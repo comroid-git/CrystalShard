@@ -61,7 +61,7 @@ public class Logger {
      *
      * @param handler The handler to register.
      */
-    public void registerCustomHandler(CustomHandler handler) {
+    public static void registerCustomHandler(CustomHandler handler) {
         customHandlers.add(handler);
     }
 
@@ -70,7 +70,7 @@ public class Logger {
      *
      * @param handler The handler to register.
      */
-    public void registerCustomExceptionHandler(CustomExceptionHandler handler) {
+    public static void registerCustomExceptionHandler(CustomExceptionHandler handler) {
         customExceptionHandlers.add(handler);
     }
 
