@@ -139,31 +139,35 @@ public class Logger {
      * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
      */
     public <T> T exception(Throwable throwable) {
-        StringBuilder sb = new StringBuilder()
-                .append("An exception has occurred: ")
-                .append(throwable.getMessage())
-                .append("\n");
+        if (!ignored.contains(loggingClass)) {
+            StringBuilder sb = new StringBuilder()
+                    .append("An exception has occurred: ")
+                    .append(throwable.getMessage())
+                    .append("\n");
 
-        List.of(throwable.getStackTrace())
-                .forEach(line -> sb.append("\t").append(line));
+            List.of(throwable.getStackTrace())
+                    .forEach(line -> sb.append("\t").append(line));
 
-        customExceptionHandlers.forEach(handler -> handler.apply(throwable));
-        post(LoggingLevel.ERROR, sb.toString());
+            customExceptionHandlers.forEach(handler -> handler.apply(throwable));
+            post(LoggingLevel.ERROR, sb.toString());
+        }
 
         return null;
     }
 
     private void post(LoggingLevel level, String message) {
-        if (level != LoggingLevel.ERROR) {
-            customHandlers.forEach(handler -> handler.apply(level, message));
+        if (!ignored.contains(loggingClass)) {
+            if (level != LoggingLevel.ERROR) {
+                customHandlers.forEach(handler -> handler.apply(level, message));
+            }
+            System.out.println(
+                    String.format(
+                            "%s %s %s",
+                            newFix(level, -1),
+                            message,
+                            newFix(level, 1)
+                    ));
         }
-        System.out.println(
-                String.format(
-                        "%s %s %s",
-                        newFix(level, -1),
-                        message,
-                        newFix(level, 1)
-                ));
     }
 
     private String newFix(LoggingLevel level, int x) {
@@ -171,6 +175,7 @@ public class Logger {
 
         fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
         fix = fix.replace("%c", loggingClass.getName());
+        fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
         fix = fix.replace("%l", level.getName());
 
         return fix.equals("null") ? "" : fix;
@@ -211,6 +216,7 @@ public class Logger {
      * <p>{@code %l} - Gets replaced with the Level of the message.</p>
      * <p>{@code %t} - Gets replaced with the current Timestamp of the message.</p>
      * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getName()}.</p>
+     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getSimpleName()}.</p>
      *
      * @param prefix The prefix to set.
      */
@@ -226,6 +232,7 @@ public class Logger {
      * <p>{@code %l} - Gets replaced with the Level of the message.</p>
      * <p>{@code %t} - Gets replaced with the current Timestamp of the message.</p>
      * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getName()}.</p>
+     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getSimpleName()}.</p>
      *
      * @param suffix The suffix to set.
      */
@@ -234,9 +241,10 @@ public class Logger {
     }
 
     private static void initLogging() {
+        hasInit = true;
         JsonNode node;
-        InputStream configStream = Logger.class.getResourceAsStream("logging.json");
-        try {
+        InputStream configStream = Logger.class.getResourceAsStream("/logging.json");
+        if (configStream != null) {
             Scanner s = new Scanner(configStream).useDelimiter("\\A");
             if (s.hasNext()) {
                 try {
@@ -245,18 +253,25 @@ public class Logger {
                     node = mapper.readTree(content);
                 } catch (IOException ignored) {
                     node = createDefaultConfig();
+                    System.out.println("[WARN] No logger configuration file \"logger.json\" at resources root found. " +
+                            "Using default configuration ...");
                 }
             } else {
                 // file does not exist, go for defaults
                 node = createDefaultConfig();
+                System.out.println("[WARN] No logger configuration file \"logger.json\" at resources root found. " +
+                        "Using default configuration ...");
             }
             configuration = node;
             try {
                 configStream.close();
             } catch (IOException ignored) {
+                System.out.println("test");
             }
-        } catch (NullPointerException ignored) {
+        } else {
             configuration = createDefaultConfig();
+            System.out.println("[WARN] No logger configuration file \"logger.json\" at resources root found. " +
+                    "Using default configuration ...");
         }
 
         level = LoggingLevel.ofName(configuration.get("level").asText()).orElse(LoggingLevel.INFO);
