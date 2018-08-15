@@ -1,13 +1,19 @@
 package de.kaleidox.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import de.kaleidox.logging.Logger;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class JsonHelper {
+    private final static Logger logger = new Logger(JsonHelper.class);
+
     public static JsonNode nodeOf(Object of) {
         if (of == null) {
             return JsonNodeFactory.instance.nullNode();
@@ -32,5 +38,14 @@ public class JsonHelper {
         List.of(items).forEach(item -> node.add(nodeOf(item)));
 
         return node;
+    }
+
+    public static JsonNode parse(String body) {
+        try {
+            return new ObjectMapper().readTree(body);
+        } catch (IOException e) {
+            logger.exception(e);
+            return null;
+        }
     }
 }
