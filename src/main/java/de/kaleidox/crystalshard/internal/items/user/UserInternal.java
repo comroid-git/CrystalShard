@@ -71,7 +71,7 @@ public class UserInternal implements User {
 
     @Override
     public String getNicknameMentionTag() {
-        return "<@!"+id+">";
+        return "<@!" + id + ">";
     }
 
     @Override
@@ -116,6 +116,6 @@ public class UserInternal implements User {
 
     @Override
     public String getMentionTag() {
-        return "<@"+id+">";
+        return "<@" + id + ">";
     }
 }

@@ -92,7 +92,7 @@ public class RoleInternal implements Role {
      */
     @Override
     public String getMentionTag() {
-        return "<@&"+id+">";
+        return "<@&" + id + ">";
     }
 
     @Override

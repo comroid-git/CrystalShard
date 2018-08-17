@@ -4,12 +4,10 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.permission.PermissionSet;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 import java.awt.*;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Role extends DiscordItem, Nameable, Mentionable, PermissionApplyable {

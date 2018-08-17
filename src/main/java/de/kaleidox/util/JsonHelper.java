@@ -7,9 +7,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import de.kaleidox.logging.Logger;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class JsonHelper {
     private final static Logger logger = new Logger(JsonHelper.class);

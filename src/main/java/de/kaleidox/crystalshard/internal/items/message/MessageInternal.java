@@ -8,14 +8,14 @@ import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
-import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.message.*;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.role.Role;
+import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
+import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
@@ -109,12 +109,12 @@ public class MessageInternal implements Message {
 
     @Override
     public Optional<AuthorUser> getAuthorAsUser() {
-        return author.asAuthorUser();
+        return author.toAuthorUser();
     }
 
     @Override
     public Optional<AuthorWebhook> getAuthorAsWebhook() {
-        return author.asAuthorWebhook();
+        return author.toAuthorWebhook();
     }
 
     @Override
@@ -214,7 +214,7 @@ public class MessageInternal implements Message {
 
     @Override
     public List<CustomEmoji> getCustomEmojis() {
-        return Collections.unmodifiableList();
+        return null;
     }
 
     @Override

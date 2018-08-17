@@ -11,7 +11,7 @@ public interface CustomHandler {
     /**
      * The method that gets called.
      *
-     * @param level The logging level of the message.
+     * @param level   The logging level of the message.
      * @param message The message that gets logged.
      */
     void apply(LoggingLevel level, String message);

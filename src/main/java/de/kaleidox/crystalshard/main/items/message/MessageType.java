@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.main.items.message;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
