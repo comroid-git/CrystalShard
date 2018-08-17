@@ -1,7 +1,34 @@
 package de.kaleidox.crystalshard.main.items.user;
 
 import de.kaleidox.crystalshard.main.items.DiscordItem;
+import de.kaleidox.crystalshard.main.items.Mentionable;
+import de.kaleidox.crystalshard.main.items.Nameable;
+import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 
-public interface User extends DiscordItem, MessageReciever {
+import java.net.URL;
+import java.util.Optional;
+
+public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever {
+    String getDiscriminatedName();
+
+    String getDiscriminator();
+
+    Optional<String> getNickname(Server inServer);
+
+    String getDisplayName(Server inServer);
+
+    String getNicknameMentionTag();
+
+    Optional<URL> getAvatarUrl();
+
+    boolean isBot();
+
+    boolean isVerified();
+
+    boolean hasMultiFactorAuthorization();
+
+    Optional<String> getLocale();
+
+    Optional<String> getEmail();
 }

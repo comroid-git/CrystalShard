@@ -19,17 +19,38 @@ public class WebRequest<T> {
     private static final Logger logger = new Logger(WebRequest.class);
     private static final String BASE_URL = "https://discordapp.com/api";
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private JsonNode node;
+    private String endpoint;
+    private Method method;
 
     public WebRequest() {
     }
 
-    public void execute(String token) {
-        ObjectNode node = JsonNodeFactory.instance.objectNode();
-        node.set("content", JsonHelper.nodeOf("Hello World!"));
-        node.set("file", JsonHelper.nodeOf("content"));
+    public WebRequest(Method method,
+                      String endpoint,
+                      JsonNode node) {
+        this.method = method;
+        this.endpoint = endpoint;
+        this.node = node;
+    }
 
-        request("Bot "+token, "/channels/479438264491573249/messages", Method.POST, node)
-                .thenAcceptAsync(System.out::println);
+    public WebRequest endpoint(String endpoint) {
+        this.endpoint = endpoint;
+        return this;
+    }
+
+    public WebRequest node(JsonNode node) {
+        this.node = node;
+        return this;
+    }
+
+    public WebRequest method(Method method) {
+        this.method = method;
+        return this;
+    }
+
+    public CompletableFuture<JsonNode> execute(String token) {
+        return request(token, endpoint, method, node);
     }
 
     @SuppressWarnings("SameParameterValue")
