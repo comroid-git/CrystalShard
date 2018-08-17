@@ -3,13 +3,14 @@ package de.kaleidox.crystalshard.main.items.user;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
-import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.util.Castable;
 
 import java.net.URL;
 import java.util.Optional;
 
-public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever {
+public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User> {
     String getDiscriminatedName();
 
     String getDiscriminator();
@@ -31,4 +32,16 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     Optional<String> getLocale();
 
     Optional<String> getEmail();
+
+    default Optional<ServerMember> toServerMember() {
+        return castTo(ServerMember.class);
+    }
+
+    default Optional<AuthorUser> toAuthorUser() {
+        return castTo(AuthorUser.class);
+    }
+
+    default Optional<AuthorWebhook> toAuthorWebhook() {
+        return castTo(AuthorWebhook.class);
+    }
 }

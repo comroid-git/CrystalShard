@@ -3,13 +3,14 @@ package de.kaleidox.crystalshard.main.items.user;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.util.Castable;
 
 import java.util.Optional;
 
 /**
  * This interface represents an Author of a message.
  */
-public interface Author extends DiscordItem, Nameable {
+public interface Author extends DiscordItem, Nameable, Castable<Author> {
     /**
      * The message the author has been obtained from.
      *
@@ -35,29 +36,11 @@ public interface Author extends DiscordItem, Nameable {
         return this instanceof AuthorWebhook;
     }
 
-    /**
-     * Returns the Author as an AuthorUser.
-     * Returns empty if the author is a webhook.
-     *
-     * @return An Optional that may contain this author as a AuthorUser.
-     */
-    default Optional<AuthorUser> asAuthorUser() {
-        if (this instanceof AuthorUser) {
-            return Optional.of((AuthorUser) this);
-        }
-        return Optional.empty();
+    default Optional<AuthorUser> toAuthorUser() {
+        return castTo(AuthorUser.class);
     }
 
-    /**
-     * Returns the Author as an AuthorWebhook.
-     * Returns empty if the author is a user.
-     *
-     * @return An Optional that may contain this author as a AuthorWebhook.
-     */
-    default Optional<AuthorWebhook> asAuthorWebhook() {
-        if (this instanceof AuthorWebhook) {
-            return Optional.of((AuthorWebhook) this);
-        }
-        return Optional.empty();
+    default Optional<AuthorWebhook> toAuthorWebhook() {
+        return castTo(AuthorWebhook.class);
     }
 }
