@@ -9,44 +9,44 @@ import de.kaleidox.util.UrlHelper;
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
-@SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "FieldCanBeLocal"})
+@SuppressWarnings("FieldCanBeLocal")
 public class SentEmbedInternal implements SentEmbed {
-    private Optional<String> title;
-    private Optional<String> description;
-    private Optional<URL> url;
-    private Optional<Instant> timestamp;
-    private Optional<Color> color;
-    private Optional<SentEmbed.Footer> footer;
-    private Optional<SentEmbed.Image> image;
-    private Optional<SentEmbed.Thumbnail> thumbnail;
-    private Optional<SentEmbed.Author> author;
-    private Optional<SentEmbed.Video> video;
-    private Optional<SentEmbed.Provider> provider;
-    private ArrayList<SentEmbed.Field> fields;
+    private final String title;
+    private final String description;
+    private final URL url;
+    private final Instant timestamp;
+    private final Color color;
+    private final SentEmbed.Footer footer;
+    private final SentEmbed.Image image;
+    private final SentEmbed.Thumbnail thumbnail;
+    private final SentEmbed.Author author;
+    private final SentEmbed.Video video;
+    private final SentEmbed.Provider provider;
+    private final ArrayList<SentEmbed.Field> fields;
 
     public SentEmbedInternal(JsonNode data) {
-        this.title = Optional.ofNullable(data.get("title").asText(null));
-        this.description = Optional.ofNullable(data.get("description").asText(null));
-        this.url = Optional.ofNullable(UrlHelper.orNull(data.get("url").asText(null)));
-        this.timestamp = Optional.ofNullable(data.has("timestamp") ?
+        this.title = data.get("title").asText(null);
+        this.description = data.get("description").asText(null);
+        this.url = UrlHelper.orNull(data.get("url").asText(null));
+        this.timestamp = (data.has("timestamp") ?
                 Instant.parse(data.get("timestamp").asText()) : null);
-        this.color = Optional.ofNullable(data.has("color") ?
+        this.color = (data.has("color") ?
                 new Color(data.get("color").asInt()) : null);
-        this.footer = Optional.ofNullable(data.has("footer") ?
+        this.footer = (data.has("footer") ?
                 new Footer(data.get("footer")) : null);
-        this.image = Optional.ofNullable(data.has("image") ?
+        this.image = (data.has("image") ?
                 new Image(data.get("image")) : null);
-        this.thumbnail = Optional.ofNullable(data.has("thumbnail") ?
+        this.thumbnail = (data.has("thumbnail") ?
                 new Thumbnail(data.get("thumbnail")) : null);
-        this.author = Optional.ofNullable(data.has("author") ?
+        this.author = (data.has("author") ?
                 new Author(data.get("author")) : null);
-        this.provider = Optional.ofNullable(data.has("provider") ?
+        this.provider = (data.has("provider") ?
                 new Provider(data.get("provider")) : null);
-        this.video = Optional.ofNullable(data.has("video") ?
+        this.video = (data.has("video") ?
                 new Video(data.get("video")) : null);
+        this.fields = new ArrayList<>();
         for (JsonNode node : data.get("fields")) {
             fields.add(new Field(node));
         }
@@ -54,23 +54,83 @@ public class SentEmbedInternal implements SentEmbed {
 
     @Override
     public Optional<EmbedDraft> toEmbedDraft() {
-        return Optional.empty();
+        return toBuilder().map(Builder::build);
     }
 
     @Override
     public Optional<Builder> toBuilder() {
         Builder builder = Embed.BUILDER()
-                .setTitle(title.orElse(null))
-                .setDescription(description.orElse(null))
-                .setUrl(url.map(URL::toExternalForm).orElse(null))
-                .setTimestamp(timestamp.orElse(null))
-                .setColor(color.orElse(null))
-                .setFooter(footer.map(SentEmbed.Footer::toDraft).orElse(null))
-                .setImage(image.map(SentEmbed.Image::toDraft).orElse(null))
-                .setThumbnail(thumbnail.map(SentEmbed.Thumbnail::toDraft).orElse(null))
-                .setAuthor(author.map(SentEmbed.Author::toDraft).orElse(null));
+                .setTitle(title)
+                .setDescription(description)
+                .setUrl(Objects.nonNull(url) ? url.toExternalForm() : null)
+                .setTimestamp(timestamp)
+                .setColor(color)
+                .setFooter(Objects.nonNull(footer) ? footer.toDraft() : null)
+                .setImage(Objects.nonNull(image) ? image.toDraft() : null)
+                .setThumbnail(Objects.nonNull(thumbnail) ? thumbnail.toDraft() : null)
+                .setAuthor(Objects.nonNull(author) ? author.toDraft() : null);
         fields.forEach(field -> builder.addField(field.toDraft()));
         return Optional.of(builder);
+    }
+
+    @Override
+    public Optional<String> getTitle() {
+        return Optional.ofNullable(title);
+    }
+
+    @Override
+    public Optional<String> getDescription() {
+        return Optional.ofNullable(description);
+    }
+
+    @Override
+    public Optional<URL> getUrl() {
+        return Optional.ofNullable(url);
+    }
+
+    @Override
+    public Optional<Instant> getTimestamp() {
+        return Optional.ofNullable(timestamp);
+    }
+
+    @Override
+    public Optional<Color> getColor() {
+        return Optional.ofNullable(color);
+    }
+
+    @Override
+    public Optional<SentEmbed.Footer> getFooter() {
+        return Optional.ofNullable(footer);
+    }
+
+    @Override
+    public Optional<SentEmbed.Image> getImage() {
+        return Optional.ofNullable(image);
+    }
+
+    @Override
+    public Optional<SentEmbed.Author> getAuthor() {
+        return Optional.ofNullable(author);
+    }
+
+    @Override
+    public Optional<SentEmbed.Thumbnail> getThumbail() {
+        return Optional.ofNullable(thumbnail);
+    }
+
+    @Override
+    public Optional<SentEmbed.Video> getVideo() {
+        return Optional.ofNullable(video);
+    }
+
+    @Override
+    public Optional<SentEmbed.Provider> getProvider() {
+        return Optional.ofNullable(provider);
+    }
+
+    @Override
+    public Collection<SentEmbed.Field> getFields() {
+        return Collections.unmodifiableList(fields);
     }
 
     public class Footer implements SentEmbed.Footer {

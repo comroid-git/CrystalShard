@@ -2,10 +2,38 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 
+import javax.swing.text.html.Option;
+import java.awt.*;
 import java.net.URL;
+import java.time.Instant;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface SentEmbed extends Embed {
+    Optional<String> getTitle();
+
+    Optional<String> getDescription();
+
+    Optional<URL> getUrl();
+
+    Optional<Instant> getTimestamp();
+
+    Optional<Color> getColor();
+
+    Optional<Footer> getFooter();
+
+    Optional<Image> getImage();
+
+    Optional<Author> getAuthor();
+
+    Optional<Thumbnail> getThumbail();
+
+    Optional<Video> getVideo();
+
+    Optional<Provider> getProvider();
+
+    Collection<Field> getFields();
+
     @Override
     default Optional<SentEmbed> toSentEmbed() {
         return Optional.of(this);
