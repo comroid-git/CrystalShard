@@ -14,15 +14,15 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public interface Embed extends Castable<Embed> {
-    static Builder BUILDER() {
-        return new EmbedBuilderInternal();
-    }
-
     Optional<EmbedDraft> toEmbedDraft();
 
     Optional<SentEmbed> toSentEmbed();
 
     Optional<Embed.Builder> toBuilder();
+
+    static Builder BUILDER() {
+        return new EmbedBuilderInternal();
+    }
 
     interface Builder {
         Builder setTitle(String title);
@@ -59,10 +59,18 @@ public interface Embed extends Castable<Embed> {
 
         Builder setAuthor(EmbedDraft.Author author);
 
-        default Builder setAuthor(User user) {
+        default Builder setAuthor(User user, String url) {
             return setAuthor(EmbedDraft.Author.BUILD(user.getName(),
-                    null,
+                    url,
                     user.getAvatarUrl().map(URL::toExternalForm).orElse(null)));
+        }
+
+        default Builder setAuthor(User user) {
+            return setAuthor(user, null);
+        }
+
+        default Builder setAuthor(String name) {
+            return setAuthor(name, null, null);
         }
 
         default Builder setAuthor(String name, String url, String iconUrl) {

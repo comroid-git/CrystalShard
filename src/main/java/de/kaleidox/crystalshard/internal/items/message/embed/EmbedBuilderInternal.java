@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.internal.items.message.embed;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.logging.Logger;
@@ -40,13 +39,6 @@ public class EmbedBuilderInternal implements Embed.Builder {
         }
         this.title = title;
         return this;
-    }
-
-    private void testCharCounter() {
-        if (charCounter > Embed.Boundaries.TOTAL_CHAR_COUNT) {
-            throw new IllegalArgumentException("Total embed characters must not exceed " +
-                    Embed.Boundaries.TOTAL_CHAR_COUNT + " characters!");
-        }
     }
 
     @Override
@@ -122,6 +114,8 @@ public class EmbedBuilderInternal implements Embed.Builder {
 
     @Override
     public Embed.Builder addField(String title, String text, boolean inline) {
+        Objects.requireNonNull(title, "Embed field title must not be null.");
+        Objects.requireNonNull(text, "Embed field text must not be null.");
         return addField(new EmbedDraftInternal.Field(title, text, inline));
     }
 
@@ -181,8 +175,10 @@ public class EmbedBuilderInternal implements Embed.Builder {
         );
     }
 
-    public JsonNode toJsonNode(JsonNode node) {
-
-        return node;
+    private void testCharCounter() {
+        if (charCounter > Embed.Boundaries.TOTAL_CHAR_COUNT) {
+            throw new IllegalArgumentException("Total embed characters must not exceed " +
+                    Embed.Boundaries.TOTAL_CHAR_COUNT + " characters!");
+        }
     }
 }

@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
+import de.kaleidox.crystalshard.internal.util.Container;
 import de.kaleidox.crystalshard.main.items.Nameable;
-import de.kaleidox.crystalshard.main.util.Castable;
 
 import java.awt.*;
 import java.net.URL;
@@ -33,26 +33,30 @@ public interface EmbedDraft extends Embed {
 
     List<Field> getFields();
 
-    interface Footer {
+    interface Footer extends Container.Interface {
+        String getText();
+
+        Optional<URL> getIconUrl();
+
         static Footer BUILD(String text,
                             String iconUrl) {
             return new EmbedDraftInternal.Footer(text, iconUrl);
         }
-
-        String getText();
-
-        Optional<URL> getUrl();
     }
 
-    interface Image {
+    interface Image extends Container.Interface {
+        Optional<URL> getUrl();
+
         static Image BUILD(String url) {
             return new EmbedDraftInternal.Image(url);
         }
-
-        Optional<URL> getUrl();
     }
 
-    interface Author extends Nameable {
+    interface Author extends Nameable, Container.Interface {
+        Optional<URL> getUrl();
+
+        Optional<URL> getIconUrl();
+
         static Author BUILD(String name,
                             String url,
                             String iconUrl) {
@@ -60,21 +64,15 @@ public interface EmbedDraft extends Embed {
         }
     }
 
-    interface Thumbnail {
+    interface Thumbnail extends Container.Interface {
+        Optional<URL> getUrl();
+
         static Thumbnail BUILD(String url) {
             return new EmbedDraftInternal.Thumbnail(url);
         }
-
-        Optional<URL> getUrl();
     }
 
-    interface Field extends Castable<Field> {
-        static Field BUILD(String name,
-                           String text,
-                           boolean inline) {
-            return new EmbedDraftInternal.Field(name, text, (Objects.nonNull(inline) && inline));
-        }
-
+    interface Field {
         String getTitle();
 
         String getText();
@@ -83,6 +81,12 @@ public interface EmbedDraft extends Embed {
 
         default Optional<EditableField> toEditableField() {
             return Optional.of(new EmbedDraftInternal.EditableField(this));
+        }
+
+        static Field BUILD(String title,
+                           String text,
+                           boolean inline) {
+            return new EmbedDraftInternal.Field(title, text, (Objects.nonNull(inline) && inline));
         }
     }
 

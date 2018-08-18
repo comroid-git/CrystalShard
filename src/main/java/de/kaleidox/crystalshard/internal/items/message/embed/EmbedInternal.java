@@ -32,7 +32,7 @@ public class EmbedInternal implements Embed {
         } else if (this instanceof Embed.Builder) {
             return Optional.of((Builder) this);
         } else {
-            throw new AssertionError("Embed is of unknown type.");
+            throw new AssertionError("Embed is orNull unknown type.");
         }
     }
 }
