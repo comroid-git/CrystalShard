@@ -16,14 +16,14 @@ public enum MessageActivityType {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public static MessageActivityType getById(int id) {
         return Stream.of(values())
                 .filter(type -> type.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
-    }
-
-    public int getId() {
-        return id;
     }
 }
