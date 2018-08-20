@@ -112,6 +112,17 @@ public class Logger {
     }
 
     /**
+     * Posts a log message with {@link LoggingLevel#DEEP_TRACE}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void deeptrace(Object message) {
+        if (level.getSeverity() >= LoggingLevel.DEEP_TRACE.getSeverity()) {
+            post(LoggingLevel.DEEP_TRACE, message.toString());
+        }
+    }
+
+    /**
      * Posts an exception with {@link LoggingLevel#ERROR}.
      * This method is useful for usage in {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
      *

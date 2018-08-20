@@ -36,9 +36,14 @@ public enum LoggingLevel {
     ERROR("ERROR", 4),
 
     /**
-     * A tracing level to track down every action.
+     * A tracing level to track down every web action.
      */
-    TRACE("TRACE", 5);
+    TRACE("TRACE", 5),
+
+    /**
+     * A tracing level to track down every single sent action, things like sent image bytes.
+     */
+    DEEP_TRACE("DEEPTRACE", 6);
 
     private final String name;
     private int severity;
