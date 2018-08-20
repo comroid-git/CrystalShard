@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.message.embed;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.util.Container;
@@ -165,64 +166,64 @@ public class EmbedDraftInternal implements EmbedDraft {
 
         object.put("type", "rich");
         if (title != null && !title.equals("")) {
-            object.put("title", title);
+            object.set("title", JsonHelper.nodeOf(title));
         }
         if (description != null && !description.equals("")) {
-            object.put("description", description);
+            object.set("description", JsonHelper.nodeOf(description));
         }
         if (url != null && !url.equals("")) {
-            object.put("url", JsonHelper.nodeOf(url));
+            object.set("url", JsonHelper.nodeOf(url));
         }
         if (color != null) {
-            object.put("color", color.getRGB() & 0xFFFFFF);
+            object.set("color", JsonHelper.nodeOf(color.getRGB() & 0xFFFFFF));
         }
         if (timestamp != null) {
-            object.put("timestamp", DateTimeFormatter.ISO_INSTANT.format(timestamp));
+            object.set("timestamp", JsonHelper.nodeOf(DateTimeFormatter.ISO_INSTANT.format(timestamp)));
         }
         if ((footerText != null && !footerText.equals("")) || (footerIconUrl != null && !footerIconUrl.equals(""))) {
             ObjectNode footer = object.putObject("footer");
             if (footerText != null && !footerText.equals("")) {
-                footer.put("text", footerText);
+                footer.set("text", JsonHelper.nodeOf(footerText));
             }
             if (footerIconUrl != null && !footerIconUrl.equals("")) {
-                footer.put("icon_url", footerIconUrl);
+                footer.set("icon_url", JsonHelper.nodeOf(footerIconUrl));
             }
             if (footerIconContainer != null) {
-                footer.put("icon_url", "attachment://" + footerIconContainer.getFullName());
+                footer.set("icon_url", JsonHelper.nodeOf("attachment://" + footerIconContainer.getFullName()));
             }
         }
         if (imageUrl != null && !imageUrl.equals("")) {
-            object.putObject("image").put("url", imageUrl);
+            object.putObject("image").set("url", JsonHelper.nodeOf(imageUrl));
         }
         if (imageContainer != null) {
-            object.putObject("image").put("url", "attachment://" + imageContainer.getFullName());
+            object.putObject("image").set("url", JsonHelper.nodeOf("attachment://" + imageContainer.getFullName()));
         }
         if (authorName != null && !authorName.equals("")) {
             ObjectNode author = object.putObject("author");
             author.put("name", authorName);
             if (authorUrl != null && !authorUrl.equals("")) {
-                author.put("url", authorUrl);
+                author.set("url", JsonHelper.nodeOf(authorUrl));
             }
             if (authorIconUrl != null && !authorIconUrl.equals("")) {
-                author.put("icon_url", authorIconUrl);
+                author.set("icon_url", JsonHelper.nodeOf(authorIconUrl));
             }
             if (authorIconContainer != null) {
-                author.put("url", "attachment://" + authorIconContainer.getFullName());
+                author.set("url", JsonHelper.nodeOf("attachment://" + authorIconContainer.getFullName()));
             }
         }
         if (thumbnailUrl != null && !thumbnailUrl.equals("")) {
-            object.putObject("thumbnail").put("url", thumbnailUrl);
+            object.putObject("thumbnail").set("url", JsonHelper.nodeOf(thumbnailUrl));
         }
         if (thumbnailContainer != null) {
-            object.putObject("thumbnail").put("url", "attachment://" + thumbnailContainer.getFullName());
+            object.putObject("thumbnail").set("url", JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
         }
         if (fields.size() > 0) {
             ArrayNode jsonFields = object.putArray("fields");
             for (EmbedDraft.Field field : fields) {
                 ObjectNode jsonField = jsonFields.addObject();
-                jsonField.put("name", field.getTitle());
-                jsonField.put("value", field.getText());
-                jsonField.put("inline", field.isInline());
+                jsonField.set("name", JsonHelper.nodeOf(field.getTitle()));
+                jsonField.set("value", JsonHelper.nodeOf(field.getText()));
+                jsonField.set("inline", JsonHelper.nodeOf(field.isInline()));
             }
         }
         return object;

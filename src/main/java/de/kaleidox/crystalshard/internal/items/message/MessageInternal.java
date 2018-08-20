@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
+import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
+import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -73,13 +75,13 @@ public class MessageInternal implements Message {
         this.application = data.has("application") ?
                 new MessageApplicationInternal(data.get("application")) : null;
         if (!data.has("webhook_id")) {
-            this.author = new AuthorUserInternal(this, data.get("author"));
+            this.author = new AuthorUserInternal(discord, this, data.get("author"));
         } else {
-            this.author = new AuthorWebhookInternal(this, data.get("author"));
+            this.author = new AuthorWebhookInternal(discord, this, data.get("author"));
         }
 
         for (JsonNode mention : data.get("mentions")) {
-            userMentions.add(new UserInternal(mention));
+            userMentions.add(new UserInternal(discord, mention));
         }
 
         for (JsonNode role : data.get("mention_roles")) {

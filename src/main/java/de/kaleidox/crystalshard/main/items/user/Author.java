@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * This interface represents an Author of a message.
  */
-public interface Author extends DiscordItem, Nameable, Castable<Author> {
+public interface Author extends DiscordItem, Nameable {
     /**
      * The message the author has been obtained from.
      *
@@ -27,6 +27,8 @@ public interface Author extends DiscordItem, Nameable, Castable<Author> {
         return this instanceof AuthorUser;
     }
 
+    Optional<AuthorUser> toAuthorUser();
+
     /**
      * Returns whether the author of the message was a webhook.
      *
@@ -36,11 +38,5 @@ public interface Author extends DiscordItem, Nameable, Castable<Author> {
         return this instanceof AuthorWebhook;
     }
 
-    default Optional<AuthorUser> toAuthorUser() {
-        return castTo(AuthorUser.class);
-    }
-
-    default Optional<AuthorWebhook> toAuthorWebhook() {
-        return castTo(AuthorWebhook.class);
-    }
+    Optional<AuthorWebhook> toAuthorWebhook();
 }

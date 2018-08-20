@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.items.user.Author;
+import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.Webhook;
 import de.kaleidox.logging.Logger;
 
@@ -13,8 +16,10 @@ public class WebhookInternal implements Webhook {
     private final long id;
     private final String name;
     private final URL avatarUrl;
+    private final Discord discord;
 
-    public WebhookInternal(JsonNode data) {
+    public WebhookInternal(Discord discord, JsonNode data) {
+        this.discord = discord;
         this.id = data.get("id").asLong();
         this.name = data.get("username").asText();
         URL tempAvatarUrl;
@@ -34,8 +39,21 @@ public class WebhookInternal implements Webhook {
     }
 
     @Override
+    public Optional<AuthorWebhook> toAuthorWebhook() {
+        if (this instanceof AuthorWebhook) {
+            return Optional.of((AuthorWebhook) this);
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public long getId() {
         return id;
+    }
+
+    @Override
+    public Discord getDiscord() {
+        return discord;
     }
 
     @Override

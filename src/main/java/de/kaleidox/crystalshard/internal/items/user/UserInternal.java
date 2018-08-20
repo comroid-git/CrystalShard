@@ -1,9 +1,11 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.UrlHelper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,20 +23,15 @@ public class UserInternal implements User {
     private final boolean verified;
     private final String locale;
     private final String email;
+    private final Discord discord;
 
-    public UserInternal(JsonNode data) {
-        URL tempAvatarUrl;
+    public UserInternal(Discord discord, JsonNode data) {
+        this.discord = discord;
         this.id = data.get("id").asLong();
         this.name = data.get("name").asText();
         this.discriminator = data.get("discriminator").asText();
-        try {
-            tempAvatarUrl = data.has("avatar") ?
-                    new URL(data.get("avatar").asText()) : null;
-        } catch (MalformedURLException e) {
-            logger.exception(e);
-            tempAvatarUrl = null;
-        }
-        this.avatarUrl = tempAvatarUrl;
+        this.avatarUrl = data.has("avatar_url") ?
+                UrlHelper.orNull(data.get("avatar_url").asText()) : null;
         this.bot = data.get("bot").asBoolean(false);
         //noinspection SimplifiableConditionalExpression
         this.mfa = data.has("mfa") ?
@@ -107,6 +104,11 @@ public class UserInternal implements User {
     @Override
     public long getId() {
         return id;
+    }
+
+    @Override
+    public Discord getDiscord() {
+        return discord;
     }
 
     @Override

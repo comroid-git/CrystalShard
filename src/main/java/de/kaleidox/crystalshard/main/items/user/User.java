@@ -36,12 +36,4 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     default Optional<ServerMember> toServerMember() {
         return castTo(ServerMember.class);
     }
-
-    default Optional<AuthorUser> toAuthorUser() {
-        return castTo(AuthorUser.class);
-    }
-
-    default Optional<AuthorWebhook> toAuthorWebhook() {
-        return castTo(AuthorWebhook.class);
-    }
 }
