@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.logging.Logger;
 
 import java.io.IOException;
@@ -30,12 +31,16 @@ public class JsonHelper {
         }
     }
 
-    public static JsonNode arrayNode(Object... items) {
+    public static ArrayNode arrayNode(Object... items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.length);
 
         List.of(items).forEach(item -> node.add(nodeOf(item)));
 
         return node;
+    }
+
+    public static ObjectNode objectNode() {
+        return JsonNodeFactory.instance.objectNode();
     }
 
     public static JsonNode parse(String body) {
