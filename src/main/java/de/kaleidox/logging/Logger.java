@@ -132,14 +132,21 @@ public class Logger {
      * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
      */
     public <T> T exception(Throwable throwable) {
+        return exception(throwable, null);
+    }
+
+    public <T> T exception(Throwable throwable, String customMessage) {
         if (!ignored.contains(loggingClass)) {
             StringBuilder sb = new StringBuilder()
                     .append("An exception has occurred: ")
-                    .append(throwable.getMessage())
-                    .append("\n");
+                    .append(customMessage == null ? throwable.getMessage() : customMessage)
+                    .append("\nException in thread \"")
+                    .append(Thread.currentThread().getName())
+                    .append("\" ")
+                    .append(throwable.getClass().getName());
 
             List.of(throwable.getStackTrace())
-                    .forEach(line -> sb.append("\t").append(line));
+                    .forEach(line -> sb.append("\n\t").append(line));
 
             customExceptionHandlers.forEach(handler -> handler.apply(throwable));
             post(LoggingLevel.ERROR, sb.toString());
@@ -264,7 +271,7 @@ public class Logger {
                     node = mapper.readTree(content);
                 } catch (IOException ignored) {
                     node = createDefaultConfig();
-                    System.out.println("[WARN] No logger configuration file \"logger.json\" at resources root found. " +
+                    System.out.println("[INFO] No logger configuration file \"logger.json\" at resources root found. " +
                             "Using default configuration ...");
                 }
             } else {

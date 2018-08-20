@@ -16,24 +16,24 @@ public enum LoggingLevel {
     SILENT("", 0),
 
     /**
+     * An error level to post exceptions and errors to.
+     */
+    ERROR("ERROR", 1),
+
+    /**
      * An information level to post information to.
      */
-    INFO("INFO", 1),
+    INFO("INFO", 2),
 
     /**
      * A warning level to post warnings to.
      */
-    WARN("WARN", 2),
+    WARN("WARN", 3),
 
     /**
      * A debug level to post debug information to.
      */
-    DEBUG("DEBUG", 3),
-
-    /**
-     * An error level to post exceptions and errors to.
-     */
-    ERROR("ERROR", 4),
+    DEBUG("DEBUG", 4),
 
     /**
      * A tracing level to track down every web action.
