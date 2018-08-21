@@ -48,7 +48,7 @@ public class JsonHelper {
             return new ObjectMapper().readTree(body);
         } catch (IOException e) {
             logger.exception(e);
-            return null;
+            return objectNode();
         }
     }
 }
