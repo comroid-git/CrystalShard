@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.internal.items.message.embed;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.util.Container;

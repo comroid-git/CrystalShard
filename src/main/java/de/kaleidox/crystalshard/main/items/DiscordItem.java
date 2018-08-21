@@ -20,4 +20,15 @@ public interface DiscordItem {
      * @return The Discord object of the item.
      */
     Discord getDiscord();
+
+    /**
+     * Used for comparing two DiscordItems after their ID.
+     *
+     * @param other The DiscordItem to compare to.
+     * @return Whether the items are equal.
+     * @see Object#equals(Object)
+     */
+    default boolean equals(DiscordItem other) {
+        return (this.getId() == other.getId());
+    }
 }

@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 
-import javax.swing.text.html.Option;
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;

@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.UrlHelper;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
