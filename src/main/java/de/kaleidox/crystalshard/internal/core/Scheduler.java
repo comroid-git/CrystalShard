@@ -1,16 +1,14 @@
 package de.kaleidox.crystalshard.internal.core;
 
-import de.kaleidox.crystalshard.internal.items.DiscordInternal;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicMarkableReference;
 
 public class Scheduler {
     private final static Logger logger = new Logger(Scheduler.class);
@@ -21,16 +19,16 @@ public class Scheduler {
     private final Discord discord;
 
     public Scheduler(Discord discord,
-                     LinkedBlockingQueue<Runnable> queue,
                      long heartbeat) {
         this.discord = discord;
         this.queue = new LinkedBlockingQueue<>();
         this.schedulerPool = new ThreadPool(discord, 51);
         this.heartbeat = heartbeat;
         schedulerPool.execute(this::cycle);
-        scheduleWithDelayAndRate(heartbeat, heartbeat, TimeUnit.MILLISECONDS, () -> {
-            ((DiscordInternal) discord).getWebSocket().heartbeat();
-        });
+        scheduleWithDelayAndRate(heartbeat, heartbeat, TimeUnit.MILLISECONDS, () ->
+                ((DiscordInternal) discord).getWebSocket().heartbeat());
+        scheduleWithDelayAndRate(250, 250, TimeUnit.MILLISECONDS, () ->
+                ((DiscordInternal) discord).getRatelimiter().tryRun());
     }
 
     public void schedule(Runnable task) {
@@ -53,7 +51,9 @@ public class Scheduler {
     }
 
     private void cycle() {
-        var ref = new Object() {long milis = 0;};
+        var ref = new Object() {
+            long milis = 0;
+        };
         while (true) {
             ref.milis = System.currentTimeMillis();
             try {

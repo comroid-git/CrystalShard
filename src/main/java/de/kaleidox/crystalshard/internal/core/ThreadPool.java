@@ -17,7 +17,7 @@ public class ThreadPool extends LinkedBlockingQueue {
         this.discord = discord;
         this.nThreads = threads;
         this.queue = new LinkedBlockingQueue<>();
-        this.threads = new Worker[nThreads+1];
+        this.threads = new Worker[nThreads];
 
         for (int i = 0; i < nThreads; i++) {
             this.threads[i] = new Worker();
@@ -26,7 +26,7 @@ public class ThreadPool extends LinkedBlockingQueue {
     }
 
     public void initScheduler(long heartbeat) {
-        this.scheduler = new Scheduler(discord, queue, heartbeat);
+        this.scheduler = new Scheduler(discord, heartbeat);
     }
 
     public void execute(Runnable task) {
