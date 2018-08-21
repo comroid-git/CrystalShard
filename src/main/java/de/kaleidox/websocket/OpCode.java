@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 public enum OpCode {
     /**
-     * Dispatches an event.
+     * Dispatches an listener.
      */
     DISPATCH(0),
 
@@ -78,6 +78,12 @@ public enum OpCode {
         this.code = code;
     }
 
+    public static Optional<OpCode> getByCode(int code) {
+        return Stream.of(values())
+                .filter(opCode -> opCode.code == code)
+                .findAny();
+    }
+
     /**
      * Gets the actual numeric code.
      *
@@ -87,14 +93,8 @@ public enum OpCode {
         return code;
     }
 
-    public static Optional<OpCode> getByCode(int code) {
-        return Stream.of(values())
-                .filter(opCode -> opCode.code == code)
-                .findAny();
-    }
-
     @Override
     public String toString() {
-        return this.name()+"("+code+")";
+        return this.name() + "(" + code + ")";
     }
 }

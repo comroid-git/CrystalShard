@@ -1,8 +1,8 @@
 package de.kaleidox.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.ResponseDispatch;
-import de.kaleidox.crystalshard.internal.items.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.JsonHelper;
@@ -12,12 +12,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class WebRequest<T> {
     private static final Logger logger = new Logger(WebRequest.class);
     private static final String BASE_URL = "https://discordapp.com/api";
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private final CompletableFuture<JsonNode> future = new CompletableFuture<>();
     private DiscordInternal discord;
     private JsonNode node;
     private String endpoint;
@@ -57,13 +59,16 @@ public class WebRequest<T> {
         return this;
     }
 
-    public CompletableFuture<JsonNode> execute(String token) {
-        return request(token, endpoint, method, node);
+    public CompletableFuture<JsonNode> getFuture() {
+        return future;
+    }
+
+    public CompletableFuture<JsonNode> execute() {
+        return request(endpoint, method, node);
     }
 
     @SuppressWarnings("SameParameterValue")
     private CompletableFuture<JsonNode> request(
-            String prefixedToken,
             String location,
             Method method,
             JsonNode node) {
@@ -78,26 +83,35 @@ public class WebRequest<T> {
                                         .uri(URI.create(BASE_URL + location))
                                         .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
                                                 "Content-Type", "application/json",
-                                                "Authorization", prefixedToken)
+                                                "Authorization", discord.getPrefixedToken())
                                         .method(method.getDescriptor(),
                                                 HttpRequest.BodyPublishers.ofString(s))
                                         .build(),
                                 HttpResponse.BodyHandlers.ofString());
                         logger.trace("Recieved status code " + response.statusCode() + " from Discord with body: " + response.body());
-                        boolean dispatch = ResponseDispatch.dispatch(response, future);
+                        boolean dispatch = ResponseDispatch.dispatch(discord, response, future);
                         if (!dispatch & (future.isCancelled() || future.isCompletedExceptionally())) {
                             logger.error("Something went horribly wrong in WebRequest.java, please contact the developer.");
                         } else {
                             if (dispatch) {
-                                future.complete(JsonHelper.parse(response.body()));
+                                JsonNode parse = JsonHelper.parse(response.body());
+                                future.complete(parse);
+                                this.future.complete(parse);
                             }
                         }
-                        future.completeExceptionally(new UnknownError("An unknown error ocurred."));
+                        UnknownError unknownError = new UnknownError("An unknown error ocurred.");
+                        future.completeExceptionally(unknownError);
+                        this.future.completeExceptionally(unknownError);
                     } catch (IOException | InterruptedException e) {
                         future.completeExceptionally(e);
+                        this.future.completeExceptionally(e);
                     }
                 });
 
         return future;
+    }
+
+    public Optional<String> getFirstArgument() {
+        return null;
     }
 }

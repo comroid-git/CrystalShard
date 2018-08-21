@@ -2,7 +2,7 @@ package de.kaleidox.websocket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.crystalshard.internal.items.DiscordInternal;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
@@ -25,7 +25,7 @@ public class WebSocketClient {
                 Method.GET,
                 "/gateway",
                 JsonHelper.nodeOf(null))
-                .execute("")
+                .execute()
                 .exceptionally(logger::exception)
                 .join();
         this.discord = (DiscordInternal) discordObject;
@@ -39,13 +39,13 @@ public class WebSocketClient {
     public CompletableFuture<WebSocket> sendPayload(Payload payload) {
         assert payload != null : "Payload must not be null!";
         CompletableFuture<WebSocket> future = CompletableFuture.failedFuture(new UnknownError("An unknown error" +
-                " occurred when trying to send payload: "+payload+"\n" +
+                " occurred when trying to send payload: " + payload + "\n" +
                 "Please contact the developer."));
         List<Payload> splitLoads = payload.split();
-        logger.trace("Sending Packet with OpCode "+payload.getCode()+" and body: "+payload.getBody());
+        logger.trace("Sending Packet with OpCode " + payload.getCode() + " and body: " + payload.getBody());
         for (int i = 0; i < splitLoads.size(); i++) {
             Payload that = splitLoads.get(i);
-            if (i == splitLoads.size()-1) {
+            if (i == splitLoads.size() - 1) {
                 CharSequence nodeAsText = that.getSendableNote();
                 future = webSocket.sendText(nodeAsText, true);
             } else {
@@ -66,13 +66,11 @@ public class WebSocketClient {
         data.set("large_threshold", JsonHelper.nodeOf(250));
         data.set("shard", JsonHelper.arrayNode(discord.getShardId(), discord.getShards()));
         sendPayload(Payload.create(OpCode.IDENTIFY, data))
-                .exceptionally(logger::exception)
-                .thenAcceptAsync(logger::trace);
+                .exceptionally(logger::exception);
     }
 
     public void heartbeat() {
         sendPayload(Payload.create(OpCode.HEARTBEAT, JsonHelper.nodeOf(null)))
-                .exceptionally(logger::exception)
-                .thenAcceptAsync(logger::trace);
+                .exceptionally(logger::exception);
     }
 }
