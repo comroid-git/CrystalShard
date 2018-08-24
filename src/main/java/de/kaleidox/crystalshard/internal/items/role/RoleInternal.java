@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.items.permission.PermissionSetInternal;
+import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.permission.PermissionSet;
+import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class RoleInternal implements Role {
     private final Server server;
-    private final PermissionSet permissions;
+    private final PermissionList permissions;
     private final long id;
     private final String name;
     private final Color color;
@@ -30,7 +30,7 @@ public class RoleInternal implements Role {
         this.color = new Color(data.get("color").asInt());
         this.grouping = data.get("hoist").asBoolean();
         this.position = data.get("position").asInt();
-        this.permissions = new PermissionSetInternal(data.get("permissions").asInt());
+        this.permissions = new PermissionListInternal(data.get("permissions").asInt());
         this.managed = data.get("manages").asBoolean();
         this.mentionable = data.get("mentionable").asBoolean();
     }
@@ -70,7 +70,7 @@ public class RoleInternal implements Role {
     }
 
     @Override
-    public PermissionSet getPermissions() {
+    public PermissionList getPermissions() {
         return permissions;
     }
 

@@ -4,7 +4,7 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
-import de.kaleidox.crystalshard.main.items.permission.PermissionSet;
+import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 import java.awt.*;
@@ -23,5 +23,5 @@ public interface Role extends DiscordItem, Nameable, Mentionable, PermissionAppl
 
     int getPosition();
 
-    PermissionSet getPermissions();
+    PermissionList getPermissions();
 }
