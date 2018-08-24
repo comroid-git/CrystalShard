@@ -1,4 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
-public class PrivateTextChannelInternal {
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+
+public class PrivateTextChannelInternal implements PrivateTextChannel {
 }
