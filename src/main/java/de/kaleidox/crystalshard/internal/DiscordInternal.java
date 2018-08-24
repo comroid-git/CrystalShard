@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.internal.core.Ratelimiting;
 import de.kaleidox.crystalshard.internal.core.ThreadPool;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
+import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.websocket.WebSocketClient;
 
@@ -41,6 +42,11 @@ public class DiscordInternal implements Discord {
     @Override
     public int getShards() {
         return 1;
+    }
+
+    @Override
+    public void addServerCreateListener(ServerCreateListener listener) {
+
     }
 
     public WebSocketClient getWebSocket() {

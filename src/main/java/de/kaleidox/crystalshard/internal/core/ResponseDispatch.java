@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.internal.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.exception.DiscordResponseException;
+import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.JsonHelper;
 

@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.internal.exception;
+package de.kaleidox.crystalshard.main.exception;
 
 public class DiscordResponseException extends Throwable {
     public DiscordResponseException(String message) {
