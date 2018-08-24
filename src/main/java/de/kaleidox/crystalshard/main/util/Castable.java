@@ -6,7 +6,7 @@ public interface Castable<C> {
     @SuppressWarnings("unchecked")
     private static <T> Optional<T> cast(Class<T> castTo, Object instance) {
         return castTo.isAssignableFrom(instance.getClass()) ?
-                Optional.of((T) instance) : Optional.empty();
+                Optional.of(castTo.cast(instance)) : Optional.empty();
     }
 
     default <T extends C> Optional<T> castTo(Class<T> castTo) {
