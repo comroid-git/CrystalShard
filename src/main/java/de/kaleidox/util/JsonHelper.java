@@ -9,7 +9,9 @@ import de.kaleidox.logging.Logger;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public class JsonHelper {
     private final static Logger logger = new Logger(JsonHelper.class);
 
@@ -29,6 +31,23 @@ public class JsonHelper {
         } else {
             return JsonNodeFactory.instance.textNode(of.toString());
         }
+    }
+
+    public static <T, N> ArrayNode arrayNode(List<T> items, Function<T, N> mapper) {
+        ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
+        items.stream()
+                .map(mapper)
+                .map(JsonHelper::nodeOf)
+                .forEach(node::add);
+        return node;
+    }
+
+    public static <T> ArrayNode arrayNode(List<T> items) {
+        ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
+        items.stream()
+                .map(JsonHelper::nodeOf)
+                .forEach(node::add);
+        return node;
     }
 
     public static ArrayNode arrayNode(Object... items) {
