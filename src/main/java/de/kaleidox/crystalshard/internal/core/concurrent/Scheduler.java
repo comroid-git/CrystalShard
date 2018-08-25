@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.internal.core;
+package de.kaleidox.crystalshard.internal.core.concurrent;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;

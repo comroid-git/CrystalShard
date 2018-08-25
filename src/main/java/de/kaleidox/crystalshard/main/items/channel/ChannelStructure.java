@@ -5,5 +5,9 @@ import java.util.List;
 public interface ChannelStructure extends List<ServerChannel> {
     int getPosition(ServerChannel channel);
 
-    int getRealPosition(ServerChannel channel);
+    List<ServerTextChannel> getAllTextChannels();
+
+    List<ServerVoiceChannel> getAllVoiceChannels();
+
+    List<ChannelCategory> getAllCategories();
 }

@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.core.Ratelimiting;
-import de.kaleidox.crystalshard.internal.core.ThreadPool;
+import de.kaleidox.crystalshard.internal.core.net.Ratelimiting;
+import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;

@@ -1,7 +1,7 @@
 package de.kaleidox.websocket;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.core.DiscordEventDispatch;
+import de.kaleidox.crystalshard.internal.core.net.DiscordEventDispatch;
 import de.kaleidox.logging.Logger;
 
 import java.net.http.WebSocket;

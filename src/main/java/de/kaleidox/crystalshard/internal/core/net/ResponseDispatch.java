@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.internal.core;
+package de.kaleidox.crystalshard.internal.core.net;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;

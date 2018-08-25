@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.internal.core;
+package de.kaleidox.crystalshard.internal.core.net;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
@@ -20,7 +20,7 @@ public class DiscordEventDispatch {
                         JsonNode node = data.get("d");
                         switch (opCode) {
                             case HELLO:
-                                long heartbeat_interval = (node.get("heartbeat_interval").asLong() / 10);
+                                long heartbeat_interval = (node.get("heartbeat_interval").asLong());
                                 discord.getThreadPool().initScheduler(heartbeat_interval);
                                 break;
                             case DISPATCH:

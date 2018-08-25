@@ -36,7 +36,7 @@ public enum LoggingLevel {
     DEBUG("DEBUG", 4),
 
     /**
-     * A tracing level to track down every web action.
+     * A tracing level to track down every net action.
      */
     TRACE("TRACE", 5),
 
