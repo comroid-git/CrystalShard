@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.main;
 
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
+import de.kaleidox.crystalshard.util.DiscordUtils;
 
 public interface Discord {
     String getPrefixedToken();
@@ -10,4 +11,6 @@ public interface Discord {
     int getShards();
 
     void addServerCreateListener(ServerCreateListener listener);
+
+    DiscordUtils getUtilities();
 }

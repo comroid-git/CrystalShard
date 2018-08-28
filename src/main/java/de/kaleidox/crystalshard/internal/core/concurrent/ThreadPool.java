@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.internal.core.concurrent;
 
+import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 
@@ -10,17 +11,17 @@ public class ThreadPool extends LinkedBlockingQueue {
     private final int nThreads;
     private final Worker[] threads;
     private final LinkedBlockingQueue<Runnable> queue;
-    private final Discord discord;
+    private final DiscordInternal discord;
     private Scheduler scheduler;
 
     public ThreadPool(Discord discord, int threads) {
-        this.discord = discord;
+        this.discord = (DiscordInternal) discord;
         this.nThreads = threads;
         this.queue = new LinkedBlockingQueue<>();
         this.threads = new Worker[nThreads];
 
         for (int i = 0; i < nThreads; i++) {
-            this.threads[i] = new Worker();
+            this.threads[i] = new Worker(this.discord);
             this.threads[i].start();
         }
     }
@@ -40,10 +41,19 @@ public class ThreadPool extends LinkedBlockingQueue {
         return scheduler;
     }
 
-    private class Worker extends Thread {
+    public class Worker extends Thread {
+        private final DiscordInternal discord;
+
+        Worker(DiscordInternal discord) {
+            this.discord = discord;
+        }
+
+        public DiscordInternal getDiscord() {
+            return discord;
+        }
+
         public void run() {
             Runnable task;
-
             while (true) {
                 synchronized (queue) {
                     while (queue.isEmpty()) {
