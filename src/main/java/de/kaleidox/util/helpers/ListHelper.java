@@ -1,4 +1,4 @@
-package de.kaleidox.util;
+package de.kaleidox.util.helpers;
 
 import java.util.ArrayList;
 import java.util.List;

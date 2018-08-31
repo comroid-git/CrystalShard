@@ -1,4 +1,4 @@
-package de.kaleidox.util;
+package de.kaleidox.util.helpers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

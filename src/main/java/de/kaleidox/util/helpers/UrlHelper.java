@@ -1,4 +1,4 @@
-package de.kaleidox.util;
+package de.kaleidox.util.helpers;
 
 import de.kaleidox.logging.Logger;
 

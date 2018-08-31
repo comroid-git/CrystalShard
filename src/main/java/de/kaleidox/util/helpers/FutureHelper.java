@@ -1,4 +1,4 @@
-package de.kaleidox.util;
+package de.kaleidox.util.helpers;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
