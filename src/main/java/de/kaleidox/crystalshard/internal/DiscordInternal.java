@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.internal.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
+import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
@@ -20,6 +21,7 @@ public class DiscordInternal implements Discord {
     private final AccountType type;
     private final WebSocketClient webSocket;
     private final Ratelimiting ratelimiter;
+    private Self self;
 
     public DiscordInternal(String token, AccountType type) {
         this.pool = new ThreadPool(this);
@@ -69,12 +71,21 @@ public class DiscordInternal implements Discord {
         return Optional.empty();
     }
 
+    @Override
+    public Self getSelf() {
+        return self;
+    }
+
     public WebSocketClient getWebSocket() {
         return webSocket;
     }
 
     public Ratelimiting getRatelimiter() {
         return ratelimiter;
+    }
+
+    public void setSelf(Self self) {
+        this.self = self;
     }
 
     public void craftServer(JsonNode data) {

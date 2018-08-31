@@ -2,6 +2,9 @@ package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.internal.core.net.request.Method;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
@@ -11,6 +14,7 @@ import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
+import de.kaleidox.crystalshard.internal.items.user.presence.PresenceStateInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
@@ -22,7 +26,6 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
 import de.kaleidox.crystalshard.main.items.server.ExplicitContentFilterLevel;
 import de.kaleidox.crystalshard.main.items.server.MFALevel;
-import de.kaleidox.crystalshard.main.items.server.PresenceState;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
 import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
@@ -30,6 +33,8 @@ import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
+import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
@@ -37,8 +42,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class ServerInternal implements Server {
+    private final static Logger logger = new Logger(ServerInternal.class);
     private final DiscordInternal discord;
     private final long id;
     private final String name;
@@ -70,8 +77,8 @@ public class ServerInternal implements Server {
     private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
     private final ChannelStructureInternal structure;
 
-    public ServerInternal(DiscordInternal discord, JsonNode data) {
-        this.discord = discord;
+    public ServerInternal(Discord discord, JsonNode data) {
+        this.discord = (DiscordInternal) discord;
         id = data.get("id").asLong();
         name = data.get("name").asText();
         iconUrl = UrlHelper.orNull(data.get("icon").asText());
@@ -105,7 +112,7 @@ public class ServerInternal implements Server {
         data.get("emojis").forEach(emoji -> emojis.add(new CustomEmojiInternal(getDiscord(), this, emoji)));
         data.get("features").forEach(feature -> features.add(feature.asText()));
         data.path("voice_states").forEach(state -> voiceStates.add(new VoiceState(state)));
-        data.path("members").forEach(member -> members.add(new ServerMemberInternal(discord, this, member)));
+        data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord, this, member)));
         data.path("channels").forEach(channel -> {
             ChannelType type = ChannelType.getFromId(channel.get("type").asInt(-1));
             switch (type) {
@@ -124,7 +131,7 @@ public class ServerInternal implements Server {
                     break;
             }
         });
-        data.path("presenceStates").forEach(presence -> presenceStates.add(new PresenceState(presence)));
+        data.path("presenceStates").forEach(presence -> presenceStates.add(new PresenceStateInternal(discord, this, presence)));
 
         structure = new ChannelStructureInternal(channels);
     }
@@ -276,6 +283,14 @@ public class ServerInternal implements Server {
     @Override
     public Optional<User> getUserById(long id) {
         return Optional.empty();
+    }
+
+    @Override
+    public CompletableFuture<Void> leave() {
+        return new WebRequest<Void>(discord)
+                .method(Method.DELETE)
+                .endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD, this))
+                .execute(node -> null);
     }
 
     @Override

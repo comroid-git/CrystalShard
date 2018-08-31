@@ -10,11 +10,14 @@ import de.kaleidox.crystalshard.main.UserContainer;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +54,10 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     default ServerMember toServerMember(Server server) {
         return null; // todo
     }
+
+    Collection<Role> getRoles(Server server);
+
+    CompletableFuture<PrivateTextChannel> openPrivateChannel();
 
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;

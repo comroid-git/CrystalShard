@@ -14,4 +14,6 @@ public interface MessageReciever {
     CompletableFuture<Message> sendMessage(EmbedDraft embedDraft);
 
     CompletableFuture<Message> sendMessage(String content);
+
+    CompletableFuture<Void> typing();
 }

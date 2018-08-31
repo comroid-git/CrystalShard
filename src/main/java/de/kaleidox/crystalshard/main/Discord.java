@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.exception.UncachedItemException;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
@@ -31,4 +32,8 @@ public interface Discord extends UserContainer, ChannelContainer {
     Optional<Channel> getChannelById(long id);
 
     Optional<User> getUserById(long id);
+
+    Self getSelf();
+
+    Optional<Server> getServerById(long id);
 }

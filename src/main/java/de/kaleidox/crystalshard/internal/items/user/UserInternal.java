@@ -2,18 +2,26 @@ package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.internal.core.net.request.Method;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -109,6 +117,20 @@ public class UserInternal implements User {
     }
 
     @Override
+    public Collection<Role> getRoles(Server server) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
+        return new WebRequest<PrivateTextChannel>(discord)
+                .method(Method.POST)
+                .endpoint(Endpoint.of(Endpoint.Location.SELF_CHANNELS))
+                .node(JsonHelper.objectNode().set("recipient_id", JsonHelper.nodeOf(id)))
+                .execute(PrivateTextChannelInternal::new);
+    }
+
+    @Override
     public long getId() {
         return id;
     }
@@ -145,6 +167,11 @@ public class UserInternal implements User {
 
     @Override
     public CompletableFuture<Message> sendMessage(String content) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> typing() {
         return null;
     }
 }

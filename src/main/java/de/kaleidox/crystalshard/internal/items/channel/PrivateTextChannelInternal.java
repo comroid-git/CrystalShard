@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
@@ -12,6 +13,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class PrivateTextChannelInternal implements PrivateTextChannel {
+    public PrivateTextChannelInternal(JsonNode node) {
+
+    }
+
     @Override
     public ChannelType getType() {
         return null;

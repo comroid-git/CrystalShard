@@ -1,6 +1,13 @@
 package de.kaleidox.crystalshard.main.items.server;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.core.handlers.GUILD_CREATE;
+import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.internal.core.net.request.Method;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.ChannelContainer;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.UserContainer;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Nameable;
@@ -13,11 +20,13 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
 
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer {
     Optional<URL> getIconUrl();
@@ -75,4 +84,15 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
     Collection<PresenceState> getPresenceStates();
 
     Optional<User> getUserById(long id);
+
+    CompletableFuture<Void> leave();
+
+    static CompletableFuture<Server> of(Discord discord, long id) {
+        return discord.getServerById(id)
+                .map(CompletableFuture::completedFuture)
+                .orElseGet(() -> new WebRequest<Server>(discord)
+                        .method(Method.GET)
+                        .endpoint(Endpoint.of(Endpoint.Location.SERVER, id))
+                        .execute(data -> new ServerInternal(discord, data)));
+    }
 }
