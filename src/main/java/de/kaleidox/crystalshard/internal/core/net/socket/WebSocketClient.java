@@ -29,6 +29,7 @@ public class WebSocketClient {
     private final DiscordInternal discord;
     private final WebSocket webSocket;
     private final AtomicLong lastPacket = new AtomicLong(0);
+    private final AtomicLong lastHeartbeat = new AtomicLong(0);
     private final ThreadPool threadPool;
 
     public WebSocketClient(Discord discordObject) {
@@ -100,5 +101,13 @@ public class WebSocketClient {
     public void heartbeat() {
         Payload payload = Payload.create(OpCode.HEARTBEAT, JsonHelper.nodeOf(null));
         sendPayload(payload);
+        lastHeartbeat.set(System.currentTimeMillis());
+    }
+
+    public boolean respondToHeartbeat() {
+        if (lastHeartbeat.get() < System.currentTimeMillis()-4000) {
+            return true;
+        }
+        return false;
     }
 }
