@@ -12,10 +12,12 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
+import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer {
     Optional<URL> getIconUrl();
@@ -71,4 +73,6 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
     ChannelStructure getChannelStructure();
 
     Collection<PresenceState> getPresenceStates();
+
+    Optional<User> getUserById(long id);
 }
