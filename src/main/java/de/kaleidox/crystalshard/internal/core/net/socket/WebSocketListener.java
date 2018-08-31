@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.core.net.socket;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.DiscordEventDispatch;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
@@ -28,7 +29,7 @@ public class WebSocketListener implements WebSocket.Listener {
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
         webSocket.request(1);
-        logger.info("on error");
+        logger.exception(error, "WebSocket error");
     }
 
     @Override
@@ -41,7 +42,9 @@ public class WebSocketListener implements WebSocket.Listener {
             CompletableFuture<String> returning = onTextFuture;
             onTextFuture = new CompletableFuture<>();
             returning.thenAcceptAsync(logger::trace);
-            DiscordEventDispatch.handle(discord, returning);
+            returning.exceptionally(logger::exception)
+                    .thenApplyAsync(JsonHelper::parse)
+                    .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node));
             return returning;
         }
         return onTextFuture;

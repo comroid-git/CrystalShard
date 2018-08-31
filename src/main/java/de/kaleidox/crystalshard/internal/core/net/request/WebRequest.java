@@ -5,8 +5,8 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.ResponseDispatch;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.FutureHelper;
-import de.kaleidox.util.JsonHelper;
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -25,7 +25,7 @@ public class WebRequest<T> {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private final CompletableFuture<T> future;
     private DiscordInternal discord;
-    private JsonNode node;
+    private JsonNode node = JsonHelper.nodeOf(null);
     private Endpoint endpoint;
     private Method method;
 
@@ -95,67 +95,66 @@ public class WebRequest<T> {
             Method method,
             Endpoint endpoint,
             JsonNode data) {
+        if (method == null) throw new NullPointerException("Method must not be null.");
+        if (endpoint == null) throw new NullPointerException("Endpoint must not be null.");
+        if (data == null) data = JsonHelper.nodeOf(null);
         CompletableFuture<JsonNode> future = new CompletableFuture<>();
-        Ratelimiting ratelimiter = discord.getRatelimiter();
-        ratelimiter.schedule(() -> fillFuture -> {
-            try {
-                String s = data.toString();
-                logger.trace("Creating " + method.getDescriptor() + " Request to " +
-                        endpoint.getUrl().toExternalForm() + " with body: " + s);
-                HttpResponse<String> response = CLIENT.send(HttpRequest
-                                .newBuilder()
-                                .uri(URI.create(endpoint.getUrl().toExternalForm()))
-                                .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
-                                        "Content-Type", "application/json",
-                                        "Authorization", discord.getPrefixedToken())
-                                .method(method.getDescriptor(),
-                                        HttpRequest.BodyPublishers.ofString(s))
-                                .build(),
-                        HttpResponse.BodyHandlers.ofString());
-                logger.trace("Recieved status code " + response.statusCode() +
-                        " from Discord with body: " + response.body());
-                JsonNode responseNode = JsonHelper.parse(response.body());
-                switch (response.statusCode()) {
-                    case 429:
-                        Ratelimiting.RatelimitBlock block = new Ratelimiting.RatelimitBlock();
-                        logger.warn("Warning: " + responseNode.get("message"));
-                        block.setRetryAfter(responseNode.get("retry_after").asLong());
-                        block.setGlobal(responseNode.get("global").asBoolean());
-                        try {
-                            HttpHeaders headers = response.headers();
-                            headers.firstValue("Retry-After").map(Long::parseLong)
-                                    .ifPresent(block::setRetryAfter);
-                            headers.firstValue("X-RateLimit-Limit").map(Long::parseLong)
-                                    .ifPresent(block::setLimit);
-                            headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong)
-                                    .ifPresent(block::setRemaining);
-                            headers.firstValue("X-RateLimit-Global").map(Boolean::valueOf)
-                                    .ifPresent(block::setGlobal);
-                        } catch (NullPointerException e) {
-                            logger.deeptrace("NPE on Ratelimit Header checking. Message: " + e.getMessage());
-                        } finally {
-                            fillFuture.completeExceptionally(block);
+        try {
+            String s = data.toString();
+            logger.trace("Creating " + method.getDescriptor() + " Request to " +
+                    endpoint.getUrl().toExternalForm() + " with body: " + s);
+            HttpResponse<String> response = CLIENT.send(HttpRequest
+                            .newBuilder()
+                            .uri(URI.create(endpoint.getUrl().toExternalForm()))
+                            .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
+                                    "Content-Type", "application/json",
+                                    "Authorization", discord.getPrefixedToken())
+                            .method(method.getDescriptor(),
+                                    HttpRequest.BodyPublishers.ofString(s))
+                            .build(),
+                    HttpResponse.BodyHandlers.ofString());
+            logger.trace("Recieved status code " + response.statusCode() +
+                    " from Discord with body: " + response.body());
+            JsonNode responseNode = JsonHelper.parse(response.body());
+            switch (response.statusCode()) {
+                case 429:
+                    Ratelimiting.RatelimitBlock block = new Ratelimiting.RatelimitBlock();
+                    logger.warn("Warning: " + responseNode.get("message"));
+                    block.setRetryAfter(responseNode.get("retry_after").asLong());
+                    block.setGlobal(responseNode.get("global").asBoolean());
+                    try {
+                        HttpHeaders headers = response.headers();
+                        headers.firstValue("Retry-After").map(Long::parseLong)
+                                .ifPresent(block::setRetryAfter);
+                        headers.firstValue("X-RateLimit-Limit").map(Long::parseLong)
+                                .ifPresent(block::setLimit);
+                        headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong)
+                                .ifPresent(block::setRemaining);
+                        headers.firstValue("X-RateLimit-Global").map(Boolean::valueOf)
+                                .ifPresent(block::setGlobal);
+                    } catch (NullPointerException e) {
+                        logger.deeptrace("NPE on Ratelimit Header checking. Message: " + e.getMessage());
+                    } finally {
+                        future.completeExceptionally(block);
+                    }
+                    break;
+                default:
+                    boolean dispatch = ResponseDispatch.dispatch(discord, response, future);
+                    if (!dispatch & (future.isCancelled() || future.isCompletedExceptionally())) {
+                        logger.error("Something went horribly wrong in WebRequest.java, " +
+                                "please contact the developer.");
+                    } else {
+                        if (dispatch) {
+                            future.complete(JsonHelper.parse(response.body()));
                         }
-                        break;
-                    default:
-                        boolean dispatch = ResponseDispatch.dispatch(discord, response, fillFuture);
-                        if (!dispatch & (fillFuture.isCancelled() || fillFuture.isCompletedExceptionally())) {
-                            logger.error("Something went horribly wrong in WebRequest.java, " +
-                                    "please contact the developer.");
-                        } else {
-                            if (dispatch) {
-                                fillFuture.complete(JsonHelper.parse(response.body()));
-                            }
-                        }
-                        UnknownError unknownError = new UnknownError("An unknown error ocurred.");
-                        fillFuture.completeExceptionally(unknownError);
-                        break;
-                }
-            } catch (IOException | InterruptedException e) {
-                fillFuture.completeExceptionally(e);
+                    }
+                    UnknownError unknownError = new UnknownError("An unknown error ocurred.");
+                    future.completeExceptionally(unknownError);
+                    break;
             }
-            FutureHelper.linkFutures(fillFuture, future);
-        });
+        } catch (IOException | InterruptedException e) {
+            future.completeExceptionally(e);
+        }
 
         return future;
     }

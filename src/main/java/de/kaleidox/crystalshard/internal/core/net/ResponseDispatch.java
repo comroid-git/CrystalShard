@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.request.Ratelimiting;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.JsonHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.net.http.HttpHeaders;
 import java.net.http.HttpResponse;

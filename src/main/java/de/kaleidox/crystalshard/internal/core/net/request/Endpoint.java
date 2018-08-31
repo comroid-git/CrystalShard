@@ -1,7 +1,8 @@
 package de.kaleidox.crystalshard.internal.core.net.request;
 
+import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.util.UrlHelper;
+import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.Optional;
  * This enum contains all endpoints which we may use.
  */
 public class Endpoint {
+    public final static String BASE_URL = "https://discordapp.com/api/v";
     private final Location location;
     private final URL url;
 
@@ -103,7 +105,7 @@ public class Endpoint {
             }
 
             if (parameterCount == params.length) {
-                String of = String.format(location, (Object[]) params);
+                String of = String.format(BASE_URL + CrystalShard.API_VERSION + location, (Object[]) params);
                 URL url = UrlHelper.require(of);
                 return new Endpoint(this, url);
             } else throw new IllegalArgumentException("Too " + (parameterCount > params.length ? "few" : "many") +

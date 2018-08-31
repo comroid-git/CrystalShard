@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.core.net.socket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.Payload;
@@ -10,72 +11,94 @@ import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.JsonHelper;
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class WebSocketClient {
     private static final Logger logger = new Logger(WebSocketClient.class);
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private final DiscordInternal discord;
     private final WebSocket webSocket;
+    private final AtomicLong lastPacket = new AtomicLong(0);
+    private final ThreadPool threadPool;
 
     public WebSocketClient(Discord discordObject) {
-        JsonNode welcomeNode = new WebRequest<String>(
-                discordObject,
-                Method.GET,
-                Endpoint.of(Endpoint.Location.GATEWAY),
-                JsonHelper.nodeOf(null))
-                .execute()
-                .exceptionally(logger::exception)
+        URI gatewayUrl = new WebRequest<String>(discordObject)
+                .method(Method.GET)
+                .endpoint(Endpoint.of(Endpoint.Location.GATEWAY))
+                .execute(node -> node.get("url").asText())
+                .exceptionally(throwable -> {
+                    logger.exception(throwable);
+                    return "wss://gateway.discord.gg"; // default gateway if gateway couldn't be retrieved
+                })
+                .thenApply(URI::create)
                 .join();
+        this.threadPool = new ThreadPool(discordObject, 1, "WebSocketClient");
         this.discord = (DiscordInternal) discordObject;
         this.webSocket = CLIENT.newWebSocketBuilder()
                 .header("Authorization", discordObject.getPrefixedToken())
-                .buildAsync(URI.create(welcomeNode.get("url").asText()), new WebSocketListener((DiscordInternal) discordObject))
+                .buildAsync(gatewayUrl, new WebSocketListener((DiscordInternal) discordObject))
                 .join();
         identification();
     }
 
     public CompletableFuture<WebSocket> sendPayload(Payload payload) {
         assert payload != null : "Payload must not be null!";
-        CompletableFuture<WebSocket> future = CompletableFuture.failedFuture(new UnknownError("An unknown error" +
-                " occurred when trying to send payload: " + payload + "\n" +
-                "Please contact the developer."));
-        List<Payload> splitLoads = payload.split();
-        logger.trace("Sending Packet with OpCode " + payload.getCode() + " and body: " + payload.getBody());
-        for (int i = 0; i < splitLoads.size(); i++) {
-            Payload that = splitLoads.get(i);
-            if (i == splitLoads.size() - 1) {
-                CharSequence nodeAsText = that.getSendableNote();
-                future = webSocket.sendText(nodeAsText, true);
-            } else {
-                CharSequence nodeAsText = that.getSendableNote();
-                webSocket.sendText(nodeAsText, false);
+        CompletableFuture<WebSocket> future = new CompletableFuture<>();
+        this.threadPool.execute(() -> {
+            while (lastPacket.get() > (System.currentTimeMillis()-600)) {
+                try {
+                    Thread.sleep(50L);
+                } catch (InterruptedException e) {
+                    logger.exception(e);
+                }
             }
-        }
+            if (lastPacket.get() <= (System.currentTimeMillis()-500)) {
+                logger.trace("Sending Packet with OpCode " + payload.getCode() + " and body: " + payload.getBody());
+                CompletableFuture<WebSocket> subFut;
+                boolean attachedFuture = false;
+                for (Payload that : payload.split()) {
+                    boolean last = that.isLast();
+                    that.addNode("token", JsonHelper.nodeOf(discord.getPrefixedToken()));
+                    that.addNode("large_threshold", JsonHelper.nodeOf(250));
+                    that.addNode("shard", JsonHelper.arrayNode(discord.getShardId(), discord.getShards()));
+                    CharSequence nodeAsText = that.getSendableNode();
+                    subFut = webSocket.sendText(nodeAsText, last);
+                    if (last) lastPacket.set(System.currentTimeMillis());
+                    if (!attachedFuture) {
+                        FutureHelper.linkFutures(subFut, future);
+                        attachedFuture = true;
+                    }
+                }
+            }
+        });
         return future;
     }
 
     private void identification() {
         ObjectNode data = JsonHelper.objectNode();
-        data.set("token", JsonHelper.nodeOf(discord.getPrefixedToken()));
+        //data.set("token", JsonHelper.nodeOf(discord.getPrefixedToken()));
         ObjectNode properties = (ObjectNode) data.set("properties", JsonHelper.objectNode());
         properties.set("$os", JsonHelper.nodeOf(System.getProperty("os.name")));
         properties.set("$browser", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT));
         properties.set("$device", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT));
-        data.set("large_threshold", JsonHelper.nodeOf(250));
-        data.set("shard", JsonHelper.arrayNode(discord.getShardId(), discord.getShards()));
+        //data.set("large_threshold", JsonHelper.nodeOf(250));
+        //data.set("shard", JsonHelper.arrayNode(discord.getShardId(), discord.getShards()));
         sendPayload(Payload.create(OpCode.IDENTIFY, data))
                 .exceptionally(logger::exception);
     }
 
     public void heartbeat() {
-        sendPayload(Payload.create(OpCode.HEARTBEAT, JsonHelper.nodeOf(null)))
-                .exceptionally(logger::exception);
+        Payload payload = Payload.create(OpCode.HEARTBEAT, JsonHelper.nodeOf(null));
+        sendPayload(payload);
     }
 }

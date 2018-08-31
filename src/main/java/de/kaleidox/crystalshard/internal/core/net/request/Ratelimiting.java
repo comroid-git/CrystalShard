@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.internal.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.util.ListHelper;
+import de.kaleidox.util.helpers.ListHelper;
 
 import java.util.ArrayList;
 import java.util.List;
