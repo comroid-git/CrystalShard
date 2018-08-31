@@ -1,13 +1,20 @@
-package de.kaleidox.crystalshard.internal.core.net;
+package de.kaleidox.crystalshard.internal.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.util.FutureHelper;
 import de.kaleidox.util.ListHelper;
-import de.kaleidox.websocket.WebRequest;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Ratelimiting {
     private final DiscordInternal discord;
@@ -54,7 +61,7 @@ public class Ratelimiting {
                 });
     }
 
-    public CompletableFuture<JsonNode> schedule(WebRequest<JsonNode> request) {
+    public CompletableFuture<JsonNode> scheduleRequest(WebRequest<JsonNode> request) {
         boolean found = false;
 
         for (int i = 0; !found; i++) {
@@ -78,6 +85,9 @@ public class Ratelimiting {
         this.limit = limit;
     }
 
+    public void schedule(Supplier<Consumer<CompletableFuture<JsonNode>>> request) {
+    }
+
     class Bucket {
         final List<WebRequest<JsonNode>> requests = new ArrayList<>();
         final long birthTime;
@@ -89,6 +99,29 @@ public class Ratelimiting {
         public CompletableFuture<JsonNode> addRequest(WebRequest<JsonNode> request) {
             this.requests.add(request);
             return request.getFuture();
+        }
+    }
+
+    public static class RatelimitBlock extends Throwable {
+        Boolean global = null;
+        Long retryAfter = null;
+        Long limit = null;
+        Long remaining = null;
+
+        public void setGlobal(Boolean global) {
+            this.global = global;
+        }
+
+        public void setRetryAfter(Long retryAfter) {
+            this.retryAfter = retryAfter;
+        }
+
+        public void setLimit(Long limit) {
+            this.limit = limit;
+        }
+
+        public void setRemaining(Long remaining) {
+            this.remaining = remaining;
         }
     }
 }

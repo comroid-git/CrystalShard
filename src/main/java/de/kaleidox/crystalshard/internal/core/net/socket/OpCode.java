@@ -1,4 +1,4 @@
-package de.kaleidox.websocket;
+package de.kaleidox.crystalshard.internal.core.net.socket;
 
 import java.util.Optional;
 import java.util.stream.Stream;

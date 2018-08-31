@@ -2,6 +2,8 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.Castable;
 
@@ -9,6 +11,7 @@ import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -97,6 +100,8 @@ public interface Embed extends Castable<Embed> {
         }
 
         EmbedDraft build();
+
+        CompletableFuture<Message> send(MessageReciever sendTo);
     }
 
     interface Boundaries {

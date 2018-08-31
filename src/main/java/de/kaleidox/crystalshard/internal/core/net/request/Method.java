@@ -1,4 +1,4 @@
-package de.kaleidox.websocket;
+package de.kaleidox.crystalshard.internal.core.net.request;
 
 public enum Method {
     GET("GET"),

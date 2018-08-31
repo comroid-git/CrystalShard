@@ -1,9 +1,10 @@
-package de.kaleidox.websocket;
+package de.kaleidox.crystalshard.internal.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.util.JsonHelper;
+import de.kaleidox.crystalshard.internal.core.net.socket.OpCode;
 
 import java.util.ArrayList;
 import java.util.List;

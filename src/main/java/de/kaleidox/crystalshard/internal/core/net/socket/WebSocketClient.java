@@ -1,4 +1,4 @@
-package de.kaleidox.websocket;
+package de.kaleidox.crystalshard.internal.core.net.socket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -7,6 +7,10 @@ import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.JsonHelper;
+import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.internal.core.net.request.Method;
+import de.kaleidox.crystalshard.internal.core.net.request.Payload;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,9 +25,10 @@ public class WebSocketClient {
     private final WebSocket webSocket;
 
     public WebSocketClient(Discord discordObject) {
-        JsonNode welcomeNode = new WebRequest<String>(discordObject,
+        JsonNode welcomeNode = new WebRequest<String>(
+                discordObject,
                 Method.GET,
-                "/gateway",
+                Endpoint.of(Endpoint.Location.GATEWAY),
                 JsonHelper.nodeOf(null))
                 .execute()
                 .exceptionally(logger::exception)

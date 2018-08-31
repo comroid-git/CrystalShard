@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.message.embed;
 
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.logging.Logger;
@@ -10,6 +12,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -173,6 +176,11 @@ public class EmbedBuilderInternal implements Embed.Builder {
                 author,
                 fields
         );
+    }
+
+    @Override
+    public CompletableFuture<Message> send(MessageReciever sendTo) {
+        return sendTo.sendMessage(this.build());
     }
 
     private void testCharCounter() {

@@ -43,7 +43,7 @@ public class UrlHelper {
             return new URL(of);
         } catch (MalformedURLException e) {
             logger.exception(e);
-            return null;
+            throw new IllegalArgumentException("MalformedURLException: "+e.getMessage());
         }
     }
 }

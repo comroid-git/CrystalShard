@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.JsonHelper;
-import de.kaleidox.websocket.OpCode;
+import de.kaleidox.crystalshard.internal.core.net.socket.OpCode;
 
 import java.util.concurrent.CompletableFuture;
 

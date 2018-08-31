@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.internal.core.net;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.core.net.request.Ratelimiting;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.JsonHelper;
@@ -13,9 +14,9 @@ import java.util.concurrent.CompletableFuture;
 public class ResponseDispatch {
     private final static Logger logger = new Logger(ResponseDispatch.class);
 
-    public static boolean dispatch(DiscordInternal discord,
+    public static <T> boolean dispatch(DiscordInternal discord,
                                    HttpResponse<String> response,
-                                   CompletableFuture<JsonNode> future) {
+                                   CompletableFuture<T> future) {
         String body = response.body();
         JsonNode data = JsonHelper.parse(body);
         Ratelimiting ratelimiter = discord.getRatelimiter();

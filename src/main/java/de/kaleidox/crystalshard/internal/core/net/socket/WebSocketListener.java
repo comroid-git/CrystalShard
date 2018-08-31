@@ -1,4 +1,4 @@
-package de.kaleidox.websocket;
+package de.kaleidox.crystalshard.internal.core.net.socket;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.DiscordEventDispatch;

@@ -1,13 +1,14 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.core.net.Ratelimiting;
+import de.kaleidox.crystalshard.internal.core.net.request.Ratelimiting;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
+import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.websocket.WebSocketClient;
+import de.kaleidox.web.socket.WebSocketClient;
 
 public class DiscordInternal implements Discord {
     private final ThreadPool pool;
@@ -47,6 +48,11 @@ public class DiscordInternal implements Discord {
     @Override
     public void addServerCreateListener(ServerCreateListener listener) {
 
+    }
+
+    @Override
+    public DiscordUtils getUtilities() {
+        return null;
     }
 
     public WebSocketClient getWebSocket() {
