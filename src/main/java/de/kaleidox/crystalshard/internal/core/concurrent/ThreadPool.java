@@ -4,19 +4,15 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicMarkableReference;
 import java.util.function.Supplier;
 
 public class ThreadPool extends LinkedBlockingQueue {
@@ -52,7 +48,7 @@ public class ThreadPool extends LinkedBlockingQueue {
         this.queue = new LinkedBlockingQueue<>();
         this.name = name;
 
-        execute(() -> logger.trace("New ThreadPool created: "+name));
+        execute(() -> logger.trace("New ThreadPool created: " + name));
     }
 
     public void startHeartbeat(long heartbeat) {
@@ -120,13 +116,17 @@ public class ThreadPool extends LinkedBlockingQueue {
         private AtomicBoolean marker;
 
         Worker(DiscordInternal discord, int id) {
-            super(name == null ? ("Worker Thread #" + id) : name +" Thread #"+id);
+            super(name == null ? ("Worker Thread #" + id) : name + " Thread #" + id);
             this.discord = discord;
             this.marker = new AtomicBoolean(false);
         }
 
         public AtomicBoolean getMarker() {
             return marker;
+        }
+
+        public void setMarker(AtomicBoolean marker) {
+            this.marker = marker;
         }
 
         public DiscordInternal getDiscord() {
@@ -157,10 +157,6 @@ public class ThreadPool extends LinkedBlockingQueue {
                     logger.exception(e);
                 }
             }
-        }
-
-        public void setMarker(AtomicBoolean marker) {
-            this.marker = marker;
         }
     }
 }

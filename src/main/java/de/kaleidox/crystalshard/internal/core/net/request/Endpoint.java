@@ -44,6 +44,7 @@ public class Endpoint {
         GATEWAY("/gateway"),
         GATEWAY_BOT("/gateway/bot"),
         GUILD("/guilds"),
+        GUILDS("/guilds/%s"),
         GUILD_CHANNEL("/guilds/%s/channels"),
         GUILD_INVITE("/guilds/%s/invites"),
         GUILD_MEMBER("/guilds/%s/members/%s"),
@@ -86,7 +87,11 @@ public class Endpoint {
         }
 
         public int getParameterCount() {
-            return location.split("%s").length - 1;
+            int splitted = location.split("%s").length - 1;
+
+            int end = (location.indexOf("%s") == location.length() - 2 ? 1 : 0);
+
+            return splitted + end;
         }
 
         public Endpoint toEndpoint(Object... parameter) {
@@ -110,7 +115,7 @@ public class Endpoint {
                 URL url = UrlHelper.require(of);
                 return new Endpoint(this, url);
             } else throw new IllegalArgumentException("Too " + (parameterCount > params.length ? "few" : "many") +
-                    " few parameters!");
+                    " parameters!");
         }
     }
 }

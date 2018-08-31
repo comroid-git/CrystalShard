@@ -14,7 +14,7 @@ public class DiscordEventDispatch {
         WebSocketClient webSocket = discord.getWebSocket();
         OpCode.getByCode(data.get("op").asInt())
                 .ifPresent(opCode -> {
-                    logger.trace("Recieved Packet with OpCode "+opCode+" and body: "+data.toString());
+                    logger.trace("Recieved Packet with OpCode " + opCode + " and body: " + data.toString());
                     switch (opCode) {
                         case HELLO:
                             long heartbeat_interval = (data.get("d").get("heartbeat_interval").asLong());
@@ -40,8 +40,7 @@ public class DiscordEventDispatch {
     }
 
     private static <T extends HandlerBase> void dispatch(DiscordInternal discord, JsonNode data) {
-        logger.trace("Dispatching event '"+data.get("t").asText()+"' with body: "+data.get("d").toString());
-        T handler = HandlerBase.getHandlerByType(discord, data);
-        handler.handle(discord, data.get("d"));
+        logger.trace("Dispatching event '" + data.get("t").asText() + "' with body: " + data.get("d").toString());
+        HandlerBase.getHandlerByType(discord, data);
     }
 }

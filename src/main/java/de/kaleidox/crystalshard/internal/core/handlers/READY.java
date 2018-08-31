@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.core.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.user.SelfInternal;
-import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 
 public class READY extends HandlerBase {
     @Override

@@ -50,7 +50,7 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
                                         return new ServerTextChannelInternal(discord, srv, node);
                                     }
                                 }
-                                throw new NoSuchElementException("No Channel with ID "+id+" found!");
+                                throw new NoSuchElementException("No Channel with ID " + id + " found!");
                             }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;

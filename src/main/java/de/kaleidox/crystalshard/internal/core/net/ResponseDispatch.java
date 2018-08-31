@@ -32,6 +32,9 @@ public class ResponseDispatch {
         switch (response.statusCode()) {
             case 200:
                 return true;
+            case 400:
+                logger.error("Error 400: Bad request with response body: " + body);
+                return false;
             case 429:
                 logger.warn("Warning: " + data.get("message"));
                 ratelimiter.retryAfter(data.get("retry_after").asLong());

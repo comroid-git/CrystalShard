@@ -51,4 +51,9 @@ public class PrivateTextChannelInternal implements PrivateTextChannel {
     public CompletableFuture<Message> sendMessage(String content) {
         return null;
     }
+
+    @Override
+    public CompletableFuture<Void> typing() {
+        return null;
+    }
 }

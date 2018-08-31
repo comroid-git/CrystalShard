@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.user.presence;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.items.user.presence.UserActivityInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -9,12 +8,9 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.logging.StaticException;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class PresenceStateInternal implements PresenceState {
     private final User user;

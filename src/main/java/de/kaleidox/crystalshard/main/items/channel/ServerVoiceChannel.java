@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.ChannelContainer;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
@@ -48,7 +47,7 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
                                         return new ServerVoiceChannelInternal(discord, srv, node);
                                     }
                                 }
-                                throw new NoSuchElementException("No Channel with ID "+id+" found!");
+                                throw new NoSuchElementException("No Channel with ID " + id + " found!");
                             }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;

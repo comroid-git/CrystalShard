@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.internal.core.net.socket;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
@@ -17,10 +16,7 @@ import de.kaleidox.util.helpers.JsonHelper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
-import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class WebSocketClient {
@@ -56,14 +52,14 @@ public class WebSocketClient {
         assert payload != null : "Payload must not be null!";
         CompletableFuture<WebSocket> future = new CompletableFuture<>();
         this.threadPool.execute(() -> {
-            while (lastPacket.get() > (System.currentTimeMillis()-600)) {
+            while (lastPacket.get() > (System.currentTimeMillis() - 600)) {
                 try {
                     Thread.sleep(50L);
                 } catch (InterruptedException e) {
                     logger.exception(e);
                 }
             }
-            if (lastPacket.get() <= (System.currentTimeMillis()-500)) {
+            if (lastPacket.get() <= (System.currentTimeMillis() - 500)) {
                 logger.trace("Sending Packet with OpCode " + payload.getCode() + " and body: " + payload.getBody());
                 CompletableFuture<WebSocket> subFut;
                 boolean attachedFuture = false;
@@ -105,7 +101,7 @@ public class WebSocketClient {
     }
 
     public boolean respondToHeartbeat() {
-        if (lastHeartbeat.get() < System.currentTimeMillis()-4000) {
+        if (lastHeartbeat.get() < System.currentTimeMillis() - 4000) {
             return true;
         }
         return false;

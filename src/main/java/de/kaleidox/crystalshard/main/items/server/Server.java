@@ -1,7 +1,5 @@
 package de.kaleidox.crystalshard.main.items.server;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.core.handlers.GUILD_CREATE;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
@@ -26,7 +24,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer {
     Optional<URL> getIconUrl();
@@ -92,7 +89,7 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
                 .map(CompletableFuture::completedFuture)
                 .orElseGet(() -> new WebRequest<Server>(discord)
                         .method(Method.GET)
-                        .endpoint(Endpoint.of(Endpoint.Location.SERVER, id))
+                        .endpoint(Endpoint.of(Endpoint.Location.GUILDS, id))
                         .execute(data -> new ServerInternal(discord, data)));
     }
 }

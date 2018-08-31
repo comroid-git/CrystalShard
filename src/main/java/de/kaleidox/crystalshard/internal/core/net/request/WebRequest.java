@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.ResponseDispatch;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.io.IOException;

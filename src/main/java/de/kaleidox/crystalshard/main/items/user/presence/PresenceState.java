@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.main.items.user.presence;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.logging.StaticException;
 
 import java.util.Collection;
 import java.util.Objects;

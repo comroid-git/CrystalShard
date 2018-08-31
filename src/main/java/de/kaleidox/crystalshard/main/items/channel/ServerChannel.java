@@ -62,7 +62,7 @@ public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
                                         }
                                     }
                                 }
-                                throw new NoSuchElementException("No Channel with ID "+id+" found!");
+                                throw new NoSuchElementException("No Channel with ID " + id + " found!");
                             }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;

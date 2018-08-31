@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main.items.user;
 
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 
 import java.net.URL;

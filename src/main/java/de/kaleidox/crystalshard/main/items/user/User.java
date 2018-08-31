@@ -74,7 +74,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
                             .execute(node -> {
                                 if (node.isObject()) {
                                     return new UserInternal(discord, node);
-                                } else throw new NoSuchElementException("No User with ID "+id+" found!");
+                                } else throw new NoSuchElementException("No User with ID " + id + " found!");
                             })
                     );
         } else if (in instanceof Discord) {
@@ -88,7 +88,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
                             .execute(node -> {
                                 if (node.isObject()) {
                                     return new UserInternal(discord, node);
-                                } else throw new NoSuchElementException("No User with ID "+id+" found!");
+                                } else throw new NoSuchElementException("No User with ID " + id + " found!");
                             }));
         } else {
             throw new IllegalArgumentException(
@@ -118,7 +118,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
                     .execute(node -> {
                         if (node.isObject()) {
                             return new UserInternal(discord, node);
-                        } else throw new NoSuchElementException("No User with ID "+id+" found!");
+                        } else throw new NoSuchElementException("No User with ID " + id + " found!");
                     });
         } else userFuture.completeExceptionally(ThreadPool.BOT_THREAD_EXCEPTION.get());
 

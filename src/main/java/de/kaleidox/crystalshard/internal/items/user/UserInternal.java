@@ -1,12 +1,10 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -43,7 +41,7 @@ public class UserInternal implements User {
     public UserInternal(Discord discord, JsonNode data) {
         this.discord = discord;
         this.id = data.get("id").asLong();
-        this.name = data.get("name").asText();
+        this.name = data.path("name").asText("");
         this.discriminator = data.get("discriminator").asText();
         this.avatarUrl = data.has("avatar_url") ?
                 UrlHelper.orNull(data.get("avatar_url").asText()) : null;
