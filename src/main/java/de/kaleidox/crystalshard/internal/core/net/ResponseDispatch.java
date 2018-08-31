@@ -15,8 +15,8 @@ public class ResponseDispatch {
     private final static Logger logger = new Logger(ResponseDispatch.class);
 
     public static <T> boolean dispatch(DiscordInternal discord,
-                                   HttpResponse<String> response,
-                                   CompletableFuture<T> future) {
+                                       HttpResponse<String> response,
+                                       CompletableFuture<T> future) {
         String body = response.body();
         JsonNode data = JsonHelper.parse(body);
         Ratelimiting ratelimiter = discord.getRatelimiter();

@@ -63,6 +63,133 @@ public class Logger {
     }
 
     /**
+     * Posts a log message with {@link LoggingLevel#INFO}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void info(Object message) {
+        if (level.getSeverity() >= LoggingLevel.INFO.getSeverity()) {
+            post(LoggingLevel.INFO, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#WARN}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void warn(Object message) {
+        if (level.getSeverity() >= LoggingLevel.WARN.getSeverity()) {
+            post(LoggingLevel.WARN, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#DEBUG}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void debug(Object message) {
+        if (level.getSeverity() >= LoggingLevel.DEBUG.getSeverity()) {
+            post(LoggingLevel.DEBUG, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#ERROR}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void error(Object message) {
+        if (level.getSeverity() >= LoggingLevel.ERROR.getSeverity()) {
+            post(LoggingLevel.ERROR, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#TRACE}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void trace(Object message) {
+        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
+            post(LoggingLevel.TRACE, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#DEEP_TRACE}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void deeptrace(Object message) {
+        if (level.getSeverity() >= LoggingLevel.DEEP_TRACE.getSeverity()) {
+            post(LoggingLevel.DEEP_TRACE, message.toString());
+        }
+    }
+
+    /**
+     * Posts an exception with {@link LoggingLevel#ERROR}.
+     * This method is useful for usage in {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
+     *
+     * @param throwable The throwable to post.
+     * @param <T>       A type variable for the return-type.
+     * @return null
+     * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
+     */
+    public <T> T exception(Throwable throwable) {
+        return exception(throwable, null);
+    }
+
+    public <T> T exception(Throwable throwable, String customMessage) {
+        if (!ignored.contains(loggingClass)) {
+            StringBuilder sb = new StringBuilder()
+                    .append("An exception has occurred: ")
+                    .append(customMessage == null ? throwable.getMessage() : customMessage)
+                    .append("\nException in thread \"")
+                    .append(Thread.currentThread().getName())
+                    .append("\" ")
+                    .append(throwable.getClass().getName());
+
+            List.of(throwable.getStackTrace())
+                    .forEach(line -> sb.append("\n\t").append(line));
+
+            customExceptionHandlers.forEach(handler -> handler.apply(throwable));
+            post(LoggingLevel.ERROR, sb.toString());
+        }
+
+        return null;
+    }
+
+    private void post(LoggingLevel level, String message) {
+        if (!ignored.contains(loggingClass)) {
+            if (level != LoggingLevel.ERROR) {
+                customHandlers.forEach(handler -> handler.apply(level, message));
+            }
+            String format = String.format("%s %s %s", newFix(level, -1), message, newFix(level, 1));
+            for (String string : blanked) {
+                int i1 = format.indexOf(string);
+                if (i1 > -1) {
+                    format = format.substring(0, i1) +
+                            "*****" + format.substring(i1 + string.length());
+                }
+            }
+            System.out.println(format);
+        }
+    }
+
+    private String newFix(LoggingLevel level, int x) {
+        String fix = configuration.get(x < 0 ? "prefix" : "suffix").asText();
+
+        fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
+        fix = fix.replace("%c", loggingClass.getName());
+        fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
+        fix = fix.replace("%l", level.getName());
+
+        return fix.equals("null") ? "" : fix;
+    }
+
+    /**
      * Registers the given CustomHandler for handling any post message.
      *
      * @param handler The handler to register.
@@ -218,132 +345,5 @@ public class Logger {
 
     public static void addBlankedkeyword(String word) {
         blanked.add(word);
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#INFO}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void info(Object message) {
-        if (level.getSeverity() >= LoggingLevel.INFO.getSeverity()) {
-            post(LoggingLevel.INFO, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#WARN}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void warn(Object message) {
-        if (level.getSeverity() >= LoggingLevel.WARN.getSeverity()) {
-            post(LoggingLevel.WARN, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#DEBUG}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void debug(Object message) {
-        if (level.getSeverity() >= LoggingLevel.DEBUG.getSeverity()) {
-            post(LoggingLevel.DEBUG, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#ERROR}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void error(Object message) {
-        if (level.getSeverity() >= LoggingLevel.ERROR.getSeverity()) {
-            post(LoggingLevel.ERROR, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#TRACE}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void trace(Object message) {
-        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
-            post(LoggingLevel.TRACE, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#DEEP_TRACE}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void deeptrace(Object message) {
-        if (level.getSeverity() >= LoggingLevel.DEEP_TRACE.getSeverity()) {
-            post(LoggingLevel.DEEP_TRACE, message.toString());
-        }
-    }
-
-    /**
-     * Posts an exception with {@link LoggingLevel#ERROR}.
-     * This method is useful for usage in {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
-     *
-     * @param throwable The throwable to post.
-     * @param <T>       A type variable for the return-type.
-     * @return null
-     * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
-     */
-    public <T> T exception(Throwable throwable) {
-        return exception(throwable, null);
-    }
-
-    public <T> T exception(Throwable throwable, String customMessage) {
-        if (!ignored.contains(loggingClass)) {
-            StringBuilder sb = new StringBuilder()
-                    .append("An exception has occurred: ")
-                    .append(customMessage == null ? throwable.getMessage() : customMessage)
-                    .append("\nException in thread \"")
-                    .append(Thread.currentThread().getName())
-                    .append("\" ")
-                    .append(throwable.getClass().getName());
-
-            List.of(throwable.getStackTrace())
-                    .forEach(line -> sb.append("\n\t").append(line));
-
-            customExceptionHandlers.forEach(handler -> handler.apply(throwable));
-            post(LoggingLevel.ERROR, sb.toString());
-        }
-
-        return null;
-    }
-
-    private void post(LoggingLevel level, String message) {
-        if (!ignored.contains(loggingClass)) {
-            if (level != LoggingLevel.ERROR) {
-                customHandlers.forEach(handler -> handler.apply(level, message));
-            }
-            String format = String.format("%s %s %s", newFix(level, -1), message, newFix(level, 1));
-            for (String string : blanked) {
-                int i1 = format.indexOf(string);
-                if (i1 > -1) {
-                    format = format.substring(0, i1) +
-                            "*****" + format.substring(i1 + string.length());
-                }
-            }
-            System.out.println(format);
-        }
-    }
-
-    private String newFix(LoggingLevel level, int x) {
-        String fix = configuration.get(x < 0 ? "prefix" : "suffix").asText();
-
-        fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
-        fix = fix.replace("%c", loggingClass.getName());
-        fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
-        fix = fix.replace("%l", level.getName());
-
-        return fix.equals("null") ? "" : fix;
     }
 }

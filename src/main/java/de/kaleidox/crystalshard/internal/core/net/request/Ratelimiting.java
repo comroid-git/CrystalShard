@@ -2,18 +2,12 @@ package de.kaleidox.crystalshard.internal.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.util.FutureHelper;
 import de.kaleidox.util.ListHelper;
-import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Ratelimiting {
@@ -88,20 +82,6 @@ public class Ratelimiting {
     public void schedule(Supplier<Consumer<CompletableFuture<JsonNode>>> request) {
     }
 
-    class Bucket {
-        final List<WebRequest<JsonNode>> requests = new ArrayList<>();
-        final long birthTime;
-
-        Bucket() {
-            this.birthTime = System.currentTimeMillis();
-        }
-
-        public CompletableFuture<JsonNode> addRequest(WebRequest<JsonNode> request) {
-            this.requests.add(request);
-            return request.getFuture();
-        }
-    }
-
     public static class RatelimitBlock extends Throwable {
         Boolean global = null;
         Long retryAfter = null;
@@ -122,6 +102,20 @@ public class Ratelimiting {
 
         public void setRemaining(Long remaining) {
             this.remaining = remaining;
+        }
+    }
+
+    class Bucket {
+        final List<WebRequest<JsonNode>> requests = new ArrayList<>();
+        final long birthTime;
+
+        Bucket() {
+            this.birthTime = System.currentTimeMillis();
+        }
+
+        public CompletableFuture<JsonNode> addRequest(WebRequest<JsonNode> request) {
+            this.requests.add(request);
+            return request.getFuture();
         }
     }
 }

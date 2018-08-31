@@ -2,7 +2,11 @@ package de.kaleidox.crystalshard.internal.items.permission;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.crystalshard.main.items.permission.*;
+import de.kaleidox.crystalshard.main.items.permission.OverrideState;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
+import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
+import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.JsonHelper;

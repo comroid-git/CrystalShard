@@ -78,12 +78,6 @@ public enum OpCode {
         this.code = code;
     }
 
-    public static Optional<OpCode> getByCode(int code) {
-        return Stream.of(values())
-                .filter(opCode -> opCode.code == code)
-                .findAny();
-    }
-
     /**
      * Gets the actual numeric code.
      *
@@ -96,5 +90,11 @@ public enum OpCode {
     @Override
     public String toString() {
         return this.name() + "(" + code + ")";
+    }
+
+    public static Optional<OpCode> getByCode(int code) {
+        return Stream.of(values())
+                .filter(opCode -> opCode.code == code)
+                .findAny();
     }
 }

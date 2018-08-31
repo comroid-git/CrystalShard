@@ -1,9 +1,12 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
-import de.kaleidox.crystalshard.main.items.channel.*;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;

@@ -8,14 +8,6 @@ import java.util.Set;
 public interface PermissionList extends Set<Permission> {
     PermissionList EMPTY_LIST = new PermissionListInternal(null, 0);
 
-    static PermissionList emptyListOf(PermissionApplyable parent) {
-        return new PermissionListInternal(parent, 0);
-    }
-
-    static PermissionList create(PermissionApplyable parent) {
-        return new PermissionListInternal(parent);
-    }
-
     Optional<PermissionApplyable> getParent();
 
     int toPermissionInt();
@@ -25,4 +17,12 @@ public interface PermissionList extends Set<Permission> {
 
     @Override
     boolean remove(Object o);
+
+    static PermissionList emptyListOf(PermissionApplyable parent) {
+        return new PermissionListInternal(parent, 0);
+    }
+
+    static PermissionList create(PermissionApplyable parent) {
+        return new PermissionListInternal(parent);
+    }
 }

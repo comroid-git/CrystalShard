@@ -3,14 +3,14 @@ package de.kaleidox.crystalshard.internal.core.net.socket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.main.CrystalShard;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.JsonHelper;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.Payload;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.main.CrystalShard;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.logging.Logger;
+import de.kaleidox.util.JsonHelper;
 
 import java.net.URI;
 import java.net.http.HttpClient;

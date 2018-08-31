@@ -3,8 +3,8 @@ package de.kaleidox.crystalshard.internal.core.net.request;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.util.JsonHelper;
 import de.kaleidox.crystalshard.internal.core.net.socket.OpCode;
+import de.kaleidox.util.JsonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +12,6 @@ import java.util.List;
 public class Payload {
     private OpCode code;
     private JsonNode node;
-
-    public static Payload create(OpCode code, JsonNode node) {
-        return new Payload()
-                .opcode(code)
-                .node(node);
-    }
 
     public Payload opcode(OpCode code) {
         this.code = code;
@@ -54,5 +48,11 @@ public class Payload {
         }
 
         return data.toString();
+    }
+
+    public static Payload create(OpCode code, JsonNode node) {
+        return new Payload()
+                .opcode(code)
+                .node(node);
     }
 }

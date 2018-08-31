@@ -10,8 +10,8 @@ public class FutureHelper {
      * When the parent future completes exceptionally, the exception is passed to the other futures.
      *
      * @param parentFuture The parent future to listen from.
-     * @param others Futures to be completed with the parent future.
-     * @param <T> Type variable of the futures.
+     * @param others       Futures to be completed with the parent future.
+     * @param <T>          Type variable of the futures.
      * @return The parent future.
      */
     public static <T> CompletableFuture<T> linkFutures(CompletableFuture<T> parentFuture,
