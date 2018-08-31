@@ -155,7 +155,6 @@ public class WebRequest<T> {
                 fillFuture.completeExceptionally(e);
             }
             FutureHelper.linkFutures(fillFuture, future);
-            return future;
         });
 
         return future;
