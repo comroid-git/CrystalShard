@@ -1,7 +1,15 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
+import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.internal.core.net.request.Method;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
+import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
+import de.kaleidox.crystalshard.main.ChannelContainer;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.main.exception.UncachedItemException;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 import java.util.Objects;
@@ -11,6 +19,45 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
     default Builder BUILDER(Server server) {
         Objects.requireNonNull(server);
         return new ChannelBuilderInternal.ServerVoiceChannelBuilder(server);
+    }
+
+    static CompletableFuture<ServerVoiceChannel> of(ChannelContainer in, long id) {
+        CompletableFuture<ServerVoiceChannel> channelFuture = new CompletableFuture<>();
+
+        if (in instanceof Server) {
+            Server srv = (Server) in;
+            Discord discord = srv.getDiscord();
+
+            channelFuture = srv.getChannels()
+                    .stream()
+                    .filter(chl -> chl.getId() == id)
+                    .peek(channel -> {
+                        assert channel.canCastTo(ServerVoiceChannel.class);
+                    })
+                    .findAny()
+                    .map(ServerVoiceChannel.class::cast)
+                    .map(CompletableFuture::completedFuture)
+                    .orElseGet(() -> new WebRequest<ServerVoiceChannel>(discord)
+                            .method(Method.POST)
+                            .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
+                            .execute(node -> new ServerVoiceChannelInternal(discord, (ServerInternal) srv, node)));
+        } else if (in instanceof Discord) {
+            Discord discord = (Discord) in;
+
+            CompletableFuture<ServerVoiceChannel> finalChannelFuture = channelFuture;
+            discord.getChannelById(id)
+                    .map(channel -> {
+                        assert channel.canCastTo(ServerVoiceChannel.class);
+                        return (ServerVoiceChannel) channel;
+                    })
+                    .ifPresentOrElse(channelFuture::complete, () -> finalChannelFuture
+                            .completeExceptionally(new UncachedItemException("Channel is not cached.")));
+        } else {
+            throw new IllegalArgumentException(
+                    in.getClass().getSimpleName() + " is not a valid ChannelContainer!");
+        }
+
+        return channelFuture;
     }
 
     @SuppressWarnings("JavaDoc")

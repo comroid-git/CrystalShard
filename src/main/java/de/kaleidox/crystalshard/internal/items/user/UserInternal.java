@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
@@ -42,6 +44,12 @@ public class UserInternal implements User {
                 data.get("verified").asBoolean(false) : false;
         this.email = data.has("email") ?
                 data.get("email").asText(null) : null;
+    }
+
+    public UserInternal(ServerInternal serverInternal, JsonNode member) {
+    }
+
+    public UserInternal(DiscordInternal discord, long application_id) {
     }
 
     @Override

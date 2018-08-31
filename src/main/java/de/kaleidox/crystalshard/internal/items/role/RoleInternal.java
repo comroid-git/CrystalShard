@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.items.role;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -31,7 +32,7 @@ public class RoleInternal implements Role {
         this.grouping = data.get("hoist").asBoolean();
         this.position = data.get("position").asInt();
         this.permissions = new PermissionListInternal(data.get("permissions").asInt());
-        this.managed = data.get("manages").asBoolean();
+        this.managed = data.get("managed").asBoolean();
         this.mentionable = data.get("mentionable").asBoolean();
     }
 
@@ -98,5 +99,10 @@ public class RoleInternal implements Role {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public PermissionList getListFor(DiscordItem scope) {
+        return permissions;
     }
 }

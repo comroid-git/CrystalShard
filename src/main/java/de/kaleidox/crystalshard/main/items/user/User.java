@@ -36,4 +36,8 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     default Optional<ServerMember> toServerMember() {
         return castTo(ServerMember.class);
     }
+
+    default ServerMember toServerMember(Server server) {
+        return null; // todo
+    }
 }

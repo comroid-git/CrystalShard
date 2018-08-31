@@ -1,0 +1,9 @@
+package de.kaleidox.crystalshard.main.items.server;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+public class PresenceState {
+    public PresenceState(JsonNode data) {
+
+    }
+}

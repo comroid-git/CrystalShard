@@ -11,9 +11,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChannelStructureInternal extends ArrayList<ServerChannel> implements ChannelStructure {
+    public ChannelStructureInternal(ArrayList<ServerChannel> channels) {
+        super(channels);
+    }
+
     @Override
     public int getPosition(ServerChannel channel) {
         return indexOf(channel);
+    }
+
+    @Override
+    public ServerChannel getChannel(int fromPosition) {
+        return get(fromPosition);
     }
 
     @Override
