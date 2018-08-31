@@ -4,13 +4,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.Sendable;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.UrlHelper;
+import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
@@ -44,12 +50,6 @@ public class UserInternal implements User {
                 data.get("verified").asBoolean(false) : false;
         this.email = data.has("email") ?
                 data.get("email").asText(null) : null;
-    }
-
-    public UserInternal(ServerInternal serverInternal, JsonNode member) {
-    }
-
-    public UserInternal(DiscordInternal discord, long application_id) {
     }
 
     @Override
@@ -126,5 +126,25 @@ public class UserInternal implements User {
     @Override
     public String getMentionTag() {
         return "<@" + id + ">";
+    }
+
+    @Override
+    public CompletableFuture<Message> sendMessage(Sendable content) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> sendMessage(String content) {
+        return null;
     }
 }

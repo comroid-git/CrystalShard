@@ -30,7 +30,7 @@ import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.UrlHelper;
+import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -131,7 +131,8 @@ public class ServerInternal implements Server {
 
     private User getOwnerPrivate(JsonNode data) {
         if (data.has("application_id")) {
-            return new UserInternal(discord, data.get("application_id").asLong());
+            //return new UserInternal(discord, data.get("application_id").asLong());
+            return null;
         } else {
             return ServerMember.of(this, data.get("owner_id").asLong());
         }
@@ -270,6 +271,11 @@ public class ServerInternal implements Server {
     @Override
     public Collection<PresenceState> getPresenceStates() {
         return Collections.unmodifiableList(presenceStates);
+    }
+
+    @Override
+    public Optional<User> getUserById(long id) {
+        return Optional.empty();
     }
 
     @Override

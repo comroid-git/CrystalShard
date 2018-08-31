@@ -25,8 +25,4 @@ public interface Role extends DiscordItem, Nameable, Mentionable, PermissionAppl
     int getPosition();
 
     PermissionList getPermissions();
-
-    static Role dummy(long id) {
-        return RoleInternal.dummy(id);
-    }
 }

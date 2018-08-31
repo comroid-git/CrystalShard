@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.JsonHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;

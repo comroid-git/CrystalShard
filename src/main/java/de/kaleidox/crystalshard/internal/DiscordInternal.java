@@ -3,12 +3,16 @@ package de.kaleidox.crystalshard.internal;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.Ratelimiting;
+import de.kaleidox.crystalshard.internal.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.web.socket.WebSocketClient;
+
+import java.util.Optional;
 
 public class DiscordInternal implements Discord {
     private final ThreadPool pool;
@@ -18,7 +22,7 @@ public class DiscordInternal implements Discord {
     private final Ratelimiting ratelimiter;
 
     public DiscordInternal(String token, AccountType type) {
-        this.pool = new ThreadPool(this, 50);
+        this.pool = new ThreadPool(this);
         this.token = token;
         Logger.addBlankedkeyword(token);
         this.type = type;
@@ -55,6 +59,16 @@ public class DiscordInternal implements Discord {
         return null;
     }
 
+    @Override
+    public Optional<Channel> getChannelById(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> getUserById(long id) {
+        return Optional.empty();
+    }
+
     public WebSocketClient getWebSocket() {
         return webSocket;
     }
@@ -64,5 +78,15 @@ public class DiscordInternal implements Discord {
     }
 
     public void craftServer(JsonNode data) {
+    }
+
+    @Override
+    public long getId() {
+        return 0;
+    }
+
+    @Override
+    public Discord getDiscord() {
+        return null;
     }
 }

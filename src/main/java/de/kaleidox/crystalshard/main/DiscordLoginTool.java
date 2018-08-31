@@ -47,8 +47,10 @@ public class DiscordLoginTool {
     }
 
     public CompletableFuture<Discord> login() {
+        return null;
     }
 
     public CompletableFuture<MultiShard> loginMultiShard() {
+        return null;
     }
 }

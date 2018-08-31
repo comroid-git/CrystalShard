@@ -8,4 +8,14 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 public class CustomEmojiInternal implements CustomEmoji {
     public CustomEmojiInternal(Discord discord, Server server, JsonNode data) {
     }
+
+    @Override
+    public long getId() {
+        return 0;
+    }
+
+    @Override
+    public Discord getDiscord() {
+        return null;
+    }
 }
