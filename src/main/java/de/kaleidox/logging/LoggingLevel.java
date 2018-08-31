@@ -43,7 +43,7 @@ public enum LoggingLevel {
     /**
      * A tracing level to track down every single sent action, things like sent image bytes.
      */
-    DEEP_TRACE("DEEPTRACE", 6);
+    DEEP_TRACE("DEEP", 6);
 
     private final String name;
     private int severity;

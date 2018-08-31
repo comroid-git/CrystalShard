@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.util.JsonHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public class Logger {
     private final static LoggingLevel DEFAULT_LEVEL = LoggingLevel.DEBUG;
     private final static List<Class> DEFAULT_IGNORED = new ArrayList<>();
-    private final static String DEFAULT_PREFIX = "[%l] %t - %c]";
+    private final static String DEFAULT_PREFIX = "[%l] %t - %c:";
     private final static String DEFAULT_SUFFIX = null;
     private final static List<String> DEFAULT_BLANKED = new ArrayList<>();
 
@@ -185,6 +185,7 @@ public class Logger {
         fix = fix.replace("%c", loggingClass.getName());
         fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
         fix = fix.replace("%l", level.getName());
+        fix = fix.replace("%r", Thread.currentThread().getName());
 
         return fix.equals("null") ? "" : fix;
     }
