@@ -40,7 +40,7 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
                     .map(ServerVoiceChannel.class::cast)
                     .map(CompletableFuture::completedFuture)
                     .orElseGet(() -> new WebRequest<ServerVoiceChannel>(discord)
-                            .method(Method.POST)
+                            .method(Method.GET)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
                             .execute(node -> {
                                 for (JsonNode channel : node) {

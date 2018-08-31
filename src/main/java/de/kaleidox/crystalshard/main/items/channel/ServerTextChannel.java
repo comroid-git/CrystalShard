@@ -42,7 +42,7 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
                     .map(ServerTextChannel.class::cast)
                     .map(CompletableFuture::completedFuture)
                     .orElseGet(() -> new WebRequest<ServerTextChannel>(discord)
-                            .method(Method.POST)
+                            .method(Method.GET)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
                             .execute(node -> {
                                 for (JsonNode channel : node) {

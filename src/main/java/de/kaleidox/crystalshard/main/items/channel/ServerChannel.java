@@ -40,7 +40,7 @@ public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
                     .map(ServerChannel.class::cast)
                     .map(CompletableFuture::completedFuture)
                     .orElseGet(() -> new WebRequest<ServerChannel>(discord)
-                            .method(Method.POST)
+                            .method(Method.GET)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
                             .execute(node -> {
                                 for (JsonNode channel : node) {
