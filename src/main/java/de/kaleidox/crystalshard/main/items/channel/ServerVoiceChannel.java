@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
@@ -12,6 +13,7 @@ import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.UncachedItemException;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,7 +42,14 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
                     .orElseGet(() -> new WebRequest<ServerVoiceChannel>(discord)
                             .method(Method.POST)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
-                            .execute(node -> new ServerVoiceChannelInternal(discord, (ServerInternal) srv, node)));
+                            .execute(node -> {
+                                for (JsonNode channel : node) {
+                                    if (channel.get("id").asLong() == id) {
+                                        return new ServerVoiceChannelInternal(discord, (ServerInternal) srv, node);
+                                    }
+                                }
+                                throw new NoSuchElementException("No Channel with ID "+id+" found!");
+                            }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;
 

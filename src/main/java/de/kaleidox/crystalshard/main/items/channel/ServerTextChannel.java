@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
@@ -14,6 +15,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -42,7 +44,14 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
                     .orElseGet(() -> new WebRequest<ServerTextChannel>(discord)
                             .method(Method.POST)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
-                            .execute(node -> new ServerTextChannelInternal(discord, srv, node)));
+                            .execute(node -> {
+                                for (JsonNode channel : node) {
+                                    if (channel.get("id").asLong() == id) {
+                                        return new ServerTextChannelInternal(discord, srv, node);
+                                    }
+                                }
+                                throw new NoSuchElementException("No Channel with ID "+id+" found!");
+                            }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;
 
