@@ -28,17 +28,31 @@ public class ThreadPool extends LinkedBlockingQueue {
     private final static Logger logger = new Logger(ThreadPool.class);
     private final ConcurrentHashMap<Worker, AtomicBoolean> threads;
     private final DiscordInternal discord;
+    private final int maxSize;
     private final Factory factory;
     private final LinkedBlockingQueue<Runnable> queue;
     private ScheduledExecutorService scheduler;
+    private String name = null;
 
     public ThreadPool(Discord discord) {
         this.discord = (DiscordInternal) discord;
         this.threads = new ConcurrentHashMap<>();
         this.factory = new Factory();
         this.queue = new LinkedBlockingQueue<>();
+        this.maxSize = -1;
 
         execute(() -> scheduler = Executors.newScheduledThreadPool(30, factory));
+    }
+
+    public ThreadPool(Discord discordObject, int maxSize, String name) {
+        this.discord = (DiscordInternal) discordObject;
+        this.maxSize = maxSize;
+        this.threads = new ConcurrentHashMap<>();
+        this.factory = new Factory();
+        this.queue = new LinkedBlockingQueue<>();
+        this.name = name;
+
+        execute(() -> logger.trace("New ThreadPool created: "+name));
     }
 
     public void startHeartbeat(long heartbeat) {
@@ -48,23 +62,25 @@ public class ThreadPool extends LinkedBlockingQueue {
 
     public void execute(Runnable task) {
         synchronized (queue) {
-            threads.entrySet()
-                    .stream()
-                    .filter(entry -> !entry.getValue().get())
-                    .findFirst()
-                    .map(Map.Entry::getKey)
-                    .orElseGet(() -> {
-                        Worker worker = new Worker(discord, factory.nameCounter.getAndIncrement());
-                        AtomicBoolean marker = new AtomicBoolean(false);
-                        threads.put(worker, marker);
-                        worker.setMarker(marker);
-                        logger.deeptrace("New worker created: " + worker.toString());
-                        if (!worker.isAlive()) {
-                            worker.start();
-                            logger.deeptrace("Worker Thread \""+worker.getName()+"\" started!");
-                        }
-                        return worker;
-                    });
+            if (threads.size() < maxSize || maxSize == -1) {
+                threads.entrySet()
+                        .stream()
+                        .filter(entry -> !entry.getValue().get())
+                        .findFirst()
+                        .map(Map.Entry::getKey)
+                        .orElseGet(() -> {
+                            Worker worker = new Worker(discord, factory.nameCounter.getAndIncrement());
+                            AtomicBoolean marker = new AtomicBoolean(false);
+                            threads.put(worker, marker);
+                            worker.setMarker(marker);
+                            logger.deeptrace("New worker created: " + worker.toString());
+                            if (!worker.isAlive()) {
+                                worker.start();
+                                logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
+                            }
+                            return worker;
+                        });
+            }
             queue.add(task);
             queue.notify();
         }
@@ -104,7 +120,7 @@ public class ThreadPool extends LinkedBlockingQueue {
         private AtomicBoolean marker;
 
         Worker(DiscordInternal discord, int id) {
-            super("Worker Thread #" + id);
+            super(name == null ? ("Worker Thread #" + id) : name +" Thread #"+id);
             this.discord = discord;
             this.marker = new AtomicBoolean(false);
         }
