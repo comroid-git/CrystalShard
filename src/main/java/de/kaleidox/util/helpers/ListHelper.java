@@ -25,7 +25,7 @@ public class ListHelper {
         List<T> newList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             if (list.size() >= i - distance) {
-                if (i - distance < 0) {
+                if (i + distance < 0) {
                     // drop all items under index zero
                 } else {
                     // list has this index; add from i+distance to i
