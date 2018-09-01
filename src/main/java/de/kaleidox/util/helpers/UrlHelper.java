@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Objects;
 
 public class UrlHelper {
+    public final static String BASE_IMAGE_URL = "https://cdn.discordapp.com/";
     private final static Logger logger = new Logger(UrlHelper.class);
 
     /**
@@ -22,12 +23,33 @@ public class UrlHelper {
             try {
                 return new URL(of);
             } catch (MalformedURLException e) {
+                return imageUrl(null, of); // try create a discord image url
+            }
+        }
+        return null;
+    }
+
+    public static URL imageUrl(ImageEndpoint imageEndpoint, String of) {
+        if (Objects.nonNull(of)) {
+            try {
+                return new URL(of);
+            } catch (MalformedURLException e) {
                 logger.exception(e);
                 return null;
             }
-        } else {
-            return null;
         }
+        return null;
+    }
+
+    public static URL ignoreIfNull(String of) {
+        if (Objects.nonNull(of)) {
+            try {
+                return new URL(of);
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
