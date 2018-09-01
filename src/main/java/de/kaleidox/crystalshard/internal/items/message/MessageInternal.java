@@ -28,6 +28,7 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.logging.Logger;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -39,6 +40,7 @@ import java.util.Optional;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {
+    private final static Logger logger = new Logger(MessageInternal.class);
     private final long id;
     private final long channelId;
     private final Author author;
@@ -63,6 +65,7 @@ public class MessageInternal implements Message {
     private final TextChannel channel;
 
     public MessageInternal(Discord discord, Server server, JsonNode data) {
+        logger.deeptrace("Creating message object for data: "+data.toString());
         Instant timestamp1;
         this.discord = discord;
         this.server = server;
