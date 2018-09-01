@@ -6,6 +6,7 @@ import de.kaleidox.logging.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,6 +28,7 @@ public class ThreadPool extends LinkedBlockingQueue {
     private final int maxSize;
     private final Factory factory;
     private final LinkedBlockingQueue<Runnable> queue;
+    private Executor executor;
     private ScheduledExecutorService scheduler;
     private String name = null;
 
@@ -36,6 +38,7 @@ public class ThreadPool extends LinkedBlockingQueue {
         this.factory = new Factory();
         this.queue = new LinkedBlockingQueue<>();
         this.maxSize = -1;
+        this.executor = new BotOwn(this);
 
         execute(() -> scheduler = Executors.newScheduledThreadPool(30, factory));
     }
@@ -51,9 +54,18 @@ public class ThreadPool extends LinkedBlockingQueue {
         execute(() -> logger.trace("New ThreadPool created: " + name));
     }
 
+    public Executor getExecutor() {
+        return executor;
+    }
+
     public void startHeartbeat(long heartbeat) {
         scheduler.scheduleAtFixedRate(() ->
                 discord.getWebSocket().heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
+        scheduler.schedule(() -> {
+            synchronized (discord) {
+                discord.notify();
+            }
+        }, heartbeat, TimeUnit.MILLISECONDS);
     }
 
     public void execute(Runnable task) {
@@ -116,7 +128,7 @@ public class ThreadPool extends LinkedBlockingQueue {
         private AtomicBoolean marker;
 
         Worker(DiscordInternal discord, int id) {
-            super(name == null ? ("Worker Thread #" + id) : name + " Thread #" + id);
+            super(name == null ? ("Worker Thread #" + id) : name + " Thread" + (maxSize == 1 ? "" : " #" + id));
             this.discord = discord;
             this.marker = new AtomicBoolean(false);
         }
