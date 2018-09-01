@@ -51,7 +51,7 @@ public class ThreadPool extends LinkedBlockingQueue {
         this.queue = new LinkedBlockingQueue<>();
         this.name = name;
 
-        execute(() -> logger.trace("New ThreadPool created: " + name));
+        execute(() -> logger.deeptrace("New ThreadPool created: " + name));
     }
 
     public Executor getExecutor() {

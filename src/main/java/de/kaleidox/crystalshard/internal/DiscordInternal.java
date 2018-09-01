@@ -31,6 +31,7 @@ public class DiscordInternal implements Discord {
     private final WebSocketClient webSocket;
     private final Ratelimiting ratelimiter;
     private final List<Server> servers;
+    private final DiscordUtils utils;
     private Self self;
     private final Collection<DiscordAttachableListener> listeners = new ArrayList<>();
 
@@ -41,6 +42,7 @@ public class DiscordInternal implements Discord {
         this.type = type;
         this.ratelimiter = new Ratelimiting(this);
         this.webSocket = new WebSocketClient(this);
+        this.utils = new DiscordUtils();
 
         servers = new ArrayList<>();
 
@@ -88,7 +90,7 @@ public class DiscordInternal implements Discord {
 
     @Override
     public DiscordUtils getUtilities() {
-        return null;
+        return utils;
     }
 
     @Override

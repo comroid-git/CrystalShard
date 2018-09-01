@@ -2,10 +2,12 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
@@ -19,6 +21,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.listener.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.util.DefaultEmbed;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 
@@ -72,13 +75,16 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
     }
 
     @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return null;
-    }
-
-    @Override
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        return null;
+        ObjectNode data = JsonHelper.objectNode();
+        data.set("content", JsonHelper.nodeOf(""));
+        data.set("embed", ((EmbedDraftInternal) embedDraft).toJsonNode(JsonHelper.objectNode()));
+        data.set("file", JsonHelper.nodeOf("content"));
+        return new WebRequest<Message>(discord)
+                .method(Method.POST)
+                .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
+                .node(data)
+                .execute(node -> new MessageInternal(getDiscord(), getServer(), node));
     }
 
     @Override
@@ -86,7 +92,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
         ObjectNode data = JsonHelper.objectNode();
         data.set("content", JsonHelper.nodeOf(content));
         data.set("file", JsonHelper.nodeOf("content"));
-        return new WebRequest<Message>(getDiscord())
+        return new WebRequest<Message>(discord)
                 .method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
                 .node(data)

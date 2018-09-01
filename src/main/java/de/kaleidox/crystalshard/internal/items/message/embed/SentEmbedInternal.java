@@ -31,27 +31,27 @@ public class SentEmbedInternal implements SentEmbed {
     private final ArrayList<SentEmbed.Field> fields;
 
     public SentEmbedInternal(JsonNode data) {
-        this.title = data.get("title").asText(null);
-        this.description = data.get("description").asText(null);
-        this.url = UrlHelper.orNull(data.get("url").asText(null));
+        this.title = data.path("title").asText(null);
+        this.description = data.path("description").asText(null);
+        this.url = UrlHelper.orNull(data.path("url").asText(null));
         this.timestamp = (data.has("timestamp") ?
-                Instant.parse(data.get("timestamp").asText()) : null);
+                Instant.parse(data.path("timestamp").asText()) : null);
         this.color = (data.has("color") ?
-                new Color(data.get("color").asInt()) : null);
+                new Color(data.path("color").asInt()) : null);
         this.footer = (data.has("footer") ?
-                new Footer(data.get("footer")) : null);
+                new Footer(data.path("footer")) : null);
         this.image = (data.has("image") ?
-                new Image(data.get("image")) : null);
+                new Image(data.path("image")) : null);
         this.thumbnail = (data.has("thumbnail") ?
-                new Thumbnail(data.get("thumbnail")) : null);
+                new Thumbnail(data.path("thumbnail")) : null);
         this.author = (data.has("author") ?
-                new Author(data.get("author")) : null);
+                new Author(data.path("author")) : null);
         this.provider = (data.has("provider") ?
-                new Provider(data.get("provider")) : null);
+                new Provider(data.path("provider")) : null);
         this.video = (data.has("video") ?
-                new Video(data.get("video")) : null);
+                new Video(data.path("video")) : null);
         this.fields = new ArrayList<>();
-        for (JsonNode node : data.get("fields")) {
+        for (JsonNode node : data.path("fields")) {
             fields.add(new Field(node));
         }
     }
@@ -198,9 +198,9 @@ public class SentEmbedInternal implements SentEmbed {
         private final boolean inline;
 
         public Field(JsonNode data) {
-            this.title = data.get("title").asText();
-            this.text = data.get("text").asText();
-            this.inline = data.get("inline").asBoolean();
+            this.title = data.path("title").asText();
+            this.text = data.path("text").asText();
+            this.inline = data.path("inline").asBoolean(false);
         }
 
         @Override
