@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.kaleidox.crystalshard.main.exception.LowStackTraceable;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.io.IOException;
@@ -141,6 +142,15 @@ public class Logger {
         return exception(throwable, null);
     }
 
+    /**
+     * Posts an exception with {@link LoggingLevel#ERROR}.
+     * This method is useful for logging caught exceptions with a custom message.
+     *
+     * @param throwable     The throwable to post.
+     * @param customMessage A custom message to post instead of {@link Throwable#getMessage()}. May be null.
+     * @param <T>           A type variable for the return-type.
+     * @return null
+     */
     public <T> T exception(Throwable throwable, String customMessage) {
         if (!ignored.contains(loggingClass)) {
             StringBuilder sb = new StringBuilder()
@@ -151,8 +161,14 @@ public class Logger {
                     .append("\" ")
                     .append(throwable.getClass().getName());
 
-            List.of(throwable.getStackTrace())
-                    .forEach(line -> sb.append("\n\t").append(line));
+            if (throwable instanceof LowStackTraceable) {
+                if (((LowStackTraceable) throwable).lowStackTrace()) {
+                    sb.append("\n\t").append(throwable.getStackTrace()[0]);
+                }
+            } else {
+                List.of(throwable.getStackTrace())
+                        .forEach(line -> sb.append("\n\t").append(line));
+            }
 
             customExceptionHandlers.forEach(handler -> handler.apply(throwable));
             post(LoggingLevel.ERROR, sb.toString());
@@ -186,6 +202,35 @@ public class Logger {
         fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
         fix = fix.replace("%l", level.getName());
         fix = fix.replace("%r", Thread.currentThread().getName());
+
+        /*
+        if (x > 0) {
+            String[] split = fix.split("\t");
+            for (int i = 0; i < split.length; i++) {
+                StringBuilder subfix = new StringBuilder(split[i]);
+                if (subfix.toString().contains("\t")) {
+                    int tabCounterPos = subfix.indexOf("\t");
+                    char check2 = subfix.charAt(tabCounterPos + 2);
+                    char check1 = subfix.charAt(tabCounterPos + 1);
+                    int extraTabs;
+                    if (Character.isDigit(check2))
+                        extraTabs = Integer.parseInt(subfix.substring(tabCounterPos + 1, tabCounterPos + 2));
+                    else if (Character.isDigit(check1))
+                        extraTabs = Integer.parseInt(String.valueOf(subfix.charAt(tabCounterPos + 1)));
+                    else
+                        extraTabs = 0;
+                    int indentSpaces = extraTabs * 4;
+                    int indentFromL = subfix.substring(tabCounterPos).length();
+                    int addActualSpaces = indentSpaces - indentFromL;
+                    while (addActualSpaces > 0) {
+                        subfix.append(" ");
+                        addActualSpaces--;
+                    }
+                    subfix.append("\t");
+                }
+            }
+        }
+        */
 
         return fix.equals("null") ? "" : fix;
     }
@@ -344,7 +389,7 @@ public class Logger {
         return list;
     }
 
-    public static void addBlankedkeyword(String word) {
+    public static void addBlankedWord(String word) {
         blanked.add(word);
     }
 }
