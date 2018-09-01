@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.Ratelimiting;
 import de.kaleidox.crystalshard.internal.core.net.socket.WebSocketClient;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -14,23 +15,38 @@ import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 public class DiscordInternal implements Discord {
+    private final static Logger logger = new Logger(DiscordInternal.class);
     private final ThreadPool pool;
     private final String token;
     private final AccountType type;
     private final WebSocketClient webSocket;
     private final Ratelimiting ratelimiter;
+    private final List<Server> servers;
     private Self self;
 
     public DiscordInternal(String token, AccountType type) {
         this.pool = new ThreadPool(this);
         this.token = token;
-        Logger.addBlankedkeyword(token);
+        Logger.addBlankedWord(token);
         this.type = type;
-        this.webSocket = new WebSocketClient(this);
         this.ratelimiter = new Ratelimiting(this);
+        this.webSocket = new WebSocketClient(this);
+
+        servers = new ArrayList<>();
+
+        synchronized (this) {
+            try {
+                this.wait(); // wait for first heartbeat after initialization
+            } catch (InterruptedException e) {
+                logger.exception(e);
+            }
+        }
     }
 
     public ThreadPool getThreadPool() {
@@ -83,7 +99,14 @@ public class DiscordInternal implements Discord {
 
     @Override
     public Optional<Server> getServerById(long id) {
-        return Optional.empty();
+        return servers.stream()
+                .filter(server -> server.getId() == id)
+                .findAny();
+    }
+
+    @Override
+    public Executor getExecutor() {
+        return getThreadPool().getExecutor();
     }
 
     public WebSocketClient getWebSocket() {
@@ -95,6 +118,7 @@ public class DiscordInternal implements Discord {
     }
 
     public void craftServer(JsonNode data) {
+        this.servers.add(new ServerInternal(this, data));
     }
 
     @Override
