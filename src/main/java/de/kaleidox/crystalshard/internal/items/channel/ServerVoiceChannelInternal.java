@@ -8,11 +8,15 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.logging.Logger;
 
 import java.util.Optional;
 
 public class ServerVoiceChannelInternal implements ServerVoiceChannel {
-    public ServerVoiceChannelInternal(Discord discord, Server serverInternal, JsonNode channel) {
+    private final static Logger logger = new Logger(ServerVoiceChannelInternal.class);
+
+    public ServerVoiceChannelInternal(Discord discord, Server server, JsonNode data) {
+        logger.deeptrace("Creating SVC object for data: " + data.toString());
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.main;
 
+import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
@@ -9,6 +10,7 @@ import de.kaleidox.crystalshard.util.DiscordUtils;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
@@ -54,6 +56,16 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
     public Optional<Server> getServerById(long id) {
         return Optional.empty();
+    }
+
+    @Override
+    public Executor getExecutor() {
+        return null;
+    }
+
+    @Override
+    public ThreadPool getThreadPool() {
+        return null;
     }
 
     @Override

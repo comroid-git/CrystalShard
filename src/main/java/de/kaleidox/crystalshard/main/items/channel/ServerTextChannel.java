@@ -26,6 +26,7 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
     }
 
     static CompletableFuture<ServerTextChannel> of(ChannelContainer in, long id) {
+        if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerTextChannel> channelFuture = new CompletableFuture<>();
 
         if (in instanceof Server) {
@@ -62,7 +63,7 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
                         return (ServerTextChannel) channel;
                     })
                     .ifPresentOrElse(channelFuture::complete, () -> finalChannelFuture
-                            .completeExceptionally(new UncachedItemException("Channel is not cached.")));
+                            .completeExceptionally(new UncachedItemException("Channel is not cached. ID: " + id, true)));
         } else {
             throw new IllegalArgumentException(
                     in.getClass().getSimpleName() + " is not a valid ChannelContainer!");

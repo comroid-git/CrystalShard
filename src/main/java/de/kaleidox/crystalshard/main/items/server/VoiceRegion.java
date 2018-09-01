@@ -83,6 +83,7 @@ public enum VoiceRegion {
     }
 
     public static VoiceRegion getFromRegionKey(String regionKey) {
+        if (regionKey == null) return UNKNOWN;
         return Stream.of(values())
                 .filter(region -> region.regionKey.equals(regionKey))
                 .findAny()

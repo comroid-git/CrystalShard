@@ -17,6 +17,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.util.Optional;
@@ -24,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class ServerTextChannelInternal implements ServerTextChannel {
+    private final static Logger logger = new Logger(ServerTextChannelInternal.class);
     private final Discord discord;
     private final Server server;
     private final long id;
@@ -31,6 +33,7 @@ public class ServerTextChannelInternal implements ServerTextChannel {
     private final String name;
 
     public ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
+        logger.deeptrace("Creating STC object for data: " + data.toString());
         this.discord = discord;
         this.server = server;
         this.id = data.get("id").asLong();

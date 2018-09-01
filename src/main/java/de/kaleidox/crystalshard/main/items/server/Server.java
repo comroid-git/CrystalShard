@@ -1,9 +1,5 @@
 package de.kaleidox.crystalshard.main.items.server;
 
-import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.internal.core.net.request.Method;
-import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.ChannelContainer;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.UserContainer;
@@ -19,9 +15,11 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
+import de.kaleidox.util.CompletableFutureExtended;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -85,11 +83,9 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
     CompletableFuture<Void> leave();
 
     static CompletableFuture<Server> of(Discord discord, long id) {
-        return discord.getServerById(id)
-                .map(CompletableFuture::completedFuture)
-                .orElseGet(() -> new WebRequest<Server>(discord)
-                        .method(Method.GET)
-                        .endpoint(Endpoint.of(Endpoint.Location.GUILDS, id))
-                        .execute(data -> new ServerInternal(discord, data)));
+        CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
+        discord.getServerById(id).ifPresentOrElse(future::complete,
+                () -> future.completeExceptionally(new NoSuchElementException("Server is not available.")));
+        return future;
     }
 }

@@ -88,9 +88,7 @@ public class Endpoint {
 
         public int getParameterCount() {
             int splitted = location.split("%s").length - 1;
-
             int end = (location.indexOf("%s") == location.length() - 2 ? 1 : 0);
-
             return splitted + end;
         }
 

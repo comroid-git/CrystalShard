@@ -24,6 +24,7 @@ public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
     Optional<ChannelCategory> getCategory();
 
     static CompletableFuture<ServerChannel> of(ChannelContainer in, long id) {
+        if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerChannel> channelFuture = new CompletableFuture<>();
 
         if (in instanceof Server) {
@@ -74,7 +75,7 @@ public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
                         return (ServerChannel) channel;
                     })
                     .ifPresentOrElse(channelFuture::complete, () -> finalChannelFuture
-                            .completeExceptionally(new UncachedItemException("Channel is not cached.")));
+                            .completeExceptionally(new UncachedItemException("Channel is not cached. ID: " + id, true)));
         } else {
             throw new IllegalArgumentException(
                     in.getClass().getSimpleName() + " is not a valid ChannelContainer!");

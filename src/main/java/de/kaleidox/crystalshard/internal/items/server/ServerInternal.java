@@ -77,21 +77,18 @@ public class ServerInternal implements Server {
     private final ChannelStructureInternal structure;
 
     public ServerInternal(Discord discord, JsonNode data) {
+        logger.deeptrace("Creating server object for data: " + data.toString());
         this.discord = (DiscordInternal) discord;
         id = data.get("id").asLong();
         name = data.get("name").asText();
-        iconUrl = UrlHelper.orNull(data.get("icon").asText());
-        splashUrl = UrlHelper.orNull(data.get("splashUrl").asText());
+        iconUrl = UrlHelper.ignoreIfNull(data.path("icon").asText(null));
+        splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl").asText(null));
         owner = getOwnerPrivate(data);
         ownPermissions = data.has("permissions") ?
                 new PermissionListInternal(data.get("permissions").asInt()) : PermissionList.EMPTY_LIST;
-        voiceRegion = VoiceRegion.getFromRegionKey(data.get("region").get("id").asText());
-        afkChannel = data.has("afk_channel_id") ?
-                ServerVoiceChannel.of(discord, data.get("afk_channel_id").asLong()).join() : null;
+        voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").path("id").asText(null));
         afkTimeout = data.get("afk_timeout").asInt(-1);
         embedEnabled = data.path("embed_enabled").asBoolean(false);
-        embedChannel = data.has("embed_channel_id") ?
-                ServerChannel.of(discord, data.get("embed_channel_id").asLong()).join() : null;
         verificationLevel = VerificationLevel.getFromId(data.get("verification_level").asInt(-1));
         defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(
                 data.get("default_message_notifications").asInt(-1));
@@ -99,10 +96,6 @@ public class ServerInternal implements Server {
                 data.get("explicit_content_filter").asInt(-1));
         mfaLevel = MFALevel.getFromId(data.get("mfa_level").asInt(-1));
         widgetable = data.path("widget_enabled").asBoolean(false);
-        widgetChannel = data.has("widget_channel_id") ?
-                ServerChannel.of(discord, data.get("widget_channel_id").asLong()).join() : null;
-        systemChannel = data.has("system_channel_id") ?
-                ServerTextChannel.of(discord, data.path("system_channel_id").asLong()).join() : null;
         large = data.path("large").asBoolean(false);
         unavailable = data.path("unavailable").asBoolean(false);
         memberCount = data.path("member_count").asInt(-1);
@@ -111,7 +104,8 @@ public class ServerInternal implements Server {
         data.get("emojis").forEach(emoji -> emojis.add(new CustomEmojiInternal(getDiscord(), this, emoji)));
         data.get("features").forEach(feature -> features.add(feature.asText()));
         data.path("voice_states").forEach(state -> voiceStates.add(new VoiceState(state)));
-        data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord, this, member)));
+        data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord,
+                this, member.get("user"))));
         data.path("channels").forEach(channel -> {
             ChannelType type = ChannelType.getFromId(channel.get("type").asInt(-1));
             switch (type) {
@@ -131,8 +125,18 @@ public class ServerInternal implements Server {
             }
         });
         data.path("presenceStates").forEach(presence -> presenceStates.add(new PresenceStateInternal(discord, this, presence)));
-
         structure = new ChannelStructureInternal(channels);
+
+        afkChannel = data.has("afk_channel_id") ?
+                ServerVoiceChannel.of(discord, data.path("afk_channel_id").asLong(-1)).join() : null;
+        embedChannel = data.has("embed_channel_id") ?
+                ServerChannel.of(discord, data.get("embed_channel_id").asLong(-1)).join() : null;
+        widgetChannel = data.has("widget_channel_id") ?
+                ServerChannel.of(discord, data.get("widget_channel_id").asLong(-1)).join() : null;
+        systemChannel = data.has("system_channel_id") ?
+                ServerTextChannel.of(discord, data.path("system_channel_id").asLong(-1))
+                        .exceptionally(throwable -> null)
+                        .join() : null;
     }
 
     private User getOwnerPrivate(JsonNode data) {

@@ -39,13 +39,14 @@ public class UserInternal implements User {
     private final Discord discord;
 
     public UserInternal(Discord discord, JsonNode data) {
+        logger.deeptrace("Creating user object for data: " + data.toString());
         this.discord = discord;
         this.id = data.get("id").asLong();
         this.name = data.path("name").asText("");
         this.discriminator = data.get("discriminator").asText();
         this.avatarUrl = data.has("avatar_url") ?
                 UrlHelper.orNull(data.get("avatar_url").asText()) : null;
-        this.bot = data.get("bot").asBoolean(false);
+        this.bot = data.path("bot").asBoolean(false);
         //noinspection SimplifiableConditionalExpression
         this.mfa = data.has("mfa") ?
                 data.get("mfa_enabled").asBoolean(false) : false;
