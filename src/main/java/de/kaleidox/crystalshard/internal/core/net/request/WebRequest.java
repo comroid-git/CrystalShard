@@ -106,7 +106,7 @@ public class WebRequest<T> {
         CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getThreadPool());
         Ratelimiting ratelimiter = discord.getRatelimiter();
         JsonNode finalData = data;
-        ratelimiter.schedule(() -> {
+        ratelimiter.schedule(endpoint, future, () -> {
             try {
                 String urlExternal = endpoint.getUrl().toExternalForm();
                 String dataAsString = finalData.toString();
@@ -125,24 +125,15 @@ public class WebRequest<T> {
                 switch (response.statusCode()) {
                     case 429:
                         JsonNode responseNode = JsonHelper.parse(response.body());
-                        Ratelimiting.RatelimitBlock block = new Ratelimiting.RatelimitBlock();
                         logger.warn("Warning: " + responseNode.get("message"));
-                        block.setRetryAfter(responseNode.get("retry_after").asLong());
-                        block.setGlobal(responseNode.get("global").asBoolean());
                         try {
                             HttpHeaders headers = response.headers();
-                            headers.firstValue("Retry-After").map(Long::parseLong)
-                                    .ifPresent(block::setRetryAfter);
-                            headers.firstValue("X-RateLimit-Limit").map(Long::parseLong)
-                                    .ifPresent(block::setLimit);
-                            headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong)
-                                    .ifPresent(block::setRemaining);
-                            headers.firstValue("X-RateLimit-Global").map(Boolean::valueOf)
-                                    .ifPresent(block::setGlobal);
+                            headers.firstValue("Retry-After").map(Long::parseLong).ifPresent(after ->
+                                    Endpoint.RATELIMIT_COOLDOWNS.put(endpoint.getLocation(), after));
+                            headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong).ifPresent(after ->
+                                    Endpoint.RATELIMIT_COOLDOWNS.put(endpoint.getLocation(), after));
                         } catch (NullPointerException e) {
                             logger.deeptrace("NPE on Ratelimit Header checking. Message: " + e.getMessage());
-                        } finally {
-                            future.completeExceptionally(block);
                         }
                         break;
                     case 400:

@@ -46,6 +46,8 @@ public class WebSocketClient {
                 .buildAsync(gatewayUrl, new WebSocketListener((DiscordInternal) discordObject))
                 .join();
         identification();
+        Runtime.getRuntime()
+                .addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
 
     public CompletableFuture<WebSocket> sendPayload(Payload payload) {

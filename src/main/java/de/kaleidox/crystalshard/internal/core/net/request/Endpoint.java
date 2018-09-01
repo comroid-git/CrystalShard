@@ -6,12 +6,14 @@ import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This enum contains all endpoints which we may use.
  */
 public class Endpoint {
     public final static String BASE_URL = "https://discordapp.com/api/v";
+    public final static ConcurrentHashMap<Location, Long> RATELIMIT_COOLDOWNS = new ConcurrentHashMap<>();
     private final Location location;
     private final URL url;
 
@@ -26,6 +28,18 @@ public class Endpoint {
 
     public URL getUrl() {
         return url;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Endpoint) {
+            if (obj.equals(this)) {
+                return true;
+            } else if (((Endpoint) obj).url.equals(url)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Endpoint of(Location location, Object... parameter) {

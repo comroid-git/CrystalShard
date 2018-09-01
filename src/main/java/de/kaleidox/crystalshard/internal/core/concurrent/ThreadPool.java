@@ -94,6 +94,10 @@ public class ThreadPool extends LinkedBlockingQueue {
         }
     }
 
+    public Factory getFactory() {
+        return factory;
+    }
+
     public ScheduledExecutorService getScheduler() {
         return scheduler;
     }
