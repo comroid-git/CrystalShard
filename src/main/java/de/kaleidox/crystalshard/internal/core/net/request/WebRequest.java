@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.ResponseDispatch;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.io.IOException;
@@ -18,19 +19,23 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+/**
+ * This class is used for creating requests to discord.
+ *
+ * @param <T> The output item. The output type comes from JSON and is mapped using {@link #execute(Function)}.
+ */
 public class WebRequest<T> {
     private static final Logger logger = new Logger(WebRequest.class);
     private static final String BASE_URL = "https://discordapp.com/api";
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private final CompletableFuture<T> future;
+    private final CompletableFutureExtended<T> future;
     private DiscordInternal discord;
-    private JsonNode node = JsonHelper.nodeOf(null);
+    private JsonNode node;
     private Endpoint endpoint;
     private Method method;
 
     public WebRequest(Discord discord) {
-        this.future = new CompletableFuture<>();
-        this.discord = (DiscordInternal) discord;
+        this(null, (DiscordInternal) discord, null, null, null);
     }
 
     public WebRequest(Discord discord,
@@ -40,7 +45,8 @@ public class WebRequest<T> {
         this(null, (DiscordInternal) discord, method, endpoint, node);
     }
 
-    public WebRequest(CompletableFuture<T> future,
+
+    public WebRequest(CompletableFutureExtended<T> future,
                       DiscordInternal discord,
                       Method method,
                       Endpoint endpoint,
@@ -48,7 +54,7 @@ public class WebRequest<T> {
         if (Objects.nonNull(future)) {
             this.future = future;
         } else {
-            this.future = new CompletableFuture<>();
+            this.future = new CompletableFutureExtended<>(discord.getThreadPool());
         }
         this.discord = discord;
         this.method = method;
@@ -76,84 +82,93 @@ public class WebRequest<T> {
         return this;
     }
 
-    public CompletableFuture<T> getFuture() {
+    public CompletableFutureExtended<T> getFuture() {
         return future;
     }
 
     public CompletableFuture<T> execute(Function<JsonNode, T> requestBodyMapper) {
-        CompletableFuture<JsonNode> execute = execute();
-        return execute.thenApply(requestBodyMapper);
+        return execute().thenApply(requestBodyMapper);
     }
 
-    public CompletableFuture<JsonNode> execute() {
+    public CompletableFutureExtended<JsonNode> execute() {
         return request(method, endpoint, node);
     }
 
     @SuppressWarnings({"SameParameterValue", "unchecked"})
-    private CompletableFuture<JsonNode> request(
+    private CompletableFutureExtended<JsonNode> request(
             Method method,
             Endpoint endpoint,
             JsonNode data) {
-        if (method == null) throw new NullPointerException("Method must not be null.");
-        if (endpoint == null) throw new NullPointerException("Endpoint must not be null.");
-        if (data == null) data = JsonHelper.nodeOf(null);
-        CompletableFuture<JsonNode> future = new CompletableFuture<>();
-        try {
-            String s = data.toString();
-            logger.trace("Creating " + method.getDescriptor() + " Request to " +
-                    endpoint.getUrl().toExternalForm() + " with body: " + s);
-            HttpResponse<String> response = CLIENT.send(HttpRequest
-                            .newBuilder()
-                            .uri(URI.create(endpoint.getUrl().toExternalForm()))
-                            .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
-                                    "Content-Type", "application/json",
-                                    "Authorization", discord.getPrefixedToken())
-                            .method(method.getDescriptor(),
-                                    HttpRequest.BodyPublishers.ofString(s))
-                            .build(),
-                    HttpResponse.BodyHandlers.ofString());
-            logger.trace("Recieved status code " + response.statusCode() +
-                    " from Discord with body: " + response.body());
-            JsonNode responseNode = JsonHelper.parse(response.body());
-            switch (response.statusCode()) {
-                case 429:
-                    Ratelimiting.RatelimitBlock block = new Ratelimiting.RatelimitBlock();
-                    logger.warn("Warning: " + responseNode.get("message"));
-                    block.setRetryAfter(responseNode.get("retry_after").asLong());
-                    block.setGlobal(responseNode.get("global").asBoolean());
-                    try {
-                        HttpHeaders headers = response.headers();
-                        headers.firstValue("Retry-After").map(Long::parseLong)
-                                .ifPresent(block::setRetryAfter);
-                        headers.firstValue("X-RateLimit-Limit").map(Long::parseLong)
-                                .ifPresent(block::setLimit);
-                        headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong)
-                                .ifPresent(block::setRemaining);
-                        headers.firstValue("X-RateLimit-Global").map(Boolean::valueOf)
-                                .ifPresent(block::setGlobal);
-                    } catch (NullPointerException e) {
-                        logger.deeptrace("NPE on Ratelimit Header checking. Message: " + e.getMessage());
-                    } finally {
-                        future.completeExceptionally(block);
-                    }
-                    break;
-                default:
-                    boolean dispatch = ResponseDispatch.dispatch(discord, response, future);
-                    if (!dispatch & (future.isCancelled() || future.isCompletedExceptionally())) {
-                        logger.error("Something went horribly wrong in WebRequest.java, " +
-                                "please contact the developer.");
-                    } else {
-                        if (dispatch) {
-                            future.complete(JsonHelper.parse(response.body()));
+        Objects.requireNonNull(method, "Method must not be null.");
+        Objects.requireNonNull(endpoint, "Endpoint must not be null.");
+        if (data == null) data = JsonHelper.objectNode();
+        if (data.isNull()) data = JsonHelper.objectNode();
+        CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getThreadPool());
+        Ratelimiting ratelimiter = discord.getRatelimiter();
+        JsonNode finalData = data;
+        ratelimiter.schedule(() -> {
+            try {
+                String urlExternal = endpoint.getUrl().toExternalForm();
+                String dataAsString = finalData.toString();
+                logger.trace("Creating request: " + method.getDescriptor() + " " +
+                        urlExternal + " with body: " + dataAsString);
+                HttpRequest request = HttpRequest
+                        .newBuilder()
+                        .uri(URI.create(urlExternal))
+                        .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
+                                "Content-Type", "application/json",
+                                "Authorization", discord.getPrefixedToken())
+                        .method(method.getDescriptor(),
+                                HttpRequest.BodyPublishers.ofString(dataAsString))
+                        .build();
+                HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                switch (response.statusCode()) {
+                    case 429:
+                        JsonNode responseNode = JsonHelper.parse(response.body());
+                        Ratelimiting.RatelimitBlock block = new Ratelimiting.RatelimitBlock();
+                        logger.warn("Warning: " + responseNode.get("message"));
+                        block.setRetryAfter(responseNode.get("retry_after").asLong());
+                        block.setGlobal(responseNode.get("global").asBoolean());
+                        try {
+                            HttpHeaders headers = response.headers();
+                            headers.firstValue("Retry-After").map(Long::parseLong)
+                                    .ifPresent(block::setRetryAfter);
+                            headers.firstValue("X-RateLimit-Limit").map(Long::parseLong)
+                                    .ifPresent(block::setLimit);
+                            headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong)
+                                    .ifPresent(block::setRemaining);
+                            headers.firstValue("X-RateLimit-Global").map(Boolean::valueOf)
+                                    .ifPresent(block::setGlobal);
+                        } catch (NullPointerException e) {
+                            logger.deeptrace("NPE on Ratelimit Header checking. Message: " + e.getMessage());
+                        } finally {
+                            future.completeExceptionally(block);
                         }
-                    }
-                    UnknownError unknownError = new UnknownError("An unknown error ocurred.");
-                    future.completeExceptionally(unknownError);
-                    break;
+                        break;
+                    case 400:
+                        logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " +
+                                urlExternal + " with body: " + dataAsString);
+                        break;
+                    default:
+                        logger.trace("Recieved status code " + response.statusCode() +
+                                " from Discord with body: " + response.body());
+                        boolean dispatch = ResponseDispatch.dispatch(discord, response, future);
+                        if (!dispatch & (future.isCancelled() || future.isCompletedExceptionally())) {
+                            logger.error("Something went horribly wrong in WebRequest.java, " +
+                                    "please contact the developer.");
+                        } else {
+                            if (dispatch) {
+                                future.complete(JsonHelper.parse(response.body()));
+                            }
+                        }
+                        UnknownError unknownError = new UnknownError("An unknown error ocurred.");
+                        future.completeExceptionally(unknownError);
+                        break;
+                }
+            } catch (IOException | InterruptedException e) {
+                future.completeExceptionally(e);
             }
-        } catch (IOException | InterruptedException e) {
-            future.completeExceptionally(e);
-        }
+        });
 
         return future;
     }

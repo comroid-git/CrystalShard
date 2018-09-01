@@ -2,17 +2,17 @@ package de.kaleidox.crystalshard.internal.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.util.helpers.ListHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class Ratelimiting {
     private final DiscordInternal discord;
     private final List<Bucket> bucketList;
+    private final ThreadPool pool;
     private long retryAtMillis = 0;
     private boolean global;
     private long limit;
@@ -20,6 +20,7 @@ public class Ratelimiting {
     public Ratelimiting(DiscordInternal discord) {
         this.discord = discord;
         this.bucketList = new ArrayList<>();
+        this.pool = new ThreadPool(discord, -1, "Ratelimiter");
     }
 
     public void retryAfter(long retryAfter) {
@@ -55,6 +56,7 @@ public class Ratelimiting {
                 });
     }
 
+    @Deprecated
     public CompletableFuture<JsonNode> scheduleRequest(WebRequest<JsonNode> request) {
         boolean found = false;
 
@@ -79,7 +81,8 @@ public class Ratelimiting {
         this.limit = limit;
     }
 
-    public void schedule(Supplier<Consumer<CompletableFuture<JsonNode>>> request) {
+    public void schedule(Runnable requestTask) {
+        pool.execute(requestTask);
     }
 
     public static class RatelimitBlock extends Throwable {
