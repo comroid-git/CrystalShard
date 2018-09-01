@@ -12,10 +12,11 @@ import de.kaleidox.logging.Logger;
 
 import java.util.Optional;
 
-public class ServerVoiceChannelInternal implements ServerVoiceChannel {
+public class ServerVoiceChannelInternal extends ChannelInternal implements ServerVoiceChannel {
     private final static Logger logger = new Logger(ServerVoiceChannelInternal.class);
 
     public ServerVoiceChannelInternal(Discord discord, Server server, JsonNode data) {
+        super(discord, data);
         logger.deeptrace("Creating SVC object for data: " + data.toString());
     }
 

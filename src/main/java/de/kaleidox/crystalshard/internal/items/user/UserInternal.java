@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
@@ -126,7 +127,7 @@ public class UserInternal implements User {
                 .method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.SELF_CHANNELS))
                 .node(JsonHelper.objectNode().set("recipient_id", JsonHelper.nodeOf(id)))
-                .execute(PrivateTextChannelInternal::new);
+                .execute(node -> new PrivateTextChannelInternal((DiscordInternal) discord, node));
     }
 
     @Override

@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 
@@ -66,6 +67,11 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
     public ThreadPool getThreadPool() {
         return null;
+    }
+
+    @Override
+    public void attachMessageCreateListener(MessageCreateListener listener) {
+
     }
 
     @Override

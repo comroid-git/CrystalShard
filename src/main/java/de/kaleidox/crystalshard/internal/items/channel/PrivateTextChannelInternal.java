@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
@@ -8,28 +11,23 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.main.listener.ChannelAttachableListener;
+import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
+import de.kaleidox.logging.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class PrivateTextChannelInternal implements PrivateTextChannel {
-    public PrivateTextChannelInternal(JsonNode node) {
+public class PrivateTextChannelInternal extends ChannelInternal implements PrivateTextChannel {
+    private final static Logger logger = new Logger(PrivateTextChannelInternal.class);
+    private final List<Message> messages = new ArrayList<>();
+    private final List<ChannelAttachableListener> listeners = new ArrayList<>();
 
-    }
-
-    @Override
-    public ChannelType getType() {
-        return null;
-    }
-
-    @Override
-    public long getId() {
-        return 0;
-    }
-
-    @Override
-    public Discord getDiscord() {
-        return null;
+    public PrivateTextChannelInternal(DiscordInternal discord, JsonNode data) {
+        super(discord, data);
+        logger.deeptrace("Creating PTC object for data: "+data.toString());
     }
 
     @Override
@@ -55,5 +53,16 @@ public class PrivateTextChannelInternal implements PrivateTextChannel {
     @Override
     public CompletableFuture<Void> typing() {
         return null;
+    }
+
+    public Message craftMessage(JsonNode data) {
+        MessageInternal messageInternal = new MessageInternal(getDiscord(), null, data);
+        this.messages.add(messageInternal);
+        return messageInternal;
+    }
+
+    @Override
+    public void attachMessageCreateListener(MessageCreateListener listener) {
+        listeners.add(listener);
     }
 }

@@ -65,7 +65,7 @@ public class ThreadPool extends LinkedBlockingQueue {
             synchronized (discord) {
                 discord.notify();
             }
-        }, heartbeat, TimeUnit.MILLISECONDS);
+        }, 2, TimeUnit.SECONDS);
     }
 
     public void execute(Runnable task) {

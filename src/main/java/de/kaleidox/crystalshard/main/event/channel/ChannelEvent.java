@@ -6,6 +6,4 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ChannelEvent {
     Channel getChannel();
-
-    CompletableFuture<Channel> requestChannel();
 }

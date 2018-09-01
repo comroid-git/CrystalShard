@@ -6,6 +6,4 @@ import java.util.concurrent.CompletableFuture;
 
 public interface MessageEvent {
     Message getMessage();
-
-    CompletableFuture<Message> requestMessage();
 }

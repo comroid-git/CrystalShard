@@ -9,6 +9,8 @@ import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Attachment;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -27,10 +29,12 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
@@ -56,15 +60,22 @@ public class MessageInternal implements Message {
     private final Discord discord;
     private final List<Emoji> emojis = new ArrayList<>();
     private final List<Channel> channelMentions = new ArrayList<>();
+    private final TextChannel channel;
 
     public MessageInternal(Discord discord, Server server, JsonNode data) {
+        Instant timestamp1;
         this.discord = discord;
         this.server = server;
         this.id = data.get("id").asLong();
         this.channelId = data.get("channel_id").asLong();
         this.contentRaw = data.get("content").asText();
-        this.timestamp = Instant.parse(data.get("timestamp").asText());
-        this.editedTimestamp = data.has("edited_timestamp") ?
+        try {
+            timestamp1 = Instant.parse(data.get("timestamp").asText());
+        } catch (DateTimeException ignored) {
+            timestamp1 = null;
+        }
+        this.timestamp = timestamp1;
+        this.editedTimestamp = data.has("edited_timestamp") && !data.get("edited_timestamp").isNull() ?
                 Instant.parse(data.get("edited_timestamp").asText()) : null;
         this.tts = data.get("tts").asBoolean(false);
         this.mentionsEveryone = data.get("tts").asBoolean(false);
@@ -101,11 +112,18 @@ public class MessageInternal implements Message {
                 reactions.add(new ReactionInternal(reaction));
             }
         }
+        if (Objects.nonNull(server)) {
+            // is server
+            this.channel = ServerTextChannel.of(discord, channelId).join();
+        } else {
+            // is private
+            this.channel = PrivateTextChannel.of(discord, channelId).join();
+        }
     }
 
     @Override
     public TextChannel getChannel() {
-        return null;
+        return channel;
     }
 
     @Override

@@ -17,27 +17,32 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.listener.ChannelAttachableListener;
+import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class ServerTextChannelInternal implements ServerTextChannel {
+public class ServerTextChannelInternal extends ChannelInternal implements ServerTextChannel {
     private final static Logger logger = new Logger(ServerTextChannelInternal.class);
     private final Discord discord;
     private final Server server;
     private final long id;
-    private final ChannelType type;
     private final String name;
+    private final List<Message> messages = new ArrayList<>();
+    private final List<ChannelAttachableListener> listeners = new ArrayList<>();
 
     public ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
+        super(discord, data);
         logger.deeptrace("Creating STC object for data: " + data.toString());
         this.discord = discord;
         this.server = server;
         this.id = data.get("id").asLong();
-        this.type = ChannelType.GUILD_TEXT;
         this.name = data.path("name").asText(null);
     }
 
@@ -57,23 +62,8 @@ public class ServerTextChannelInternal implements ServerTextChannel {
     }
 
     @Override
-    public ChannelType getType() {
-        return type;
-    }
-
-    @Override
     public PermissionList getListFor(DiscordItem scope) {
         return null;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public Discord getDiscord() {
-        return discord;
     }
 
     @Override
@@ -106,5 +96,20 @@ public class ServerTextChannelInternal implements ServerTextChannel {
     @Override
     public CompletableFuture<Void> typing() {
         return null;
+    }
+
+    public List<ChannelAttachableListener> getListeners() {
+        return listeners;
+    }
+
+    public Message craftMessage(JsonNode data) {
+        MessageInternal messageInternal = new MessageInternal(discord, server, data);
+        this.messages.add(messageInternal);
+        return messageInternal;
+    }
+
+    @Override
+    public void attachMessageCreateListener(MessageCreateListener listener) {
+        listeners.add(listener);
     }
 }

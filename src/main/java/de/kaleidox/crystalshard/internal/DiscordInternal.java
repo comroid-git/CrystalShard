@@ -11,11 +11,14 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.main.listener.DiscordAttachableListener;
+import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
 import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -29,6 +32,7 @@ public class DiscordInternal implements Discord {
     private final Ratelimiting ratelimiter;
     private final List<Server> servers;
     private Self self;
+    private final Collection<DiscordAttachableListener> listeners = new ArrayList<>();
 
     public DiscordInternal(String token, AccountType type) {
         this.pool = new ThreadPool(this);
@@ -51,6 +55,15 @@ public class DiscordInternal implements Discord {
 
     public ThreadPool getThreadPool() {
         return pool;
+    }
+
+    @Override
+    public void attachMessageCreateListener(MessageCreateListener listener) {
+        listeners.add(listener);
+    }
+
+    public Collection<DiscordAttachableListener> getListeners() {
+        return listeners;
     }
 
     @Override
@@ -80,7 +93,11 @@ public class DiscordInternal implements Discord {
 
     @Override
     public Optional<Channel> getChannelById(long id) {
-        return Optional.empty();
+        return servers.stream()
+                .flatMap(server -> server.getChannels().stream())
+                .filter(channel -> channel.getId() == id)
+                .map(Channel.class::cast)
+                .findAny();
     }
 
     @Override
