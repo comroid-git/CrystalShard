@@ -27,7 +27,11 @@ public abstract class HandlerBase {
                 Class<T> tClass = (Class<T>) Class.forName(t1);
                 value = tClass.getConstructor().newInstance();
                 types.put(type, value);
-                discord.getThreadPool().execute(() -> value.handle(discord, data.get("d")));
+                discord.getThreadPool().execute(() -> {
+                    baseLogger.trace("Dispatching event '" + data.get("t").asText() +
+                            "' with body: " + data.get("d").toString());
+                    value.handle(discord, data.get("d"));
+                });
             } catch (ClassNotFoundException e) {
                 baseLogger.exception(e, "Failed to dispatch unknown type: " + data.get("t"));
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {

@@ -39,8 +39,7 @@ public class DiscordEventDispatch {
                 });
     }
 
-    private static <T extends HandlerBase> void dispatch(DiscordInternal discord, JsonNode data) {
-        logger.trace("Dispatching event '" + data.get("t").asText() + "' with body: " + data.get("d").toString());
+    private static void dispatch(DiscordInternal discord, JsonNode data) {
         HandlerBase.getHandlerByType(discord, data);
     }
 }
