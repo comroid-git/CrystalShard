@@ -25,8 +25,8 @@ public class MapHelper {
      *
      * @param map The map to check in.
      * @param key The key to look for.
-     * @param <K> Type variable for the Key.
-     * @param <V> Type variable for the Value.
+     * @param <K> Type variable for the keys.
+     * @param <V> Type variable for the values.
      * @return Whether the map contains the key.
      * @see Map#containsKey(Object)
      */
@@ -43,8 +43,8 @@ public class MapHelper {
      *
      * @param map   The map to check in.
      * @param value The value to look for.
-     * @param <K>   Type variable for the Key.
-     * @param <V>   Type variable for the Value.
+     * @param <K>   Type variable for the keys.
+     * @param <V>   Type variable for the values.
      * @return Whether the map contains the key.
      * @see Map#containsValue(Object)
      */
@@ -53,6 +53,46 @@ public class MapHelper {
                 .stream()
                 .map(Map.Entry::getValue)
                 .anyMatch(check -> check.equals(value));
+    }
+
+    /**
+     * Checks whether the given map contains any Entry whose key {@link Object#equals(Object)} the value
+     * returned by the {@code extractor} for that key.
+     *
+     * @param map       The map to check in.
+     * @param value     The value to look for.
+     * @param extractor The Function to extract the value out of a key.
+     * @param <K>       Type variable for the keys.
+     * @param <V>       Type variable for the values.
+     * @param <T>       Type variable for the item to check for.
+     * @return Whether the map contains a key that can be mapped to the value.
+     */
+    public static <K, V, T> boolean containsKey(Map<K, V> map, T value, Function<K, T> extractor) {
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .map(extractor)
+                .anyMatch(t -> t.equals(value));
+    }
+
+    /**
+     * Checks whether the given map contains any Entry whose value {@link Object#equals(Object)} the value
+     * returned by the {@code extractor} for that value.
+     *
+     * @param map       The map to check in.
+     * @param value     The value to look for.
+     * @param extractor The Function to extract the value out of a value.
+     * @param <K>       Type variable for the keys.
+     * @param <V>       Type variable for the values.
+     * @param <T>       Type variable for the item to check for.
+     * @return Whether the map contains a key that can be mapped to the value.
+     */
+    public static <K, V, T> boolean containsValue(Map<K, V> map, T value, Function<V, T> extractor) {
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .map(extractor)
+                .anyMatch(t -> t.equals(value));
     }
 
     /**
@@ -194,8 +234,8 @@ public class MapHelper {
      * @param <iMap>           Type variable for the input map.
      * @param <oMap>           Type variable for the output map.
      * @return The pointer to the new map.
-     * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
      * @throws ClassCastException If the map is a TreeMap whose comparator can't be {@code Comparator<\? super oK>}.
+     * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
      */
     public static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap reformat(
             iMap map,

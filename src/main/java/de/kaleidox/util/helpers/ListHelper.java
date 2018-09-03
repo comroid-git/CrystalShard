@@ -65,4 +65,22 @@ public class ListHelper {
 
         return Optional.empty();
     }
+
+    public static <T> boolean booleanOfAll(List<T> list, Function<T, Boolean> booleanFunction) {
+        var ref = new Object() {
+            int trues = 0;
+            int falses = 0;
+        };
+
+        list.stream()
+                .map(booleanFunction)
+                .forEach(bool -> {
+                    if (bool)
+                        ref.trues++;
+                    else
+                        ref.falses++;
+                });
+
+        return (ref.trues == list.size());
+    }
 }
