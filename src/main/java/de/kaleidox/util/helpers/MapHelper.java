@@ -1,16 +1,17 @@
 package de.kaleidox.util.helpers;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.TreeMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Function;
 
 /**
@@ -207,15 +208,15 @@ public class MapHelper {
     /**
      * Creates a new parented map of the type of {@code inputMap} and injects it into {@code outputMap}.
      * This way, methods like {@link #reformat(Map, Function, Function)} can always return the correct map type.
-     * The class of {@code iMap} should always equal the class of {@code oMap}, given that the class type is
-     * implemented in this method.
-     * If the class "parent" type of {@code iMap} is not implemented in this method,
-     * {@code oMap} conforms to a new {@link HashMap}.
+     * The class of {@code inputMap} should always equal the class of the returned {@code outputMap}, given that
+     * the class type is implemented in this method.
+     * If the class "parent" type of {@code inputMap} is not implemented in this method,
+     * {@code outputMap} conforms to a new {@link HashMap}.
      * The parameter {@code outputMap} is only necessary for acquiring the type variables {@code <oK>} and
      * {@code <oV>}, and gets overwritten with a new map of parent type of {@code inputMap}.
      *
      * @param inputMap  Input map. Required for getting the map parent type.
-     * @param outputMap Output map. Provides output type variables. Should be an empty {@code Map<oK, oV>}.
+     * @param outputMap Output map. Provides output type variables. Should be an <b>empty</b> {@code Map<oK, oV>}.
      * @param <iK>      Input map Key type.
      * @param <iV>      Input map Value type.
      * @param <oK>      Output map Key type.
@@ -224,10 +225,17 @@ public class MapHelper {
      */
     @SuppressWarnings("ParameterCanBeLocal")
     private static <iK, iV, oK, oV> Map<oK, oV> getMapOfParent(Map<iK, iV> inputMap, Map<oK, oV> outputMap) {
+        Objects.requireNonNull(outputMap);
         if (inputMap instanceof ConcurrentHashMap) {
             outputMap = new ConcurrentHashMap<>();
         } else if (inputMap instanceof TreeMap) {
             outputMap = new TreeMap<oK, oV>(((TreeMap) inputMap).comparator());
+        } else if (inputMap instanceof WeakHashMap) {
+            outputMap = new WeakHashMap<>();
+        } else if (inputMap instanceof LinkedHashMap) {
+            outputMap = new LinkedHashMap<>();
+        } else if (inputMap instanceof ConcurrentSkipListMap) {
+            outputMap = new ConcurrentSkipListMap<>();
         } else {
             outputMap = new HashMap<>();
         }
