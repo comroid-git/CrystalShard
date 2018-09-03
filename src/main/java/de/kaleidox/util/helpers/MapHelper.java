@@ -1,12 +1,14 @@
 package de.kaleidox.util.helpers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -191,7 +193,7 @@ public class MapHelper {
             oMap outputMapPointer,
             Function<iK, oK> keyMapper,
             Function<iV, oV> valueMapper) {
-        oMap newMap = Objects.requireNonNullElse(outputMapPointer, null);
+        oMap newMap = (oMap) Objects.requireNonNullElse(outputMapPointer, new HashMap<oK, oV>());
         newMap = (oMap) getMapOfParent(map, newMap);
         for (Map.Entry<iK, iV> entry : map.entrySet()) {
             newMap.put(
@@ -218,22 +220,17 @@ public class MapHelper {
      * @param <iV>      Input map Value type.
      * @param <oK>      Output map Key type.
      * @param <oV>      Output map Value type.
-     * @param <iMap>    Type variable for the input map.
-     * @param <oMap>    Type variable for the output map. Used for casting.
      * @return The newly created {@code [PARENT]Map<oK, oV>}, casted down to {@link Map}.
      */
-    @SuppressWarnings({"ParameterCanBeLocal", "UnusedAssignment"})
-    private static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> Map<oK, oV> getMapOfParent(
-            iMap inputMap, oMap outputMap) {
-        Map<oK, oV> newMap;
+    @SuppressWarnings("ParameterCanBeLocal")
+    private static <iK, iV, oK, oV> Map<oK, oV> getMapOfParent(Map<iK, iV> inputMap, Map<oK, oV> outputMap) {
         if (inputMap instanceof ConcurrentHashMap) {
-            newMap = new ConcurrentHashMap<>();
+            outputMap = new ConcurrentHashMap<>();
         } else if (inputMap instanceof TreeMap) {
-            newMap = new TreeMap<oK, oV>(((TreeMap) inputMap).comparator());
+            outputMap = new TreeMap<oK, oV>(((TreeMap) inputMap).comparator());
         } else {
-            newMap = new HashMap<>();
+            outputMap = new HashMap<>();
         }
-        outputMap = (oMap) newMap;
-        return newMap;
+        return outputMap;
     }
 }
