@@ -191,7 +191,7 @@ public class MapHelper {
             oMap outputMapPointer,
             Function<iK, oK> keyMapper,
             Function<iV, oV> valueMapper) {
-        oMap newMap = Objects.requireNonNullElseGet(outputMapPointer, () -> (oMap) new HashMap<oK, oV>());
+        oMap newMap = Objects.requireNonNullElse(outputMapPointer, null);
         newMap = getMapOfParent(map, newMap);
         for (Map.Entry<iK, iV> entry : map.entrySet()) {
             newMap.put(
