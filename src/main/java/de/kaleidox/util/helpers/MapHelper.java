@@ -192,7 +192,7 @@ public class MapHelper {
             Function<iK, oK> keyMapper,
             Function<iV, oV> valueMapper) {
         oMap newMap = Objects.requireNonNullElse(outputMapPointer, null);
-        newMap = getMapOfParent(map, newMap);
+        newMap = (oMap) getMapOfParent(map, newMap);
         for (Map.Entry<iK, iV> entry : map.entrySet()) {
             newMap.put(
                     keyMapper.apply(entry.getKey()),
@@ -222,17 +222,18 @@ public class MapHelper {
      * @param <oMap>    Type variable for the output map. Used for casting.
      * @return The newly created {@code [PARENT]Map<oK, oV>}, casted down to {@link Map}.
      */
-    @SuppressWarnings("ParameterCanBeLocal")
-    private static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap getMapOfParent(
+    @SuppressWarnings({"ParameterCanBeLocal", "UnusedAssignment"})
+    private static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> Map<oK, oV> getMapOfParent(
             iMap inputMap, oMap outputMap) {
+        Map<oK, oV> newMap;
         if (inputMap instanceof ConcurrentHashMap) {
-            outputMap = (oMap) new ConcurrentHashMap<oK, oV>();
+            newMap = new ConcurrentHashMap<>();
         } else if (inputMap instanceof TreeMap) {
-            outputMap = (oMap) new TreeMap<oK, oV>(((TreeMap) inputMap).comparator());
+            newMap = new TreeMap<oK, oV>(((TreeMap) inputMap).comparator());
         } else {
-            outputMap = (oMap) new HashMap<oK, oV>();
+            newMap = new HashMap<>();
         }
-
-        return outputMap;
+        outputMap = (oMap) newMap;
+        return newMap;
     }
 }
