@@ -3,11 +3,14 @@ package de.kaleidox.util.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * This class contains several help methods when handling lists.
  */
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ListHelper {
     /**
      * Moves all items within a list after the given {@code distance}.
@@ -40,5 +43,26 @@ public class ListHelper {
         }
         list = newList;
         return list;
+    }
+
+    /**
+     * Search for an item within a list without having to modify the list.
+     * This way, you provide a Function to convert the list type of item into the criteria type of item.
+     *
+     * @param list              The list to search in.
+     * @param criteria          An item to search for. Uses {@link Object#equals(Object)}.
+     * @param criteriaExtractor A function to modify each entry of the list to fit the search criteria.
+     * @param <A>               The type of the items in the list.
+     * @param <B>               The type of the criteria to search for.
+     * @return An Optional that may contain the found item.
+     */
+    public static <A, B> Optional<A> findComplex(List<A> list, B criteria, Function<A, B> criteriaExtractor) {
+        for (A item : list) {
+            if (criteriaExtractor.apply(item).equals(criteria)) {
+                return Optional.of(item);
+            }
+        }
+
+        return Optional.empty();
     }
 }
