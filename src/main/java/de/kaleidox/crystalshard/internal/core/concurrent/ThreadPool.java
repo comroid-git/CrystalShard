@@ -174,6 +174,21 @@ public class ThreadPool extends LinkedBlockingQueue {
     }
 
     /**
+     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the
+     * {@link Worker} Thread.
+     *
+     * @param customMessage A custom message to show in the possible exception.
+     * @return The worker thread.
+     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
+     */
+    public static Worker requireBotOwnThread(String customMessage) {
+        Thread thread = Thread.currentThread();
+        if (thread instanceof Worker) {
+            return (Worker) thread;
+        } else throw new IllegalCallerException(customMessage);
+    }
+
+    /**
      * Gets the Discord object attached to the current Thread, if the current thread is a {@link Worker} thread.
      * Otherwise throws a {@link IllegalCallerException}.
      *
@@ -258,6 +273,10 @@ public class ThreadPool extends LinkedBlockingQueue {
             return marker;
         }
 
+        private void setMarker(AtomicBoolean marker) {
+            this.marker = marker;
+        }
+
         /**
          * Gets the discord instance attached to the current worker thread.
          *
@@ -293,10 +312,6 @@ public class ThreadPool extends LinkedBlockingQueue {
                     logger.exception(e);
                 }
             }
-        }
-
-        private void setMarker(AtomicBoolean marker) {
-            this.marker = marker;
         }
     }
 }
