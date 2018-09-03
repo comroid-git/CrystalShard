@@ -90,31 +90,6 @@ public class MapHelper {
     }
 
     /**
-     * Reformats a map after the provided Functions, then returns the new map.
-     * This method is an overloaded version of {@link #reformat(Map, Map, Function, Function)}, but
-     * with {@code null} as outputMapPointer.
-     *
-     * @param map         The map to reformat.
-     * @param keyMapper   The function to apply to every key in the map.
-     * @param valueMapper The function to apply to every value in the map.
-     * @param <iK>        Input map Key type.
-     * @param <iV>        Input map Value type.
-     * @param <oK>        Output map Key type.
-     * @param <oV>        Output map Value type.
-     * @param <iMap>      Type variable for the input map.
-     * @param <oMap>      Type variable for the output map.
-     * @return The pointer to the new map.
-     * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
-     * @see #reformat(Map, Map, Function, Function)
-     */
-    public static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap reformat(
-            iMap map,
-            Function<iK, oK> keyMapper,
-            Function<iV, oV> valueMapper) {
-        return reformat(map, null, keyMapper, valueMapper);
-    }
-
-    /**
      * Reformats a {@link TreeMap} after the provided Functions, then returns the new map and overwrites the provided
      * {@code outputMapPointer} with the new map.
      * This method requires an additional comparator to be attached to the output TreeMap.
@@ -173,8 +148,40 @@ public class MapHelper {
     }
 
     /**
+     * Reformats a map after the provided Functions, then returns the new map.
+     * This method is an overloaded version of {@link #reformat(Map, Map, Function, Function)}, but
+     * with {@code null} as outputMapPointer.
+     * When trying to reformat a {@link TreeMap} including its keys, please use
+     * {@link #reformat(TreeMap, Function, Function, Comparator)}, as that method will also set the comparator
+     * for the new map.
+     *
+     * @param map         The map to reformat.
+     * @param keyMapper   The function to apply to every key in the map.
+     * @param valueMapper The function to apply to every value in the map.
+     * @param <iK>        Input map Key type.
+     * @param <iV>        Input map Value type.
+     * @param <oK>        Output map Key type.
+     * @param <oV>        Output map Value type.
+     * @param <iMap>      Type variable for the input map.
+     * @param <oMap>      Type variable for the output map.
+     * @return The pointer to the new map.
+     * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
+     * @see #reformat(Map, Map, Function, Function)
+     */
+    public static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap reformat(
+            iMap map,
+            Function<iK, oK> keyMapper,
+            Function<iV, oV> valueMapper) {
+        return reformat(map, null, keyMapper, valueMapper);
+    }
+
+    /**
      * Reformats a map after the provided Functions, then returns the new map and overwrites the provided
      * {@code outputMapPointer} with the new map.
+     * When trying to reformat a {@link TreeMap} including its keys, consider using
+     * {@link #reformat(TreeMap, TreeMap, Function, Function, Comparator)}, as that method will also set the
+     * comparator for the new map. This method will try to place the old comparator in the new map, casting it
+     * to conform to {@code Comparator<oK>}.
      *
      * @param map              The map to reformat.
      * @param outputMapPointer The output map pointer. Gets overwritten with the output map. May be {@code null}.
@@ -188,19 +195,27 @@ public class MapHelper {
      * @param <oMap>           Type variable for the output map.
      * @return The pointer to the new map.
      * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
+     * @throws ClassCastException If the map is a TreeMap whose comparator can't be {@code Comparator<\? super oK>}.
      */
     public static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap reformat(
             iMap map,
             oMap outputMapPointer,
             Function<iK, oK> keyMapper,
             Function<iV, oV> valueMapper) {
-        oMap newMap = (oMap) Objects.requireNonNullElse(outputMapPointer, new HashMap<oK, oV>());
+        Comparator<iK> comparator = (map instanceof TreeMap) ? ((TreeMap) map).comparator() : null;
+        oMap newMap;
+        newMap = (oMap) Objects.requireNonNullElse(outputMapPointer, new HashMap<oK, oV>());
         newMap = (oMap) getMapOfParent(map, newMap);
         for (Map.Entry<iK, iV> entry : map.entrySet()) {
             newMap.put(
                     keyMapper.apply(entry.getKey()),
                     valueMapper.apply(entry.getValue())
             );
+        }
+        if (Objects.nonNull(comparator)) {
+            TreeMap<oK, oV> treeMap = new TreeMap<>((Comparator<? super oK>) comparator);
+            treeMap.putAll(newMap);
+            return (oMap) treeMap;
         }
         return newMap;
     }
@@ -214,6 +229,8 @@ public class MapHelper {
      * {@code outputMap} conforms to a new {@link HashMap}.
      * The parameter {@code outputMap} is only necessary for acquiring the type variables {@code <oK>} and
      * {@code <oV>}, and gets overwritten with a new map of parent type of {@code inputMap}.
+     * If the {@code inputMap} is a {@link TreeMap}, the comparator will be dropped and the returning {@link TreeMap}
+     * will have no custom comparator attached. (See {@link TreeMap} -> Comparator will be {@code null}.
      *
      * @param inputMap  Input map. Required for getting the map parent type.
      * @param outputMap Output map. Provides output type variables. Should be an <b>empty</b> {@code Map<oK, oV>}.
@@ -229,7 +246,7 @@ public class MapHelper {
         if (inputMap instanceof ConcurrentHashMap) {
             outputMap = new ConcurrentHashMap<>();
         } else if (inputMap instanceof TreeMap) {
-            outputMap = new TreeMap<oK, oV>(((TreeMap) inputMap).comparator());
+            outputMap = new TreeMap<>();
         } else if (inputMap instanceof WeakHashMap) {
             outputMap = new WeakHashMap<>();
         } else if (inputMap instanceof LinkedHashMap) {
