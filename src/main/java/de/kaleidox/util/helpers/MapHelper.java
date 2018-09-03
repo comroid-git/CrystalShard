@@ -2,6 +2,7 @@ package de.kaleidox.util.helpers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +109,64 @@ public class MapHelper {
             Function<iK, oK> keyMapper,
             Function<iV, oV> valueMapper) {
         return reformat(map, null, keyMapper, valueMapper);
+    }
+
+    /**
+     * Reformats a {@link TreeMap} after the provided Functions, then returns the new map and overwrites the provided
+     * {@code outputMapPointer} with the new map.
+     * This method requires an additional comparator to be attached to the output TreeMap.
+     *
+     * @param map                   The map to reformat.
+     * @param keyMapper             The function to apply to every key in the map.
+     * @param valueMapper           The function to apply to every value in the map.
+     * @param replacementComparator The new comparator to be used by the map.
+     * @param <iK>                  Input map Key type.
+     * @param <iV>                  Input map Value type.
+     * @param <oK>                  Output map Key type.
+     * @param <oV>                  Output map Value type.
+     * @param <iMap>                Type variable for the input map.
+     * @param <oMap>                Type variable for the output map.
+     * @return The pointer to the new map.
+     */
+    public static <iK, iV, oK, oV, iMap extends TreeMap<iK, iV>, oMap extends TreeMap<oK, oV>> oMap reformat(
+            iMap map,
+            Function<iK, oK> keyMapper,
+            Function<iV, oV> valueMapper,
+            Comparator<oK> replacementComparator) {
+        oMap reformat = reformat(map, null, keyMapper, valueMapper);
+        oMap newMap = (oMap) new TreeMap<oK, oV>(replacementComparator);
+        newMap.putAll(reformat);
+        return newMap;
+    }
+
+    /**
+     * Reformats a {@link TreeMap} after the provided Functions, then returns the new map and overwrites the provided
+     * {@code outputMapPointer} with the new map.
+     * This method requires an additional comparator to be attached to the output TreeMap.
+     *
+     * @param map                   The map to reformat.
+     * @param outputMapPointer      The output map pointer. Gets overwritten with the output map. May be {@code null}.
+     * @param keyMapper             The function to apply to every key in the map.
+     * @param valueMapper           The function to apply to every value in the map.
+     * @param replacementComparator The new comparator to be used by the map.
+     * @param <iK>                  Input map Key type.
+     * @param <iV>                  Input map Value type.
+     * @param <oK>                  Output map Key type.
+     * @param <oV>                  Output map Value type.
+     * @param <iMap>                Type variable for the input map.
+     * @param <oMap>                Type variable for the output map.
+     * @return The pointer to the new map.
+     */
+    public static <iK, iV, oK, oV, iMap extends TreeMap<iK, iV>, oMap extends TreeMap<oK, oV>> oMap reformat(
+            iMap map,
+            oMap outputMapPointer,
+            Function<iK, oK> keyMapper,
+            Function<iV, oV> valueMapper,
+            Comparator<oK> replacementComparator) {
+        oMap reformat = reformat(map, outputMapPointer, keyMapper, valueMapper);
+        outputMapPointer = (oMap) new TreeMap<oK, oV>(replacementComparator);
+        outputMapPointer.putAll(reformat);
+        return outputMapPointer;
     }
 
     /**
