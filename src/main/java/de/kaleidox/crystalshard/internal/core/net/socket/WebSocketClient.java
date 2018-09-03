@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
-import de.kaleidox.crystalshard.internal.core.net.request.Payload;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;

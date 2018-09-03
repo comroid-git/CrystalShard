@@ -15,7 +15,6 @@ import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -104,9 +103,10 @@ public class WebRequest<T> {
         if (data == null) data = JsonHelper.objectNode();
         if (data.isNull()) data = JsonHelper.objectNode();
         CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getThreadPool());
+        CompletableFutureExtended<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getThreadPool());
         Ratelimiting ratelimiter = discord.getRatelimiter();
         JsonNode finalData = data;
-        ratelimiter.schedule(endpoint, future, () -> {
+        ratelimiter.schedule(endpoint, headersFuture, () -> {
             try {
                 String urlExternal = endpoint.getUrl().toExternalForm();
                 String dataAsString = finalData.toString();
@@ -122,19 +122,11 @@ public class WebRequest<T> {
                                 HttpRequest.BodyPublishers.ofString(dataAsString))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+                headersFuture.complete(response.headers());
                 switch (response.statusCode()) {
                     case 429:
                         JsonNode responseNode = JsonHelper.parse(response.body());
                         logger.warn("Warning: " + responseNode.get("message"));
-                        try {
-                            HttpHeaders headers = response.headers();
-                            headers.firstValue("Retry-After").map(Long::parseLong).ifPresent(after ->
-                                    Endpoint.RATELIMIT_COOLDOWNS.put(endpoint.getLocation(), after));
-                            headers.firstValue("X-RateLimit-Remaining").map(Long::parseLong).ifPresent(after ->
-                                    Endpoint.RATELIMIT_COOLDOWNS.put(endpoint.getLocation(), after));
-                        } catch (NullPointerException e) {
-                            logger.deeptrace("NPE on Ratelimit Header checking. Message: " + e.getMessage());
-                        }
                         break;
                     case 400:
                         logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " +
@@ -156,15 +148,10 @@ public class WebRequest<T> {
                         future.completeExceptionally(unknownError);
                         break;
                 }
-            } catch (IOException | InterruptedException e) {
-                future.completeExceptionally(e);
+            } catch (IOException | InterruptedException ignored) {
             }
         });
 
         return future;
-    }
-
-    public Optional<String> getFirstArgument() {
-        return null;
     }
 }
