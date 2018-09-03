@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * This class represents an extension to the CompletableFuture class.
- * For async methods, it will always use a bot-own thread for asyncronity.
+ * For async methods, it will always use a bot-own thread for asynchronity.
  *
  * @param <T> The type variable of the Item.
  */

@@ -36,7 +36,7 @@ public interface TextChannel extends Channel, MessageReciever {
                                 return new PrivateTextChannelInternal((DiscordInternal) discord, node)
                                         .castTo(TextChannel.class).get();
                             }
-                            throw new NoSuchElementException("Could not create TextChannel. ID: "+id);
+                            throw new NoSuchElementException("Could not create TextChannel. ID: " + id);
                         }));
 
         return future;

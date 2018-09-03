@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.event.EventBase;
 import de.kaleidox.crystalshard.main.event.MessageEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.PrivateChannel;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;

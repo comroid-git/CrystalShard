@@ -32,8 +32,8 @@ public class DiscordInternal implements Discord {
     private final Ratelimiting ratelimiter;
     private final List<Server> servers;
     private final DiscordUtils utils;
-    private Self self;
     private final Collection<DiscordAttachableListener> listeners = new ArrayList<>();
+    private Self self;
 
     public DiscordInternal(String token, AccountType type) {
         this.pool = new ThreadPool(this);

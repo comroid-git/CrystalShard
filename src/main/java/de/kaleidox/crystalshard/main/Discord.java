@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main;
 
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.main.event.channel.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;

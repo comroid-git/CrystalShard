@@ -3,9 +3,6 @@ package de.kaleidox.crystalshard.internal.items.channel;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
-import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
@@ -28,7 +25,7 @@ public class PrivateTextChannelInternal extends ChannelInternal implements Priva
 
     public PrivateTextChannelInternal(DiscordInternal discord, JsonNode data) {
         super(discord, data);
-        logger.deeptrace("Creating PTC object for data: "+data.toString());
+        logger.deeptrace("Creating PTC object for data: " + data.toString());
     }
 
     @Override

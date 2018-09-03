@@ -65,7 +65,7 @@ public class MessageInternal implements Message {
     private final TextChannel channel;
 
     public MessageInternal(Discord discord, Server server, JsonNode data) {
-        logger.deeptrace("Creating message object for data: "+data.toString());
+        logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
         this.discord = discord;
         this.server = server;

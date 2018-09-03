@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
@@ -11,17 +10,14 @@ import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.listener.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
-import de.kaleidox.crystalshard.util.DefaultEmbed;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 
@@ -29,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class ServerTextChannelInternal extends ChannelInternal implements ServerTextChannel {
     private final static Logger logger = new Logger(ServerTextChannelInternal.class);
