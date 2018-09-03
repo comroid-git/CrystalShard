@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * This enum contains all endpoints which we may use.
  */
 public class Endpoint {
-    public final static String BASE_URL = "https://discordapp.com/api/v";
-    public final static ConcurrentHashMap<Location, Long> RATELIMIT_COOLDOWNS = new ConcurrentHashMap<>();
+    final static ConcurrentHashMap<Endpoint, Ratelimiting.Block> RATELIMIT_COOLDOWNS = new ConcurrentHashMap<>();
+    private final static String BASE_URL = "https://discordapp.com/api/v";
     private final Location location;
     private final URL url;
 
@@ -33,13 +33,14 @@ public class Endpoint {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Endpoint) {
-            if (obj.equals(this)) {
-                return true;
-            } else if (((Endpoint) obj).url.equals(url)) {
-                return true;
-            }
+            return ((Endpoint) obj).url.equals(url);
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return getUrl().toExternalForm();
     }
 
     public static Endpoint of(Location location, Object... parameter) {
