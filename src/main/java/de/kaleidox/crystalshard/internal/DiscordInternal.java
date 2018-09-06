@@ -46,12 +46,13 @@ public class DiscordInternal implements Discord {
 
         servers = new ArrayList<>();
 
-        synchronized (this) {
-            try {
-                this.wait(); // wait for first heartbeat after initialization
-            } catch (InterruptedException e) {
-                logger.exception(e);
-            }
+        try {
+            long waitMs = 2000;
+            logger.info("Waiting for initialization to finish... (" + (waitMs / 1000) + "s)");
+            Thread.sleep(waitMs);
+            logger.info("Discord connection for user " + self.getDiscriminatedName() + " is ready!");
+        } catch (InterruptedException e) {
+            logger.exception(e);
         }
     }
 

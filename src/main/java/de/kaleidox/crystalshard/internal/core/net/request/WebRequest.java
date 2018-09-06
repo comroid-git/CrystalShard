@@ -8,7 +8,6 @@ import de.kaleidox.logging.Logger;
 import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
@@ -148,7 +147,8 @@ public class WebRequest<T> {
                         future.completeExceptionally(unknownError);
                         break;
                 }
-            } catch (IOException | InterruptedException ignored) {
+            } catch (Throwable e) {
+                logger.exception(e, "Error in WebRequest @ " + endpoint);
             }
         });
 

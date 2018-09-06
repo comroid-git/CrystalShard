@@ -41,10 +41,10 @@ public class WebSocketListener implements WebSocket.Listener {
             onTextBuilder = new StringBuilder();
             CompletableFuture<String> returning = onTextFuture;
             onTextFuture = new CompletableFuture<>();
-            returning.thenAcceptAsync(logger::trace);
+            returning.thenAcceptAsync(logger::deeptrace, discord.getExecutor());
             returning.exceptionally(logger::exception)
-                    .thenApplyAsync(JsonHelper::parse)
-                    .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node));
+                    .thenApplyAsync(JsonHelper::parse, discord.getExecutor())
+                    .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node), discord.getExecutor());
             return returning;
         }
         return onTextFuture;

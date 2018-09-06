@@ -26,7 +26,7 @@ public class Ratelimiting {
     private final ThreadPool bucketExecutionPool;
     private final DiscordInternal discord;
 
-    public Ratelimiting(DiscordInternal discord) {
+    public Ratelimiting(DiscordInternal discord) { // todo Remake all of this
         this.discord = discord;
         this.bucketList = new BucketQueue();
         this.bucketExecutionPool = new ThreadPool(discord, -1, "Ratelimiter Execution");
@@ -37,13 +37,13 @@ public class Ratelimiting {
             while (true) {
                 synchronized (bucketList) {
                     try {
-                        bucketList.wait();
+                        //bucketList.wait();
+                        Thread.sleep(50);
                         bucketList.assureAny();
                         boolean retry = true;
                         while (retry) {
                             retry = bucketList.getFirst().tryRun(); // block further actions until bucket could be sent
                         }
-                        ListHelper.moveList(bucketList, -1, Bucket::new);
                     } catch (InterruptedException e) {
                         logger.exception(e, "RatelimitTickPool sleep interrupted.");
                     }
@@ -55,9 +55,12 @@ public class Ratelimiting {
     void schedule(Endpoint endpoint, CompletableFuture<HttpHeaders> headersFuture, Runnable requestTask) {
         logger.deeptrace("Scheduling Request to endpoint " + endpoint.getUrl().toExternalForm());
         synchronized (bucketList) {
+            bucketList.removeIf(Bucket::isObsolete);
             bucketList.assureAny();
-            while (!bucketList.getLast().addRequest(requestTask, endpoint)) {
+            Bucket last = bucketList.getLast();
+            while (!last.addRequest(requestTask, endpoint) && !last.isObsolete) {
                 bucketList.append();
+                last = bucketList.getLast();
             }
             bucketList.notifyAll();
         }
@@ -141,7 +144,7 @@ public class Ratelimiting {
         }
 
         Bucket getFirst() {
-            assureAt(0);
+            assureAny();
             return get(0);
         }
 
@@ -154,23 +157,19 @@ public class Ratelimiting {
                 add(new Bucket());
             }
         }
-
-        void assureAt(int index) {
-            if (size() - 1 < index) {
-                set(index, new Bucket());
-            }
-        }
     }
 
     private class Bucket {
         final ConcurrentHashMap<Block, Runnable> requests = new ConcurrentHashMap<>();
         final long birthTime;
+        private boolean isObsolete;
 
         Bucket() {
             this.birthTime = System.currentTimeMillis();
         }
 
         boolean addRequest(Runnable request, Endpoint endpoint) {
+            if (isObsolete) return false;
             boolean couldAdd;
 
             if (MapHelper.containsKey(requests, endpoint, Block::getEndpoint) || requests.size() > 49) {
@@ -203,12 +202,20 @@ public class Ratelimiting {
             return true;
         }
 
-        @SuppressWarnings("SuspiciousMethodCalls")
         void runAll() {
             requests.forEach((key, value) -> {
                 bucketExecutionPool.execute(value);
                 requests.remove(key, value);
+                obsolete();
             });
+        }
+
+        void obsolete() {
+            isObsolete = true;
+        }
+
+        boolean isObsolete() {
+            return isObsolete;
         }
     }
 }

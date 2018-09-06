@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 /**
  * This class represents a Logging framework.
  */
-@SuppressWarnings({"ResultOfMethodCallIgnored", "unused", "WeakerAccess", "UnusedReturnValue", "FieldCanBeLocal"})
+@SuppressWarnings({"MismatchedQueryAndUpdateOfCollection", "unused", "WeakerAccess"})
 public class Logger {
     private final static LoggingLevel DEFAULT_LEVEL = LoggingLevel.DEBUG;
     private final static List<Class> DEFAULT_IGNORED = new ArrayList<>();
@@ -30,8 +31,6 @@ public class Logger {
 
     private static LoggingLevel level;
     private static List<Class> ignored = new ArrayList<>();
-    private static String suffix;
-    private static String prefix;
     private static List<String> blanked = new ArrayList<>();
     private static JsonNode configuration;
     private static boolean hasInit = false;
@@ -175,6 +174,21 @@ public class Logger {
         }
 
         return null;
+    }
+
+    /**
+     * Checks a list of items for nonnull values.
+     *
+     * @param items The items to check.
+     */
+    public void nonNullChecks(Object... items) {
+        for (Object x : items) {
+            if (!Objects.nonNull(x)) {
+                exception(
+                        new NullPointerException("NonNullCheck failed: " + x)
+                );
+            }
+        }
     }
 
     private void post(LoggingLevel level, String message) {
@@ -342,8 +356,8 @@ public class Logger {
 
         level = LoggingLevel.ofName(configuration.get("level").asText()).orElse(LoggingLevel.INFO);
         ignored = createIgnoredList(configuration.get("ignored"));
-        prefix = configuration.get("prefix").asText();
-        suffix = configuration.get("suffix").asText();
+        String prefix = configuration.get("prefix").asText();
+        String suffix = configuration.get("suffix").asText();
     }
 
     /**

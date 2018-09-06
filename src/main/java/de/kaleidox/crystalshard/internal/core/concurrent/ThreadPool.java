@@ -5,6 +5,8 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.CompletableFutureExtended;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -17,6 +19,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicMarkableReference;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -37,11 +40,13 @@ public class ThreadPool extends LinkedBlockingQueue {
     private final ConcurrentHashMap<Worker, AtomicBoolean> threads;
     private final DiscordInternal discord;
     private final int maxSize;
+    private final LinkedBlockingQueue<Task> queue;
+    private final AtomicInteger busyThreads = new AtomicInteger(0);
     private final Factory factory;
-    private final LinkedBlockingQueue<Runnable> queue;
     private Executor executor;
     private ScheduledExecutorService scheduler;
     private String name;
+    private List<Worker> factoriedThreads = new ArrayList<>();
 
     /**
      * Creates a new, unlimited ThreadPool for the specified discord object.
@@ -49,9 +54,11 @@ public class ThreadPool extends LinkedBlockingQueue {
      * @param discord The discord object to attach to this ThreadPool.
      */
     public ThreadPool(Discord discord) {
-        this(discord, -1, "CrystalShard Main");
+        this(discord, -1, "CrystalShard Main Worker");
         this.executor = new BotOwn(this);
-        execute(() -> scheduler = Executors.newScheduledThreadPool(30, factory));
+        this.scheduler = Executors.newSingleThreadScheduledExecutor(factory);
+
+        scheduler.scheduleAtFixedRate(this::cleanupThreads, 30, 30, TimeUnit.SECONDS);
     }
 
     /**
@@ -65,9 +72,9 @@ public class ThreadPool extends LinkedBlockingQueue {
         this.discord = (DiscordInternal) discordObject;
         this.maxSize = maxSize;
         this.threads = new ConcurrentHashMap<>();
-        this.factory = new Factory();
         this.queue = new LinkedBlockingQueue<>();
         this.name = name;
+        this.factory = new Factory();
 
         execute(() -> logger.deeptrace("New ThreadPool created: " + name));
     }
@@ -98,6 +105,10 @@ public class ThreadPool extends LinkedBlockingQueue {
         return executor;
     }
 
+    public DiscordInternal getDiscord() {
+        return discord;
+    }
+
     /**
      * This method is used internally to start heartbeating to discord.
      * Do not call this method on your own.
@@ -109,9 +120,10 @@ public class ThreadPool extends LinkedBlockingQueue {
                 discord.getWebSocket().heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
         scheduler.schedule(() -> {
             synchronized (discord) {
-                discord.notify();
+                discord.notifyAll();
+                logger.deeptrace("Discord Object revived.");
             }
-        }, 2, TimeUnit.SECONDS);
+        }, 3, TimeUnit.SECONDS);
     }
 
     /**
@@ -120,23 +132,15 @@ public class ThreadPool extends LinkedBlockingQueue {
      *
      * @param task The task to execute.
      */
-    public void execute(Runnable task) {
+    public void execute(Runnable task, String... description) {
         synchronized (queue) {
             if (threads.size() < maxSize || maxSize == -1) {
-                factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
+                if (busyThreads.get() <= queue.size())
+                    factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
             }
-            queue.add(task);
+            queue.add(new Task(task, description));
             queue.notify();
         }
-    }
-
-    /**
-     * Gets the ThreadFactory.
-     *
-     * @return The ThreadFactory.
-     */
-    public Factory getFactory() {
-        return factory;
     }
 
     /**
@@ -147,6 +151,18 @@ public class ThreadPool extends LinkedBlockingQueue {
      */
     public ScheduledExecutorService getScheduler() {
         return scheduler;
+    }
+
+    /**
+     * Removes terminated Threads from the {@code factoriedThreads} list,
+     * and decrements the name counter for each thread.
+     */
+    void cleanupThreads() {
+        factoriedThreads.stream()
+                .filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
+                .peek(Worker::interrupt) // interrupt the thread
+                .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one each thread
+                .forEach(factoriedThreads::remove); // remove the thread from the list
     }
 
     /**
@@ -197,24 +213,27 @@ public class ThreadPool extends LinkedBlockingQueue {
      * @see #requireBotOwnThread()
      */
     public static Discord getThreadDiscord() {
-        requireBotOwnThread();
-        return ((Worker) Thread.currentThread()).getDiscord();
+        return requireBotOwnThread().getDiscord();
     }
 
     /**
-     * This class represents the Factory for new {@link Worker} threads.
+     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
+     *
+     * @param task The task to check.
+     * @return Whether the task is most likely from an async stage.
      */
+    private static boolean nonFutureTask(Runnable task) {
+        return !task.toString().toLowerCase().contains("future");
+    }
+
     public class Factory implements ThreadFactory {
-        final AtomicInteger nameCounter = new AtomicInteger(1);
+        private final AtomicInteger nameCounter = new AtomicInteger(1);
 
         @Override
         public Thread newThread(Runnable r) {
-            synchronized (queue) {
-                Worker worker = getOrCreateWorker();
-                queue.add(r);
-                queue.notify();
-                return worker;
-            }
+            Worker worker = new Worker(r, discord, nameCounter.getAndIncrement());
+            factoriedThreads.add(worker);
+            return worker;
         }
 
         /**
@@ -230,10 +249,8 @@ public class ThreadPool extends LinkedBlockingQueue {
                     .map(Map.Entry::getKey)
                     .orElseGet(() -> {
                         Worker worker = new Worker(discord, nameCounter.getAndIncrement());
-                        AtomicBoolean marker = new AtomicBoolean(false);
-                        threads.put(worker, marker);
-                        worker.setMarker(marker);
-                        logger.deeptrace("New worker created: " + worker.toString());
+                        threads.put(worker, worker.isBusy);
+                        logger.deeptrace("New worker created: " + worker.getName());
                         if (!worker.isAlive()) {
                             worker.start();
                             logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
@@ -244,11 +261,35 @@ public class ThreadPool extends LinkedBlockingQueue {
     }
 
     /**
+     * This class represents an implementation of an executor interface to this current ThreadPool.
+     */
+    public class BotOwn implements Executor {
+        private final ThreadPool pool;
+
+        /**
+         * Creates a new executor instance.
+         *
+         * @param pool The thread pool to execute in.
+         */
+        BotOwn(ThreadPool pool) {
+            this.pool = pool;
+        }
+
+        @Override
+        public void execute(Runnable command) {
+            pool.execute(command);
+        }
+    }
+
+    /**
      * This class represents a bot-own worker thread.
      */
     public class Worker extends Thread {
         private final DiscordInternal discord;
-        private AtomicBoolean marker;
+        private final AtomicMarkableReference<Task> nextTask =
+                new AtomicMarkableReference<>(null, false);
+        private final AtomicBoolean isBusy;
+        private final boolean runnableAttachedThread;
 
         /**
          * Creates a new {@link Worker} thread.
@@ -259,22 +300,36 @@ public class ThreadPool extends LinkedBlockingQueue {
         Worker(DiscordInternal discord, int id) {
             super(name == null ? ("Worker Thread #" + id) : name + " Thread" + (maxSize == 1 ? "" : " #" + id));
             this.discord = discord;
-            this.marker = new AtomicBoolean(false);
+            this.isBusy = new AtomicBoolean(false);
+            this.runnableAttachedThread = false;
+        }
+
+        Worker(Runnable initTask, DiscordInternal discord, int id) {
+            super(initTask, name == null ?
+                    ("Worker Thread #" + id) : name + " Thread" + (maxSize == 1 ? "" : " #" + id));
+            this.discord = discord;
+            this.isBusy = new AtomicBoolean(true);
+            this.runnableAttachedThread = true;
         }
 
         /**
-         * Gets the marker that marks this thread as busy.
-         * Marker is {@code TRUE} if the worker is busy.
-         * Marker is {@code FALSE} if the worker is busy.
+         * Attaches a new Runnable to this worker.
+         * This method should not be used for chaining tasks, but for attaching runnables to worker threads in the
+         * {@code java.lang.Thread.State.RUNNABLE} state.
+         * For chaining tasks, use {@link #execute(Runnable, String...)} instead.
          *
-         * @return The marker.
+         * @param task The task to attach.
          */
-        public AtomicBoolean getMarker() {
-            return marker;
-        }
-
-        private void setMarker(AtomicBoolean marker) {
-            this.marker = marker;
+        void attachTask(Task task) {
+            synchronized (queue) {
+                //noinspection StatementWithEmptyBody
+                if (isBusy.get()) {
+                    execute(task); // if current worker is busy, add task to the queue
+                } else {
+                    this.nextTask.set(task, true);
+                    queue.notify();
+                }
+            }
         }
 
         /**
@@ -289,29 +344,77 @@ public class ThreadPool extends LinkedBlockingQueue {
 
         @Override
         public void run() {
-            Runnable task;
-            //noinspection InfiniteLoopStatement
-            while (true) {
-                synchronized (queue) {
-                    while (queue.isEmpty()) {
+            if (!runnableAttachedThread) {
+                Task task = null;
+                //noinspection InfiniteLoopStatement
+                while (true) {
+                    synchronized (queue) {
                         try {
-                            marker.set(false);
-                            queue.wait();
-                        } catch (InterruptedException e) {
-                            logger.exception(e);
+                            while (queue.isEmpty() && !nextTask.isMarked()) {
+                                try {
+                                    queue.wait();
+                                } catch (InterruptedException e) {
+                                    logger.exception(e);
+                                }
+                            }
+                            task = nextTask.isMarked() ? nextTask.getReference() : queue.poll();
+                            assert task != null;
+                            busy();
+                            if (nonFutureTask(task))
+                                logger.deeptrace("Running " + (nextTask.isMarked() ? "attached" : "scheduled") +
+                                        " task #" + task.hashCode() + (task.hasDescription() ?
+                                        " with description: " + task.getDescription() : ""));
+                            task.run();
+                            if (nonFutureTask(task))
+                                logger.deeptrace((nextTask.isMarked() ? "Attached" : "Scheduled") +
+                                        " task #" + task.hashCode() + " finished.");
+                            unbusy();
+                            if (nextTask.isMarked())
+                                nextTask.set(null, false); // if nextTask is set, unset it, because its being run
+                        } catch (Throwable e) {
+                            assert task != null;
+                            if (nonFutureTask(task))
+                                logger.exception(e, (nextTask.isMarked() ? "Attached" : "Scheduled") +
+                                        " task " + ("#" + task.hashCode()) + " finished with an exception:");
                         }
                     }
-                    marker.set(true);
-                    task = queue.poll();
                 }
-
-                try {
-                    assert task != null;
-                    task.run();
-                } catch (Throwable e) {
-                    logger.exception(e);
-                }
+            } else {
+                super.run();
             }
+        }
+
+        private void busy() {
+            isBusy.set(true);
+            busyThreads.incrementAndGet();
+        }
+
+        private void unbusy() {
+            isBusy.set(false);
+            busyThreads.decrementAndGet();
+        }
+    }
+
+    private class Task implements Runnable {
+        private final Runnable runnable;
+        private final String[] description;
+
+        Task(Runnable runnable, String... description) {
+            this.runnable = runnable;
+            this.description = description;
+        }
+
+        public boolean hasDescription() {
+            return description.length != 0;
+        }
+
+        public String getDescription() {
+            return description.length == 0 ? "No task description." : String.join(" ", description);
+        }
+
+        @Override
+        public void run() {
+            runnable.run();
         }
     }
 }

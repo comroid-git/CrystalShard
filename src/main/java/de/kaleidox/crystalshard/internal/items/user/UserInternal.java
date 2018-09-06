@@ -43,7 +43,7 @@ public class UserInternal implements User {
         logger.deeptrace("Creating user object for data: " + data.toString());
         this.discord = discord;
         this.id = data.get("id").asLong();
-        this.name = data.path("name").asText("");
+        this.name = data.path("username").asText(null);
         this.discriminator = data.get("discriminator").asText();
         this.avatarUrl = data.has("avatar_url") ?
                 UrlHelper.orNull(data.get("avatar_url").asText()) : null;
@@ -58,6 +58,8 @@ public class UserInternal implements User {
                 data.get("verified").asBoolean(false) : false;
         this.email = data.has("email") ?
                 data.get("email").asText(null) : null;
+
+        logger.nonNullChecks(name, discriminator);
     }
 
     @Override

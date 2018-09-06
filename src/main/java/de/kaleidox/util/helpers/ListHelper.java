@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * This class contains several help methods when handling lists.
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class ListHelper {
+public class ListHelper extends CollectionHelper {
     /**
      * Moves all items within a list after the given {@code distance}.
      * If an object is null or not available, it gets replaced with {@code defaultValue}.
