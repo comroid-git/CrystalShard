@@ -19,6 +19,15 @@ import java.util.function.Function;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class MapHelper {
+    public static <K, V> V getEquals(Map<K, V> map, K key, V valueIfAbsent) {
+        return map.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals(key))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElse(valueIfAbsent);
+    }
+
     /**
      * Another implementation of {@link Map#containsKey(Object)}, but uses {@link Object#equals(Object)}
      * instead of comparing hash codes.
@@ -93,6 +102,32 @@ public class MapHelper {
                 .map(Map.Entry::getValue)
                 .map(extractor)
                 .anyMatch(t -> t.equals(value));
+    }
+
+    public static <K, V> int countKeyOccurrences(Map<K, V> map, K key) {
+        return Math.toIntExact(map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .filter(check -> check.equals(key))
+                .count());
+    }
+
+    public static <K, V> int countValueOccurrences(Map<K, V> map, V value) {
+        return Math.toIntExact(map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .filter(check -> check.equals(value))
+                .count());
+    }
+
+    public static <K, V> Map<V, List<K>> reverseMap(Map<K, V> map) {
+        Map<V, List<K>> newMap = new HashMap<>();
+        getMapOfParent(map, newMap);
+        map.forEach((key, value) -> {
+            newMap.putIfAbsent(value, new ArrayList<>());
+            newMap.get(value).add(key);
+        });
+        return newMap;
     }
 
     /**
