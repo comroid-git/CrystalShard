@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.internal.core.net.request.Ratelimiting;
+import de.kaleidox.crystalshard.internal.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.internal.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;

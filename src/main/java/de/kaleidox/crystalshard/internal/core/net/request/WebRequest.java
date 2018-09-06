@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.core.net.request;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.ResponseDispatch;
+import de.kaleidox.crystalshard.internal.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.CompletableFutureExtended;
@@ -80,6 +81,14 @@ public class WebRequest<T> {
         return this;
     }
 
+    public Endpoint getEndpoint() {
+        return endpoint;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
     public CompletableFutureExtended<T> getFuture() {
         return future;
     }
@@ -105,7 +114,7 @@ public class WebRequest<T> {
         CompletableFutureExtended<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getThreadPool());
         Ratelimiting ratelimiter = discord.getRatelimiter();
         JsonNode finalData = data;
-        ratelimiter.schedule(endpoint, headersFuture, () -> {
+        ratelimiter.schedule(this, headersFuture, () -> {
             try {
                 String urlExternal = endpoint.getUrl().toExternalForm();
                 String dataAsString = finalData.toString();
@@ -126,6 +135,7 @@ public class WebRequest<T> {
                     case 429:
                         JsonNode responseNode = JsonHelper.parse(response.body());
                         logger.warn("Warning: " + responseNode.get("message"));
+                        // wait for ratelimiter retry
                         break;
                     case 400:
                         logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " +
