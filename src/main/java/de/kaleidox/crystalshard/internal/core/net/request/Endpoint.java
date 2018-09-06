@@ -5,6 +5,9 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,14 +15,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * This enum contains all endpoints which we may use.
  */
 public class Endpoint {
-    final static ConcurrentHashMap<Endpoint, Ratelimiting.Block> RATELIMIT_COOLDOWNS = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<String[], Endpoint> olderInstances = new ConcurrentHashMap<>();
     private final static String BASE_URL = "https://discordapp.com/api/v";
     private final Location location;
     private final URL url;
+    private final String[] params;
+    private final String firstParam;
 
-    private Endpoint(Location location, URL url) {
+    private Endpoint(Location location, URL url, String[] params) {
         this.location = location;
         this.url = url;
+        this.params = params;
+        this.firstParam = (params.length == 0 ? null : params[0]);
     }
 
     public Location getLocation() {
@@ -33,7 +40,12 @@ public class Endpoint {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Endpoint) {
-            return ((Endpoint) obj).url.equals(url);
+            Endpoint target = (Endpoint) obj;
+            if (Objects.nonNull(this.firstParam))
+                return target.url.equals(url) &&
+                        target.firstParam.equals(this.firstParam);
+            else
+                return target.url.equals(url);
         }
         return false;
     }
@@ -122,11 +134,23 @@ public class Endpoint {
                     params[i] = x.toString();
                 }
             }
-
             if (parameterCount == params.length) {
+                boolean olderInstanceExists = olderInstances.entrySet()
+                        .stream()
+                        .anyMatch(entry -> Arrays.compare(entry.getKey(), params) == 0);
+                if (olderInstanceExists) {
+                    for (Map.Entry<String[], Endpoint> entry : olderInstances.entrySet()) {
+                        if (Arrays.compare(entry.getKey(), params) == 0) {
+                            return entry.getValue();
+                        }
+                    }
+                    // no instance could be found
+                }
                 String of = String.format(BASE_URL + CrystalShard.API_VERSION + location, (Object[]) params);
                 URL url = UrlHelper.require(of);
-                return new Endpoint(this, url);
+                Endpoint endpoint = new Endpoint(this, url, params);
+                olderInstances.putIfAbsent(params, endpoint);
+                return endpoint;
             } else throw new IllegalArgumentException("Too " + (parameterCount > params.length ? "few" : "many") +
                     " parameters!");
         }

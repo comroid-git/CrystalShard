@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * This class is the main concurrent implementation.
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class ThreadPool extends LinkedBlockingQueue {
+public class ThreadPool {
     public final static Supplier<IllegalCallerException> BOT_THREAD_EXCEPTION = () ->
             new IllegalCallerException("That method may only be called from a bot-own " +
                     "thread, such as in listeners or scheduler tasks. You may not use it from contexts like " +
