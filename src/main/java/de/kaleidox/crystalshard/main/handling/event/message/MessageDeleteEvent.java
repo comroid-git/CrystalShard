@@ -1,6 +1,6 @@
-package de.kaleidox.crystalshard.main.event.message;
+package de.kaleidox.crystalshard.main.handling.event.message;
 
-import de.kaleidox.crystalshard.main.event.channel.ChannelEvent;
+import de.kaleidox.crystalshard.main.handling.event.channel.ChannelEvent;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.util.Optional;

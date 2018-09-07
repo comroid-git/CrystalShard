@@ -1,5 +1,6 @@
-package de.kaleidox.crystalshard.main.event.channel;
+package de.kaleidox.crystalshard.main.handling.event.channel;
 
+import de.kaleidox.crystalshard.main.handling.event.Event;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
@@ -8,7 +9,7 @@ import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 
 import java.util.Optional;
 
-public interface ChannelEvent {
+public interface ChannelEvent extends Event {
     Channel getChannel();
 
     default long getChannelId() {

@@ -1,7 +1,7 @@
-package de.kaleidox.crystalshard.main.event.message;
+package de.kaleidox.crystalshard.main.handling.event.message;
 
-import de.kaleidox.crystalshard.main.event.channel.ChannelEvent;
-import de.kaleidox.crystalshard.main.event.server.OptionalServerEvent;
+import de.kaleidox.crystalshard.main.handling.event.channel.ChannelEvent;
+import de.kaleidox.crystalshard.main.handling.event.server.OptionalServerEvent;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 

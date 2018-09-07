@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.event.message;
+package de.kaleidox.crystalshard.main.handling.event.message;
 
 import java.util.Optional;
 

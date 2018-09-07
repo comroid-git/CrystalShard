@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.event.server;
+package de.kaleidox.crystalshard.main.handling.event.server;
 
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.server.Server;

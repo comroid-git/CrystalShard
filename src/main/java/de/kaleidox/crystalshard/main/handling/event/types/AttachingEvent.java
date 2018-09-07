@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.event.types;
+package de.kaleidox.crystalshard.main.handling.event.types;
 
 public interface AttachingEvent {
     default boolean test(AttachingEvent other) {
