@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main;
+package de.kaleidox.crystalshard.main.util;
 
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 
