@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
-import de.kaleidox.crystalshard.main.event.channel.MessageCreateEvent;
+import de.kaleidox.crystalshard.main.event.message.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
