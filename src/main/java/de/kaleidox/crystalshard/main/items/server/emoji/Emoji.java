@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
+import com.vdurmont.emoji.EmojiParser;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.message.Message;
 
@@ -40,4 +41,14 @@ public interface Emoji extends DiscordItem {
      * @return A discord-printable string of this emoji.
      */
     String toDiscordPrintable();
+
+    static Emoji of(String anyEmoji) {
+        String s = EmojiParser.parseToAliases(anyEmoji);
+        if (s.equalsIgnoreCase(anyEmoji)) {
+            // is likely customEmoji
+        } else {
+            // is likely unicodeEmoji
+        }
+        return null; // todo
+    }
 }
