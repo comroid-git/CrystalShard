@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public enum LogicalOperator {
     UNKNOWN("unknown"),
@@ -17,12 +16,6 @@ public enum LogicalOperator {
 
     LogicalOperator(String name) {
         this.name = name;
-    }
-
-    public static Optional<LogicalOperator> find(String tag) {
-        return Stream.of(values())
-                .filter(lo -> lo.name.equalsIgnoreCase(tag))
-                .findAny();
     }
 
     public boolean test(Stream<Boolean> booleans) {
@@ -53,5 +46,11 @@ public enum LogicalOperator {
     @Override
     public String toString() {
         return "LogicalOperator (" + name + ")";
+    }
+
+    public static Optional<LogicalOperator> find(String tag) {
+        return Stream.of(values())
+                .filter(lo -> lo.name.equalsIgnoreCase(tag))
+                .findAny();
     }
 }
