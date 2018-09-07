@@ -118,12 +118,6 @@ public class ThreadPool {
     public void startHeartbeat(long heartbeat) {
         scheduler.scheduleAtFixedRate(() ->
                 discord.getWebSocket().heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
-        scheduler.schedule(() -> {
-            synchronized (discord) {
-                discord.notifyAll();
-                logger.deeptrace("Discord Object revived.");
-            }
-        }, 3, TimeUnit.SECONDS);
     }
 
     /**
@@ -250,10 +244,10 @@ public class ThreadPool {
                     .orElseGet(() -> {
                         Worker worker = new Worker(discord, nameCounter.getAndIncrement());
                         threads.put(worker, worker.isBusy);
-                        logger.deeptrace("New worker created: " + worker.getName());
+                        //logger.deeptrace("New worker created: " + worker.getName());
                         if (!worker.isAlive()) {
                             worker.start();
-                            logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
+                            //logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
                         }
                         return worker;
                     });
@@ -360,22 +354,22 @@ public class ThreadPool {
                             task = nextTask.isMarked() ? nextTask.getReference() : queue.poll();
                             assert task != null;
                             busy();
-                            if (nonFutureTask(task))
+                            /*if (nonFutureTask(task))
                                 logger.deeptrace("Running " + (nextTask.isMarked() ? "attached" : "scheduled") +
                                         " task #" + task.hashCode() + (task.hasDescription() ?
-                                        " with description: " + task.getDescription() : ""));
+                                        " with description: " + task.getDescription() : ""));*/
                             task.run();
-                            if (nonFutureTask(task))
+                            /*if (nonFutureTask(task))
                                 logger.deeptrace((nextTask.isMarked() ? "Attached" : "Scheduled") +
-                                        " task #" + task.hashCode() + " finished.");
+                                        " task #" + task.hashCode() + " finished.");*/
                             unbusy();
                             if (nextTask.isMarked())
                                 nextTask.set(null, false); // if nextTask is set, unset it, because its being run
                         } catch (Throwable e) {
                             assert task != null;
-                            if (nonFutureTask(task))
+                            /*if (nonFutureTask(task))
                                 logger.exception(e, (nextTask.isMarked() ? "Attached" : "Scheduled") +
-                                        " task " + ("#" + task.hashCode()) + " finished with an exception:");
+                                        " task " + ("#" + task.hashCode()) + " finished with an exception:");*/
                         }
                     }
                 }
