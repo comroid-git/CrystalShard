@@ -112,7 +112,7 @@ public class DiscordInternal implements Discord {
 
     @Override
     public ListenerManager<ServerCreateListener> attachServerCreateListener(ServerCreateListener listener) {
-
+        return null; // todo
     }
 
     @Override
