@@ -37,6 +37,7 @@ allprojects {
 
     dependencies {
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+        implementation 'com.vdurmont:emoji-java:4.0.0'
         testCompile group: 'junit', name: 'junit', version: '4.12'
     }
 }

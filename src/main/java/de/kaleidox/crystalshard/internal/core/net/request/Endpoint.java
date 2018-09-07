@@ -68,6 +68,7 @@ public class Endpoint {
         CHANNEL_WEBHOOK("/channels/%s/webhooks"),
         CURRENT_USER("/users/@me"),
         CUSTOM_EMOJI("/guilds/%s/emojis"),
+        CUSTOM_EMOJI_SPECIFIC("/guilds/%s/emoji/%s"),
         GATEWAY("/gateway"),
         GATEWAY_BOT("/gateway/bot"),
         GUILD("/guilds"),
