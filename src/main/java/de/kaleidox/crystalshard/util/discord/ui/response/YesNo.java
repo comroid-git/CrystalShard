@@ -1,10 +1,16 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
 
-import de.kaleidox.util.listeners.MessageListeners;
+import de.kaleidox.crystalshard.main.items.Mentionable;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.NamedItem;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -17,7 +23,7 @@ public class YesNo extends ResponseElement<Boolean> {
     private final static String EMOJI_YES = "✅";
     private final static String EMOJI_NO = "❌";
 
-    private EmbedFieldRepresentative field;
+    private EmbedDraft.Field field;
 
     /**
      * Creates a new Yes-No Question.
@@ -29,9 +35,9 @@ public class YesNo extends ResponseElement<Boolean> {
      */
     public YesNo(
             String name,
-            Messageable parent,
-            @Nullable Supplier<EmbedBuilder> embedBaseSupplier,
-            @Nullable Predicate<User> userCanRespond) {
+            MessageReciever parent,
+            Supplier<Embed.Builder> embedBaseSupplier,
+            Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
     }
 
@@ -43,31 +49,32 @@ public class YesNo extends ResponseElement<Boolean> {
      * @return The Instance for chaining methods.
      */
     public YesNo setQuestion(String title, String text) {
-        field = new EmbedFieldRepresentative(title, text, false);
+        field = EmbedDraft.Field.BUILD(title, text, false);
         return this;
     }
 
     @Override
     public CompletableFuture<NamedItem<Boolean>> build() {
-        EmbedBuilder embed = embedBaseSupplier.get();
+        Embed.Builder embed = embedBaseSupplier.get();
         embed.setDescription("Yes/No question:")
-                .setTimestampToNow();
-        if (field != null) field.fillBuilder(embed);
+                .setTimestampNow();
+        if (field != null) embed.addField(field);
 
         CompletableFuture<NamedItem<Boolean>> future = new CompletableFuture<>();
-        parent.sendMessage(embed)
+        parent.sendMessage(embed.build())
                 .thenAcceptAsync(message -> {
                     affiliateMessages.add(message);
                     message.addReaction(EMOJI_YES);
                     message.addReaction(EMOJI_NO);
-                    message.addReactionAddListener(event -> {
-                        event.requestMessage().thenAcceptAsync(affiliateMessages::add);
+                    message.attachReactionAddListener(event -> {
+                        affiliateMessages.add(event.getMessage());
                         Emoji emoji = event.getEmoji();
                         User user = event.getUser();
 
                         if (!user.isYourself()) {
-                            if (userCanRespond.test(user) && emoji.asUnicodeEmoji().isPresent()) {
-                                switch (emoji.asUnicodeEmoji().get()) {
+                            if (userCanRespond.test(user) && emoji.toUnicodeEmoji().isPresent()) {
+                                //noinspection OptionalGetWithoutIsPresent
+                                switch (emoji.toUnicodeEmoji().map(Mentionable::getMentionTag).get()) {
                                     case EMOJI_YES:
                                         future.complete(new NamedItem<>(super.name, true));
                                         break;
@@ -75,36 +82,33 @@ public class YesNo extends ResponseElement<Boolean> {
                                         future.complete(new NamedItem<>(super.name, false));
                                         break;
                                     default:
-                                        event.requestMessage()
-                                                .thenAcceptAsync(msg -> msg.removeReactionByEmoji(
-                                                        user,
-                                                        emoji
-                                                ));
+                                        event.getMessage().removeReactionsByEmoji(user, emoji);
+                                        break;
                                 }
                             } else {
-                                event.requestMessage()
-                                        .thenAcceptAsync(msg -> msg.removeReactionByEmoji(
-                                                user,
-                                                emoji
-                                        ));
+                                event.getMessage().removeReactionsByEmoji(user, emoji);
                             }
                         }
                     });
-                    message.addMessageDeleteListener(MessageListeners::deleteCleanup)
-                            .removeAfter(duration, timeUnit)
-                            .addRemoveHandler(() -> future.complete(new NamedItem<>(super.name, false)));
+                    parent.getDiscord()
+                            .getThreadPool()
+                            .getScheduler()
+                            .schedule(() ->
+                                    future.complete(new NamedItem<>(super.name, false)), duration, timeUnit);
                     future.thenAcceptAsync(result -> {
                         message.removeAllReactions();
-                        message.edit(field != null ?
-                                field.fillBuilder(embedBaseSupplier.get())
+                        message.edit((field != null ?
+                                embedBaseSupplier.get()
+                                        .addField(field)
                                         .addField("Answer:", (result.getItem() ? "Yes" : "No")) :
                                 embedBaseSupplier.get()
-                                        .addField("Answer:", (result.getItem() ? "Yes" : "No"))
+                                        .addField("Answer:", (result.getItem() ? "Yes" : "No"))).build()
                         );
-                        message.getMessageAttachableListeners().forEach((k, v) -> message.removeMessageAttachableListener(k));
-                    }).exceptionally(ExceptionLogger.get());
+                        message.removeAllListeners();
+                    }).exceptionally(Logger::get);
                     if (deleteLater)
-                        future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(ExceptionLogger.get());
+                        future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
+                                .exceptionally(Logger::get);
                 });
 
         return future;

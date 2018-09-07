@@ -1,9 +1,12 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.discord.ui.DialogueBranch;
-import de.kaleidox.util.Bot;
+import de.kaleidox.util.objects.NamedItem;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -13,8 +16,8 @@ import java.util.function.Supplier;
 @SuppressWarnings({"unused", "WeakerAccess", "FieldCanBeLocal", "UnusedReturnValue"})
 public abstract class ResponseElement<ResultType> {
     protected final String name;
-    protected final Messageable parent;
-    protected final Supplier<EmbedBuilder> embedBaseSupplier;
+    protected final MessageReciever parent;
+    protected final Supplier<Embed.Builder> embedBaseSupplier;
     protected final Predicate<User> userCanRespond;
     protected final ArrayList<Message> affiliateMessages;
 
@@ -26,12 +29,13 @@ public abstract class ResponseElement<ResultType> {
 
     public ResponseElement(
             String name,
-            Messageable parent,
-            @Nullable Supplier<EmbedBuilder> embedBaseSupplier,
-            @Nullable Predicate<User> userCanRespond) {
+            MessageReciever parent,
+            Supplier<Embed.Builder> embedBaseSupplier,
+            Predicate<User> userCanRespond) {
         this.name = name;
         this.parent = parent;
-        this.embedBaseSupplier = (embedBaseSupplier == null ? Bot::getEmbed : embedBaseSupplier);
+        this.embedBaseSupplier = (embedBaseSupplier == null ? () ->
+                parent.getDiscord().getUtilities().getDefaultEmbed().getBuilder() : embedBaseSupplier);
         this.userCanRespond = (userCanRespond == null ? user -> true : userCanRespond);
 
         this.affiliateMessages = new ArrayList<>();

@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.util.discord.ui;
 
 import de.kaleidox.crystalshard.util.discord.ui.response.ResponseElement;
-import de.kaleidox.util.interfaces.Subclass;
+import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.NamedItem;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class DialogueBranch<A> extends Dialogue {
                                 branch.start(collectedItems);
                             }
                         })
-                ).exceptionally(ExceptionLogger.get());
+                ).exceptionally(Logger::get);
     }
 
     protected CompletableFuture<Void> runEndpoint(List<NamedItem> collectedItems) {
@@ -114,7 +114,7 @@ public class DialogueBranch<A> extends Dialogue {
      *
      * @param <B> The type of the following branch.
      */
-    public class Option<B> implements Subclass {
+    public class Option<B> {
         private final Predicate<A> tester;
         private final DialogueBranch<A> parentBranch;
         private final DialogueBranch<B> goToBranch;

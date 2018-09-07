@@ -82,9 +82,8 @@ public class PagedMessage {
                 getPageContent()
         ).thenAcceptAsync(msg -> {
             lastMessage = msg;
-            msg.addMessageAttachableListener(MessageListeners.MESSAGE_DELETE_CLEANUP);
-            msg.addReactionAddListener(this::onPageClick); // todo LOTSA TODO
-            msg.addReactionRemoveListener(this::onPageClick);
+            msg.attachReactionAddListener(this::onPageClick);
+            msg.attachReactionRemoveListener(this::onPageClick);
             msg.addReaction(PREV_PAGE_EMOJI);
             msg.addReaction(NEXT_PAGE_EMOJI);
         });

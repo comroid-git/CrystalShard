@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.util.discord.ui;
 
 import de.kaleidox.crystalshard.util.discord.ui.response.ResponseElement;
-import de.kaleidox.util.interfaces.Standalone;
 import de.kaleidox.util.objects.NamedItem;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.function.Supplier;
  * @param <FirstBranchType> The type of the first {@link DialogueBranch}.
  */
 @SuppressWarnings({"WeakerAccess", "FieldCanBeLocal", "unused"})
-public class Dialogue<FirstBranchType> implements Standalone {
+public class Dialogue<FirstBranchType> {
     private DialogueBranch<FirstBranchType> firstBranch;
 
     /**

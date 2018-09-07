@@ -83,21 +83,20 @@ public class PagedEmbed {
             sentMessage.set(message);
             if (pages.size() != 1) {
                 message.addReaction(PREV_PAGE_EMOJI);
-                message.addReaction(NEXT_PAGE_EMOJI); // todo LOTSA TODO
-                message.addReactionAddListener(this::onReactionClick);
-                message.addReactionRemoveListener(this::onReactionClick);
+                message.addReaction(NEXT_PAGE_EMOJI);
+                message.attachReactionAddListener(this::onReactionClick);
+                message.attachReactionRemoveListener(this::onReactionClick);
             }
 
-            message.addMessageDeleteListener(delete -> message.getMessageAttachableListeners()
-                    .forEach((a, b) -> message.removeMessageAttachableListener(a)))
-                    .removeAfter(3, TimeUnit.HOURS)
-                    .addRemoveHandler(() -> {
-                        sentMessage.get()
-                                .removeAllReactions();
-                        sentMessage.get()
-                                .getMessageAttachableListeners()
-                                .forEach((a, b) -> message.removeMessageAttachableListener(a));
-                    });
+            message.attachMessageDeleteListener(delete -> {
+                messageable.getDiscord()
+                        .getThreadPool()
+                        .getScheduler()
+                        .schedule(() -> {
+                            sentMessage.get().removeAllReactions();
+                            sentMessage.get().removeAllListeners();
+                        }, 3, TimeUnit.HOURS);
+            });
         }).exceptionally(Logger::get);
 
         return future;

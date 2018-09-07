@@ -32,9 +32,8 @@ public class RefreshableMessage {
         if (sent != null) {
             sent.thenAcceptAsync(msg -> {
                 lastMessage = msg;
-                msg.addMessageAttachableListener(MessageListeners.MESSAGE_DELETE_CLEANUP); // todo LOTSA TODO
-                msg.addReactionAddListener(this::onRefresh);
-                msg.addReactionRemoveListener(this::onRefresh);
+                msg.attachReactionAddListener(this::onRefresh);
+                msg.attachReactionRemoveListener(this::onRefresh);
                 msg.addReaction(REFRESH_EMOJI);
             });
         }
@@ -68,9 +67,8 @@ public class RefreshableMessage {
         if (sent != null) {
             sent.thenAcceptAsync(msg -> {
                 lastMessage = msg;
-                msg.addMessageAttachableListener(MessageListeners.MESSAGE_DELETE_CLEANUP);
-                msg.addReactionAddListener(this::onRefresh); // todo LOTSA TODO
-                msg.addReactionRemoveListener(this::onRefresh);
+                msg.attachReactionAddListener(this::onRefresh);
+                msg.attachReactionRemoveListener(this::onRefresh);
                 msg.addReaction(REFRESH_EMOJI);
             });
         }

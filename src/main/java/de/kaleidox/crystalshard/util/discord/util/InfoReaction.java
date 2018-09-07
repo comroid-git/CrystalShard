@@ -1,34 +1,35 @@
 package de.kaleidox.crystalshard.util.discord.util;
 
-import com.vdurmont.emoji.EmojiParser;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.logging.Logger;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InfoReaction {
-    public static void add(Message message, String emojiTag, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
-        String emoji = EmojiParser.parseToUnicode(emojiTag);
+    public static void add(Message message, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
         AtomicReference<Message> sentMessage = new AtomicReference<>();
 
         message.addReaction(emoji)
                 .exceptionally(Logger::get);
 
         MessageDeleteListener deleteListener = event -> {
-            message.removeOwnReactionByEmoji(emoji);
+            message.removeOwnReactionsByEmoji(emoji);
             message.delete();
-            message.getMessageAttachableListeners().forEach((key, value) -> message.removeMessageAttachableListener(key));
         };
 
         ReactionAddListener addListener = event -> {
-            if (!event.getUser().isYourself() && event.getEmoji().asUnicodeEmoji().map(emoji::equals).orElse(false)) {
-                message.getChannel().sendMessage(infoEmbed)
+            if (!event.getUser().isYourself() &&
+                    event.getEmoji().toUnicodeEmoji().map(emoji::equals).orElse(false)) {
+                message.getChannel().sendMessage(infoEmbed.build())
                         .thenAccept(myMsg -> {
                             sentMessage.set(myMsg);
-                            myMsg.addMessageAttachableListener(deleteListener);
+                            myMsg.addListener(deleteListener);
                         })
                         .thenAccept(nothing -> {
                             if (deleteAfterSend) {
@@ -39,34 +40,31 @@ public class InfoReaction {
             }
         };
 
-        ReactionRemoveListener removeListener = event -> event.getEmoji().asUnicodeEmoji()
+        ReactionRemoveListener removeListener = event -> event.getEmoji()
+                .toUnicodeEmoji()
                 .filter(emoji::equals)
                 .ifPresent(unicodeEmoji -> {
                     if (!event.getUser().isYourself()) {
-                        if (event.getUser().equals(message.getUserAuthor().get())) {
+                        //noinspection OptionalGetWithoutIsPresent
+                        if (event.getUser().equals(message.getAuthorAsUser().get())) {
                             sentMessage.get().delete().exceptionally(Logger::get);
                         }
                     }
                 });
 
-        message.addReactionAddListener(addListener);
-        message.addReactionRemoveListener(removeListener);
+        message.attachReactionAddListener(addListener);
+        message.attachReactionRemoveListener(removeListener);
     }
 
-    public static void add(CompletableFuture<Message> msgFut, String emojiTag, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
-        add(msgFut.join(), emojiTag, deleteAfterSend, infoEmbed);
+    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
+        add(msgFut.join(), emoji, deleteAfterSend, infoEmbed);
     }
 
     public static void add(Message message, Embed.Builder infoEmbed) {
-        add(message, "ℹ", false, infoEmbed);
+        add(message, Emoji.of("ℹ"), false, infoEmbed);
     }
 
     public static void add(CompletableFuture<Message> msgFut, Embed.Builder infoEmbed) {
-        add(msgFut.join(), "ℹ", false, infoEmbed);
-    }
-
-    public static void remove(Message fromMessage) {
-        fromMessage.removeOwnReactionsByEmoji("✅", "❗", "❌", "⛔", "⁉", "\uD83D\uDD1A");
-        fromMessage.getMessageAttachableListeners().forEach((key, value) -> fromMessage.removeMessageAttachableListener(key));
+        add(msgFut.join(), Emoji.of("ℹ"), false, infoEmbed);
     }
 }

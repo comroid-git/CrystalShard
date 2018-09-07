@@ -1,11 +1,13 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
-import de.kaleidox.util.Utils;
-import de.kaleidox.util.interfaces.Subclass;
-import de.kaleidox.util.listeners.MessageListeners;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.NamedItem;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -32,9 +34,9 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
      */
     public Question(
             String name,
-            Messageable parent,
-            @Nullable Supplier<EmbedBuilder> embedBaseSupplier,
-            @Nullable Predicate<User> userCanRespond) {
+            MessageReciever parent,
+            Supplier<Embed.Builder> embedBaseSupplier,
+            Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
 
         this.optionsOrdered = new ArrayList<>();
@@ -80,7 +82,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
      * @throws ArrayStoreException If there already is an option with the specified emoji.
      */
     public Question<ResultType> addOption(String emoji, String name, String description, ResultType representation) {
-        return addOption(new Option(emoji, name, description, representation));
+        return addOption(new Option(Emoji.of(emoji), name, description, representation));
     }
 
     /**
@@ -95,7 +97,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
         if (optionsOrdered.stream()
                 .anyMatch(optionS -> optionS
                         .getEmoji()
-                        .equalsIgnoreCase(option.getEmoji()))) {
+                        .equals(option.emoji))) {
             throw new ArrayStoreException("Option Emojis can not duplicate!");
         } else if (optionsOrdered.size() == 25) {
             throw new RuntimeException("Only 25 optionsOrdered are allowed.");
@@ -112,10 +114,10 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
         if (optionsOrdered.isEmpty()) {
             throw new NullPointerException("No options registered!");
         } else {
-            EmbedBuilder embed = embedBaseSupplier.get();
+            Embed.Builder embed = embedBaseSupplier.get();
             embed.setDescription("Voting will continue for " + duration + " " + timeUnit.name().toLowerCase() +
                     ", beginning from the timestamp.")
-                    .setTimestampToNow();
+                    .setTimestampNow();
             optionsOrdered.forEach(option -> embed.addField(
                     option.getEmoji() + " -> " + option.getName(),
                     option.getDescription()
@@ -123,37 +125,38 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
 
             // send the message, but separately save the future for async listener registration
             CompletableFuture<NamedItem<ResultType>> future = new CompletableFuture<>();
-            parent.sendMessage(embed).thenAcceptAsync(message -> {
-                affiliateMessages.add(message);
-                optionsOrdered.forEach(option -> message.addReaction(option.getEmoji()));
-                message.addReactionAddListener(event -> {
-                    event.requestMessage().thenAcceptAsync(affiliateMessages::add);
-                    Emoji emoji = event.getEmoji();
-                    User user = event.getUser();
+            parent.sendMessage(embed.build())
+                    .thenAcceptAsync(message -> {
+                        affiliateMessages.add(message);
+                        optionsOrdered.forEach(option -> message.addReaction(option.getEmoji()));
+                        message.attachReactionAddListener(event -> {
+                            affiliateMessages.add(event.getMessage());
+                            Emoji emoji = event.getEmoji();
+                            User user = event.getUser();
 
-                    if (!user.isYourself() && userCanRespond.test(user)) {
-                        Optional<Option> any = optionsOrdered
-                                .stream()
-                                .filter(option -> Utils.compareAnyEmoji(emoji, option.getEmoji()))
-                                .findAny();
-                        if (any.isPresent()) {
-                            future.complete(new NamedItem<>(name, any.get().getValue()));
-                        } else {
-                            future.cancel(true);
-                        }
-                    }
-                });
-                message.addMessageDeleteListener(MessageListeners::deleteCleanup)
-                        .removeAfter(this.duration, this.timeUnit)
-                        .addRemoveHandler(() -> {
-                            message.removeAllReactions();
-                            message.getMessageAttachableListeners()
-                                    .forEach((key, value) -> message.removeMessageAttachableListener(key));
+                            if (!user.isYourself() && userCanRespond.test(user)) {
+                                Optional<Option> any = optionsOrdered
+                                        .stream()
+                                        .filter(option -> option.emoji.equals(emoji))
+                                        .findAny();
+                                if (any.isPresent()) {
+                                    future.complete(new NamedItem<>(name, any.get().getValue()));
+                                } else {
+                                    future.cancel(true);
+                                }
+                            }
                         });
-                if (deleteLater)
-                    future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(ExceptionLogger.get());
-            }).exceptionally(ExceptionLogger.get());
-
+                        parent.getDiscord()
+                                .getThreadPool()
+                                .getScheduler()
+                                .schedule(() -> {
+                                    message.removeAllReactions();
+                                    message.removeAllListeners();
+                                }, duration, timeUnit);
+                        if (deleteLater)
+                            future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
+                                    .exceptionally(Logger::get);
+                    }).exceptionally(Logger::get);
             return future;
         }
     }
@@ -161,8 +164,8 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
     /**
      * This subclass represents a Question Option.
      */
-    public class Option implements Subclass {
-        private final String emoji;
+    public class Option {
+        private final Emoji emoji;
         private final String description;
         private final ResultType value;
         private final String name;
@@ -177,7 +180,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
          * @param value       The representative Value of the Option.
          */
         public Option(
-                String emoji,
+                Emoji emoji,
                 String name,
                 String description,
                 ResultType value) {
@@ -187,7 +190,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
             this.value = value;
         }
 
-        public String getEmoji() {
+        public Emoji getEmoji() {
             return emoji;
         }
 

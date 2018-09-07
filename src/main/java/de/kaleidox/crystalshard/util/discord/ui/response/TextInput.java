@@ -1,9 +1,13 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
-import de.kaleidox.util.listeners.MessageListeners;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.NamedItem;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -17,7 +21,7 @@ public class TextInput extends ResponseElement<String> {
     // Default Settings
     private Style style = Style.FULL;
 
-    private EmbedFieldRepresentative field;
+    private EmbedDraft.Field field;
 
     /**
      * Creates a new Text input object.
@@ -29,9 +33,9 @@ public class TextInput extends ResponseElement<String> {
      */
     public TextInput(
             String name,
-            Messageable parent,
-            @Nullable Supplier<EmbedBuilder> embedBaseSupplier,
-            @Nullable Predicate<User> userCanRespond) {
+            MessageReciever parent,
+            Supplier<Embed.Builder> embedBaseSupplier,
+            Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
     }
 
@@ -43,7 +47,7 @@ public class TextInput extends ResponseElement<String> {
      * @return The Instance for chaining methods.
      */
     public TextInput setQuestion(String title, String text) {
-        field = new EmbedFieldRepresentative(title, text, false);
+        field = EmbedDraft.Field.BUILD(title, text, false);
         return this;
     }
 
@@ -63,19 +67,19 @@ public class TextInput extends ResponseElement<String> {
     @Override
     public CompletableFuture<NamedItem<String>> build() {
         CompletableFuture<NamedItem<String>> future = new CompletableFuture<>();
-        EmbedBuilder embed = embedBaseSupplier.get();
+        Embed.Builder embed = embedBaseSupplier.get();
         embed.setDescription("Please type in your response:")
-                .setTimestampToNow();
-        if (field != null) field.fillBuilder(embed);
+                .setTimestampNow();
+        if (field != null) embed.addField(field);
 
-        parent.sendMessage(embed)
+        parent.sendMessage(embed.build())
                 .thenAcceptAsync(message -> {
                     affiliateMessages.add(message);
                     message.getChannel()
-                            .addMessageCreateListener(event -> {
+                            .attachMessageCreateListener(event -> {
                                 affiliateMessages.add(event.getMessage());
                                 Message msg = event.getMessage();
-                                User user = msg.getUserAuthor().get();
+                                User user = msg.getAuthorAsUser().get();
 
                                 if (!user.isYourself() && userCanRespond.test(user)) {
                                     future.complete(new NamedItem<>(
@@ -86,27 +90,29 @@ public class TextInput extends ResponseElement<String> {
                             });
                     future.thenAcceptAsync(result -> {
                         if (result != null) {
-                            message.edit(field != null ?
-                                    field.fillBuilder(embedBaseSupplier.get())
+                            message.edit((field != null ?
+                                    embedBaseSupplier.get()
+                                            .addField(field)
                                             .addField("Answer:", result.getItem()) :
                                     embedBaseSupplier.get()
-                                            .addField("Answer:", result.getItem())
+                                            .addField("Answer:", result.getItem())).build()
                             );
                         } else {
                             message.edit(
-                                    field.fillBuilder(embedBaseSupplier.get())
+                                    embedBaseSupplier.get()
+                                            .addField(field)
                                             .addField("Nobody typed anything.", "There was no valid answer.")
+                                            .build()
                             );
                         }
-                    }).exceptionally(ExceptionLogger.get());
-                    message.addMessageDeleteListener(MessageListeners::deleteCleanup)
-                            .removeAfter(duration, timeUnit)
-                            .addRemoveHandler(() -> {
-                                future.complete(null);
-                                message.getMessageAttachableListeners().forEach((k, v) -> message.removeMessageAttachableListener(k));
-                            });
+                    }).exceptionally(Logger::get);
+                    parent.getDiscord()
+                            .getThreadPool()
+                            .getScheduler()
+                            .schedule(() -> future.complete(null), duration, timeUnit);
                     if (deleteLater)
-                        future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(ExceptionLogger.get());
+                        future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
+                                .exceptionally(Logger::get);
                 });
 
         return future;

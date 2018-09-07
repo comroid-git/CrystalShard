@@ -1,16 +1,19 @@
 package de.kaleidox.crystalshard.util.discord.util;
 
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+
 import java.util.concurrent.CompletableFuture;
 
 public class Wastebasket {
     public static void add(Message msg) {
-        if (msg.getAuthor().isYourself() && !msg.getPrivateChannel().isPresent()) {
+        if (msg.getAuthor().isYourself() && !msg.getPrivateTextChannel().isPresent()) {
             msg.addReaction("🗑");
-            msg.addReactionAddListener(reaAdd -> {
-                Emoji emoji = reaAdd.getEmoji();
+            msg.attachReactionAddListener(event -> {
+                Emoji emoji = event.getEmoji();
 
-                if (!reaAdd.getUser().isBot()) {
-                    emoji.asUnicodeEmoji().ifPresent(then -> {
+                if (!event.getUser().isBot()) {
+                    emoji.toUnicodeEmoji().ifPresent(then -> {
                         if (then.equals("🗑")) {
                             msg.delete();
                         }
