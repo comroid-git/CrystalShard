@@ -6,14 +6,14 @@ import de.kaleidox.crystalshard.internal.core.net.request.ratelimiting.Ratelimit
 import de.kaleidox.crystalshard.internal.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.main.listener.DiscordAttachableListener;
-import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
-import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
 

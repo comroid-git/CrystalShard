@@ -83,6 +83,8 @@ public interface EmbedDraft extends Embed {
             return Optional.of(new EmbedDraftInternal.EditableField(this));
         }
 
+        int getTotalCharCount();
+
         static Field BUILD(String title,
                            String text,
                            boolean inline) {

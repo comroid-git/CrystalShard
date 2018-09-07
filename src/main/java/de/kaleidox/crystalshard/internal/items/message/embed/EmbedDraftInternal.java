@@ -336,6 +336,11 @@ public class EmbedDraftInternal implements EmbedDraft {
         public boolean isInline() {
             return inline;
         }
+
+        @Override
+        public int getTotalCharCount() {
+            return title.length() + text.length();
+        }
     }
 
     public static class EditableField extends Field implements EmbedDraft.EditableField {

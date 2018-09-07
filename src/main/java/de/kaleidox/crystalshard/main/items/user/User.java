@@ -43,6 +43,8 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
 
     boolean hasMultiFactorAuthorization();
 
+    boolean isYourself();
+
     Optional<String> getLocale();
 
     Optional<String> getEmail();

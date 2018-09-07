@@ -44,6 +44,10 @@ public interface Embed extends Castable<Embed> {
 
         Builder setFooter(EmbedDraft.Footer footer);
 
+        default Builder setFooter(String footerText) {
+            return setFooter(new EmbedDraftInternal.Footer(footerText, null));
+        }
+
         default Builder setFooter(String footerText, String iconUrl) {
             return setFooter(new EmbedDraftInternal.Footer(footerText, iconUrl));
         }

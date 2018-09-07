@@ -35,4 +35,8 @@ public class Sendable {
         this.embed = embed;
         return this;
     }
+
+    public static Sendable of(Object item) {
+        return null;
+    }
 }

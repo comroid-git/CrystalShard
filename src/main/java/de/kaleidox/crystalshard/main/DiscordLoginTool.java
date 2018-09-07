@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.main;
 
+import de.kaleidox.crystalshard.main.handling.listener.listener.PreattachableListener;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
-import de.kaleidox.crystalshard.main.listener.PreattachableListener;
 
 import java.util.concurrent.CompletableFuture;
 

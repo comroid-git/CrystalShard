@@ -8,6 +8,8 @@ import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
@@ -16,8 +18,6 @@ import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.listener.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 

@@ -18,6 +18,7 @@ import java.util.function.Supplier;
  */
 public class DefaultEmbed implements Supplier<EmbedDraft> {
     public final static Supplier<EmbedDraft> EMPTY_SUPPLIER = () -> Embed.BUILDER().build();
+    public final static Supplier<Embed.Builder> EMPTY_BUILDER = Embed::BUILDER;
     private final List<Consumer<Embed.Builder>> modifiers;
 
     DefaultEmbed() {
@@ -37,6 +38,16 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
             Embed.Builder builder = Embed.BUILDER();
             modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
             return builder.build();
+        }
+    }
+
+    public Embed.Builder getBuilder() {
+        if (modifiers.isEmpty()) {
+            return EMPTY_BUILDER.get();
+        } else {
+            Embed.Builder builder = EMPTY_BUILDER.get();
+            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
+            return builder;
         }
     }
 
@@ -91,6 +102,32 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
                     .getUtilities()
                     .getDefaultEmbed()
                     .get();
+        }
+        throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
+                "thread, such as in listeners or scheduler tasks. You may not use it from contexts like " +
+                "CompletableFuture#thenAcceptAsync or such.");
+    }
+
+    /**
+     * A static implementation of the {@link DefaultEmbed#get()} method.
+     * This method will first check if the current thread is a {@link ThreadPool.Worker} thread, and if so,
+     * will get the {@link Discord} item the Worker belongs to. Throws an exception if invoked from a wrong context.
+     *
+     * @return The default EmbedDraft according to the {@link Discord} instance that this Thread belongs to.
+     * @throws IllegalCallerException If the current thread does not belong to any {@link Discord} object.
+     * @implNote This method must only be invoked from "bot-own" threads.
+     * @see ThreadPool#isBotOwnThread()
+     */
+    public static Embed.Builder getBuilderStatic() {
+        ThreadPool.requireBotOwnThread();
+        Thread thread = Thread.currentThread();
+
+        if (thread instanceof ThreadPool.Worker) {
+            return ((ThreadPool.Worker) thread)
+                    .getDiscord()
+                    .getUtilities()
+                    .getDefaultEmbed()
+                    .getBuilder();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                 "thread, such as in listeners or scheduler tasks. You may not use it from contexts like " +

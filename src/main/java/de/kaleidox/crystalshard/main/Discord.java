@@ -1,12 +1,12 @@
 package de.kaleidox.crystalshard.main;
 
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
-import de.kaleidox.crystalshard.main.listener.ServerCreateListener;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 
 import java.util.Optional;

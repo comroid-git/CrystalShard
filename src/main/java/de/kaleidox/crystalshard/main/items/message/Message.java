@@ -2,7 +2,11 @@ package de.kaleidox.crystalshard.main.items.message;
 
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
+import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.role.Role;
@@ -17,10 +21,23 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public interface Message extends DiscordItem {
     TextChannel getChannel();
+
+    default Optional<ServerTextChannel> getServerTextChannel() {
+        return getChannel().toServerTextChannel();
+    }
+
+    default Optional<PrivateTextChannel> getPrivateTextChannel() {
+        return getChannel().toPrivateTextChannel();
+    }
+
+    default Optional<GroupChannel> getGroupChannel() {
+        return getChannel().toGroupChannel();
+    }
 
     Author getAuthor();
 
@@ -70,4 +87,20 @@ public interface Message extends DiscordItem {
     List<CustomEmoji> getCustomEmojis();
 
     List<UnicodeEmoji> getUnicodeEmojis();
+
+    CompletableFuture<Message> edit(String newContent);
+
+    CompletableFuture<Message> edit(Sendable newContent);
+
+    CompletableFuture<Message> edit(EmbedDraft embedDraft);
+
+    default CompletableFuture<Void> delete() {
+        return delete(null);
+    }
+
+    CompletableFuture<Void> delete(String reason);
+
+    CompletableFuture<Void> addReaction(String emojiPrintable);
+
+    CompletableFuture<Void> addReaction(Emoji emoji);
 }

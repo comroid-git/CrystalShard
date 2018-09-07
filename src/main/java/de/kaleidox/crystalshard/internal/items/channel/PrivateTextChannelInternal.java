@@ -3,13 +3,13 @@ package de.kaleidox.crystalshard.internal.items.channel;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.main.listener.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.listener.MessageCreateListener;
 import de.kaleidox.logging.Logger;
 
 import java.util.ArrayList;

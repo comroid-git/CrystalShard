@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.internal.event.message.reaction;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.event.EventBase;
-import de.kaleidox.crystalshard.main.event.message.reaction.ReactionAddEvent;
-import de.kaleidox.crystalshard.main.event.types.MessageAttachingEvent;
+import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionAddEvent;
+import de.kaleidox.crystalshard.main.handling.event.types.MessageAttachingEvent;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
@@ -31,11 +31,6 @@ public class ReactionAddEventInternal extends EventBase implements ReactionAddEv
     @Override
     public Emoji getEmoji() {
         return reaction.getEmoji();
-    }
-
-    @Override
-    public int newReactionCount() {
-        return newReactionCount;
     }
 
     @Override
