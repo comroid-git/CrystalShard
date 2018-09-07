@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.core.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.event.message.MessageCreateEventInternal;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
-import de.kaleidox.crystalshard.main.handling.event.message.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -29,7 +29,7 @@ public class MESSAGE_CREATE extends HandlerBase {
                         listeners.addAll(((ServerTextChannelInternal) channel).getListeners());
                     }
                     Message finalMessage = message;
-                    discord.getListeners()
+                    discord.getListenerManangers()
                             .stream()
                             .filter(listener -> MessageCreateListener.class
                                     .isAssignableFrom(listener.getClass()))
@@ -38,7 +38,7 @@ public class MESSAGE_CREATE extends HandlerBase {
                                     .execute(() -> {
                                         assert finalMessage != null;
                                         listener.onMessageCreate(
-                                                new MessageCreateEvent(
+                                                new MessageCreateEventInternal(
                                                         discord,
                                                         finalMessage
                                                 )
@@ -52,7 +52,7 @@ public class MESSAGE_CREATE extends HandlerBase {
                                     .execute(() -> {
                                         assert finalMessage != null;
                                         listener.onMessageCreate(
-                                                new MessageCreateEvent(
+                                                new MessageCreateEventInternal(
                                                         discord,
                                                         finalMessage
                                                 )

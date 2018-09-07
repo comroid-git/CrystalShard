@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.internal.core.net.socket.WebSocketClient;
+import de.kaleidox.crystalshard.internal.event.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
-import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -16,12 +18,15 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
 
 public class DiscordInternal implements Discord {
     private final static Logger logger = new Logger(DiscordInternal.class);
@@ -32,10 +37,16 @@ public class DiscordInternal implements Discord {
     private final Ratelimiting ratelimiter;
     private final List<Server> servers;
     private final DiscordUtils utils;
-    private final Collection<DiscordAttachableListener> listeners = new ArrayList<>();
+    private final Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers = new ArrayList<>();
+    private final int thisShard;
+    private final int shardCount;
     private Self self;
+    private CompletableFuture<Void> selfFuture;
 
-    public DiscordInternal(String token, AccountType type) {
+    public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
+        selfFuture = new CompletableFuture<>();
+        this.thisShard = thisShard;
+        this.shardCount = ShardCount;
         this.pool = new ThreadPool(this);
         this.token = token;
         Logger.addBlankedWord(token);
@@ -49,6 +60,7 @@ public class DiscordInternal implements Discord {
         try {
             long waitMs = 2000;
             logger.info("Waiting for initialization to finish... (" + (waitMs / 1000) + "s)");
+            selfFuture.join();
             Thread.sleep(waitMs);
             logger.info("Discord connection for user " + self.getDiscriminatedName() + " is ready!");
         } catch (InterruptedException e) {
@@ -56,17 +68,31 @@ public class DiscordInternal implements Discord {
         }
     }
 
+    public DiscordInternal(String token) {
+        this.pool = new ThreadPool(this, 1, "GetShards Discord Pool");
+        this.token = token;
+        this.type = AccountType.BOT;
+        this.webSocket = null;
+        this.ratelimiter = new Ratelimiting(this);
+        this.servers = null;
+        this.utils = null;
+        this.thisShard = 0;
+        this.shardCount = 1;
+    }
+
     public ThreadPool getThreadPool() {
         return pool;
     }
 
     @Override
-    public void attachMessageCreateListener(MessageCreateListener listener) {
-        listeners.add(listener);
+    public ListenerManager<MessageCreateListener> attachMessageCreateListener(MessageCreateListener listener) {
+        return attachListener(listener);
     }
 
-    public Collection<DiscordAttachableListener> getListeners() {
-        return listeners;
+    public Collection<DiscordAttachableListener> getListenerManangers() {
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -76,16 +102,16 @@ public class DiscordInternal implements Discord {
 
     @Override
     public int getShardId() {
-        return 0;
+        return thisShard;
     }
 
     @Override
     public int getShards() {
-        return 1;
+        return shardCount;
     }
 
     @Override
-    public void addServerCreateListener(ServerCreateListener listener) {
+    public ListenerManager<ServerCreateListener> attachServerCreateListener(ServerCreateListener listener) {
 
     }
 
@@ -115,6 +141,7 @@ public class DiscordInternal implements Discord {
 
     public void setSelf(Self self) {
         this.self = self;
+        selfFuture.complete(null);
     }
 
     @Override
@@ -141,6 +168,10 @@ public class DiscordInternal implements Discord {
         this.servers.add(new ServerInternal(this, data));
     }
 
+    public Collection<ListenerManager<? extends DiscordAttachableListener>> getAllListenerManagers() {
+        return listenerManangers;
+    }
+
     @Override
     public long getId() {
         return 0;
@@ -148,6 +179,19 @@ public class DiscordInternal implements Discord {
 
     @Override
     public Discord getDiscord() {
-        return null;
+        return this;
+    }
+
+    @Override
+    public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
+        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener().equals(listener)));
+    }
+
+    @Override
+    public <T extends DiscordAttachableListener> ListenerManager<T> attachListener(T listener) {
+        ListenerManagerInternal<T> manager = ListenerManagerInternal.getInstance(this, listener);
+        // manager.addAttached(this);
+        listenerManangers.add(manager);
+        return manager;
     }
 }

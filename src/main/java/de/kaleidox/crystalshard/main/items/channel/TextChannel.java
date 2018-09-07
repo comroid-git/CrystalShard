@@ -7,7 +7,7 @@ import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.util.CompletableFutureExtended;
 

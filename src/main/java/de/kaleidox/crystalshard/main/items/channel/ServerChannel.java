@@ -7,12 +7,12 @@ import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
-import de.kaleidox.crystalshard.main.ChannelContainer;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.UncachedItemException;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.util.ChannelContainer;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;

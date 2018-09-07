@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.UserContainer;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
@@ -15,6 +14,7 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
+import de.kaleidox.crystalshard.main.util.UserContainer;
 
 import java.net.URL;
 import java.util.Collection;

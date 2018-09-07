@@ -5,8 +5,8 @@ import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
-import de.kaleidox.crystalshard.main.ChannelContainer;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.util.ChannelContainer;
 
 import java.util.concurrent.CompletableFuture;
 

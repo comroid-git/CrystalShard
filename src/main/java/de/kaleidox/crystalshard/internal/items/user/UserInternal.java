@@ -113,6 +113,11 @@ public class UserInternal implements User {
     }
 
     @Override
+    public boolean isYourself() {
+        return equals(discord.getSelf());
+    }
+
+    @Override
     public Optional<String> getLocale() {
         return Optional.ofNullable(locale);
     }

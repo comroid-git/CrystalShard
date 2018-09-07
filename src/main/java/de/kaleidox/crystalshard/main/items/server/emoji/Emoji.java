@@ -29,7 +29,11 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      *
      * @return universal replacement of the emoji.
      */
+    @Override
     String toString();
+
+    @Override
+    boolean equals(Object obj);
 
     /**
      * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji.

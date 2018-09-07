@@ -30,7 +30,7 @@ public class WebSocketClient {
     public WebSocketClient(Discord discordObject) {
         URI gatewayUrl = new WebRequest<String>(discordObject)
                 .method(Method.GET)
-                .endpoint(Endpoint.of(Endpoint.Location.GATEWAY))
+                .endpoint(Endpoint.Location.GATEWAY.toEndpoint())
                 .execute(node -> node.get("url").asText())
                 .exceptionally(throwable -> {
                     logger.exception(throwable);

@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 
 public class ReactionInternal implements Reaction {
@@ -42,6 +43,11 @@ public class ReactionInternal implements Reaction {
     @Override
     public Emoji getEmoji() {
         return emoji;
+    }
+
+    @Override
+    public User getUser() {
+        return null; // todo
     }
 
     @Override

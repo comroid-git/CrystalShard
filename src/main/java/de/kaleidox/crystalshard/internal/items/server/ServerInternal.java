@@ -103,7 +103,8 @@ public class ServerInternal implements Server {
         memberCount = data.path("member_count").asInt(-1);
 
         data.get("roles").forEach(role -> roles.add(new RoleInternal(discord, this, role)));
-        data.get("emojis").forEach(emoji -> emojis.add(new CustomEmojiInternal(getDiscord(), this, emoji)));
+        data.get("emojis").forEach(emoji -> emojis.add(
+                new CustomEmojiInternal((DiscordInternal) getDiscord(), this, emoji, true)));
         data.get("features").forEach(feature -> features.add(feature.asText()));
         data.path("voice_states").forEach(state -> voiceStates.add(new VoiceState(state)));
         data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord,

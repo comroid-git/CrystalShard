@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
@@ -8,6 +9,11 @@ import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
@@ -17,6 +23,8 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageActivity;
 import de.kaleidox.crystalshard.main.items.message.MessageApplication;
 import de.kaleidox.crystalshard.main.items.message.MessageType;
+import de.kaleidox.crystalshard.main.items.message.Sendable;
+import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.role.Role;
@@ -33,10 +41,12 @@ import de.kaleidox.logging.Logger;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {
@@ -112,7 +122,7 @@ public class MessageInternal implements Message {
 
         if (data.has("reactions")) {
             for (JsonNode reaction : data.get("reactions")) {
-                reactions.add(new ReactionInternal(reaction));
+                reactions.add(new ReactionInternal((DiscordInternal) discord, this, reaction));
             }
         }
         if (Objects.nonNull(server)) {
@@ -247,6 +257,86 @@ public class MessageInternal implements Message {
     @Override
     public List<UnicodeEmoji> getUnicodeEmojis() {
         return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> edit(String newContent) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> edit(Sendable newContent) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> edit(EmbedDraft embedDraft) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> delete(String reason) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> addReaction(String emojiPrintable) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> addReaction(Emoji emoji) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> removeAllReactions() {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> removeReactionsByEmoji(User user, Emoji... emojis) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Void> removeOwnReactionsByEmoji(Emoji... emojis) {
+        return null;
+    }
+
+    @Override
+    public ListenerManager<MessageDeleteListener> attachMessageDeleteListener(MessageDeleteListener event) {
+        return null;
+    }
+
+    @Override
+    public ListenerManager<ReactionAddListener> attachReactionAddListener(ReactionAddListener event) {
+        return null;
+    }
+
+    @Override
+    public ListenerManager<ReactionRemoveListener> attachReactionRemoveListener(ReactionRemoveListener event) {
+        return null;
+    }
+
+    @Override
+    public <T extends MessageAttachableListener> ListenerManager<T> addListener(T event) {
+        return null;
+    }
+
+    @Override
+    public Collection<MessageAttachableListener> getAttachedListeners() {
+        return null;
+    }
+
+    @Override
+    public void removeAllListeners() {
+
+    }
+
+    @Override
+    public void removeAttachedListener(MessageAttachableListener listener) {
+
     }
 
     @Override

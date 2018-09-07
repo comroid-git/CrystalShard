@@ -21,6 +21,13 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UnicodeEmoji)
+            return ((UnicodeEmoji) obj).toDiscordPrintable().equalsIgnoreCase(this.toDiscordPrintable());
+        return false;
+    }
+
+    @Override
     public String toAlias() {
         return aliases;
     }

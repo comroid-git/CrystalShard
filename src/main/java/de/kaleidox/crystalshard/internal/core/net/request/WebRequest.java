@@ -113,7 +113,7 @@ public class WebRequest<T> {
         CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getThreadPool());
         CompletableFutureExtended<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getThreadPool());
         Ratelimiting ratelimiter = discord.getRatelimiter();
-        JsonNode finalData = data;
+        final JsonNode finalData = data;
         ratelimiter.schedule(this, headersFuture, () -> {
             try {
                 String urlExternal = endpoint.getUrl().toExternalForm();

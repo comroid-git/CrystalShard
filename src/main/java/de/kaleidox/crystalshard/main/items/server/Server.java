@@ -1,8 +1,6 @@
 package de.kaleidox.crystalshard.main.items.server;
 
-import de.kaleidox.crystalshard.main.ChannelContainer;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.UserContainer;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
@@ -15,6 +13,8 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
+import de.kaleidox.crystalshard.main.util.ChannelContainer;
+import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.util.CompletableFutureExtended;
 
 import java.net.URL;

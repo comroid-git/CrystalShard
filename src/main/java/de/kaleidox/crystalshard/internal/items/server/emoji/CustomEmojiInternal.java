@@ -55,6 +55,13 @@ public class CustomEmojiInternal implements CustomEmoji {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CustomEmoji)
+            return ((CustomEmoji) obj).getId() == this.getId();
+        return false;
+    }
+
+    @Override
     public Server getServer() {
         return serverInternal;
     }

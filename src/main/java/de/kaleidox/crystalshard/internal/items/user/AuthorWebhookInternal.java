@@ -32,4 +32,9 @@ public class AuthorWebhookInternal extends WebhookInternal implements Author, Au
     public Optional<AuthorWebhook> toAuthorWebhook() {
         return Optional.of(this);
     }
+
+    @Override
+    public boolean isYourself() {
+        return equals(getDiscord().getSelf()); // todo Can we assert NO? (Check Webhook functionality)
+    }
 }

@@ -1,37 +1,45 @@
 package de.kaleidox.crystalshard.main;
 
 import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.main.handling.listener.listener.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
+import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
 public class MultiShard extends ArrayList<Discord> implements Discord {
+    MultiShard(List<Discord> loggedIn) {
+        super(loggedIn);
+    }
+
     @Override
     public String getPrefixedToken() {
-        return null;
+        return get(0).getPrefixedToken();
     }
 
     @Override
     public int getShardId() {
-        return 0;
+        throw new IllegalStateException("Can not get the shard id of several shards!");
     }
 
     @Override
     public int getShards() {
-        return 0;
+        return get(0).getShards();
     }
 
     @Override
-    public void addServerCreateListener(ServerCreateListener listener) {
-
+    public ListenerManager<ServerCreateListener> attachServerCreateListener(ServerCreateListener listener) {
+        return attachListener(listener);
     }
 
     @Override
@@ -70,8 +78,8 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     }
 
     @Override
-    public void attachMessageCreateListener(MessageCreateListener listener) {
-
+    public ListenerManager<MessageCreateListener> attachMessageCreateListener(MessageCreateListener listener) {
+        return null;
     }
 
     @Override
@@ -81,6 +89,16 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
 
     @Override
     public Discord getDiscord() {
+        return null;
+    }
+
+    @Override
+    public <C extends DiscordAttachableListener> ListenerManager<C> attachListener(C listener) {
+        return null;
+    }
+
+    @Override
+    public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
         return null;
     }
 }

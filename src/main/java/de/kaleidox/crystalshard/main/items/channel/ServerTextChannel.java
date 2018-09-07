@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
-import de.kaleidox.crystalshard.main.ChannelContainer;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.UncachedItemException;
@@ -14,6 +13,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.main.util.ChannelContainer;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;

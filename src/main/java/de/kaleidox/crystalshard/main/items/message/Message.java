@@ -1,5 +1,10 @@
 package de.kaleidox.crystalshard.main.items.message;
 
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
@@ -19,6 +24,7 @@ import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -88,6 +94,10 @@ public interface Message extends DiscordItem {
 
     List<UnicodeEmoji> getUnicodeEmojis();
 
+    /*
+      MODIFIER METHODS
+     */
+
     CompletableFuture<Message> edit(String newContent);
 
     CompletableFuture<Message> edit(Sendable newContent);
@@ -103,4 +113,30 @@ public interface Message extends DiscordItem {
     CompletableFuture<Void> addReaction(String emojiPrintable);
 
     CompletableFuture<Void> addReaction(Emoji emoji);
+
+    CompletableFuture<Void> removeAllReactions();
+
+    CompletableFuture<Void> removeReactionsByEmoji(User user, Emoji... emojis);
+
+    CompletableFuture<Void> removeOwnReactionsByEmoji(Emoji... emojis);
+
+    /*
+      LISTENER METHODS
+     */
+
+    ListenerManager<MessageDeleteListener> attachMessageDeleteListener(MessageDeleteListener event);
+
+    ListenerManager<ReactionAddListener> attachReactionAddListener(ReactionAddListener event);
+
+    ListenerManager<ReactionRemoveListener> attachReactionRemoveListener(ReactionRemoveListener event);
+
+    <T extends MessageAttachableListener> ListenerManager<T> addListener(T event);
+
+    Collection<MessageAttachableListener> getAttachedListeners();
+
+    void removeAllListeners();
+
+    void removeAttachedListener(MessageAttachableListener listener);
+
+    ;
 }

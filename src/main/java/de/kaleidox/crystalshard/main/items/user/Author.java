@@ -38,4 +38,6 @@ public interface Author extends DiscordItem, Nameable {
     }
 
     Optional<AuthorWebhook> toAuthorWebhook();
+
+    boolean isYourself();
 }
