@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.role.Role;
+import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
@@ -51,6 +52,11 @@ public class CustomEmojiInternal implements CustomEmoji {
             this.managed = data.path("managed").asBoolean();
             this.requireColons = data.path("require_colons").asBoolean();
         }
+    }
+
+    @Override
+    public Server getServer() {
+        return serverInternal;
     }
 
     @Override
@@ -171,5 +177,10 @@ public class CustomEmojiInternal implements CustomEmoji {
                     this.requireColons = node.get("require_colons").asBoolean();
                     return requireColons;
                 });
+    }
+
+    @Override
+    public String getMentionTag() {
+        return toDiscordPrintable();
     }
 }

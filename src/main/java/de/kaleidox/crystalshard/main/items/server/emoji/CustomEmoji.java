@@ -1,12 +1,21 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
+import de.kaleidox.crystalshard.main.items.DiscordItem;
+import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
-public interface CustomEmoji extends Emoji {
+public interface CustomEmoji extends DiscordItem, Emoji {
+    /**
+     * Gets the server that this custom emoji is in.
+     *
+     * @return The server.
+     */
+    Server getServer();
+
     /**
      * Asynchrounously requests all data about the CustomEmoji, so that future requesting tasks will complete instantly.
      * Use this method if you want to acquire a lot of CustomEmoji data soon, and block the thread using

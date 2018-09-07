@@ -21,11 +21,6 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     }
 
     @Override
-    public long getId() {
-        return -1;
-    }
-
-    @Override
     public String toAlias() {
         return aliases;
     }
@@ -43,5 +38,10 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     @Override
     public Discord getDiscord() {
         return null;
+    }
+
+    @Override
+    public String getMentionTag() {
+        return toDiscordPrintable();
     }
 }
