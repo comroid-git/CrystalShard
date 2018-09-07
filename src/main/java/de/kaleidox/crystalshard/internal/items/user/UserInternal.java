@@ -21,13 +21,16 @@ import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
     private final static Logger logger = new Logger(User.class);
+    private final static ConcurrentHashMap<Long, User> instances = new ConcurrentHashMap<>();
     private final long id;
     private final String name;
     private final String discriminator;
@@ -60,6 +63,7 @@ public class UserInternal implements User {
                 data.get("email").asText(null) : null;
 
         logger.nonNullChecks(name, discriminator);
+        instances.putIfAbsent(id, this);
     }
 
     @Override
@@ -175,5 +179,17 @@ public class UserInternal implements User {
     @Override
     public CompletableFuture<Void> typing() {
         return null;
+    }
+
+    public static User getInstance(Discord discord, long id) {
+        assert id != -1 : "No valid ID found.";
+        return instances.containsKey(id) ?
+                instances.get(id) : discord.getUserById(id).orElseThrow(NoSuchElementException::new);
+    }
+
+    public static User getInstance(Discord discord, JsonNode data) {
+        long id = data.path("id").asLong(-1);
+        assert id != -1 : "No valid ID found.";
+        return instances.containsKey(id) ? instances.get(id) : new UserInternal(discord, data);
     }
 }

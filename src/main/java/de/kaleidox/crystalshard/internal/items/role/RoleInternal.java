@@ -7,11 +7,15 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.logging.Logger;
 
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RoleInternal implements Role {
+    private final static Logger logger = new Logger(RoleInternal.class);
+    private final static ConcurrentHashMap<Long, Role> instances = new ConcurrentHashMap<>();
     private final Server server;
     private final PermissionList permissions;
     private final long id;
@@ -24,6 +28,7 @@ public class RoleInternal implements Role {
     private final Discord discordInternal;
 
     public RoleInternal(Discord discord, Server server, JsonNode data) {
+        logger.deeptrace("Creating role object for data: " + data.toString());
         this.discordInternal = discord;
         this.server = server;
         this.id = data.get("id").asLong();
@@ -34,6 +39,8 @@ public class RoleInternal implements Role {
         this.permissions = new PermissionListInternal(data.get("permissions").asInt());
         this.managed = data.get("managed").asBoolean();
         this.mentionable = data.get("mentionable").asBoolean();
+
+        instances.putIfAbsent(id, this);
     }
 
     @Override
@@ -104,5 +111,11 @@ public class RoleInternal implements Role {
     @Override
     public PermissionList getListFor(DiscordItem scope) {
         return permissions;
+    }
+
+    public static Role getInstance(Server server, JsonNode data) {
+        long id = data.path("id").asLong(-1);
+        assert id != -1 : "No valid ID found.";
+        return instances.containsKey(id) ? instances.get(id) : new RoleInternal(server.getDiscord(), server, data);
     }
 }

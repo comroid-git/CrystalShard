@@ -68,6 +68,8 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
 
     int getMemberCount();
 
+    Role getEveryoneRole();
+
     Collection<VoiceState> getVoiceStates();
 
     Collection<ServerMember> getMembers();

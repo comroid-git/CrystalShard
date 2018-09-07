@@ -40,6 +40,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -75,6 +76,7 @@ public class ServerInternal implements Server {
     private final ArrayList<ServerChannel> channels = new ArrayList<>();
     private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
     private final ChannelStructureInternal structure;
+    private final Role everyoneRole;
 
     public ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());
@@ -126,6 +128,11 @@ public class ServerInternal implements Server {
         });
         data.path("presenceStates").forEach(presence -> presenceStates.add(new PresenceStateInternal(discord, this, presence)));
         structure = new ChannelStructureInternal(channels);
+
+        everyoneRole = roles.stream()
+                .filter(role -> role.getName().equalsIgnoreCase("@everyone"))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("No @everyone role found for " + this));
 
         afkChannel = data.has("afk_channel_id") ?
                 ServerVoiceChannel.of(discord, data.path("afk_channel_id").asLong(-1)).join() : null;
@@ -256,6 +263,11 @@ public class ServerInternal implements Server {
     @Override
     public int getMemberCount() {
         return memberCount;
+    }
+
+    @Override
+    public Role getEveryoneRole() {
+        return everyoneRole;
     }
 
     @Override
