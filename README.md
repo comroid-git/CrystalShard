@@ -1,6 +1,8 @@
 # CrystalShard
 ## Forging a Discord Library
 
+Support Discord Server: https://discord.gg/QrgfQG3
+
 CrystalShard is a free to use discord bot library, built upon Java 11.
 We do not have a Java 1.8 version yet. But until that one is ready, be sure to take a long look at http://javacord.org!
 
