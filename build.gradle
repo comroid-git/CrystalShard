@@ -14,7 +14,7 @@ task myJavadocs(type: Javadoc) {
 
 javadoc {
     options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("docs\\"))
+    options.destinationDirectory(new File("A:\\IntelliJ Workspace\\CrystalShardDocumentation\\"))
 }
  
 tasks.withType(JavaCompile) {
