@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.handling.event;
+package de.kaleidox.crystalshard.main.handling.event.user;
 
 import de.kaleidox.crystalshard.main.items.user.User;
 
