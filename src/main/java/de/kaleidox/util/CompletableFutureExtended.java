@@ -1,6 +1,6 @@
 package de.kaleidox.util;
 
-import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;

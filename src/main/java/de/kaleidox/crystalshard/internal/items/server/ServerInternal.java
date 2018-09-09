@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.internal.core.net.request.Method;
-import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;

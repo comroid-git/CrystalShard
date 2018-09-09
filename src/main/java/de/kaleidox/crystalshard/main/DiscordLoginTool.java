@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.main;
 
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.internal.core.net.request.Method;
-import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.PreAttachableListener;

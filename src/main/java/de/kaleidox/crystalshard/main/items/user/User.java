@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.main.items.user;
 
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.crystalshard.internal.core.net.request.Method.*;
+import static de.kaleidox.crystalshard.core.net.request.Method.*;
 
 public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User> {
     String getDiscriminatedName();

@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.util;
 
-import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;

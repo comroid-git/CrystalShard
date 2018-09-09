@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.internal.core.net.request.Method;
-import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;

@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.main;
 
-import de.kaleidox.crystalshard.internal.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
