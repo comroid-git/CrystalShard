@@ -14,19 +14,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This class is used to create a connection with Discord.
+ */
 public class DiscordLoginTool implements ListenerAttachable<PreAttachableListener> {
     private String token = null;
     private AccountType type = AccountType.BOT;
     private int shardCount = 1;
     private int shard = 0;
 
+    /**
+     * Creates a new instance.
+     */
     public DiscordLoginTool() {
     }
 
+    /**
+     * Creates a new instance.
+     * @return The tool.
+     */
+    public static DiscordLoginTool get() {
+        return new DiscordLoginTool();
+    }
+
+    /**
+     * Creates a new instance with a preset token.
+     * @param token The token to pre-set.
+     */
     public DiscordLoginTool(String token) {
         this.token = token;
     }
 
+    /**
+     * Sets the token for this tool.
+     *
+     * @param token The token to set.
+     * @return The tool.
+     */
     public DiscordLoginTool setToken(String token) {
         this.token = token;
         return this;
