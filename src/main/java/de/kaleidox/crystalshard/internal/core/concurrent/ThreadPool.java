@@ -408,7 +408,11 @@ public class ThreadPool {
 
         @Override
         public void run() {
-            runnable.run();
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                logger.exception(e);
+            }
         }
     }
 }
