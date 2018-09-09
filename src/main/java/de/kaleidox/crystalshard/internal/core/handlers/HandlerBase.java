@@ -70,7 +70,7 @@ public abstract class HandlerBase {
 
         for (Object obj : collectIn) {
             if (Objects.nonNull(obj)) {
-                if (listenerClass.isAssignableFrom(DiscordAttachableListener.class) && obj instanceof Discord) {
+                if (DiscordAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Discord) {
                     ((DiscordInternal) obj).getListeners()
                             .stream()
                             .filter(listener -> listener.canCastTo(listenerClass))
@@ -78,7 +78,7 @@ public abstract class HandlerBase {
                             .forEachOrdered(list::add);
                 }
 
-                if (listenerClass.isAssignableFrom(ServerAttachableListener.class) && obj instanceof Server) {
+                if (ServerAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Server) {
                     ServerInternal serverInternal = (ServerInternal) obj;
                     if (anyTarget) {
                         serverInternal.getListeners()
@@ -99,7 +99,7 @@ public abstract class HandlerBase {
                     }
                 }
 
-                if (listenerClass.isAssignableFrom(ChannelAttachableListener.class) && obj instanceof Channel) {
+                if (ChannelAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Channel) {
                     switch (((Channel) obj).getType()) {
                         case DM:
                         case GROUP_DM:
@@ -149,7 +149,7 @@ public abstract class HandlerBase {
                     }
                 }
 
-                if (listenerClass.isAssignableFrom(MessageAttachableListener.class) && obj instanceof Message) {
+                if (MessageAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Message) {
                     MessageInternal message = (MessageInternal) obj;
                     if (anyTarget) {
                         message.getListeners()
