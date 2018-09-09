@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.main.handling.listener.channel;
 
-import de.kaleidox.crystalshard.main.handling.event.channel.ChannelCreateEvent;
+import de.kaleidox.crystalshard.main.handling.event.channel.generic.ChannelCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 

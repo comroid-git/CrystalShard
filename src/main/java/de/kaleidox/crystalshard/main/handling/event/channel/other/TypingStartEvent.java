@@ -1,4 +1,7 @@
-package de.kaleidox.crystalshard.main.handling.event.channel;
+package de.kaleidox.crystalshard.main.handling.event.channel.other;
 
-public interface TypingStartEvent {
+import de.kaleidox.crystalshard.main.handling.event.channel.ChannelEvent;
+import de.kaleidox.crystalshard.main.handling.event.user.UserEvent;
+
+public interface TypingStartEvent extends ChannelEvent, UserEvent {
 }

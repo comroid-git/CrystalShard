@@ -1,4 +1,6 @@
 package de.kaleidox.crystalshard.main.handling.event.voice;
 
-public interface VoiceEvent {
+import de.kaleidox.crystalshard.main.handling.event.Event;
+
+public interface VoiceEvent extends Event {
 }
