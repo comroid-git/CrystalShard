@@ -1,5 +1,17 @@
 package de.kaleidox.crystalshard.main.handling.editevent;
 
+import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.MessageEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.PresenceEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEmojiEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.ServerIntegrationEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.ServerMemberEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceServerEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.WebhookEditTrait;
 import de.kaleidox.crystalshard.main.util.Castable;
 
 import java.util.Optional;

@@ -1,5 +1,6 @@
-package de.kaleidox.crystalshard.main.handling.editevent;
+package de.kaleidox.crystalshard.main.handling.editevent.enums;
 
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 public enum UserEditTrait implements EditTrait<User> {
