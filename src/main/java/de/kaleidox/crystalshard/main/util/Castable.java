@@ -11,6 +11,10 @@ public interface Castable<C> {
         return check.isAssignableFrom(this.getClass());
     }
 
+    default <T extends C> T castOrNull(Class<T> castTo) {
+        return castTo(castTo).orElse(null);
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> Optional<T> cast(Class<T> castTo, Object instance) {
         return castTo.isAssignableFrom(instance.getClass()) ?

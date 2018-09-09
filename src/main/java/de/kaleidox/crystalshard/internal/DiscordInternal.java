@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelCreateListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -80,11 +81,40 @@ public class DiscordInternal implements Discord {
     }
 
     @Override
+    public Collection<Server> getServers() {
+        return servers;
+    }
+
+    @Override
+    public Collection<User> getUsers() {
+        return null; // todo
+    }
+
+    @Override
+    public int getServerCount() {
+        return 0;
+    }
+
+    @Override
+    public int getUserCount() {
+        return 0;
+    }
+
+    @Override
     public ListenerManager<MessageCreateListener> attachMessageCreateListener(MessageCreateListener listener) {
         return attachListener(listener);
     }
 
-    public Collection<DiscordAttachableListener> getListenerManangers() {
+    @Override
+    public ListenerManager<ChannelCreateListener> attachChannelCreateListener(ChannelCreateListener listener) {
+        return attachListener(listener);
+    }
+
+    public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers() {
+        return listenerManangers;
+    }
+
+    public Collection<DiscordAttachableListener> getListeners() {
         return listenerManangers.stream()
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());
@@ -155,7 +185,7 @@ public class DiscordInternal implements Discord {
     }
 
     public void craftServer(JsonNode data) {
-        this.servers.add(new ServerInternal(this, data));
+        this.servers.add(ServerInternal.getInstance(this, data));
     }
 
     public Collection<ListenerManager<? extends DiscordAttachableListener>> getAllListenerManagers() {
@@ -187,5 +217,10 @@ public class DiscordInternal implements Discord {
 
     public CompletableFuture<Self> getSelfFuture() {
         return selfFuture;
+    }
+
+    @Override
+    public String toString() {
+        return "Discord Connection to " + self;
     }
 }

@@ -45,7 +45,7 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
                             .execute(node -> {
                                 for (JsonNode channel : node) {
                                     if (channel.get("id").asLong() == id) {
-                                        return new ServerVoiceChannelInternal(discord, srv, node);
+                                        return ServerVoiceChannelInternal.getInstance(discord, srv, node);
                                     }
                                 }
                                 throw new NoSuchElementException("No Channel with ID " + id + " found!");

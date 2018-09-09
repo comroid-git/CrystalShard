@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 
 @FunctionalInterface
-public interface ChannelCreateListener extends DiscordAttachableListener, ServerAttachableListener,
-        ChannelAttachableListener {
+public interface ChannelCreateListener extends DiscordAttachableListener, ServerAttachableListener {
     void onChannelCreate(ChannelCreateEvent event);
 }

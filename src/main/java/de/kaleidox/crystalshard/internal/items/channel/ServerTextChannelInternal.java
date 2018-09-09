@@ -14,9 +14,7 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
@@ -43,7 +41,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
     private final List<Message> messages = new ArrayList<>();
     private final List<ChannelAttachableListener> listeners = new ArrayList<>();
 
-    public ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
+    private ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         logger.deeptrace("Creating STC object for data: " + data.toString());
         this.discord = discord;
@@ -88,7 +86,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
                 .method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
                 .node(data)
-                .execute(node -> new MessageInternal(getDiscord(), getServer(), node));
+                .execute(node -> MessageInternal.getInstance(discord, server, node));
     }
 
     @Override
@@ -100,7 +98,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
                 .method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
                 .node(data)
-                .execute(node -> new MessageInternal(getDiscord(), getServer(), node));
+                .execute(node -> MessageInternal.getInstance(discord, server, node));
     }
 
     @Override
@@ -110,12 +108,6 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
 
     public List<? extends ChannelAttachableListener> getListeners() {
         return listeners;
-    }
-
-    public Message craftMessage(JsonNode data) {
-        MessageInternal messageInternal = new MessageInternal(discord, server, data);
-        this.messages.add(messageInternal);
-        return messageInternal;
     }
 
     @Override
@@ -133,13 +125,18 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
         return null;
     }
 
-    public static ServerTextChannel getInstance(Discord discord, JsonNode data) {
+    @Override
+    public String toString() {
+        return "ServerTextChannel with ID [" + id + "]";
+    }
+
+    public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
         long id = data.get("id").asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
         if (instances.containsKey(id))
             return instances.get(id);
         else
-            return new ServerTextChannelInternal(
-                    discord, ServerInternal.getInstance(discord, data.get("guild_id").asLong()), data);
+            return new ServerTextChannelInternal(discord, server, data);
     }
 }

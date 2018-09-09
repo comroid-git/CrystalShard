@@ -13,19 +13,30 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ArrayList<Channel> implements ChannelCategory {
+    private final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
+    private final Discord discord;
+    private final Server server;
+    private final String name;
+    private final long id;
     private List<? extends ChannelAttachableListener> listeners;
 
-    public ChannelCategoryInternal(Discord discord, Server serverInternal, JsonNode channel) {
+    private ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
+        this.discord = discord;
+        this.server = server;
+        this.id = data.get("id").asLong();
+        this.name = data.path("name").asText("undefined");
+        listeners = new ArrayList<>();
     }
 
     @Override
     public Server getServer() {
-        return null;
+        return server;
     }
 
     @Override
@@ -35,12 +46,12 @@ public class ChannelCategoryInternal extends ArrayList<Channel> implements Chann
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public ChannelType getType() {
-        return null;
+        return ChannelType.GUILD_CATEGORY;
     }
 
     @Override
@@ -50,12 +61,12 @@ public class ChannelCategoryInternal extends ArrayList<Channel> implements Chann
 
     @Override
     public long getId() {
-        return 0;
+        return id;
     }
 
     @Override
     public Discord getDiscord() {
-        return null;
+        return discord;
     }
 
     public List<? extends ChannelAttachableListener> getListeners() {
@@ -70,5 +81,19 @@ public class ChannelCategoryInternal extends ArrayList<Channel> implements Chann
     @Override
     public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "ChannelCategory with ID [" + id + "]";
+    }
+
+    public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else
+            return new ChannelCategoryInternal(discord, server, data);
     }
 }

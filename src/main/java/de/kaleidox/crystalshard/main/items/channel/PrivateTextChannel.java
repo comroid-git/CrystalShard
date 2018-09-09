@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
@@ -23,7 +22,7 @@ public interface PrivateTextChannel extends PrivateChannel, TextChannel {
                     .orElseGet(() -> new WebRequest<PrivateTextChannel>(discord)
                             .method(Method.GET)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, id))
-                            .execute(node -> new PrivateTextChannelInternal((DiscordInternal) discord, node))
+                            .execute(node -> PrivateTextChannelInternal.getInstance(discord, node))
                             .thenApply(PrivateTextChannel.class::cast)
                     );
         }

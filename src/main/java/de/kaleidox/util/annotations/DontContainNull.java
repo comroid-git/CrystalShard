@@ -6,6 +6,7 @@ import java.util.Collection;
 
 /**
  * This annotation marks a {@link Collection} or {@code Array} parameter to disable it to contain {@code null} items.
+ *
  * @see NotNull
  */
 @Target(ElementType.PARAMETER)

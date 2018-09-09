@@ -65,6 +65,7 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Listener> ListenerManagerInternal<T> getInstance(
             DiscordInternal discordInternal, T listener) {
         if (instances.containsKey(listener.hashCode()))

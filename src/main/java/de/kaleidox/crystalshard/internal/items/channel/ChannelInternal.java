@@ -1,14 +1,15 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.internal.core.net.request.Method;
+import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.util.annotations.Nullable;
 
 import java.util.List;
 
@@ -40,12 +41,21 @@ public abstract class ChannelInternal implements Channel {
 
     public abstract List<? extends ChannelAttachableListener> getListeners();
 
-    public static Channel getInstance(Discord discord, JsonNode data) {
+    public static Channel getInstance(Discord discord, long id) {
+        return discord.getChannelById(id)
+                .orElseGet(() -> new WebRequest<Channel>(discord)
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.CHANNEL.toEndpoint(id))
+                        .execute(node -> ChannelInternal.getInstance(discord, null, node))
+                        .join());
+    }
+
+    public static Channel getInstance(Discord discord, @Nullable Server server, JsonNode data) {
         if (data.has("guild_id")) {
             if (data.has("bitrate")) {
-                return ServerVoiceChannelInternal.getInstance(discord, data);
+                return ServerVoiceChannelInternal.getInstance(discord, server, data);
             } else {
-                return ServerTextChannelInternal.getInstance(discord, data);
+                return ServerTextChannelInternal.getInstance(discord, server, data);
             }
         } else {
             if (data.has("recipients")) {

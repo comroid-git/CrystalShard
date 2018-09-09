@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.internal.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.editevent.enums.MessageEditTrait;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageEditEvent;
-import de.kaleidox.crystalshard.main.handling.event.types.MessageAttachingEvent;
+import de.kaleidox.crystalshard.main.handling.types.MessageAttachingEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;

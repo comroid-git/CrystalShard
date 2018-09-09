@@ -3,13 +3,11 @@ package de.kaleidox.crystalshard.internal.items.channel;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -18,7 +16,6 @@ import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
@@ -30,10 +27,12 @@ public class PrivateTextChannelInternal extends ChannelInternal implements Priva
     private final static Logger logger = new Logger(PrivateTextChannelInternal.class);
     private final List<Message> messages = new ArrayList<>();
     private final List<ChannelAttachableListener> listeners = new ArrayList<>();
+    private long id;
 
-    public PrivateTextChannelInternal(DiscordInternal discord, JsonNode data) {
+    private PrivateTextChannelInternal(DiscordInternal discord, JsonNode data) {
         super(discord, data);
         logger.deeptrace("Creating PTC object for data: " + data.toString());
+        this.id = data.get("id").asLong();
     }
 
     @Override
@@ -62,7 +61,7 @@ public class PrivateTextChannelInternal extends ChannelInternal implements Priva
     }
 
     public Message craftMessage(JsonNode data) {
-        MessageInternal messageInternal = new MessageInternal(getDiscord(), null, data);
+        MessageInternal messageInternal = (MessageInternal) MessageInternal.getInstance(getDiscord(), null, data);
         this.messages.add(messageInternal);
         return messageInternal;
     }
@@ -85,6 +84,11 @@ public class PrivateTextChannelInternal extends ChannelInternal implements Priva
     @Override
     public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "PrivateTextChannel with ID [" + id + "]";
     }
 
     public static PrivateTextChannel getInstance(Discord discord, JsonNode data) {

@@ -37,6 +37,7 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.annotations.Nullable;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -44,12 +45,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {
+    private final static ConcurrentHashMap<Long, Message> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(MessageInternal.class);
     private final long id;
     private final long channelId;
@@ -73,8 +77,9 @@ public class MessageInternal implements Message {
     private final List<Emoji> emojis = new ArrayList<>();
     private final List<Channel> channelMentions = new ArrayList<>();
     private final TextChannel channel;
+    private Collection<? extends MessageAttachableListener> listeners;
 
-    public MessageInternal(Discord discord, Server server, JsonNode data) {
+    private MessageInternal(Discord discord, @Nullable Server server, JsonNode data) {
         logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
         this.discord = discord;
@@ -132,6 +137,8 @@ public class MessageInternal implements Message {
             // is private
             this.channel = PrivateTextChannel.of(discord, channelId).join();
         }
+
+        instances.put(id, this);
     }
 
     @Override
@@ -325,8 +332,8 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public Collection<MessageAttachableListener> getAttachedListeners() {
-        return null;
+    public Collection<? extends MessageAttachableListener> getListeners() {
+        return listeners;
     }
 
     @Override
@@ -347,5 +354,16 @@ public class MessageInternal implements Message {
     @Override
     public Discord getDiscord() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "Message with ID [" + id + "]";
+    }
+
+    public static Message getInstance(Discord discord, @Nullable Server server, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        return instances.getOrDefault(id, new MessageInternal(discord, server, data));
     }
 }

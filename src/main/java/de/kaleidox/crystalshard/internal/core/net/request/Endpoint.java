@@ -72,7 +72,7 @@ public class Endpoint {
         GATEWAY("/gateway"),
         GATEWAY_BOT("/gateway/bot"),
         GUILD("/guilds"),
-        GUILDS("/guilds/%s"),
+        GUILD_SPECIFIC("/guilds/%s"),
         GUILD_CHANNEL("/guilds/%s/channels"),
         GUILD_INVITE("/guilds/%s/invites"),
         GUILD_MEMBER("/guilds/%s/members/%s"),

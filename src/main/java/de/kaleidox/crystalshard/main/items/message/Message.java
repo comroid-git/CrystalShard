@@ -132,7 +132,7 @@ public interface Message extends DiscordItem {
 
     <T extends MessageAttachableListener> ListenerManager<T> addListener(T event);
 
-    Collection<MessageAttachableListener> getAttachedListeners();
+    Collection<? extends MessageAttachableListener> getListeners();
 
     void removeAllListeners();
 

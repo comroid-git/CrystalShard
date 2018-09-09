@@ -40,6 +40,6 @@ public class DiscordEventDispatch {
     }
 
     private static void dispatch(DiscordInternal discord, JsonNode data) {
-        HandlerBase.getHandlerByType(discord, data);
+        HandlerBase.tryHandle(discord, data);
     }
 }

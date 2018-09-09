@@ -53,11 +53,11 @@ public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
                                             case GROUP_DM:
                                                 throw new IllegalArgumentException("ID " + id + " is not of a ServerChannel!");
                                             case GUILD_TEXT:
-                                                return new ServerTextChannelInternal(discord, srv, node);
+                                                return ServerTextChannelInternal.getInstance(discord, srv, node);
                                             case GUILD_VOICE:
-                                                return new ServerVoiceChannelInternal(discord, srv, node);
+                                                return ServerVoiceChannelInternal.getInstance(discord, srv, node);
                                             case GUILD_CATEGORY:
-                                                return new ChannelCategoryInternal(discord, srv, node);
+                                                return ChannelCategoryInternal.getInstance(discord, srv, node);
                                             default:
                                                 throw new AssertionError();
                                         }

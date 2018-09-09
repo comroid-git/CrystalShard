@@ -15,6 +15,8 @@ import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceStateInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
@@ -40,11 +42,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class ServerInternal implements Server {
+    private final static ConcurrentHashMap<Long, ServerInternal> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerInternal.class);
     private final DiscordInternal discord;
     private final long id;
@@ -77,8 +83,9 @@ public class ServerInternal implements Server {
     private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
     private final ChannelStructureInternal structure;
     private final Role everyoneRole;
+    private final List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
 
-    public ServerInternal(Discord discord, JsonNode data) {
+    private ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());
         this.discord = (DiscordInternal) discord;
         id = data.get("id").asLong();
@@ -102,10 +109,10 @@ public class ServerInternal implements Server {
         unavailable = data.path("unavailable").asBoolean(false);
         memberCount = data.path("member_count").asInt(-1);
 
-        data.get("role").forEach(role -> roles.add(new RoleInternal(discord, this, role)));
-        data.get("emojis").forEach(emoji -> emojis.add(
+        data.path("roles").forEach(role -> roles.add(new RoleInternal(discord, this, role)));
+        data.path("emojis").forEach(emoji -> emojis.add(
                 new CustomEmojiInternal((DiscordInternal) getDiscord(), this, emoji, true)));
-        data.get("features").forEach(feature -> features.add(feature.asText()));
+        data.path("features").forEach(feature -> features.add(feature.asText()));
         data.path("voice_states").forEach(state -> voiceStates.add(new VoiceStateInternal(state)));
         data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord,
                 this, member.get("user"))));
@@ -117,13 +124,13 @@ public class ServerInternal implements Server {
                 case GROUP_DM:
                     break;
                 case GUILD_TEXT:
-                    channels.add(new ServerTextChannelInternal(discord, this, channel));
+                    channels.add(ServerTextChannelInternal.getInstance(discord, this, channel));
                     break;
                 case GUILD_VOICE:
-                    channels.add(new ServerVoiceChannelInternal(discord, this, channel));
+                    channels.add(ServerVoiceChannelInternal.getInstance(discord, this, channel));
                     break;
                 case GUILD_CATEGORY:
-                    channels.add(new ChannelCategoryInternal(discord, this, channel));
+                    channels.add(ChannelCategoryInternal.getInstance(discord, this, channel));
                     break;
             }
         });
@@ -145,6 +152,10 @@ public class ServerInternal implements Server {
                 ServerTextChannel.of(discord, data.path("system_channel_id").asLong(-1))
                         .exceptionally(throwable -> null)
                         .join() : null;
+
+        listenerManangers = new ArrayList<>();
+
+        instances.put(id, this);
     }
 
     private User getOwnerPrivate(JsonNode data) {
@@ -322,5 +333,42 @@ public class ServerInternal implements Server {
     @Override
     public String getName() {
         return name;
+    }
+
+    public List<ServerAttachableListener> getListeners() {
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        return "Server with ID [" + id + "]";
+    }
+
+    public static Optional<Server> getInstance(long id) {
+        return Optional.ofNullable(instances.getOrDefault(id, null));
+    }
+
+    public static Server getInstance(Discord discord, long id) {
+        return discord.getServers()
+                .stream()
+                .filter(server -> server.getId() == id)
+                .findAny()
+                .orElseGet(() -> new WebRequest<Server>(discord)
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.GUILD_SPECIFIC.toEndpoint(id))
+                        .execute(node -> getInstance(discord, node))
+                        .join());
+    }
+
+    public static Server getInstance(Discord discord, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else {
+            return new ServerInternal(discord, data);
+        }
     }
 }

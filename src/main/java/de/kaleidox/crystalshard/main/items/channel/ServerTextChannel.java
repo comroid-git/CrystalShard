@@ -48,7 +48,7 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
                             .execute(node -> {
                                 for (JsonNode channel : node) {
                                     if (channel.get("id").asLong() == id) {
-                                        return new ServerTextChannelInternal(discord, srv, node);
+                                        return ServerTextChannelInternal.getInstance(discord, srv, node);
                                     }
                                 }
                                 throw new NoSuchElementException("No Channel with ID " + id + " found!");
