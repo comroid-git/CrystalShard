@@ -85,7 +85,17 @@ public class MessageEditEventInternal extends EventBase implements MessageEditEv
     }
 
     @Override
+    public Optional<SentEmbed> getPreviousEmbed() {
+        return Optional.ofNullable(prevEmbed);
+    }
+
+    @Override
     public Set<EditTrait<Message>> getEditTraits() {
         return traits;
+    }
+
+    @Override
+    public Optional<Message> getPreviousValue() {
+        return Optional.empty();
     }
 }
