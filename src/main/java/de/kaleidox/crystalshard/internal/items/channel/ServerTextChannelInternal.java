@@ -7,12 +7,16 @@ import de.kaleidox.crystalshard.internal.core.net.request.Method;
 import de.kaleidox.crystalshard.internal.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
@@ -20,13 +24,17 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerTextChannelInternal extends ChannelInternal implements ServerTextChannel {
+    private final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerTextChannelInternal.class);
     private final Discord discord;
     private final Server server;
@@ -42,6 +50,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
         this.server = server;
         this.id = data.get("id").asLong();
         this.name = data.path("name").asText(null);
+        instances.put(id, this);
     }
 
     @Override
@@ -99,7 +108,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
         return null;
     }
 
-    public List<ChannelAttachableListener> getListeners() {
+    public List<? extends ChannelAttachableListener> getListeners() {
         return listeners;
     }
 
@@ -112,5 +121,25 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
     @Override
     public void attachMessageCreateListener(MessageCreateListener listener) {
         listeners.add(listener);
+    }
+
+    @Override
+    public <C extends ChannelAttachableListener> ListenerManager<C> attachListener(C listener) {
+        return null;
+    }
+
+    @Override
+    public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
+        return null;
+    }
+
+    public static ServerTextChannel getInstance(Discord discord, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else
+            return new ServerTextChannelInternal(
+                    discord, ServerInternal.getInstance(discord, data.get("guild_id").asLong()), data);
     }
 }
