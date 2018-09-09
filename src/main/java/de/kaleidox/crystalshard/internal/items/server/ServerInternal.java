@@ -102,7 +102,7 @@ public class ServerInternal implements Server {
         unavailable = data.path("unavailable").asBoolean(false);
         memberCount = data.path("member_count").asInt(-1);
 
-        data.get("roles").forEach(role -> roles.add(new RoleInternal(discord, this, role)));
+        data.get("role").forEach(role -> roles.add(new RoleInternal(discord, this, role)));
         data.get("emojis").forEach(emoji -> emojis.add(
                 new CustomEmojiInternal((DiscordInternal) getDiscord(), this, emoji, true)));
         data.get("features").forEach(feature -> features.add(feature.asText()));

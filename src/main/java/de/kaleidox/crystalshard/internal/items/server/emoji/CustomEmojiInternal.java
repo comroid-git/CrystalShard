@@ -45,7 +45,7 @@ public class CustomEmojiInternal implements CustomEmoji {
         this.id = data.get("id").asLong();
         this.name = data.get("name").asText();
         if (!partialData) {
-            data.path("roles").forEach(node -> whitelistedRoles.add(RoleInternal.getInstance(serverInternal, node)));
+            data.path("role").forEach(node -> whitelistedRoles.add(RoleInternal.getInstance(serverInternal, node)));
             this.creator = data.has("user") ?
                     UserInternal.getInstance(discord, data.path("user")) : null;
             this.animated = data.path("animated").asBoolean();
@@ -98,7 +98,7 @@ public class CustomEmojiInternal implements CustomEmoji {
                 .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id))
                 .execute()
                 .thenAccept(data -> {
-                    data.path("roles").forEach(node ->
+                    data.path("role").forEach(node ->
                             whitelistedRoles.add(RoleInternal.getInstance(serverInternal, node)));
                     this.creator = data.has("user") ?
                             UserInternal.getInstance(discord, data.path("user")) : null;
