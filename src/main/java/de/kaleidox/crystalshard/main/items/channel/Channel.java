@@ -64,9 +64,9 @@ public interface Channel extends DiscordItem, Castable<Channel>, ListenerAttacha
     interface Builder {
         /**
          * Gets a new instance of a ServerVoiceChannelBuilder.
+         * When using this method, you <b>MUST</b> later specify a server using {@link ServerVoiceChannel.Builder#setServer(Server)}.
          *
          * @return A new ServerVoiceChannelBuilder.
-         * @implNote When using this method, you <b>MUST</b> later specify a server using {@link ServerVoiceChannel.Builder#setServer(Server)}.
          */
         default ServerVoiceChannel.Builder makeVoiceChannel() {
             return new ChannelBuilderInternal.ServerVoiceChannelBuilder(null);
@@ -74,9 +74,9 @@ public interface Channel extends DiscordItem, Castable<Channel>, ListenerAttacha
 
         /**
          * Gets a new instance of a ServerTextChannelBuilder.
+         * When using this method, you <b>MUST</b> later specify a server using {@link ServerTextChannel.Builder#setServer(Server)}.
          *
          * @return A new ServerTextChannelBuilder.
-         * @implNote When using this method, you <b>MUST</b> later specify a server using {@link ServerTextChannel.Builder#setServer(Server)}.
          */
         default ServerTextChannel.Builder makeServerChannel() {
             return new ChannelBuilderInternal.ServerTextChannelBuilder(null);
@@ -84,9 +84,9 @@ public interface Channel extends DiscordItem, Castable<Channel>, ListenerAttacha
 
         /**
          * Gets a new instance of a ChannelCategoryBuilder.
+         * When using this method, you <b>MUST</b> later specify a server using {@link ServerVoiceChannel.Builder#setServer(Server)}.
          *
          * @return A new ChannelCategoryBuilder.
-         * @implNote When using this method, you <b>MUST</b> later specify a server using {@link ChannelCategory.Builder#setServer(Server)}.
          */
         default ChannelCategory.Builder makeChannelCategory() {
             return new ChannelBuilderInternal.ChannelCategoryBuilder(null);

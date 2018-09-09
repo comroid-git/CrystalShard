@@ -16,13 +16,13 @@ public class ListHelper extends CollectionHelper {
      * Moves all items within a list after the given {@code distance}.
      * If an object is null or not available, it gets replaced with {@code defaultValue}.
      * All items that get moved below index {@code 0} get dropped.
+     * The given list pointer is being overwritten by the new, modified list.
      *
      * @param list         The list to move within.
      * @param distance     The distance to move. Can be negative for downwards moving.
      * @param defaultValue A supplier to provide a default item if the index is unavailable.
      * @param <T>          The type parameter of the list.
      * @return The modified list instance.
-     * @implNote The given list pointer is being overwritten by the new, modified list.
      */
     public static <T> List<T> moveList(List<T> list, int distance, Supplier<T> defaultValue) {
         List<T> newList = new ArrayList<>();

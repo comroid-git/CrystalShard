@@ -34,6 +34,6 @@ public interface ChannelCategory extends ServerChannel, List<Channel> {
          * @throws DiscordPermissionException If the bot account does not have the permission to create
          *                                    a channel category in that guild.
          */
-        CompletableFuture<ChannelCategory> build();
+        CompletableFuture<ChannelCategory> build() throws DiscordPermissionException;
     }
 }

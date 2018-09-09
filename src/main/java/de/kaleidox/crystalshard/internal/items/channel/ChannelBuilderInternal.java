@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
@@ -69,8 +70,8 @@ public class ChannelBuilderInternal implements Channel.Builder {
         }
 
         @Override
-        public CompletableFuture<ServerTextChannel> build() {
-            return null; // todo
+        public CompletableFuture<ServerTextChannel> build() throws DiscordPermissionException {
+            throw new DiscordPermissionException(""); // todo
         }
     }
 
@@ -109,8 +110,8 @@ public class ChannelBuilderInternal implements Channel.Builder {
         }
 
         @Override
-        public CompletableFuture<ServerVoiceChannel> build() {
-            return null; // todo
+        public CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException {
+            throw new DiscordPermissionException(""); // todo
         }
     }
 
@@ -142,8 +143,8 @@ public class ChannelBuilderInternal implements Channel.Builder {
         }
 
         @Override
-        public CompletableFuture<ChannelCategory> build() {
-            return null; // todo
+        public CompletableFuture<ChannelCategory> build() throws DiscordPermissionException {
+            throw new DiscordPermissionException(""); // todo
         }
     }
 

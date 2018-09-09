@@ -229,6 +229,7 @@ public class MapHelper {
      * When trying to reformat a {@link TreeMap} including its keys, please use
      * {@link #reformat(TreeMap, Function, Function, Comparator)}, as that method will also set the comparator
      * for the new map.
+     * The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
      *
      * @param map         The map to reformat.
      * @param keyMapper   The function to apply to every key in the map.
@@ -240,7 +241,6 @@ public class MapHelper {
      * @param <iMap>      Type variable for the input map.
      * @param <oMap>      Type variable for the output map.
      * @return The pointer to the new map.
-     * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
      * @see #reformat(Map, Map, Function, Function)
      */
     public static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap reformat(
@@ -257,6 +257,7 @@ public class MapHelper {
      * {@link #reformat(TreeMap, TreeMap, Function, Function, Comparator)}, as that method will also set the
      * comparator for the new map. This method will try to place the old comparator in the new map, casting it
      * to conform to {@code Comparator<oK>}.
+     * The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
      *
      * @param map              The map to reformat.
      * @param outputMapPointer The output map pointer. Gets overwritten with the output map. May be {@code null}.
@@ -270,8 +271,8 @@ public class MapHelper {
      * @param <oMap>           Type variable for the output map.
      * @return The pointer to the new map.
      * @throws ClassCastException If the map is a TreeMap whose comparator can't be {@code Comparator<\? super oK>}.
-     * @implNote The returned map always conforms to the given map supertype. See {@link #getMapOfParent(Map, Map)}.
      */
+    @SuppressWarnings("unchecked")
     public static <iK, iV, oK, oV, iMap extends Map<iK, iV>, oMap extends Map<oK, oV>> oMap reformat(
             iMap map,
             oMap outputMapPointer,

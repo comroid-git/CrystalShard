@@ -86,6 +86,6 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
          * @throws DiscordPermissionException If the bot account does not have the permission to create
          *                                    a voice channel in that guild.
          */
-        CompletableFuture<ServerVoiceChannel> build();
+        CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException;
     }
 }

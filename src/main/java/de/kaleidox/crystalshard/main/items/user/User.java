@@ -103,11 +103,11 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     /**
      * Gets a user from only an ID.
      * This method requires to be run from a Bot-Own Thread, see {@link ThreadPool#isBotOwnThread()}.
+     * This method must only be invoked from "bot-own" threads.
      *
      * @param id The ID to get a user for.
      * @return A future to contain a user with the given id.
      * @throws IllegalCallerException If the current thread does not belong to any {@link Discord} object.
-     * @implNote This method must only be invoked from "bot-own" threads.
      */
     static CompletableFuture<User> of(long id) {
         CompletableFuture<User> userFuture = new CompletableFuture<>();

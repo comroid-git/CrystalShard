@@ -55,11 +55,11 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
      * A static implementation of the {@link DefaultEmbed#get()} method.
      * This method will first check if the current thread is a {@link ThreadPool.Worker} thread, and if so,
      * will get the {@link Discord} item the Worker belongs to. Throws an exception if invoked from a wrong context.
+     * This method must only be invoked from "bot-own" threads.
      *
      * @param defaultEmbedModifier A modifier to be run on the default embed.
      * @return The default EmbedDraft according to the {@link Discord} instance that this Thread belongs to.
      * @throws IllegalCallerException If the current thread does not belong to any {@link Discord} object.
-     * @implNote This method must only be invoked from "bot-own" threads.
      * @see ThreadPool#isBotOwnThread()
      */
     public static EmbedDraft getStatic(Consumer<Embed.Builder> defaultEmbedModifier) {
@@ -86,10 +86,10 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
      * A static implementation of the {@link DefaultEmbed#get()} method.
      * This method will first check if the current thread is a {@link ThreadPool.Worker} thread, and if so,
      * will get the {@link Discord} item the Worker belongs to. Throws an exception if invoked from a wrong context.
+     * This method must only be invoked from "bot-own" threads.
      *
      * @return The default EmbedDraft according to the {@link Discord} instance that this Thread belongs to.
      * @throws IllegalCallerException If the current thread does not belong to any {@link Discord} object.
-     * @implNote This method must only be invoked from "bot-own" threads.
      * @see ThreadPool#isBotOwnThread()
      */
     public static EmbedDraft getStatic() {
@@ -112,10 +112,10 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
      * A static implementation of the {@link DefaultEmbed#get()} method.
      * This method will first check if the current thread is a {@link ThreadPool.Worker} thread, and if so,
      * will get the {@link Discord} item the Worker belongs to. Throws an exception if invoked from a wrong context.
+     * This method must only be invoked from "bot-own" threads.
      *
      * @return The default EmbedDraft according to the {@link Discord} instance that this Thread belongs to.
      * @throws IllegalCallerException If the current thread does not belong to any {@link Discord} object.
-     * @implNote This method must only be invoked from "bot-own" threads.
      * @see ThreadPool#isBotOwnThread()
      */
     public static Embed.Builder getBuilderStatic() {
@@ -136,10 +136,10 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
 
     /**
      * A static implementation to acquire a Thread-Fitting DefaultEmbed object.
+     * This method must only be invoked from "bot-own" threads.
      *
      * @return The according DefaultEmbed object.
      * @throws IllegalCallerException If the current thread does not belong to any {@link Discord} object.
-     * @implNote This method must only be invoked from "bot-own" threads.
      * @see ThreadPool#isBotOwnThread()
      */
     public static DefaultEmbed getInstance() {

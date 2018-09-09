@@ -95,6 +95,6 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
          * @throws DiscordPermissionException If the bot account does not have the permission to create
          *                                    a text channel in that guild.
          */
-        CompletableFuture<ServerTextChannel> build();
+        CompletableFuture<ServerTextChannel> build() throws DiscordPermissionException;
     }
 }
