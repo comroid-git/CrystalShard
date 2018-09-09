@@ -62,6 +62,12 @@ public class Logger {
         }
     }
 
+    public void traceElseInfo(Object traceMessage, Object infoMessage) {
+        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
+            post(LoggingLevel.TRACE, traceMessage.toString());
+        } else info(infoMessage);
+    }
+
     /**
      * Posts a log message with {@link LoggingLevel#INFO}.
      *
