@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
@@ -8,7 +10,11 @@ import de.kaleidox.crystalshard.main.util.Castable;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-public interface Channel extends DiscordItem, Castable<Channel> {
+public interface Channel extends DiscordItem, Castable<Channel>, ListenerAttachable<ChannelAttachableListener> {
+    default boolean isPrivate() {
+        return toServerChannel().isEmpty();
+    }
+
     default Optional<ChannelCategory> toChannelCategory() {
         return castTo(ChannelCategory.class);
     }
