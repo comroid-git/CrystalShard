@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 
 /**
- * https://discordapp.com/developers/docs/topics/gateway#channel-delete
+ * Missing Documentation.
  */
-public class CHANNEL_DELETE extends HandlerBase {
+public class PRESENCES_REPLACE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
 
