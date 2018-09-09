@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.handling.event.types;
+package de.kaleidox.crystalshard.main.handling.types;
 
 public enum MessageAttachingEvent implements AttachingEvent {
     MESSAGE_GENERIC,

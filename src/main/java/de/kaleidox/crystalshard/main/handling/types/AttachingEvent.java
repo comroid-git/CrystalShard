@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.handling.event.types;
+package de.kaleidox.crystalshard.main.handling.types;
 
 import de.kaleidox.crystalshard.main.util.Castable;
 
