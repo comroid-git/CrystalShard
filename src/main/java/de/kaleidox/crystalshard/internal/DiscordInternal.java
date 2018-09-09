@@ -40,8 +40,8 @@ public class DiscordInternal implements Discord {
     private final Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers = new ArrayList<>();
     private final int thisShard;
     private final int shardCount;
-    private Self self;
-    private CompletableFuture<Void> selfFuture;
+    private final Self self;
+    private CompletableFuture<Self> selfFuture;
 
     public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
         selfFuture = new CompletableFuture<>();
@@ -57,15 +57,9 @@ public class DiscordInternal implements Discord {
 
         servers = new ArrayList<>();
 
-        try {
-            long waitMs = 2000;
-            logger.info("Waiting for initialization to finish... (" + (waitMs / 1000) + "s)");
-            selfFuture.join();
-            Thread.sleep(waitMs);
-            logger.info("Discord connection for user " + self.getDiscriminatedName() + " is ready!");
-        } catch (InterruptedException e) {
-            logger.exception(e);
-        }
+        logger.info("Waiting for initialization to finish...");
+        self = selfFuture.join();
+        logger.info("Discord connection for user " + self.getDiscriminatedName() + " is ready!");
     }
 
     public DiscordInternal(String token) {
@@ -78,6 +72,7 @@ public class DiscordInternal implements Discord {
         this.utils = null;
         this.thisShard = 0;
         this.shardCount = 1;
+        this.self = null;
     }
 
     public ThreadPool getThreadPool() {
@@ -139,11 +134,6 @@ public class DiscordInternal implements Discord {
         return self;
     }
 
-    public void setSelf(Self self) {
-        this.self = self;
-        selfFuture.complete(null);
-    }
-
     @Override
     public Optional<Server> getServerById(long id) {
         return servers.stream()
@@ -193,5 +183,9 @@ public class DiscordInternal implements Discord {
         // manager.addAttached(this);
         listenerManangers.add(manager);
         return manager;
+    }
+
+    public CompletableFuture<Self> getSelfFuture() {
+        return selfFuture;
     }
 }
