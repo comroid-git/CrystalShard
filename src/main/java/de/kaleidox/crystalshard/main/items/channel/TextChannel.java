@@ -11,7 +11,6 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.util.CompletableFutureExtended;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface TextChannel extends Channel, MessageReciever {
@@ -31,15 +30,11 @@ public interface TextChannel extends Channel, MessageReciever {
                         .execute(node -> {
                             if (node.has("guild_id")) {
                                 return ServerTextChannelInternal.getInstance(discord, id)
-                                        .map(Channel::toTextChannel)
-                                        .filter(Optional::isPresent)
-                                        .map(Optional::get)
+                                        .toTextChannel()
                                         .get();
                             } else if (node.has("reciepients")) {
                                 return PrivateTextChannelInternal.getInstance(discord, id)
-                                        .map(Channel::toTextChannel)
-                                        .filter(Optional::isPresent)
-                                        .map(Optional::get)
+                                        .toTextChannel()
                                         .get();
                             }
                             throw new NoSuchElementException("Could not create TextChannel. ID: " + id);

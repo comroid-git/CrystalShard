@@ -13,11 +13,18 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     private final String emojiExact;
     private final String aliases;
 
-    public UnicodeEmojiInternal(DiscordInternal discord, JsonNode data, boolean partialData) {
+    public UnicodeEmojiInternal(Discord discord, JsonNode data, boolean partialData) {
         logger.deeptrace("Creating UnicodeEmoji object for data: " + data);
-        this.discord = discord;
+        this.discord = (DiscordInternal) discord;
         this.emojiExact = data.get("name").asText();
         this.aliases = EmojiParser.parseToAliases(emojiExact);
+    }
+
+    public UnicodeEmojiInternal(Discord discord, String aliases, String unicode) {
+        logger.deeptrace("Creating UnicodeEmoji object [" + unicode + "] and aliases: [" + aliases + "]");
+        this.discord = (DiscordInternal) discord;
+        this.emojiExact = unicode;
+        this.aliases = aliases;
     }
 
     @Override

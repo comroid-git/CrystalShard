@@ -62,6 +62,10 @@ public class JsonHelper {
         return JsonNodeFactory.instance.objectNode();
     }
 
+    public static JsonNode objectNode(String fieldName, Object fieldValue) {
+        return objectNode().set(fieldName, nodeOf(fieldName));
+    }
+
     public static JsonNode parse(String body) {
         try {
             return new ObjectMapper().readTree(body);

@@ -20,8 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 
-public interface Discord extends UserContainer, ChannelContainer,
-        ListenerAttachable<DiscordAttachableListener> {
+public interface Discord extends UserContainer, ChannelContainer, ListenerAttachable<DiscordAttachableListener> {
     String getPrefixedToken();
 
     int getShardId();

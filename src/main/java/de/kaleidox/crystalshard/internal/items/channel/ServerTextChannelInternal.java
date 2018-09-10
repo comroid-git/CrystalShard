@@ -25,13 +25,14 @@ import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ServerTextChannelInternal extends ChannelInternal implements ServerTextChannel {
+public class ServerTextChannelInternal extends TextChannelInternal implements ServerTextChannel {
     final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerTextChannelInternal.class);
     private final Discord discord;
@@ -86,7 +87,7 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
                 .method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
                 .node(data)
-                .execute(node -> MessageInternal.getInstance(discord, server, node));
+                .execute(node -> MessageInternal.getInstance(discord, node));
     }
 
     @Override
@@ -98,12 +99,17 @@ public class ServerTextChannelInternal extends ChannelInternal implements Server
                 .method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
                 .node(data)
-                .execute(node -> MessageInternal.getInstance(discord, server, node));
+                .execute(node -> MessageInternal.getInstance(discord, node));
     }
 
     @Override
     public CompletableFuture<Void> typing() {
         return null;
+    }
+
+    @Override
+    public Collection<Message> getMessages() {
+        return null; // todo
     }
 
     public List<? extends ChannelAttachableListener> getListeners() {

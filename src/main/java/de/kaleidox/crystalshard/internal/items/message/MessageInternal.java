@@ -1,7 +1,10 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
@@ -15,8 +18,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteList
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Attachment;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -37,7 +39,6 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.annotations.Nullable;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -46,7 +47,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,13 +79,16 @@ public class MessageInternal implements Message {
     private final TextChannel channel;
     private Collection<? extends MessageAttachableListener> listeners;
 
-    private MessageInternal(Discord discord, @Nullable Server server, JsonNode data) {
+    private MessageInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
         this.discord = discord;
-        this.server = server;
         this.id = data.get("id").asLong();
         this.channelId = data.get("channel_id").asLong();
+        this.channel = ChannelInternal.getInstance(discord, channelId).toTextChannel().get();
+        if (channel.toServerChannel().isPresent()) {
+            this.server = channel.toServerChannel().map(ServerChannel::getServer).get();
+        } else this.server = null;
         this.contentRaw = data.get("content").asText();
         try {
             timestamp1 = Instant.parse(data.get("timestamp").asText());
@@ -127,15 +130,8 @@ public class MessageInternal implements Message {
 
         if (data.has("reactions")) {
             for (JsonNode reaction : data.get("reactions")) {
-                reactions.add(new ReactionInternal((DiscordInternal) discord, this, reaction));
+                reactions.add(ReactionInternal.getInstance(null, this, null, reaction, 0));
             }
-        }
-        if (Objects.nonNull(server)) {
-            // is server
-            this.channel = ServerTextChannel.of(discord, channelId).join();
-        } else {
-            // is private
-            this.channel = PrivateTextChannel.of(discord, channelId).join();
         }
 
         instances.put(id, this);
@@ -361,9 +357,21 @@ public class MessageInternal implements Message {
         return "Message with ID [" + id + "]";
     }
 
-    public static Message getInstance(Discord discord, @Nullable Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        return instances.getOrDefault(id, new MessageInternal(discord, server, data));
+    public static Message getInstance(Discord discord, JsonNode data) {
+        synchronized (instances) {
+            long id = data.get("id").asLong(-1);
+            if (id == -1) throw new NoSuchElementException("No valid ID found.");
+            return instances.getOrDefault(id, new MessageInternal(discord, data));
+        }
+    }
+
+    public static Message getInstance(TextChannel channel, long id) {
+        return instances.getOrDefault(id,
+                new WebRequest<Message>(channel.getDiscord())
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
+                        .execute(node -> getInstance(channel.getDiscord(), node))
+                        .join()
+        );
     }
 }

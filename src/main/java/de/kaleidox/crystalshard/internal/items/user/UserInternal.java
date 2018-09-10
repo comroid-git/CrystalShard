@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
@@ -181,6 +183,16 @@ public class UserInternal implements User {
 
     @Override
     public CompletableFuture<Void> typing() {
+        return null;
+    }
+
+    @Override
+    public ScheduledFuture<Void> typeFor(long time, TimeUnit unit) {
+        return null;
+    }
+
+    @Override
+    public Collection<Message> getMessages() {
         return null;
     }
 

@@ -20,7 +20,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
@@ -119,7 +118,7 @@ public class ServerInternal implements Server {
 
         data.path("roles").forEach(role -> roles.add(RoleInternal.getInstance(this, role)));
         data.path("emojis").forEach(emoji -> emojis.add(
-                new CustomEmojiInternal((DiscordInternal) getDiscord(), this, emoji, true)));
+                CustomEmojiInternal.getInstance(getDiscord(), this, emoji, true)));
         data.path("features").forEach(feature -> features.add(feature.asText()));
         data.path("voice_states").forEach(state -> voiceStates.add(new VoiceStateInternal(state)));
         data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord,
@@ -151,30 +150,34 @@ public class ServerInternal implements Server {
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("No @everyone role found for " + this));
 
-        afkChannel = ChannelInternal
-                .getInstance(discord, data.path("afk_channel_id").asLong(-1))
-                .map(Channel::toServerVoiceChannel)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .orElse(null);
-        embedChannel = ChannelInternal
-                .getInstance(discord, data.path("embed_channel_id").asLong(-1))
-                .map(Channel::toServerChannel)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .orElse(null);
-        widgetChannel = ChannelInternal
-                .getInstance(discord, data.path("widget_channel_id").asLong(-1))
-                .map(Channel::toServerChannel)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .orElse(null);
-        systemChannel = ChannelInternal
-                .getInstance(discord, data.path("system_channel_id").asLong(-1))
-                .map(Channel::toServerTextChannel)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .orElse(null);
+        long afk_channel_id = data.path("afk_channel_id").asLong(-1);
+        if (afk_channel_id != -1) {
+            afkChannel = ChannelInternal
+                    .getInstance(discord, afk_channel_id)
+                    .toServerVoiceChannel()
+                    .orElse(null);
+        }
+        long embed_channel_id = data.path("embed_channel_id").asLong(-1);
+        if (embed_channel_id != -1) {
+            embedChannel = ChannelInternal
+                    .getInstance(discord, embed_channel_id)
+                    .toServerChannel()
+                    .orElse(null);
+        }
+        long widget_channel_id = data.path("widget_channel_id").asLong(-1);
+        if (widget_channel_id != -1) {
+            widgetChannel = ChannelInternal
+                    .getInstance(discord, widget_channel_id)
+                    .toServerChannel()
+                    .orElse(null);
+        }
+        long system_channel_id = data.path("system_channel_id").asLong(-1);
+        if (system_channel_id != -1) {
+            systemChannel = ChannelInternal
+                    .getInstance(discord, system_channel_id)
+                    .toServerTextChannel()
+                    .orElse(null);
+        }
 
         listenerManangers = new ArrayList<>();
 
@@ -445,38 +448,30 @@ public class ServerInternal implements Server {
         if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id").asLong(-1)) {
             afkChannel = ServerVoiceChannelInternal
                     .getInstance(discord, data.path("afk_channel_id").asLong(-1))
-                    .map(Channel::toServerVoiceChannel)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .orElse(null);
+                    .toServerVoiceChannel()
+                    .orElseThrow(AssertionError::new);
             traits.add(AFK_CHANNEL);
         }
         if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id").asLong(-1)) {
             embedChannel = ChannelInternal
                     .getInstance(discord, data.path("embed_channel_id").asLong(-1))
-                    .map(Channel::toServerChannel)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .orElse(null);
+                    .toServerChannel()
+                    .orElseThrow(AssertionError::new);
             traits.add(EMBED_CHANNEL);
         }
         if ((widgetChannel != null ? widgetChannel.getId() : -1) !=
                 data.path("widget_channel_id").asLong(-1)) {
             widgetChannel = ChannelInternal
                     .getInstance(discord, data.path("widget_channel_id").asLong(-1))
-                    .map(Channel::toServerChannel)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .orElse(null);
+                    .toServerChannel()
+                    .orElseThrow(AssertionError::new);
             traits.add(WIDGET_CHANNEL);
         }
         if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id").asLong(-1)) {
             systemChannel = ServerTextChannelInternal
                     .getInstance(discord, data.path("system_channel_id").asLong(-1))
-                    .map(Channel::toServerTextChannel)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .orElse(null);
+                    .toServerTextChannel()
+                    .orElseThrow(AssertionError::new);
             traits.add(SYSTEM_CHANNEL);
         }
         return traits;

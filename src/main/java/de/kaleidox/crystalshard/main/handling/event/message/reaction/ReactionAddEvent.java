@@ -4,4 +4,6 @@ import de.kaleidox.crystalshard.main.items.user.User;
 
 public interface ReactionAddEvent extends ReactionEvent {
     User getUser();
+
+    int getCount();
 }

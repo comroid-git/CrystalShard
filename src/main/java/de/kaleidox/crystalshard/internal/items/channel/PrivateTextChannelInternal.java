@@ -9,20 +9,15 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
-public class PrivateTextChannelInternal extends ChannelInternal implements PrivateTextChannel {
+public class PrivateTextChannelInternal extends TextChannelInternal implements PrivateTextChannel {
     final static ConcurrentHashMap<Long, PrivateTextChannel> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(PrivateTextChannelInternal.class);
     private final List<Message> messages = new ArrayList<>();
@@ -35,33 +30,8 @@ public class PrivateTextChannelInternal extends ChannelInternal implements Priva
         this.id = data.get("id").asLong();
     }
 
-    @Override
-    public CompletableFuture<Message> sendMessage(Sendable content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(String content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> typing() {
-        return null;
-    }
-
     public Message craftMessage(JsonNode data) {
-        MessageInternal messageInternal = (MessageInternal) MessageInternal.getInstance(getDiscord(), null, data);
+        MessageInternal messageInternal = (MessageInternal) MessageInternal.getInstance(getDiscord(), data);
         this.messages.add(messageInternal);
         return messageInternal;
     }

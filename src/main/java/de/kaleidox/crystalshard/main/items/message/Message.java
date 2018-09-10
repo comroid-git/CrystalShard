@@ -1,5 +1,9 @@
 package de.kaleidox.crystalshard.main.items.message;
 
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
@@ -138,5 +142,16 @@ public interface Message extends DiscordItem {
 
     void removeAttachedListener(MessageAttachableListener listener);
 
-    ;
+    static Message of(TextChannel channel, long id) {
+        return channel.getMessages()
+                .stream()
+                .filter(msg -> msg.getId() == id)
+                .findAny()
+                .orElseGet(() -> new WebRequest<Message>(channel.getDiscord())
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
+                        .execute(node -> MessageInternal.getInstance(channel.getDiscord(), node))
+                        .join()
+                );
+    }
 }

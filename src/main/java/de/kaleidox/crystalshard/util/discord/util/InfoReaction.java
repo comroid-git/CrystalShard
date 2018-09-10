@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.logging.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -61,10 +62,11 @@ public class InfoReaction {
     }
 
     public static void add(Message message, Embed.Builder infoEmbed) {
-        add(message, Emoji.of("ℹ"), false, infoEmbed);
+        add(message, UnicodeEmoji.of(message.getDiscord(), "ℹ"), false, infoEmbed);
     }
 
     public static void add(CompletableFuture<Message> msgFut, Embed.Builder infoEmbed) {
-        add(msgFut.join(), Emoji.of("ℹ"), false, infoEmbed);
+        Message msg = msgFut.join();
+        add(msg, UnicodeEmoji.of(msg.getDiscord(), "ℹ"), false, infoEmbed);
     }
 }

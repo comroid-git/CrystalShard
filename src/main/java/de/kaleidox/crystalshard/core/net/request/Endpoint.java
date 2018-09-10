@@ -81,6 +81,7 @@ public class Endpoint {
         GUILD_WEBHOOK("/guilds/%s/webhooks"),
         INVITE("/invites/%s"),
         MESSAGE("/channels/%s/messages"),
+        MESSAGE_SPECIFIC("/channels/%s/messages/%s"),
         MESSAGES_BULK_DELETE("/channels/%s/messages/bulk-delete"),
         MESSAGE_DELETE("/channels/%s/messages"),
         OWN_NICKNAME("/guilds/%s/members/@me/nick"),
@@ -116,7 +117,7 @@ public class Endpoint {
 
         public int getParameterCount() {
             int splitted = location.split("%s").length - 1;
-            int end = (location.indexOf("%s") == location.length() - 2 ? 1 : 0);
+            int end = (location.substring(location.length() - 2).equalsIgnoreCase("%s") ? 1 : 0);
             return splitted + end;
         }
 

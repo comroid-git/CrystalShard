@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.NamedItem;
@@ -82,7 +83,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
      * @throws ArrayStoreException If there already is an option with the specified emoji.
      */
     public Question<ResultType> addOption(String emoji, String name, String description, ResultType representation) {
-        return addOption(new Option(Emoji.of(emoji), name, description, representation));
+        return addOption(new Option(UnicodeEmoji.of(parent.getDiscord(), emoji), name, description, representation));
     }
 
     /**

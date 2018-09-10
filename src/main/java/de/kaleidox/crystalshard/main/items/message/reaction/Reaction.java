@@ -13,4 +13,6 @@ public interface Reaction {
     User getUser();
 
     Message getMessage();
+
+    int getCount();
 }

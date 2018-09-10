@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.role.Role;
@@ -20,11 +18,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomEmojiInternal implements CustomEmoji {
+    private final static ConcurrentHashMap<Long, CustomEmoji> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(CustomEmojiInternal.class);
-    private final DiscordInternal discord;
-    private final ServerInternal serverInternal;
+    private final Discord discord;
+    private final Server server;
     private final boolean partialData;
     private final long id;
     private final String name;
@@ -35,23 +35,24 @@ public class CustomEmojiInternal implements CustomEmoji {
     private List<Role> whitelistedRoles = new ArrayList<>();
     private boolean animated;
 
-    public CustomEmojiInternal(
-            DiscordInternal discord, ServerInternal serverInternal, JsonNode data, boolean partialData) {
+    private CustomEmojiInternal(
+            Discord discord, Server server, JsonNode data, boolean partialData) {
         logger.deeptrace("Creating CustomEmoji object for data: " + data);
         this.discord = discord;
-        this.serverInternal = serverInternal;
-        this.serverId = serverInternal.getId();
+        this.server = server;
+        this.serverId = server.getId();
         this.partialData = partialData;
         this.id = data.get("id").asLong();
         this.name = data.get("name").asText();
         if (!partialData) {
-            data.path("role").forEach(node -> whitelistedRoles.add(RoleInternal.getInstance(serverInternal, node)));
+            data.path("role").forEach(node -> whitelistedRoles.add(RoleInternal.getInstance(server, node)));
             this.creator = data.has("user") ?
                     UserInternal.getInstance(discord, data.path("user")) : null;
             this.animated = data.path("animated").asBoolean();
             this.managed = data.path("managed").asBoolean();
             this.requireColons = data.path("require_colons").asBoolean();
         }
+        instances.put(id, this);
     }
 
     @Override
@@ -63,7 +64,7 @@ public class CustomEmojiInternal implements CustomEmoji {
 
     @Override
     public Server getServer() {
-        return serverInternal;
+        return server;
     }
 
     @Override
@@ -99,7 +100,7 @@ public class CustomEmojiInternal implements CustomEmoji {
                 .execute()
                 .thenAccept(data -> {
                     data.path("role").forEach(node ->
-                            whitelistedRoles.add(RoleInternal.getInstance(serverInternal, node)));
+                            whitelistedRoles.add(RoleInternal.getInstance(server, node)));
                     this.creator = data.has("user") ?
                             UserInternal.getInstance(discord, data.path("user")) : null;
                     this.animated = data.path("animated").asBoolean(false);
@@ -189,5 +190,21 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public String getMentionTag() {
         return toDiscordPrintable();
+    }
+
+    public static CustomEmoji getInstance(Discord discord, Server server, JsonNode data, boolean partialData) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        return instances.getOrDefault(id, new CustomEmojiInternal(discord, server, data, partialData));
+    }
+
+    public static CompletableFuture<CustomEmoji> getInstance(Server server, String customEmojiMentionTag) {
+        String reverse = new StringBuilder(customEmojiMentionTag).reverse().toString();
+        int ind = reverse.indexOf(":");
+        long id = Long.parseLong(new StringBuilder(reverse.substring(1, ind)).reverse().toString());
+        return new WebRequest<CustomEmoji>(server.getDiscord())
+                .method(Method.GET)
+                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(server, id))
+                .execute(node -> getInstance(server.getDiscord(), server, node, false));
     }
 }

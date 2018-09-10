@@ -10,15 +10,14 @@ import de.kaleidox.crystalshard.main.items.user.User;
 
 public class ReactionAddEventInternal extends EventBase implements ReactionAddEvent {
     private final Reaction reaction;
-    private final int newReactionCount;
     private final Message message;
 
     public ReactionAddEventInternal(
             DiscordInternal discordInternal,
-            Reaction reaction, int newReactionCount, Message message) {
+            Reaction reaction,
+            Message message) {
         super(discordInternal);
         this.reaction = reaction;
-        this.newReactionCount = newReactionCount;
         this.message = message;
     }
 
@@ -35,6 +34,11 @@ public class ReactionAddEventInternal extends EventBase implements ReactionAddEv
     @Override
     public User getUser() {
         return reaction.getUser();
+    }
+
+    @Override
+    public int getCount() {
+        return reaction.getCount();
     }
 
     @Override

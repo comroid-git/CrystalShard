@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -12,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public abstract class ChannelInternal implements Channel {
     private final Discord discord;
@@ -42,11 +44,37 @@ public abstract class ChannelInternal implements Channel {
 
     public abstract List<? extends ChannelAttachableListener> getListeners();
 
-    public static Optional<Channel> getInstance(Discord discord, long id) {
+    @Override
+    public String toString() {
+        return "Channel with ID [" + id + "]";
+    }
+
+    public static Channel getInstance(Discord discord, long id) {
         return collectInstances()
                 .stream()
                 .filter(channel -> channel.getId() == id)
-                .findAny();
+                .findAny()
+                .orElseGet(() -> new WebRequest<Channel>(discord)
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.CHANNEL.toEndpoint(id))
+                        .execute(node -> getInstance(discord, null, node))
+                        .join());
+    }
+
+    public static Channel getInstance(Discord discord, @Nullable Server server, JsonNode data) {
+        if (data.has("guild_id")) {
+            if (data.has("bitrate")) {
+                return ServerVoiceChannelInternal.getInstance(discord, server, data);
+            } else {
+                return ServerTextChannelInternal.getInstance(discord, server, data);
+            }
+        } else {
+            if (data.has("recipients")) {
+                return GroupChannelInternal.getInstance(discord, data);
+            } else {
+                return PrivateTextChannelInternal.getInstance(discord, data);
+            }
+        }
     }
 
     private static Collection<Channel> collectInstances() {
@@ -77,21 +105,5 @@ public abstract class ChannelInternal implements Channel {
                 .map(Map.Entry::getValue)
                 .forEachOrdered(collect::add);
         return collect;
-    }
-
-    public static Channel getInstance(Discord discord, @Nullable Server server, JsonNode data) {
-        if (data.has("guild_id")) {
-            if (data.has("bitrate")) {
-                return ServerVoiceChannelInternal.getInstance(discord, server, data);
-            } else {
-                return ServerTextChannelInternal.getInstance(discord, server, data);
-            }
-        } else {
-            if (data.has("recipients")) {
-                return GroupChannelInternal.getInstance(discord, data);
-            } else {
-                return PrivateTextChannelInternal.getInstance(discord, data);
-            }
-        }
     }
 }
