@@ -30,15 +30,8 @@ public class DiscordLoginTool implements ListenerAttachable<PreAttachableListene
     }
 
     /**
-     * Creates a new instance.
-     * @return The tool.
-     */
-    public static DiscordLoginTool get() {
-        return new DiscordLoginTool();
-    }
-
-    /**
      * Creates a new instance with a preset token.
+     *
      * @param token The token to pre-set.
      */
     public DiscordLoginTool(String token) {
@@ -108,5 +101,14 @@ public class DiscordLoginTool implements ListenerAttachable<PreAttachableListene
     @Override
     public <C extends PreAttachableListener> ListenerManager<C> attachListener(C listener) {
         return null; // todo
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @return The tool.
+     */
+    public static DiscordLoginTool get() {
+        return new DiscordLoginTool();
     }
 }

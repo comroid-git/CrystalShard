@@ -14,7 +14,7 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
     /**
      * Creates a new DialogueEndpoint object.
      *
-     * @param questionElement The the question element to execute here.
+     * @param questionElement   The the question element to execute here.
      * @param responsesConsumer A Consumer to handle the list of responses at the end.
      */
     public DialoguePassthrough(

@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerEditEvent;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerEditListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
 

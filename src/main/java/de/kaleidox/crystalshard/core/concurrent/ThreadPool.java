@@ -124,7 +124,7 @@ public class ThreadPool {
      * Schedules a new task.
      * If there is no limit on the ThreadPool or the limit is not hit, ensures that there is a Worker available.
      *
-     * @param task The task to execute.
+     * @param task        The task to execute.
      * @param description A short description on what this task does.
      */
     public void execute(Runnable task, String... description) {

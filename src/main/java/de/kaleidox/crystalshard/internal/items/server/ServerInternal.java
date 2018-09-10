@@ -62,6 +62,15 @@ public class ServerInternal implements Server {
     private final static Logger logger = new Logger(ServerInternal.class);
     private final DiscordInternal discord;
     private final long id;
+    private final Role everyoneRole;
+    private final ArrayList<Role> roles = new ArrayList<>();
+    private final ArrayList<CustomEmoji> emojis = new ArrayList<>();
+    private final ArrayList<String> features = new ArrayList<>();
+    private final ArrayList<VoiceState> voiceStates = new ArrayList<>();
+    private final ArrayList<ServerMember> members = new ArrayList<>();
+    private final ArrayList<ServerChannel> channels = new ArrayList<>();
+    private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
+    private final List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
     private String name;
     private URL iconUrl;
     private URL splashUrl;
@@ -83,15 +92,6 @@ public class ServerInternal implements Server {
     private boolean unavailable;
     private int memberCount;
     private ChannelStructureInternal structure;
-    private final Role everyoneRole;
-    private final ArrayList<Role> roles = new ArrayList<>();
-    private final ArrayList<CustomEmoji> emojis = new ArrayList<>();
-    private final ArrayList<String> features = new ArrayList<>();
-    private final ArrayList<VoiceState> voiceStates = new ArrayList<>();
-    private final ArrayList<ServerMember> members = new ArrayList<>();
-    private final ArrayList<ServerChannel> channels = new ArrayList<>();
-    private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
-    private final List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
 
     private ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());

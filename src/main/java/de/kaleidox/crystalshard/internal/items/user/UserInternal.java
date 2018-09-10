@@ -20,7 +20,6 @@ import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;

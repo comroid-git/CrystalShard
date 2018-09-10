@@ -4,11 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerCreateEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
-import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class GUILD_CREATE extends HandlerBase {
     @Override

@@ -6,7 +6,6 @@ import de.kaleidox.util.annotations.Nullable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
-import java.util.stream.StreamSupport;
 
 public class UrlHelper {
     public final static String BASE_IMAGE_URL = "https://cdn.discordapp.com/";

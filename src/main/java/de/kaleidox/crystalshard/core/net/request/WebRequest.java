@@ -1,8 +1,6 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeCreator;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import de.kaleidox.crystalshard.core.net.ResponseDispatch;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
@@ -141,7 +139,7 @@ public class WebRequest<T> {
                         break;
                     case 400:
                         logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " +
-                                urlExternal + " with response body: "+response.body()+
+                                urlExternal + " with response body: " + response.body() +
                                 " and request body: " + requestBody);
                         break;
                     default:
