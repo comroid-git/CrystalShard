@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.handling.event.channel.generic;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.event.channel.generic.ChannelCreateEvent;
-import de.kaleidox.crystalshard.main.handling.types.ChannelAttachingEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 
 public class ChannelCreateEventInternal extends EventBase implements ChannelCreateEvent {
@@ -11,7 +10,7 @@ public class ChannelCreateEventInternal extends EventBase implements ChannelCrea
 
     public ChannelCreateEventInternal(DiscordInternal discordInternal,
                                       Channel createdChannel) {
-        super(discordInternal, ChannelAttachingEvent.CHANNEL_CREATE);
+        super(discordInternal);
         this.createdChannel = createdChannel;
     }
 

@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.handling.event.message;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageDeleteEvent;
-import de.kaleidox.crystalshard.main.handling.types.MessageAttachingEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -19,7 +18,7 @@ public class MessageDeleteEventInternal extends EventBase implements MessageDele
 
     public MessageDeleteEventInternal(DiscordInternal discordInternal,
                                       Message message, User deleter) {
-        super(discordInternal, MessageAttachingEvent.MESSAGE_DELETE);
+        super(discordInternal);
         this.message = message;
         this.messageId = message.getId();
         this.channel = message.getChannel();

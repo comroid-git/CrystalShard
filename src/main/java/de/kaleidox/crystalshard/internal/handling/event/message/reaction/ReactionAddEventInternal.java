@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.handling.event.message.reaction;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionAddEvent;
-import de.kaleidox.crystalshard.main.handling.types.MessageAttachingEvent;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
@@ -17,7 +16,7 @@ public class ReactionAddEventInternal extends EventBase implements ReactionAddEv
     public ReactionAddEventInternal(
             DiscordInternal discordInternal,
             Reaction reaction, int newReactionCount, Message message) {
-        super(discordInternal, MessageAttachingEvent.REACTION_ADD);
+        super(discordInternal);
         this.reaction = reaction;
         this.newReactionCount = newReactionCount;
         this.message = message;

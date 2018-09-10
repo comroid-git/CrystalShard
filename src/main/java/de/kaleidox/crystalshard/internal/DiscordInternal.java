@@ -184,10 +184,6 @@ public class DiscordInternal implements Discord {
         return ratelimiter;
     }
 
-    public void craftServer(JsonNode data) {
-        this.servers.add(ServerInternal.getInstance(this, data));
-    }
-
     public Collection<ListenerManager<? extends DiscordAttachableListener>> getAllListenerManagers() {
         return listenerManangers;
     }

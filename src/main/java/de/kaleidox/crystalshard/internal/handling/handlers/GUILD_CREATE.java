@@ -2,10 +2,22 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerCreateEventInternal;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerCreateEvent;
+import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
+import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class GUILD_CREATE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        discord.craftServer(data);
+        Server server = ServerInternal.getInstance(discord, data);
+
+        ServerCreateEvent event = new ServerCreateEventInternal(discord, server);
+
+        collectListeners(ServerCreateListener.class, null, discord)
+                .forEach(listener -> listener.onServerCreate(event));
     }
 }
