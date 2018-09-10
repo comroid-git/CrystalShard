@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * https://discordapp.com/developers/docs/topics/gateway#message-create
@@ -20,7 +21,8 @@ import java.util.List;
 public class MESSAGE_CREATE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Channel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong());
+        Channel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong())
+                .orElseThrow(NoSuchElementException::new);
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
         Message message = MessageInternal.getInstance(discord, server, data);
 

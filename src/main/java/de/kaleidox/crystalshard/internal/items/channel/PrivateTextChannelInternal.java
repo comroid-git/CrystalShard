@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public class PrivateTextChannelInternal extends ChannelInternal implements PrivateTextChannel {
-    private final static ConcurrentHashMap<Long, PrivateTextChannel> instances = new ConcurrentHashMap<>();
+    final static ConcurrentHashMap<Long, PrivateTextChannel> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(PrivateTextChannelInternal.class);
     private final List<Message> messages = new ArrayList<>();
     private final List<ChannelAttachableListener> listeners = new ArrayList<>();

@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerVoiceChannelInternal extends ChannelInternal implements ServerVoiceChannel {
-    private final static ConcurrentHashMap<Long, ServerVoiceChannel> instances = new ConcurrentHashMap<>();
+    final static ConcurrentHashMap<Long, ServerVoiceChannel> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerVoiceChannelInternal.class);
     private final long id;
     private List<? extends ChannelAttachableListener> listeners;

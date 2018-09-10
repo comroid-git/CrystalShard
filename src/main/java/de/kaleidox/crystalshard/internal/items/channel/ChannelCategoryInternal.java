@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ArrayList<Channel> implements ChannelCategory {
-    private final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
+    final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
     private final Discord discord;
     private final Server server;
     private final String name;

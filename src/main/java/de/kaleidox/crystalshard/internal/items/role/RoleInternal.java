@@ -2,7 +2,9 @@ package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
@@ -27,7 +29,7 @@ public class RoleInternal implements Role {
     private final boolean mentionable;
     private final Discord discordInternal;
 
-    public RoleInternal(Discord discord, Server server, JsonNode data) {
+    private RoleInternal(Discord discord, Server server, JsonNode data) {
         logger.deeptrace("Creating role object for data: " + data.toString());
         this.discordInternal = discord;
         this.server = server;

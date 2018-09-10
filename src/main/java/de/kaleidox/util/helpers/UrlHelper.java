@@ -1,10 +1,12 @@
 package de.kaleidox.util.helpers;
 
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.annotations.Nullable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 public class UrlHelper {
     public final static String BASE_IMAGE_URL = "https://cdn.discordapp.com/";
@@ -18,7 +20,7 @@ public class UrlHelper {
      * @param of The string to create an URL from.
      * @return An URL or {@code null}.
      */
-    public static URL orNull(String of) {
+    public static URL ignoreIfNull(String of) {
         if (Objects.nonNull(of)) {
             try {
                 return new URL(of);
@@ -41,7 +43,7 @@ public class UrlHelper {
         return null;
     }
 
-    public static URL ignoreIfNull(String of) {
+    public static URL orNull(String of) {
         if (Objects.nonNull(of)) {
             try {
                 return new URL(of);
@@ -50,6 +52,17 @@ public class UrlHelper {
             }
         }
         return null;
+    }
+
+    public static boolean equals(@Nullable Object first, @Nullable Object second) {
+        if (first == null || second == null) return false;
+        if (first.getClass() == second.getClass())
+            return first.equals(second);
+        if (first instanceof String && second instanceof URL)
+            return ((URL) second).toExternalForm().equalsIgnoreCase((String) first);
+        else if (first instanceof URL && second instanceof String)
+            return ((URL) first).toExternalForm().equalsIgnoreCase((String) second);
+        return false;
     }
 
     /**

@@ -219,4 +219,8 @@ public class DiscordInternal implements Discord {
     public String toString() {
         return "Discord Connection to " + self;
     }
+
+    public void addServer(Server server) {
+        servers.add(server);
+    }
 }

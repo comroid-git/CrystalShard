@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroupChannelInternal extends ChannelInternal implements GroupChannel {
-    private final static ConcurrentHashMap<Long, GroupChannel> instances = new ConcurrentHashMap<>();
+    final static ConcurrentHashMap<Long, GroupChannel> instances = new ConcurrentHashMap<>();
     private final long id;
     private List<? extends ChannelAttachableListener> listeneners;
 

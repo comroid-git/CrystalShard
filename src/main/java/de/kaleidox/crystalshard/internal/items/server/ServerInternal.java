@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
+import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
@@ -13,10 +14,13 @@ import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
+import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceStateInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
@@ -42,38 +46,44 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.*;
 
 public class ServerInternal implements Server {
     private final static ConcurrentHashMap<Long, ServerInternal> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerInternal.class);
     private final DiscordInternal discord;
     private final long id;
-    private final String name;
-    private final URL iconUrl;
-    private final URL splashUrl;
-    private final User owner;
-    private final PermissionList ownPermissions;
-    private final VoiceRegion voiceRegion;
-    private final ServerVoiceChannel afkChannel;
-    private final int afkTimeout;
-    private final boolean embedEnabled;
-    private final ServerChannel embedChannel;
-    private final VerificationLevel verificationLevel;
-    private final DefaultMessageNotificationLevel defaultMessageNotificationLevel;
-    private final ExplicitContentFilterLevel explicitContentFilterLevel;
-    private final MFALevel mfaLevel;
-    private final boolean widgetable;
-    private final ServerChannel widgetChannel;
-    private final ServerTextChannel systemChannel;
-    private final boolean large;
-    private final boolean unavailable;
-    private final int memberCount;
+    private String name;
+    private URL iconUrl;
+    private URL splashUrl;
+    private User owner;
+    private PermissionList ownPermissions;
+    private VoiceRegion voiceRegion;
+    private ServerVoiceChannel afkChannel;
+    private int afkTimeout;
+    private boolean embedEnabled;
+    private ServerChannel embedChannel;
+    private VerificationLevel verificationLevel;
+    private DefaultMessageNotificationLevel defaultMessageNotificationLevel;
+    private ExplicitContentFilterLevel explicitContentFilterLevel;
+    private MFALevel mfaLevel;
+    private boolean widgetEnabled;
+    private ServerChannel widgetChannel;
+    private ServerTextChannel systemChannel;
+    private boolean large;
+    private boolean unavailable;
+    private int memberCount;
+    private ChannelStructureInternal structure;
+    private final Role everyoneRole;
     private final ArrayList<Role> roles = new ArrayList<>();
     private final ArrayList<CustomEmoji> emojis = new ArrayList<>();
     private final ArrayList<String> features = new ArrayList<>();
@@ -81,8 +91,6 @@ public class ServerInternal implements Server {
     private final ArrayList<ServerMember> members = new ArrayList<>();
     private final ArrayList<ServerChannel> channels = new ArrayList<>();
     private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
-    private final ChannelStructureInternal structure;
-    private final Role everyoneRole;
     private final List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
 
     private ServerInternal(Discord discord, JsonNode data) {
@@ -90,12 +98,12 @@ public class ServerInternal implements Server {
         this.discord = (DiscordInternal) discord;
         id = data.get("id").asLong();
         name = data.get("name").asText();
-        iconUrl = UrlHelper.ignoreIfNull(data.path("icon").asText(null));
-        splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl").asText(null));
+        iconUrl = UrlHelper.orNull(data.path("icon").asText(null));
+        splashUrl = UrlHelper.orNull(data.path("splashUrl").asText(null));
         owner = getOwnerPrivate(data);
         ownPermissions = data.has("permissions") ?
                 new PermissionListInternal(data.get("permissions").asInt()) : PermissionList.EMPTY_LIST;
-        voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").path("id").asText(null));
+        voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").asText(null));
         afkTimeout = data.get("afk_timeout").asInt(-1);
         embedEnabled = data.path("embed_enabled").asBoolean(false);
         verificationLevel = VerificationLevel.getFromId(data.get("verification_level").asInt(-1));
@@ -104,12 +112,12 @@ public class ServerInternal implements Server {
         explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(
                 data.get("explicit_content_filter").asInt(-1));
         mfaLevel = MFALevel.getFromId(data.get("mfa_level").asInt(-1));
-        widgetable = data.path("widget_enabled").asBoolean(false);
+        widgetEnabled = data.path("widget_enabled").asBoolean(false);
         large = data.path("large").asBoolean(false);
         unavailable = data.path("unavailable").asBoolean(false);
         memberCount = data.path("member_count").asInt(-1);
 
-        data.path("roles").forEach(role -> roles.add(new RoleInternal(discord, this, role)));
+        data.path("roles").forEach(role -> roles.add(RoleInternal.getInstance(this, role)));
         data.path("emojis").forEach(emoji -> emojis.add(
                 new CustomEmojiInternal((DiscordInternal) getDiscord(), this, emoji, true)));
         data.path("features").forEach(feature -> features.add(feature.asText()));
@@ -134,7 +142,8 @@ public class ServerInternal implements Server {
                     break;
             }
         });
-        data.path("presenceStates").forEach(presence -> presenceStates.add(new PresenceStateInternal(discord, this, presence)));
+        data.path("presenceStates").forEach(presence ->
+                presenceStates.add(new PresenceStateInternal(discord, this, presence)));
         structure = new ChannelStructureInternal(channels);
 
         everyoneRole = roles.stream()
@@ -142,16 +151,30 @@ public class ServerInternal implements Server {
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("No @everyone role found for " + this));
 
-        afkChannel = data.has("afk_channel_id") ?
-                ServerVoiceChannel.of(discord, data.path("afk_channel_id").asLong(-1)).join() : null;
-        embedChannel = data.has("embed_channel_id") ?
-                ServerChannel.of(discord, data.get("embed_channel_id").asLong(-1)).join() : null;
-        widgetChannel = data.has("widget_channel_id") ?
-                ServerChannel.of(discord, data.get("widget_channel_id").asLong(-1)).join() : null;
-        systemChannel = data.has("system_channel_id") ?
-                ServerTextChannel.of(discord, data.path("system_channel_id").asLong(-1))
-                        .exceptionally(throwable -> null)
-                        .join() : null;
+        afkChannel = ChannelInternal
+                .getInstance(discord, data.path("afk_channel_id").asLong(-1))
+                .map(Channel::toServerVoiceChannel)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .orElse(null);
+        embedChannel = ChannelInternal
+                .getInstance(discord, data.path("embed_channel_id").asLong(-1))
+                .map(Channel::toServerChannel)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .orElse(null);
+        widgetChannel = ChannelInternal
+                .getInstance(discord, data.path("widget_channel_id").asLong(-1))
+                .map(Channel::toServerChannel)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .orElse(null);
+        systemChannel = ChannelInternal
+                .getInstance(discord, data.path("system_channel_id").asLong(-1))
+                .map(Channel::toServerTextChannel)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .orElse(null);
 
         listenerManangers = new ArrayList<>();
 
@@ -159,11 +182,11 @@ public class ServerInternal implements Server {
     }
 
     private User getOwnerPrivate(JsonNode data) {
-        if (data.has("application_id")) {
+        if (data.has("owner_id")) {
             //return new UserInternal(discord, data.get("application_id").asLong());
-            return null;
+            return UserInternal.getInstance(discord, data.get("owner_id").asLong());
         } else {
-            return ServerMember.of(this, data.get("owner_id").asLong());
+            return null;
         }
     }
 
@@ -214,7 +237,7 @@ public class ServerInternal implements Server {
 
     @Override
     public boolean isWidgetable() {
-        return widgetable;
+        return widgetEnabled;
     }
 
     @Override
@@ -344,6 +367,119 @@ public class ServerInternal implements Server {
     @Override
     public String toString() {
         return "Server with ID [" + id + "]";
+    }
+
+    public Set<EditTrait<Server>> updateData(JsonNode data) {
+        HashSet<EditTrait<Server>> traits = new HashSet<>();
+
+        if (!name.equals(data.path("name").asText(""))) {
+            name = data.get("name").asText();
+            traits.add(NAME);
+        }
+        if (iconUrl != null && !UrlHelper.equals(iconUrl, data.path("icon").asText(null))) {
+            iconUrl = UrlHelper.orNull(data.path("icon").asText(null));
+            traits.add(ICON);
+        }
+        if (splashUrl != null && !UrlHelper.equals(splashUrl, data.path("splash_url").asText(null))) {
+            splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl").asText(null));
+            traits.add(SPLASH);
+        }
+        if ((owner != null ? owner.getId() : -1) !=
+                data.path((data.has("owner_id") ? "owner_id" : "application_id")).asLong(-1)) {
+            owner = getOwnerPrivate(data);
+            traits.add(OWNER);
+        }
+        if ((ownPermissions != null ? ownPermissions.toPermissionInt() : 0) !=
+                data.path("permissions").asInt(0)) {
+            ownPermissions = new PermissionListInternal(data.get("permissions").asInt(0));
+            traits.add(OWN_PERMISSIONS);
+        }
+        if (!voiceRegion.getRegionKey().equalsIgnoreCase(data.path("region").asText(voiceRegion.getRegionKey()))) {
+            voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").asText(""));
+            traits.add(REGION);
+        }
+        if (afkTimeout != data.path("afk_timeout").asInt(-1)) {
+            afkTimeout = data.get("afk_timeout").asInt(-1);
+            traits.add(AFK_TIMEOUT);
+        }
+        if (embedEnabled != data.path("embed_enabled").asBoolean(embedEnabled)) {
+            embedEnabled = data.path("embed_enabled").asBoolean(false);
+            traits.add(EMBED_ENABLED);
+        }
+        if (verificationLevel.getId() != data.path("verification_level").asInt(-1)) {
+            verificationLevel = VerificationLevel.getFromId(data.get("verification_level").asInt(-1));
+            traits.add(VERIFICATION_LEVEL);
+        }
+        if (defaultMessageNotificationLevel.getId() !=
+                data.path("default_message_notification").asInt(defaultMessageNotificationLevel.getId())) {
+            defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(
+                    data.get("default_message_notifications").asInt(-1));
+            traits.add(DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
+        }
+        if (explicitContentFilterLevel.getId() != data.path("explicit_content_filter").asInt(-1)) {
+            explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(
+                    data.get("explicit_content_filter").asInt(-1));
+            traits.add(EXPLICIT_CONTENT_FILTER_LEVEL);
+        }
+        if (mfaLevel.getId() != data.path("mfa_level").asInt(-1)) {
+            mfaLevel = MFALevel.getFromId(data.get("mfa_level").asInt(-1));
+            traits.add(MFA_LEVEL);
+        }
+        if (widgetEnabled != data.path("widget_enabled").asBoolean(widgetEnabled)) {
+            widgetEnabled = data.path("widget_enabled").asBoolean(false);
+            traits.add(WIDGET_ENABLED);
+        }
+        if (large != data.path("large").asBoolean(false)) {
+            large = data.path("large").asBoolean(false);
+            traits.add(LARGE);
+        }
+        if (unavailable != data.path("unavailable").asBoolean(false)) {
+            unavailable = data.path("unavailable").asBoolean(false);
+            traits.add(AVAILABILITY);
+        }
+        if (memberCount != data.path("member_count").asInt(memberCount)) {
+            memberCount = data.path("member_count").asInt(-1);
+            traits.add(MEMBER_COUNT);
+        }
+
+        if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id").asLong(-1)) {
+            afkChannel = ServerVoiceChannelInternal
+                    .getInstance(discord, data.path("afk_channel_id").asLong(-1))
+                    .map(Channel::toServerVoiceChannel)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .orElse(null);
+            traits.add(AFK_CHANNEL);
+        }
+        if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id").asLong(-1)) {
+            embedChannel = ChannelInternal
+                    .getInstance(discord, data.path("embed_channel_id").asLong(-1))
+                    .map(Channel::toServerChannel)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .orElse(null);
+            traits.add(EMBED_CHANNEL);
+        }
+        if ((widgetChannel != null ? widgetChannel.getId() : -1) !=
+                data.path("widget_channel_id").asLong(-1)) {
+            widgetChannel = ChannelInternal
+                    .getInstance(discord, data.path("widget_channel_id").asLong(-1))
+                    .map(Channel::toServerChannel)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .orElse(null);
+            traits.add(WIDGET_CHANNEL);
+        }
+        if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id").asLong(-1)) {
+            systemChannel = ServerTextChannelInternal
+                    .getInstance(discord, data.path("system_channel_id").asLong(-1))
+                    .map(Channel::toServerTextChannel)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .orElse(null);
+            traits.add(SYSTEM_CHANNEL);
+        }
+        return traits;
     }
 
     public static Optional<Server> getInstance(long id) {

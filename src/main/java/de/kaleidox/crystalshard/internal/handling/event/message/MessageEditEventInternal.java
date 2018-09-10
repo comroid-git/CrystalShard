@@ -92,9 +92,4 @@ public class MessageEditEventInternal extends EventBase implements MessageEditEv
     public Set<EditTrait<Message>> getEditTraits() {
         return traits;
     }
-
-    @Override
-    public Optional<Message> getPreviousValue() {
-        return Optional.empty();
-    }
 }

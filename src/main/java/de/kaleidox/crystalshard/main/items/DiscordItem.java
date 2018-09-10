@@ -24,7 +24,7 @@ public interface DiscordItem {
     /**
      * Used for comparing two DiscordItems after their ID.
      *
-     * @param other The DiscordItem to compare to.
+     * @param other The DiscordItem to equals to.
      * @return Whether the items are equal.
      * @see Object#equals(Object)
      */

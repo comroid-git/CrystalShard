@@ -32,7 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerTextChannelInternal extends ChannelInternal implements ServerTextChannel {
-    private final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
+    final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerTextChannelInternal.class);
     private final Discord discord;
     private final Server server;

@@ -114,7 +114,7 @@ public class MessageInternal implements Message {
         }
 
         for (JsonNode role : data.get("mention_roles")) {
-            roleMentions.add(new RoleInternal(null, null, role));
+            roleMentions.add(RoleInternal.getInstance(server, role));
         }
 
         for (JsonNode attachment : data.get("attachments")) {

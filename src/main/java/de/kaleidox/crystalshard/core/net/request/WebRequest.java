@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeCreator;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import de.kaleidox.crystalshard.core.net.ResponseDispatch;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
@@ -117,9 +119,9 @@ public class WebRequest<T> {
         ratelimiter.schedule(this, headersFuture, () -> {
             try {
                 String urlExternal = endpoint.getUrl().toExternalForm();
-                String dataAsString = finalData.toString();
+                String requestBody = (method == Method.GET ? "" : finalData.toString());
                 logger.trace("Creating request: " + method.getDescriptor() + " " +
-                        urlExternal + " with body: " + dataAsString);
+                        urlExternal + " with body: " + requestBody);
                 HttpRequest request = HttpRequest
                         .newBuilder()
                         .uri(URI.create(urlExternal))
@@ -127,7 +129,7 @@ public class WebRequest<T> {
                                 "Content-Type", "application/json",
                                 "Authorization", discord.getPrefixedToken())
                         .method(method.getDescriptor(),
-                                HttpRequest.BodyPublishers.ofString(dataAsString))
+                                HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
                 headersFuture.complete(response.headers());
@@ -139,7 +141,8 @@ public class WebRequest<T> {
                         break;
                     case 400:
                         logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " +
-                                urlExternal + " with body: " + dataAsString);
+                                urlExternal + " with response body: "+response.body()+
+                                " and request body: " + requestBody);
                         break;
                     default:
                         logger.trace("Recieved status code " + response.statusCode() +

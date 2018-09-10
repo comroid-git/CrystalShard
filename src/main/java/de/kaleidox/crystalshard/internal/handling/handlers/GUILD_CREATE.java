@@ -16,6 +16,7 @@ public class GUILD_CREATE extends HandlerBase {
         Server server = ServerInternal.getInstance(discord, data);
 
         ServerCreateEvent event = new ServerCreateEventInternal(discord, server);
+        discord.addServer(server);
 
         collectListeners(ServerCreateListener.class, null, discord)
                 .forEach(listener -> listener.onServerCreate(event));

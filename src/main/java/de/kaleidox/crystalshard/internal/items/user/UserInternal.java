@@ -193,7 +193,11 @@ public class UserInternal implements User {
     public static User getInstance(Discord discord, long id) {
         assert id != -1 : "No valid ID found.";
         return instances.containsKey(id) ?
-                instances.get(id) : discord.getUserById(id).orElseThrow(NoSuchElementException::new);
+                instances.get(id) : new WebRequest<User>(discord)
+                .method(Method.GET)
+                .endpoint(Endpoint.Location.USER.toEndpoint(id))
+                .execute(node -> getInstance(discord, node))
+                .join();
     }
 
     public static User getInstance(Discord discord, JsonNode data) {
