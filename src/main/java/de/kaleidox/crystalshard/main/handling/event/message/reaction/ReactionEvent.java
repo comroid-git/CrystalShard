@@ -9,4 +9,6 @@ public interface ReactionEvent extends MessageEvent, UserEvent {
     Reaction getReaction();
 
     Emoji getEmoji();
+
+    int getCount();
 }

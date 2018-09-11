@@ -10,11 +10,11 @@ public class EmbedInternal implements Embed {
     @Override
     public EmbedDraft toEmbedDraft() {
         if (this instanceof EmbedDraft) {
-            return Optional.of((EmbedDraft) this);
+            return (EmbedDraft) this;
         } else if (this instanceof SentEmbed) {
             return ((SentEmbed) this).toEmbedDraft();
         } else {
-            return Optional.empty();
+            throw new AssertionError();
         }
     }
 
@@ -29,10 +29,8 @@ public class EmbedInternal implements Embed {
             return ((EmbedDraft) this).toBuilder();
         } else if (this instanceof SentEmbed) {
             return ((SentEmbed) this).toBuilder();
-        } else if (this instanceof Embed.Builder) {
-            return Optional.of((Builder) this);
         } else {
-            throw new AssertionError("Embed is orNull unknown type.");
+            throw new AssertionError("Embed has unknown type.");
         }
     }
 }

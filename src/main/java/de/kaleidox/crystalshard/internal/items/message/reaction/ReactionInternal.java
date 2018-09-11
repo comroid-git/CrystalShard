@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReactionInternal implements Reaction {
     private final static ConcurrentHashMap<ReactionCriteria, Reaction> instances = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<ReactionCriteria, Integer> counts = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ReactionInternal.class);
     private final Discord discord;
-    private final AtomicInteger count;
     private final boolean me;
     private final Emoji emoji;
     private final Message message;
@@ -33,7 +33,6 @@ public class ReactionInternal implements Reaction {
         this.discord = discord;
         this.message = message;
         this.user = user;
-        this.count = new AtomicInteger(data.path("count").asInt(0));
         this.me = data.path("me").asBoolean(false);
         this.emoji = data.get("emoji").get("id").isNull() ?
                 new UnicodeEmojiInternal(discord, data.get("emoji"), true) :
@@ -41,6 +40,9 @@ public class ReactionInternal implements Reaction {
                         message.getChannel().toServerChannel().map(ServerChannel::getServer).get(),
                         data.get("emoji"), true);
 
+        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
+        instances.put(criteria, this);
+        counts.put(criteria, data.path("count").asInt(0));
     }
 
     @Override
@@ -65,11 +67,13 @@ public class ReactionInternal implements Reaction {
 
     @Override
     public int getCount() {
-        return count.get();
+        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
+        return counts.getOrDefault(criteria, 0);
     }
 
     private Reaction changeCount(int delta) {
-        count.addAndGet(delta);
+        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
+        counts.put(criteria, counts.getOrDefault(criteria, 0) + delta);
         return this;
     }
 

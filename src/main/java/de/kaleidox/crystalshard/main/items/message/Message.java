@@ -105,7 +105,7 @@ public interface Message extends DiscordItem {
 
     CompletableFuture<Message> edit(String newContent);
 
-    CompletableFuture<Message> edit(SendableInternal newContent);
+    CompletableFuture<Message> edit(Sendable newContent);
 
     CompletableFuture<Message> edit(EmbedDraft embedDraft);
 

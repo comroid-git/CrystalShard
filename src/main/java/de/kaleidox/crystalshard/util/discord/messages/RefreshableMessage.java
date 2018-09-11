@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
+import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class RefreshableMessage {
         this.refresher = refresher;
 
         Object item = refresher.get();
-        SendableInternal sendable = SendableInternal.of(item);
+        Sendable sendable = Sendable.of(item);
 
         CompletableFuture<Message> sent = parent.sendMessage(sendable);
 
@@ -50,13 +51,13 @@ public class RefreshableMessage {
 
     public void refresh() {
         if (lastMessage != null) {
-            SendableInternal of = SendableInternal.of(refresher.get());
+            Sendable of = Sendable.of(refresher.get());
             lastMessage.edit(of);
         }
     }
 
     public void resend() {
-        SendableInternal sendable = SendableInternal.of(refresher.get());
+        Sendable of = Sendable.of(refresher.get());
         CompletableFuture<Message> sent = null;
 
         if (lastMessage != null) {

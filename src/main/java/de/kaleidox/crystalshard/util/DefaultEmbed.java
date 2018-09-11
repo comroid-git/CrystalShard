@@ -72,8 +72,7 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
                     .getUtilities()
                     .getDefaultEmbed()
                     .get()
-                    .toBuilder()
-                    .orElseThrow(NullPointerException::new);
+                    .toBuilder();
             defaultEmbedModifier.accept(builder);
             return builder.build();
         }
