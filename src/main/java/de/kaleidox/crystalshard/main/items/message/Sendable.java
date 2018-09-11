@@ -1,42 +1,24 @@
 package de.kaleidox.crystalshard.main.items.message;
 
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 
-public class Sendable {
-    private EmbedDraft embed;
-    private String content = "";
+import java.util.concurrent.CompletableFuture;
 
-    public Sendable() {
+public interface Sendable {
+    Sendable add(Object item);
+
+    Sendable add(String string);
+
+    Sendable add(Embed embed);
+
+    CompletableFuture<Message> send(MessageReciever reciever);
+
+    static Sendable of(Object... items) {
+        return new SendableInternal(items);
     }
 
-    public Sendable(String content) {
-        this(content, null);
-    }
-
-    public Sendable(EmbedDraft embed) {
-        this(null, embed);
-    }
-
-    public Sendable(String content, EmbedDraft embed) {
-        this.embed = embed;
-        this.content = content;
-    }
-
-    public Sendable add(Object object) {
-        return add(object.toString());
-    }
-
-    public Sendable add(String string) {
-        content = content + string;
-        return this;
-    }
-
-    public Sendable set(EmbedDraft embed) {
-        this.embed = embed;
-        return this;
-    }
-
-    public static Sendable of(Object item) {
-        return null;
+    static Sendable get() {
+        return new SendableInternal();
     }
 }

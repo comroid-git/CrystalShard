@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
@@ -44,7 +45,11 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
 
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
-        return null;
+        return new WebRequest<Message>(discord)
+                .method(Method.POST)
+                .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
+                .node(((SendableInternal) content).toJsonNode(JsonHelper.objectNode()))
+                .execute(node -> MessageInternal.getInstance(discord, node));
     }
 
     @Override
@@ -60,7 +65,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         data.set("file", JsonHelper.nodeOf("content"));
         return new WebRequest<Message>(discord)
                 .method(Method.POST)
-                .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
+                .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(data)
                 .execute(node -> MessageInternal.getInstance(discord, node));
     }
@@ -72,14 +77,17 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         data.set("file", JsonHelper.nodeOf("content"));
         return new WebRequest<Message>(discord)
                 .method(Method.POST)
-                .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
+                .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(data)
                 .execute(node -> MessageInternal.getInstance(discord, node));
     }
 
     @Override
     public CompletableFuture<Void> typing() {
-        return null;
+        return new WebRequest<Void>(discord)
+                .method(Method.POST)
+                .endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this))
+                .execute(node -> null);
     }
 
     @Override

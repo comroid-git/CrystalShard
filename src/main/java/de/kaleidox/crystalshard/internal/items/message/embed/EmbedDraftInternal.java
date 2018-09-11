@@ -56,8 +56,8 @@ public class EmbedDraftInternal implements EmbedDraft {
     }
 
     @Override
-    public Optional<EmbedDraft> toEmbedDraft() {
-        return Optional.of(this);
+    public EmbedDraft toEmbedDraft() {
+        return this;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class EmbedDraftInternal implements EmbedDraft {
     }
 
     @Override
-    public Optional<Builder> toBuilder() {
+    public Builder toBuilder() {
         Builder builder = Embed.BUILDER()
                 .setTitle(title)
                 .setDescription(description)
@@ -78,7 +78,7 @@ public class EmbedDraftInternal implements EmbedDraft {
                 .setThumbnail(thumbnail)
                 .setAuthor(author);
         fields.forEach(builder::addField);
-        return Optional.of(builder);
+        return builder;
     }
 
     @Override

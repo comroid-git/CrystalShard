@@ -17,11 +17,11 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public interface Embed extends Castable<Embed> {
-    Optional<EmbedDraft> toEmbedDraft();
+    EmbedDraft toEmbedDraft();
+
+    Builder toBuilder();
 
     Optional<SentEmbed> toSentEmbed();
-
-    Optional<Embed.Builder> toBuilder();
 
     static Builder BUILDER() {
         return new EmbedBuilderInternal();

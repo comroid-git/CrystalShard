@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
@@ -104,7 +105,7 @@ public interface Message extends DiscordItem {
 
     CompletableFuture<Message> edit(String newContent);
 
-    CompletableFuture<Message> edit(Sendable newContent);
+    CompletableFuture<Message> edit(SendableInternal newContent);
 
     CompletableFuture<Message> edit(EmbedDraft embedDraft);
 

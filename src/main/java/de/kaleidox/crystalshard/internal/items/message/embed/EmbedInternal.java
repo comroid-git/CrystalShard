@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public class EmbedInternal implements Embed {
     @Override
-    public Optional<EmbedDraft> toEmbedDraft() {
+    public EmbedDraft toEmbedDraft() {
         if (this instanceof EmbedDraft) {
             return Optional.of((EmbedDraft) this);
         } else if (this instanceof SentEmbed) {
@@ -24,7 +24,7 @@ public class EmbedInternal implements Embed {
     }
 
     @Override
-    public Optional<Builder> toBuilder() {
+    public Builder toBuilder() {
         if (this instanceof EmbedDraft) {
             return ((EmbedDraft) this).toBuilder();
         } else if (this instanceof SentEmbed) {

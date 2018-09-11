@@ -57,12 +57,12 @@ public class SentEmbedInternal implements SentEmbed {
     }
 
     @Override
-    public Optional<EmbedDraft> toEmbedDraft() {
-        return toBuilder().map(Builder::build);
+    public EmbedDraft toEmbedDraft() {
+        return toBuilder().build();
     }
 
     @Override
-    public Optional<Builder> toBuilder() {
+    public Builder toBuilder() {
         Builder builder = Embed.BUILDER()
                 .setTitle(title)
                 .setDescription(description)
@@ -74,7 +74,7 @@ public class SentEmbedInternal implements SentEmbed {
                 .setThumbnail(Objects.nonNull(thumbnail) ? thumbnail.toDraft() : null)
                 .setAuthor(Objects.nonNull(author) ? author.toDraft() : null);
         fields.forEach(field -> builder.addField(field.toDraft()));
-        return Optional.of(builder);
+        return builder;
     }
 
     @Override
