@@ -35,11 +35,12 @@ public class ReactionInternal implements Reaction {
         this.user = user;
         this.count = new AtomicInteger(data.path("count").asInt(0));
         this.me = data.path("me").asBoolean(false);
-        this.emoji = data.get("emoji").has("id") ?
+        this.emoji = data.get("emoji").get("id").isNull() ?
+                new UnicodeEmojiInternal(discord, data.get("emoji"), true) :
                 CustomEmojiInternal.getInstance(discord,
                         message.getChannel().toServerChannel().map(ServerChannel::getServer).get(),
-                        data.get("emoji"), true) :
-                new UnicodeEmojiInternal(discord, data.get("emoji"), true);
+                        data.get("emoji"), true);
+
     }
 
     @Override

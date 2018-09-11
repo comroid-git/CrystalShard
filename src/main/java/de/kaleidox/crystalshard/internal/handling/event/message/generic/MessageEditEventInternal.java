@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.internal.handling.event.message;
+package de.kaleidox.crystalshard.internal.handling.event.message.generic;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;

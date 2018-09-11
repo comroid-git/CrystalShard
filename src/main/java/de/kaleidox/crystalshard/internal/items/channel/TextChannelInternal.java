@@ -30,6 +30,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         this.discord = discord;
         this.id = json.get("id").asLong();
 
+        /*
         discord.getThreadPool()
                 .execute(() -> new WebRequest<Void>(discord)
                         .method(Method.GET)
@@ -38,7 +39,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                         .execute(node -> {
                             node.forEach(data -> MessageInternal.getInstance(discord, data));
                             return null;
-                        }), "Fill message cache for " + this);
+                        }), "Fill message cache for " + this);*/
     }
 
     @Override

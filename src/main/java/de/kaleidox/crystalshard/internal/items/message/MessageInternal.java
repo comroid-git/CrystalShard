@@ -130,9 +130,11 @@ public class MessageInternal implements Message {
 
         if (data.has("reactions")) {
             for (JsonNode reaction : data.get("reactions")) {
-                reactions.add(ReactionInternal.getInstance(null, this, null, reaction, 0));
+                reactions.add(ReactionInternal.getInstance(server, this, null, reaction, 0));
             }
         }
+
+        listeners = new ArrayList<>();
 
         instances.put(id, this);
     }
