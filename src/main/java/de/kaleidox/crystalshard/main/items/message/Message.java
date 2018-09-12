@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
@@ -35,7 +36,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
-public interface Message extends DiscordItem {
+public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener> {
     TextChannel getChannel();
 
     default Optional<ServerTextChannel> getServerTextChannel() {

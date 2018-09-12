@@ -21,7 +21,6 @@ import de.kaleidox.util.annotations.MayContainNull;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,32 +28,32 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class HandlerBase {
     final static Logger baseLogger = new Logger(HandlerBase.class);
-    private final static ConcurrentHashMap<String, HandlerBase> types = new ConcurrentHashMap<>();
+    private final static Package handlerPackage = HandlerBase.class.getPackage();
+    private final static ConcurrentHashMap<String, HandlerBase> instances = new ConcurrentHashMap<>();
 
     public abstract void handle(DiscordInternal discord, JsonNode data);
 
+    @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
-        T value;
+        T handler;
         String type = data.path("t").asText("");
 
-        if (types.containsKey(type)) {
-            value = (T) types.get(type);
-            discord.getThreadPool().execute(() -> value.handle(discord, data.get("d")));
+        if (instances.containsKey(type)) {
+            handler = (T) instances.get(type);
+            discord.getThreadPool().execute(() -> handler.handle(discord, data.get("d")));
         } else if (!type.isBlank() && !type.isEmpty()) {
             try {
-                Package handlerPackage = HandlerBase.class.getPackage();
-                String t1 = handlerPackage.getName() + "." + type;
-                Class<T> tClass = (Class<T>) Class.forName(t1);
-                value = tClass.getConstructor().newInstance();
-                types.put(type, value);
+                Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
+                handler = tClass.getConstructor().newInstance();
+                instances.put(type, handler);
                 discord.getThreadPool().execute(() -> {
                     baseLogger.trace("Dispatching event '" + data.get("t").asText() +
                             "' with body: " + data.get("d").toString());
-                    value.handle(discord, data.get("d"));
+                    handler.handle(discord, data.get("d"));
                 });
             } catch (ClassNotFoundException e) {
-                baseLogger.exception(e, "Failed to dispatch unknown type: " + data.get("t"));
-            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                baseLogger.error("Failed to dispatch unknown type: " + data.get("t"));
+            } catch (Exception e) {
                 baseLogger.exception(e, "Failed to create instance of handler: " + data.get("t"));
             }
         }

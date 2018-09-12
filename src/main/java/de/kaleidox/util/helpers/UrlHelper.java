@@ -1,6 +1,7 @@
 package de.kaleidox.util.helpers;
 
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.ImageEndpoint;
 import de.kaleidox.util.annotations.Nullable;
 
 import java.net.MalformedURLException;

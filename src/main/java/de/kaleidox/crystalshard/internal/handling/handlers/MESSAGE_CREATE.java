@@ -26,7 +26,7 @@ public class MESSAGE_CREATE extends HandlerBase {
 
         MessageCreateEvent event = new MessageCreateEventInternal(discord, message);
 
-        List<MessageCreateListener> messageCreateListeners = collectListeners(MessageCreateListener.class, null, discord, channel, server);
-        messageCreateListeners.forEach(listener -> listener.onMessageCreate(event));
+        collectListeners(MessageCreateListener.class, null, discord, channel, server)
+                .forEach(listener -> listener.onMessageCreate(event));
     }
 }

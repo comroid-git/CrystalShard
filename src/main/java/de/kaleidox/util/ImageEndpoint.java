@@ -1,8 +1,8 @@
-package de.kaleidox.util.helpers;
+package de.kaleidox.util;
 
 import de.kaleidox.crystalshard.internal.util.Container;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
-import de.kaleidox.util.FileType;
+import de.kaleidox.util.helpers.UrlHelper;
 
 import java.io.File;
 import java.net.URL;

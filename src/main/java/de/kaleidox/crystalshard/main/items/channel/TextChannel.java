@@ -14,7 +14,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 public interface TextChannel extends Channel, MessageReciever {
-    void attachMessageCreateListener(MessageCreateListener listener);
+    default void attachMessageCreateListener(MessageCreateListener listener) {
+        attachListener(listener);
+    }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     static CompletableFuture<TextChannel> of(Discord discord, long id) {
@@ -32,7 +34,7 @@ public interface TextChannel extends Channel, MessageReciever {
                                 return ServerTextChannelInternal.getInstance(discord, id)
                                         .toTextChannel()
                                         .get();
-                            } else if (node.has("reciepients")) {
+                            } else if (node.has("recipients")) {
                                 return PrivateTextChannelInternal.getInstance(discord, id)
                                         .toTextChannel()
                                         .get();

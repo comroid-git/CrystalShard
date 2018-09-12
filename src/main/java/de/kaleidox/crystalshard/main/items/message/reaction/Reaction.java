@@ -14,5 +14,11 @@ public interface Reaction {
 
     Message getMessage();
 
+    /**
+     * Get the new count of the reaction.
+     * Currently does not work properly.
+     *
+     * @return The count of the reaction.
+     */
     int getCount();
 }
