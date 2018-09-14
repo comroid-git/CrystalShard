@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
-import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
@@ -12,11 +11,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteList
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
-import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.TextChannel;
+import de.kaleidox.crystalshard.main.items.channel.*;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
@@ -30,13 +25,25 @@ import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener> {
+    static Message of(TextChannel channel, long id) {
+        return channel.getMessages()
+                .stream()
+                .filter(msg -> msg.getId() == id)
+                .findAny()
+                .orElseGet(() -> new WebRequest<Message>(channel.getDiscord())
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
+                        .execute(node -> MessageInternal.getInstance(channel.getDiscord(), node))
+                        .join()
+                );
+    }
+
     TextChannel getChannel();
 
     default Optional<ServerTextChannel> getServerTextChannel() {
@@ -98,11 +105,11 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
 
     List<CustomEmoji> getCustomEmojis();
 
-    List<UnicodeEmoji> getUnicodeEmojis();
-
     /*
       MODIFIER METHODS
      */
+
+    List<UnicodeEmoji> getUnicodeEmojis();
 
     CompletableFuture<Message> edit(String newContent);
 
@@ -124,11 +131,11 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
 
     CompletableFuture<Void> removeReactionsByEmoji(User user, Emoji... emojis);
 
-    CompletableFuture<Void> removeOwnReactionsByEmoji(Emoji... emojis);
-
     /*
       LISTENER METHODS
      */
+
+    CompletableFuture<Void> removeOwnReactionsByEmoji(Emoji... emojis);
 
     ListenerManager<MessageDeleteListener> attachMessageDeleteListener(MessageDeleteListener event);
 
@@ -136,24 +143,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
 
     ListenerManager<ReactionRemoveListener> attachReactionRemoveListener(ReactionRemoveListener event);
 
-    <T extends MessageAttachableListener> ListenerManager<T> addListener(T event);
-
-    Collection<? extends MessageAttachableListener> getListeners();
-
     void removeAllListeners();
 
     void removeAttachedListener(MessageAttachableListener listener);
-
-    static Message of(TextChannel channel, long id) {
-        return channel.getMessages()
-                .stream()
-                .filter(msg -> msg.getId() == id)
-                .findAny()
-                .orElseGet(() -> new WebRequest<Message>(channel.getDiscord())
-                        .method(Method.GET)
-                        .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
-                        .execute(node -> MessageInternal.getInstance(channel.getDiscord(), node))
-                        .join()
-                );
-    }
 }

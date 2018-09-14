@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
@@ -64,6 +62,22 @@ public class UserInternal implements User {
 
         logger.nonNullChecks(name, discriminator);
         instances.putIfAbsent(id, this);
+    }
+
+    public static User getInstance(Discord discord, long id) {
+        assert id != -1 : "No valid ID found.";
+        return instances.containsKey(id) ?
+                instances.get(id) : new WebRequest<User>(discord)
+                .method(Method.GET)
+                .endpoint(Endpoint.Location.USER.toEndpoint(id))
+                .execute(node -> getInstance(discord, node))
+                .join();
+    }
+
+    public static User getInstance(Discord discord, JsonNode data) {
+        long id = data.path("id").asLong(-1);
+        assert id != -1 : "No valid ID found.";
+        return instances.containsKey(id) ? instances.get(id) : new UserInternal(discord, data);
     }
 
     @Override
@@ -187,11 +201,6 @@ public class UserInternal implements User {
     }
 
     @Override
-    public ScheduledFuture<Void> typeFor(long time, TimeUnit unit) {
-        return null;
-    }
-
-    @Override
     public Collection<Message> getMessages() {
         return null;
     }
@@ -199,21 +208,5 @@ public class UserInternal implements User {
     @Override
     public String toString() {
         return "User with ID [" + id + "]";
-    }
-
-    public static User getInstance(Discord discord, long id) {
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ?
-                instances.get(id) : new WebRequest<User>(discord)
-                .method(Method.GET)
-                .endpoint(Endpoint.Location.USER.toEndpoint(id))
-                .execute(node -> getInstance(discord, node))
-                .join();
-    }
-
-    public static User getInstance(Discord discord, JsonNode data) {
-        long id = data.path("id").asLong(-1);
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) : new UserInternal(discord, data);
     }
 }

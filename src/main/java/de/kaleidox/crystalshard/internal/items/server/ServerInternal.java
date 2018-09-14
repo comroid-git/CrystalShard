@@ -5,11 +5,7 @@ import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
+import de.kaleidox.crystalshard.internal.items.channel.*;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
@@ -20,20 +16,10 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
-import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.channel.*;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
-import de.kaleidox.crystalshard.main.items.server.ExplicitContentFilterLevel;
-import de.kaleidox.crystalshard.main.items.server.MFALevel;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
-import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
-import de.kaleidox.crystalshard.main.items.server.VoiceState;
+import de.kaleidox.crystalshard.main.items.server.*;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
@@ -42,14 +28,7 @@ import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -182,6 +161,32 @@ public class ServerInternal implements Server {
         listenerManangers = new ArrayList<>();
 
         instances.put(id, this);
+    }
+
+    public static Optional<Server> getInstance(long id) {
+        return Optional.ofNullable(instances.getOrDefault(id, null));
+    }
+
+    public static Server getInstance(Discord discord, long id) {
+        return discord.getServers()
+                .stream()
+                .filter(server -> server.getId() == id)
+                .findAny()
+                .orElseGet(() -> new WebRequest<Server>(discord)
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.GUILD_SPECIFIC.toEndpoint(id))
+                        .execute(node -> getInstance(discord, node))
+                        .join());
+    }
+
+    public static Server getInstance(Discord discord, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else {
+            return new ServerInternal(discord, data);
+        }
     }
 
     private User getOwnerPrivate(JsonNode data) {
@@ -475,31 +480,5 @@ public class ServerInternal implements Server {
             traits.add(SYSTEM_CHANNEL);
         }
         return traits;
-    }
-
-    public static Optional<Server> getInstance(long id) {
-        return Optional.ofNullable(instances.getOrDefault(id, null));
-    }
-
-    public static Server getInstance(Discord discord, long id) {
-        return discord.getServers()
-                .stream()
-                .filter(server -> server.getId() == id)
-                .findAny()
-                .orElseGet(() -> new WebRequest<Server>(discord)
-                        .method(Method.GET)
-                        .endpoint(Endpoint.Location.GUILD_SPECIFIC.toEndpoint(id))
-                        .execute(node -> getInstance(discord, node))
-                        .join());
-    }
-
-    public static Server getInstance(Discord discord, JsonNode data) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (instances.containsKey(id))
-            return instances.get(id);
-        else {
-            return new ServerInternal(discord, data);
-        }
     }
 }

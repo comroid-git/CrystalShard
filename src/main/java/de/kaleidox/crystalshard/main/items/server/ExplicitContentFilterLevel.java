@@ -17,14 +17,14 @@ public enum ExplicitContentFilterLevel {
         this.id = id;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public static ExplicitContentFilterLevel getFromId(int id) {
         return Stream.of(values())
                 .filter(level -> level.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
+    }
+
+    public int getId() {
+        return id;
     }
 }

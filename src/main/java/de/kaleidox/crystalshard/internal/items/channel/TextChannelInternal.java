@@ -18,29 +18,16 @@ import de.kaleidox.util.helpers.JsonHelper;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 public abstract class TextChannelInternal extends ChannelInternal implements TextChannel {
-    private final Discord discord;
-    private final long id;
+    final ConcurrentHashMap<Long, Message> messages;
 
-    TextChannelInternal(Discord discord, JsonNode json) {
-        super(discord, json);
-        this.discord = discord;
-        this.id = json.get("id").asLong();
+    TextChannelInternal(Discord discord, JsonNode data) {
+        super(discord, data);
 
-        /*
-        discord.getThreadPool()
-                .execute(() -> new WebRequest<Void>(discord)
-                        .method(Method.GET)
-                        .endpoint(Endpoint.Location.MESSAGE.toEndpoint(id))
-                        .node(JsonHelper.objectNode("limit", 25))
-                        .execute(node -> {
-                            node.forEach(data -> MessageInternal.getInstance(discord, data));
-                            return null;
-                        }), "Fill message cache for " + this);*/
+        messages = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -49,12 +36,20 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(((SendableInternal) content).toJsonNode(JsonHelper.objectNode()))
-                .execute(node -> MessageInternal.getInstance(discord, node));
+                .execute(node -> {
+                    Message message = MessageInternal.getInstance(discord, node);
+                    messages.put(message.getId(), message);
+                    return message;
+                });
     }
 
     @Override
     public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return null;
+        Embed.Builder builder = discord.getUtilities()
+                .getDefaultEmbed()
+                .getBuilder();
+        defaultEmbedModifier.accept(builder);
+        return sendMessage(builder.build());
     }
 
     @Override
@@ -67,7 +62,11 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(data)
-                .execute(node -> MessageInternal.getInstance(discord, node));
+                .execute(node -> {
+                    Message message = MessageInternal.getInstance(discord, node);
+                    messages.put(message.getId(), message);
+                    return message;
+                });
     }
 
     @Override
@@ -79,7 +78,11 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(data)
-                .execute(node -> MessageInternal.getInstance(discord, node));
+                .execute(node -> {
+                    Message message = MessageInternal.getInstance(discord, node);
+                    messages.put(message.getId(), message);
+                    return message;
+                });
     }
 
     @Override
@@ -88,11 +91,6 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .method(Method.POST)
                 .endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this))
                 .execute(node -> null);
-    }
-
-    @Override
-    public ScheduledFuture<Void> typeFor(long time, TimeUnit unit) {
-        return null; // todo
     }
 
     @Override

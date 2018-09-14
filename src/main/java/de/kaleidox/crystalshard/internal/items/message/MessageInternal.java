@@ -20,12 +20,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.message.Attachment;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.MessageActivity;
-import de.kaleidox.crystalshard.main.items.message.MessageApplication;
-import de.kaleidox.crystalshard.main.items.message.MessageType;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
+import de.kaleidox.crystalshard.main.items.message.*;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
@@ -39,15 +34,11 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.objects.Evaluation;
 
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -137,6 +128,24 @@ public class MessageInternal implements Message {
         listeners = new ArrayList<>();
 
         instances.put(id, this);
+    }
+
+    public static Message getInstance(Discord discord, JsonNode data) {
+        synchronized (instances) {
+            long id = data.get("id").asLong(-1);
+            if (id == -1) throw new NoSuchElementException("No valid ID found.");
+            return instances.getOrDefault(id, new MessageInternal(discord, data));
+        }
+    }
+
+    public static Message getInstance(TextChannel channel, long id) {
+        return instances.getOrDefault(id,
+                new WebRequest<Message>(channel.getDiscord())
+                        .method(Method.GET)
+                        .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
+                        .execute(node -> getInstance(channel.getDiscord(), node))
+                        .join()
+        );
     }
 
     @Override
@@ -325,13 +334,13 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public <T extends MessageAttachableListener> ListenerManager<T> addListener(T event) {
+    public <C extends MessageAttachableListener> ListenerManager<C> attachListener(C listener) {
         return null;
     }
 
     @Override
-    public Collection<? extends MessageAttachableListener> getListeners() {
-        return listeners;
+    public Evaluation<Boolean> detachListener(MessageAttachableListener listener) {
+        return null;
     }
 
     @Override
@@ -357,23 +366,5 @@ public class MessageInternal implements Message {
     @Override
     public String toString() {
         return "Message with ID [" + id + "]";
-    }
-
-    public static Message getInstance(Discord discord, JsonNode data) {
-        synchronized (instances) {
-            long id = data.get("id").asLong(-1);
-            if (id == -1) throw new NoSuchElementException("No valid ID found.");
-            return instances.getOrDefault(id, new MessageInternal(discord, data));
-        }
-    }
-
-    public static Message getInstance(TextChannel channel, long id) {
-        return instances.getOrDefault(id,
-                new WebRequest<Message>(channel.getDiscord())
-                        .method(Method.GET)
-                        .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
-                        .execute(node -> getInstance(channel.getDiscord(), node))
-                        .join()
-        );
     }
 }

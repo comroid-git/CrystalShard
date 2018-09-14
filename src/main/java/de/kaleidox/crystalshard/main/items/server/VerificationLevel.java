@@ -23,18 +23,18 @@ public enum VerificationLevel {
         this.description = description;
     }
 
+    public static VerificationLevel getFromId(int id) {
+        return Stream.of(values())
+                .filter(level -> level.id == id)
+                .findAny()
+                .orElse(UNKNOWN);
+    }
+
     public int getId() {
         return id;
     }
 
     public String getDescription() {
         return description;
-    }
-
-    public static VerificationLevel getFromId(int id) {
-        return Stream.of(values())
-                .filter(level -> level.id == id)
-                .findAny()
-                .orElse(UNKNOWN);
     }
 }

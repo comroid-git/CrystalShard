@@ -1,15 +1,18 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.logging.Logger;
 
 import java.awt.*;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,6 +44,29 @@ public class RoleInternal implements Role {
         this.mentionable = data.get("mentionable").asBoolean();
 
         instances.putIfAbsent(id, this);
+    }
+
+    public static Role getInstance(Server server, JsonNode data) {
+        long id = data.path("id").asLong(-1);
+        assert id != -1 : "No valid ID found.";
+        return instances.containsKey(id) ? instances.get(id) : new RoleInternal(server.getDiscord(), server, data);
+    }
+
+    public static Role getInstance(Server server, long id) {
+        assert id != -1 : "No valid ID found.";
+        return instances.getOrDefault(id,
+                new WebRequest<Role>(server.getDiscord())
+                        .endpoint(Endpoint.Location.ROLE.toEndpoint(server))
+                        .method(Method.GET)
+                        .execute(node -> {
+                            for (JsonNode role : node) {
+                                if (role.get("id").asLong() == id)
+                                    return new RoleInternal(server.getDiscord(), server, role);
+                            }
+                            throw new NoSuchElementException("No Role with ID [" + id + "] found.");
+                        })
+                        .join()
+        );
     }
 
     @Override
@@ -106,16 +132,5 @@ public class RoleInternal implements Role {
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public PermissionList getListFor(DiscordItem scope) {
-        return permissions;
-    }
-
-    public static Role getInstance(Server server, JsonNode data) {
-        long id = data.path("id").asLong(-1);
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) : new RoleInternal(server.getDiscord(), server, data);
     }
 }

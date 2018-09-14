@@ -18,6 +18,12 @@ public enum LogicalOperator {
         this.name = name;
     }
 
+    public static Optional<LogicalOperator> find(String tag) {
+        return Stream.of(values())
+                .filter(lo -> lo.name.equalsIgnoreCase(tag))
+                .findAny();
+    }
+
     public boolean test(Stream<Boolean> booleans) {
         if (this == UNKNOWN) throw new NullPointerException();
         switch (this) {
@@ -46,11 +52,5 @@ public enum LogicalOperator {
     @Override
     public String toString() {
         return "LogicalOperator (" + name + ")";
-    }
-
-    public static Optional<LogicalOperator> find(String tag) {
-        return Stream.of(values())
-                .filter(lo -> lo.name.equalsIgnoreCase(tag))
-                .findAny();
     }
 }

@@ -37,6 +37,32 @@ public class PagedMessage {
         resend();
     }
 
+    public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
+        if (selfMap.containsKey(forParent)) {
+            PagedMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return val;
+        } else {
+            return selfMap.put(forParent,
+                    new PagedMessage(
+                            forParent,
+                            defaultHead,
+                            defaultBody
+                    )
+            );
+        }
+    }
+
+    public final static Optional<PagedMessage> get(MessageReciever forParent) {
+        if (selfMap.containsKey(forParent)) {
+            PagedMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return Optional.of(val);
+        } else return Optional.empty();
+    }
+
     private void onPageClick(ReactionEvent event) {
         if (!event.getUser().isYourself()) {
             Emoji emoji = event.getEmoji();
@@ -126,31 +152,5 @@ public class PagedMessage {
                 }
             }
         }
-    }
-
-    public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
-        if (selfMap.containsKey(forParent)) {
-            PagedMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return val;
-        } else {
-            return selfMap.put(forParent,
-                    new PagedMessage(
-                            forParent,
-                            defaultHead,
-                            defaultBody
-                    )
-            );
-        }
-    }
-
-    public final static Optional<PagedMessage> get(MessageReciever forParent) {
-        if (selfMap.containsKey(forParent)) {
-            PagedMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return Optional.of(val);
-        } else return Optional.empty();
     }
 }

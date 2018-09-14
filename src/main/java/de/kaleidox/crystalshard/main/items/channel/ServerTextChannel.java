@@ -20,11 +20,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public interface ServerTextChannel extends ServerChannel, TextChannel {
-    default Builder BUILDER(Server server) {
-        Objects.requireNonNull(server);
-        return new ChannelBuilderInternal.ServerTextChannelBuilder(server);
-    }
-
     static CompletableFuture<ServerTextChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerTextChannel> channelFuture = new CompletableFuture<>();
@@ -70,6 +65,13 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
         }
 
         return channelFuture;
+    }
+
+    String getTopic();
+
+    default Builder BUILDER(Server server) {
+        Objects.requireNonNull(server);
+        return new ChannelBuilderInternal.ServerTextChannelBuilder(server);
     }
 
     @SuppressWarnings("JavaDoc")

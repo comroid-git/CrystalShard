@@ -31,8 +31,6 @@ public abstract class HandlerBase {
     private final static Package handlerPackage = HandlerBase.class.getPackage();
     private final static ConcurrentHashMap<String, HandlerBase> instances = new ConcurrentHashMap<>();
 
-    public abstract void handle(DiscordInternal discord, JsonNode data);
-
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;
@@ -70,7 +68,7 @@ public abstract class HandlerBase {
         for (Object obj : collectIn) {
             if (Objects.nonNull(obj)) {
                 if (DiscordAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Discord) {
-                    ((DiscordInternal) obj).getListeners()
+                    ((DiscordInternal) obj).getAttachedListeners()
                             .stream()
                             .filter(listener -> listener.canCastTo(listenerClass))
                             .map(listenerClass::cast)
@@ -106,7 +104,7 @@ public abstract class HandlerBase {
                         case GUILD_VOICE:
                             ChannelInternal channel = (ChannelInternal) obj;
                             if (anyTarget) {
-                                channel.getListeners()
+                                channel.getAttachedListeners()
                                         .stream()
                                         .filter(listener -> listener.canCastTo(listenerClass))
                                         .map(listenerClass::cast)
@@ -114,7 +112,7 @@ public abstract class HandlerBase {
                             } else {
                                 for (DiscordItem target : collectFrom) {
                                     if (target.equals(obj)) {
-                                        channel.getListeners()
+                                        channel.getAttachedListeners()
                                                 .stream()
                                                 .filter(listener -> listener.canCastTo(listenerClass))
                                                 .map(listenerClass::cast)
@@ -126,7 +124,7 @@ public abstract class HandlerBase {
                         case GUILD_CATEGORY:
                             ChannelCategoryInternal category = (ChannelCategoryInternal) obj;
                             if (anyTarget) {
-                                category.getListeners()
+                                category.getAttachedListeners()
                                         .stream()
                                         .filter(listener -> listener.canCastTo(listenerClass))
                                         .map(listenerClass::cast)
@@ -134,7 +132,7 @@ public abstract class HandlerBase {
                             } else {
                                 for (DiscordItem target : collectFrom) {
                                     if (target.equals(obj)) {
-                                        category.getListeners()
+                                        category.getAttachedListeners()
                                                 .stream()
                                                 .filter(listener -> listener.canCastTo(listenerClass))
                                                 .map(listenerClass::cast)
@@ -151,7 +149,7 @@ public abstract class HandlerBase {
                 if (MessageAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Message) {
                     MessageInternal message = (MessageInternal) obj;
                     if (anyTarget) {
-                        message.getListeners()
+                        message.getAttachedListeners()
                                 .stream()
                                 .filter(listener -> listener.canCastTo(listenerClass))
                                 .map(listenerClass::cast)
@@ -159,7 +157,7 @@ public abstract class HandlerBase {
                     } else {
                         for (DiscordItem target : collectFrom) {
                             if (target.equals(obj)) {
-                                message.getListeners()
+                                message.getAttachedListeners()
                                         .stream()
                                         .filter(listener -> listener.canCastTo(listenerClass))
                                         .map(listenerClass::cast)
@@ -173,4 +171,6 @@ public abstract class HandlerBase {
 
         return list;
     }
+
+    public abstract void handle(DiscordInternal discord, JsonNode data);
 }

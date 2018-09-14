@@ -29,6 +29,10 @@ public class Endpoint {
         this.firstParam = (params.length == 0 ? null : params[0]);
     }
 
+    public static Endpoint of(Location location, Object... parameter) {
+        return location.toEndpoint(parameter);
+    }
+
     public Location getLocation() {
         return location;
     }
@@ -53,10 +57,6 @@ public class Endpoint {
     @Override
     public String toString() {
         return getUrl().toExternalForm();
-    }
-
-    public static Endpoint of(Location location, Object... parameter) {
-        return location.toEndpoint(parameter);
     }
 
     public enum Location {

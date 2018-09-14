@@ -34,45 +34,51 @@ public interface EmbedDraft extends Embed {
     List<Field> getFields();
 
     interface Footer extends Container.Interface {
-        String getText();
-
-        Optional<URL> getIconUrl();
-
         static Footer BUILD(String text,
                             String iconUrl) {
             return new EmbedDraftInternal.Footer(text, iconUrl);
         }
+
+        String getText();
+
+        Optional<URL> getIconUrl();
     }
 
     interface Image extends Container.Interface {
-        Optional<URL> getUrl();
-
         static Image BUILD(String url) {
             return new EmbedDraftInternal.Image(url);
         }
+
+        Optional<URL> getUrl();
     }
 
     interface Author extends Nameable, Container.Interface {
-        Optional<URL> getUrl();
-
-        Optional<URL> getIconUrl();
-
         static Author BUILD(String name,
                             String url,
                             String iconUrl) {
             return new EmbedDraftInternal.Author(name, url, iconUrl);
         }
+
+        Optional<URL> getUrl();
+
+        Optional<URL> getIconUrl();
     }
 
     interface Thumbnail extends Container.Interface {
-        Optional<URL> getUrl();
-
         static Thumbnail BUILD(String url) {
             return new EmbedDraftInternal.Thumbnail(url);
         }
+
+        Optional<URL> getUrl();
     }
 
     interface Field {
+        static Field BUILD(String title,
+                           String text,
+                           boolean inline) {
+            return new EmbedDraftInternal.Field(title, text, (Objects.nonNull(inline) && inline));
+        }
+
         String getTitle();
 
         String getText();
@@ -84,12 +90,6 @@ public interface EmbedDraft extends Embed {
         }
 
         int getTotalCharCount();
-
-        static Field BUILD(String title,
-                           String text,
-                           boolean inline) {
-            return new EmbedDraftInternal.Field(title, text, (Objects.nonNull(inline) && inline));
-        }
     }
 
     interface EditableField extends Field {

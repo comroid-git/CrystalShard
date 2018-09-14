@@ -28,6 +28,16 @@ public class Evaluation<T> {
     }
 
     /**
+     * Creates a new Evaluation instance for a predefined boolean.
+     *
+     * @param bool The boolean to use for testing.
+     * @return The Evaluation instance.
+     */
+    public static Evaluation<Boolean> of(boolean bool) {
+        return new Evaluation<>(bool, n -> n);
+    }
+
+    /**
      * Gets the actual value.
      *
      * @return The value.
@@ -113,15 +123,5 @@ public class Evaluation<T> {
     @Override
     public String toString() {
         return "Evaluation [" + value.toString() + "; tested " + (result ? "TRUE" : "FALSE") + "]";
-    }
-
-    /**
-     * Creates a new Evaluation instance for a predefined boolean.
-     *
-     * @param bool The boolean to use for testing.
-     * @return The Evaluation instance.
-     */
-    public static Evaluation<Boolean> of(boolean bool) {
-        return new Evaluation<>(bool, n -> n);
     }
 }

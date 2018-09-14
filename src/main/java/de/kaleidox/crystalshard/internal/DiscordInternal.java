@@ -112,7 +112,7 @@ public class DiscordInternal implements Discord {
         return listenerManangers;
     }
 
-    public Collection<DiscordAttachableListener> getListeners() {
+    public Collection<DiscordAttachableListener> getAttachedListeners() {
         return listenerManangers.stream()
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());

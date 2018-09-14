@@ -17,15 +17,15 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
 public interface Embed extends Castable<Embed> {
+    static Builder BUILDER() {
+        return new EmbedBuilderInternal();
+    }
+
     EmbedDraft toEmbedDraft();
 
     Builder toBuilder();
 
     Optional<SentEmbed> toSentEmbed();
-
-    static Builder BUILDER() {
-        return new EmbedBuilderInternal();
-    }
 
     interface Builder {
         Builder setTitle(String title);

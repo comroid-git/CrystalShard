@@ -16,12 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public interface ServerVoiceChannel extends ServerChannel, Channel {
-    default Builder BUILDER(Server server) {
-        Objects.requireNonNull(server);
-        return new ChannelBuilderInternal.ServerVoiceChannelBuilder(server);
-    }
-
+public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
     static CompletableFuture<ServerVoiceChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerVoiceChannel> channelFuture = new CompletableFuture<>();
@@ -67,6 +62,11 @@ public interface ServerVoiceChannel extends ServerChannel, Channel {
         }
 
         return channelFuture;
+    }
+
+    default Builder BUILDER(Server server) {
+        Objects.requireNonNull(server);
+        return new ChannelBuilderInternal.ServerVoiceChannelBuilder(server);
     }
 
     @SuppressWarnings("JavaDoc")

@@ -9,11 +9,7 @@ import de.kaleidox.util.helpers.UrlHelper;
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class SentEmbedInternal implements SentEmbed {

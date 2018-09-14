@@ -1,139 +1,44 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
-import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
+import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
-import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.helpers.JsonHelper;
-import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerTextChannelInternal extends TextChannelInternal implements ServerTextChannel {
     final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
-    private final static Logger logger = new Logger(ServerTextChannelInternal.class);
-    private final Discord discord;
-    private final Server server;
-    private final long id;
-    private final String name;
-    private final List<Message> messages = new ArrayList<>();
-    private final List<ChannelAttachableListener> listeners = new ArrayList<>();
+    final boolean isNsfw;
+    final String topic;
+    final String name;
+    final List<PermissionOverride> overrides;
+    final Server server;
+    final ChannelCategory category;
 
     private ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
-        logger.deeptrace("Creating STC object for data: " + data.toString());
-        this.discord = discord;
         this.server = server;
-        this.id = data.get("id").asLong();
-        this.name = data.path("name").asText(null);
+        this.name = data.path("name").asText("");
+        this.isNsfw = data.path("nsfw").asBoolean(false);
+        this.topic = data.path("topic").asText(null);
+        this.category = ChannelInternal.getInstance(discord, data.path("parent_id").asInt(0))
+                .toChannelCategory()
+                .orElse(null);
+
+        this.overrides = new ArrayList<>();
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
+
         instances.put(id, this);
-    }
-
-    @Override
-    public Server getServer() {
-        return server;
-    }
-
-    @Override
-    public Optional<ChannelCategory> getCategory() {
-        return Optional.empty();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public PermissionList getListFor(DiscordItem scope) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Sendable content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        ObjectNode data = JsonHelper.objectNode();
-        data.set("content", JsonHelper.nodeOf(""));
-        data.set("embed", ((EmbedDraftInternal) embedDraft).toJsonNode(JsonHelper.objectNode()));
-        data.set("file", JsonHelper.nodeOf("content"));
-        return new WebRequest<Message>(discord)
-                .method(Method.POST)
-                .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
-                .node(data)
-                .execute(node -> MessageInternal.getInstance(discord, node));
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(String content) {
-        ObjectNode data = JsonHelper.objectNode();
-        data.set("content", JsonHelper.nodeOf(content));
-        data.set("file", JsonHelper.nodeOf("content"));
-        return new WebRequest<Message>(discord)
-                .method(Method.POST)
-                .endpoint(Endpoint.of(Endpoint.Location.MESSAGE, this))
-                .node(data)
-                .execute(node -> MessageInternal.getInstance(discord, node));
-    }
-
-    @Override
-    public CompletableFuture<Void> typing() {
-        return null;
-    }
-
-    @Override
-    public Collection<Message> getMessages() {
-        return null; // todo
-    }
-
-    public List<? extends ChannelAttachableListener> getListeners() {
-        return listeners;
-    }
-
-    @Override
-    public void attachMessageCreateListener(MessageCreateListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public <C extends ChannelAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null;
-    }
-
-    @Override
-    public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return "ServerTextChannel with ID [" + id + "]";
     }
 
     public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
@@ -144,5 +49,30 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
             return instances.get(id);
         else
             return new ServerTextChannelInternal(discord, server, data);
+    }
+
+    @Override
+    public Server getServer() {
+        return server;
+    }
+
+    @Override
+    public Optional<ChannelCategory> getCategory() {
+        return Optional.ofNullable(category);
+    }
+
+    @Override
+    public List<PermissionOverride> getPermissionOverrides() {
+        return overrides;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getTopic() {
+        return topic;
     }
 }

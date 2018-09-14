@@ -17,6 +17,31 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Emoji extends Mentionable, Castable<Emoji> {
+    static CompletableFuture<Emoji> of(@NotNull Discord discord,
+                                       @Nullable Server server,
+                                       @NotNull String anyEmoji) {
+        Objects.requireNonNull(anyEmoji);
+        String aliases = EmojiParser.parseToAliases(anyEmoji);
+        String unicode = EmojiParser.parseToUnicode(anyEmoji);
+        if (aliases.equalsIgnoreCase(anyEmoji) && unicode.equalsIgnoreCase(anyEmoji)) {
+            // is likely customEmoji
+            return CustomEmojiInternal.getInstance(server, anyEmoji).thenApply(Emoji.class::cast);
+        } else {
+            // is likely unicodeEmoji
+            return CompletableFuture.completedFuture(new UnicodeEmojiInternal(discord, aliases, unicode));
+        }
+    }
+
+    static Emoji of(@NotNull Discord discord,
+                    @Nullable Server server,
+                    @NotNull JsonNode data) {
+        if (data.get("id").isNull()) {
+            return new UnicodeEmojiInternal(discord, data, true);
+        } else {
+            return CustomEmojiInternal.getInstance(discord, server, data, true);
+        }
+    }
+
     /**
      * Gets the alias or name of this emoji.
      *
@@ -58,30 +83,5 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
 
     default Optional<CustomEmoji> toCustomEmoji() {
         return castTo(CustomEmoji.class);
-    }
-
-    static CompletableFuture<Emoji> of(@NotNull Discord discord,
-                                       @Nullable Server server,
-                                       @NotNull String anyEmoji) {
-        Objects.requireNonNull(anyEmoji);
-        String aliases = EmojiParser.parseToAliases(anyEmoji);
-        String unicode = EmojiParser.parseToUnicode(anyEmoji);
-        if (aliases.equalsIgnoreCase(anyEmoji) && unicode.equalsIgnoreCase(anyEmoji)) {
-            // is likely customEmoji
-            return CustomEmojiInternal.getInstance(server, anyEmoji).thenApply(Emoji.class::cast);
-        } else {
-            // is likely unicodeEmoji
-            return CompletableFuture.completedFuture(new UnicodeEmojiInternal(discord, aliases, unicode));
-        }
-    }
-
-    static Emoji of(@NotNull Discord discord,
-                    @Nullable Server server,
-                    @NotNull JsonNode data) {
-        if (data.get("id").isNull()) {
-            return new UnicodeEmojiInternal(discord, data, true);
-        } else {
-            return CustomEmojiInternal.getInstance(discord, server, data, true);
-        }
     }
 }

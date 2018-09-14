@@ -8,23 +8,11 @@ import de.kaleidox.util.CompletableFutureExtended;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicMarkableReference;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * This class is the main concurrent implementation.
@@ -77,6 +65,67 @@ public class ThreadPool {
         this.factory = new Factory();
 
         execute(() -> logger.deeptrace("New ThreadPool created: " + name));
+    }
+
+    /**
+     * Returns whether the current thread is a BotOwn thread; meaning the current thread is a {@link Worker} Thread.
+     * This method is required if you statically want to get a Discord instance using {@link #getThreadDiscord()}.
+     *
+     * @return Whether the current thread is a bot own thread.
+     */
+    public static boolean isBotOwnThread() {
+        return Thread.currentThread() instanceof Worker;
+    }
+
+    /**
+     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the
+     * {@link Worker} Thread.
+     *
+     * @return The worker thread.
+     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
+     */
+    public static Worker requireBotOwnThread() {
+        Thread thread = Thread.currentThread();
+        if (thread instanceof Worker) {
+            return (Worker) thread;
+        } else throw BOT_THREAD_EXCEPTION.get();
+    }
+
+    /**
+     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the
+     * {@link Worker} Thread.
+     *
+     * @param customMessage A custom message to show in the possible exception.
+     * @return The worker thread.
+     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
+     */
+    public static Worker requireBotOwnThread(String customMessage) {
+        Thread thread = Thread.currentThread();
+        if (thread instanceof Worker) {
+            return (Worker) thread;
+        } else throw new IllegalCallerException(customMessage);
+    }
+
+    /**
+     * Gets the Discord object attached to the current Thread, if the current thread is a {@link Worker} thread.
+     * Otherwise throws a {@link IllegalCallerException}.
+     *
+     * @return The discord object.
+     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
+     * @see #requireBotOwnThread()
+     */
+    public static Discord getThreadDiscord() {
+        return requireBotOwnThread().getDiscord();
+    }
+
+    /**
+     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
+     *
+     * @param task The task to check.
+     * @return Whether the task is most likely from an async stage.
+     */
+    private static boolean nonFutureTask(Runnable task) {
+        return !task.toString().toLowerCase().contains("future");
     }
 
     /**
@@ -158,67 +207,6 @@ public class ThreadPool {
                 .peek(Worker::interrupt) // interrupt the thread
                 .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one each thread
                 .forEach(factoriedThreads::remove); // remove the thread from the list
-    }
-
-    /**
-     * Returns whether the current thread is a BotOwn thread; meaning the current thread is a {@link Worker} Thread.
-     * This method is required if you statically want to get a Discord instance using {@link #getThreadDiscord()}.
-     *
-     * @return Whether the current thread is a bot own thread.
-     */
-    public static boolean isBotOwnThread() {
-        return Thread.currentThread() instanceof Worker;
-    }
-
-    /**
-     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the
-     * {@link Worker} Thread.
-     *
-     * @return The worker thread.
-     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
-     */
-    public static Worker requireBotOwnThread() {
-        Thread thread = Thread.currentThread();
-        if (thread instanceof Worker) {
-            return (Worker) thread;
-        } else throw BOT_THREAD_EXCEPTION.get();
-    }
-
-    /**
-     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the
-     * {@link Worker} Thread.
-     *
-     * @param customMessage A custom message to show in the possible exception.
-     * @return The worker thread.
-     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
-     */
-    public static Worker requireBotOwnThread(String customMessage) {
-        Thread thread = Thread.currentThread();
-        if (thread instanceof Worker) {
-            return (Worker) thread;
-        } else throw new IllegalCallerException(customMessage);
-    }
-
-    /**
-     * Gets the Discord object attached to the current Thread, if the current thread is a {@link Worker} thread.
-     * Otherwise throws a {@link IllegalCallerException}.
-     *
-     * @return The discord object.
-     * @throws IllegalCallerException If the thread is not a Bot-Own thread.
-     * @see #requireBotOwnThread()
-     */
-    public static Discord getThreadDiscord() {
-        return requireBotOwnThread().getDiscord();
-    }
-
-    /**
-     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
-     *
-     * @param task The task to check.
-     * @return Whether the task is most likely from an async stage.
-     */
-    private static boolean nonFutureTask(Runnable task) {
-        return !task.toString().toLowerCase().contains("future");
     }
 
     public class Factory implements ThreadFactory {

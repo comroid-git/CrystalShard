@@ -10,19 +10,16 @@ import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInterna
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.UncachedItemException;
 import de.kaleidox.crystalshard.main.items.Nameable;
-import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
-    Server getServer();
-
-    Optional<ChannelCategory> getCategory();
-
+public interface ServerChannel extends Channel, Nameable {
     static CompletableFuture<ServerChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerChannel> channelFuture = new CompletableFuture<>();
@@ -83,4 +80,10 @@ public interface ServerChannel extends Channel, Nameable, PermissionApplyable {
 
         return channelFuture;
     }
+
+    Server getServer();
+
+    Optional<ChannelCategory> getCategory();
+
+    List<PermissionOverride> getPermissionOverrides();
 }

@@ -70,6 +70,14 @@ public enum VoiceRegion {
         this.vip = vip;
     }
 
+    public static VoiceRegion getFromRegionKey(String regionKey) {
+        if (regionKey == null) return UNKNOWN;
+        return Stream.of(values())
+                .filter(region -> region.regionKey.equals(regionKey))
+                .findAny()
+                .orElse(UNKNOWN);
+    }
+
     public String getRegionKey() {
         return regionKey;
     }
@@ -80,13 +88,5 @@ public enum VoiceRegion {
 
     public boolean isVip() {
         return vip;
-    }
-
-    public static VoiceRegion getFromRegionKey(String regionKey) {
-        if (regionKey == null) return UNKNOWN;
-        return Stream.of(values())
-                .filter(region -> region.regionKey.equals(regionKey))
-                .findAny()
-                .orElse(UNKNOWN);
     }
 }

@@ -7,8 +7,6 @@ import de.kaleidox.crystalshard.util.DefaultEmbed;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public interface MessageReciever extends DiscordItem {
@@ -23,8 +21,6 @@ public interface MessageReciever extends DiscordItem {
     CompletableFuture<Message> sendMessage(String content);
 
     CompletableFuture<Void> typing();
-
-    ScheduledFuture<Void> typeFor(long time, TimeUnit unit);
 
     Collection<Message> getMessages();
 }

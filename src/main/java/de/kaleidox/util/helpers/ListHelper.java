@@ -83,4 +83,35 @@ public class ListHelper extends CollectionHelper {
 
         return (ref.trues == list.size());
     }
+
+    /**
+     * Creates a List of Lists of every {@code OF} items whithin the list {@code of}.
+     *
+     * @param every How many items to contain in each sublist.
+     * @param of    The source list.
+     * @param <T>   The type of the lists.
+     * @return A list of lists which contain the wanted subsets based on {@code every}.
+     */
+    public static <T> List<List<T>> everyOfList(int every, List<T> of) {
+        ArrayList<List<T>> val = new ArrayList<>();
+        ArrayList<T> count = new ArrayList<>();
+        int i = 0, run = 0;
+
+        while (run != of.size()) {
+            if (i == every)
+                i = 0;
+
+            if (i == 0) {
+                count = new ArrayList<>();
+                val.add(count);
+            }
+
+            count.add(of.get(run));
+
+            i++;
+            run++;
+        }
+
+        return val;
+    }
 }

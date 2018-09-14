@@ -1,10 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.channel.*;
 
 import java.util.ArrayList;
 import java.util.List;

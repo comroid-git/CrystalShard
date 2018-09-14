@@ -62,6 +62,164 @@ public class Logger {
         }
     }
 
+    /**
+     * Registers the given CustomHandler for handling any post message.
+     *
+     * @param handler The handler to register.
+     */
+    public static void registerCustomHandler(CustomHandler handler) {
+        customHandlers.add(handler);
+    }
+
+    /**
+     * Registers the given CustomExceptionHandler for handling exceptions.
+     *
+     * @param handler The handler to register.
+     */
+    public static void registerCustomExceptionHandler(CustomExceptionHandler handler) {
+        customExceptionHandlers.add(handler);
+    }
+
+    /**
+     * Sets the logging level to the given level.
+     * Changes are not stored and get lost on any restart.
+     *
+     * @param level The level to set to.
+     */
+    public static void setLevel(LoggingLevel level) {
+        ((ObjectNode) configuration).set("level", JsonHelper.nodeOf(level.getName()));
+        Logger.level = level;
+    }
+
+    /**
+     * Sets the ignored classes.
+     * Changes are not stored and get lost on any restart.
+     *
+     * @param ignoredClasses A list of ignored classes.
+     */
+    public static void setIgnored(Class... ignoredClasses) {
+        ((ObjectNode) configuration).set("ignored", JsonHelper.arrayNode(
+                Stream.of(ignoredClasses)
+                        .map(Class::getName)
+                        .collect(Collectors.toList())
+                        .toArray(new Object[ignoredClasses.length])
+        ));
+        Logger.ignored = List.of(ignoredClasses);
+    }
+
+    /**
+     * Sets the prefix of the logger.
+     * Changes are not stored and get lost on any restart.
+     *
+     * <p>The prefix may contain three different formatting pieces:</p>
+     * <p>{@code %l} - Gets replaced with the Level of the message.</p>
+     * <p>{@code %t} - Gets replaced with the current Timestamp of the message.</p>
+     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getName()}.</p>
+     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getSimpleName()}.</p>
+     *
+     * @param prefix The prefix to set.
+     */
+    public static void setPrefix(String prefix) {
+        ((ObjectNode) configuration).set("prefix", JsonHelper.nodeOf(prefix));
+    }
+
+    /**
+     * Sets the suffix of the logger.
+     * Changes are not stored and get lost on any restart.
+     *
+     * <p>The suffix may contain three different formatting pieces:</p>
+     * <p>{@code %l} - Gets replaced with the Level of the message.</p>
+     * <p>{@code %t} - Gets replaced with the current Timestamp of the message.</p>
+     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getName()}.</p>
+     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getSimpleName()}.</p>
+     *
+     * @param suffix The suffix to set.
+     */
+    public static void setSuffix(String suffix) {
+        ((ObjectNode) configuration).set("suffix", JsonHelper.nodeOf(suffix));
+    }
+
+    private static void initLogging() {
+        hasInit = true;
+        JsonNode node;
+        InputStream configStream = Logger.class.getResourceAsStream("/logging.json");
+        if (configStream != null) {
+            Scanner s = new Scanner(configStream).useDelimiter("\\A");
+            if (s.hasNext()) {
+                try {
+                    String content = s.next();
+                    ObjectMapper mapper = new ObjectMapper();
+                    node = mapper.readTree(content);
+                } catch (IOException ignored) {
+                    node = createDefaultConfig();
+                }
+            } else {
+                // file does not exist, go for defaults
+                node = createDefaultConfig();
+            }
+            configuration = node;
+            try {
+                configStream.close();
+            } catch (IOException ignored) {
+                System.out.println("test");
+            }
+        } else {
+            configuration = createDefaultConfig();
+        }
+
+        level = LoggingLevel.ofName(configuration.get("level").asText()).orElse(LoggingLevel.INFO);
+        ignored = createIgnoredList(configuration.get("ignored"));
+        String prefix = configuration.get("prefix").asText();
+        String suffix = configuration.get("suffix").asText();
+    }
+
+    /**
+     * A static method to catch exceptions.
+     * This method posts the given exception from a static logger for {@link StaticException}.
+     * This method can be used for {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
+     *
+     * @param throwable The exception to log.
+     * @param <T>       A type variable for the return.
+     * @return null
+     * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
+     */
+    public static <T> T get(Throwable throwable) {
+        staticLogger.exception(throwable);
+        return null;
+    }
+
+    private static ObjectNode createDefaultConfig() {
+        System.out.println("[INFO] No logger configuration file \"logger.json\" at resources root found. " +
+                "Using default configuration or code set preferences...");
+        ObjectNode data = JsonNodeFactory.instance.objectNode();
+
+        data.set("level", JsonHelper.nodeOf(DEFAULT_LEVEL.getName()));
+        data.set("ignored", JsonHelper.arrayNode(DEFAULT_IGNORED.stream().map(Class::getName).toArray()));
+        data.set("prefix", JsonHelper.nodeOf(DEFAULT_PREFIX));
+        data.set("suffix", JsonHelper.nodeOf(DEFAULT_SUFFIX));
+        data.set("blanked", JsonHelper.arrayNode(DEFAULT_BLANKED.toArray()));
+
+        return data;
+    }
+
+    private static List<Class> createIgnoredList(JsonNode data) {
+        List<Class> list = new ArrayList<>();
+
+        for (JsonNode clazz : data) {
+            try {
+                list.add(Class.forName(clazz.asText()));
+            } catch (ClassNotFoundException e) {
+                throw new NullPointerException(e.getMessage());
+            }
+        }
+
+        return list;
+    }
+
+    public static void addBlankedWord(String word) {
+        blanked.add(word);
+    }
+
     public void traceElseInfo(Object traceMessage, Object infoMessage) {
         if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
             post(LoggingLevel.TRACE, traceMessage.toString());
@@ -253,163 +411,5 @@ public class Logger {
         */
 
         return fix.equals("null") ? "" : fix;
-    }
-
-    /**
-     * Registers the given CustomHandler for handling any post message.
-     *
-     * @param handler The handler to register.
-     */
-    public static void registerCustomHandler(CustomHandler handler) {
-        customHandlers.add(handler);
-    }
-
-    /**
-     * Registers the given CustomExceptionHandler for handling exceptions.
-     *
-     * @param handler The handler to register.
-     */
-    public static void registerCustomExceptionHandler(CustomExceptionHandler handler) {
-        customExceptionHandlers.add(handler);
-    }
-
-    /**
-     * Sets the logging level to the given level.
-     * Changes are not stored and get lost on any restart.
-     *
-     * @param level The level to set to.
-     */
-    public static void setLevel(LoggingLevel level) {
-        ((ObjectNode) configuration).set("level", JsonHelper.nodeOf(level.getName()));
-        Logger.level = level;
-    }
-
-    /**
-     * Sets the ignored classes.
-     * Changes are not stored and get lost on any restart.
-     *
-     * @param ignoredClasses A list of ignored classes.
-     */
-    public static void setIgnored(Class... ignoredClasses) {
-        ((ObjectNode) configuration).set("ignored", JsonHelper.arrayNode(
-                Stream.of(ignoredClasses)
-                        .map(Class::getName)
-                        .collect(Collectors.toList())
-                        .toArray(new Object[ignoredClasses.length])
-        ));
-        Logger.ignored = List.of(ignoredClasses);
-    }
-
-    /**
-     * Sets the prefix of the logger.
-     * Changes are not stored and get lost on any restart.
-     *
-     * <p>The prefix may contain three different formatting pieces:</p>
-     * <p>{@code %l} - Gets replaced with the Level of the message.</p>
-     * <p>{@code %t} - Gets replaced with the current Timestamp of the message.</p>
-     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getName()}.</p>
-     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getSimpleName()}.</p>
-     *
-     * @param prefix The prefix to set.
-     */
-    public static void setPrefix(String prefix) {
-        ((ObjectNode) configuration).set("prefix", JsonHelper.nodeOf(prefix));
-    }
-
-    /**
-     * Sets the suffix of the logger.
-     * Changes are not stored and get lost on any restart.
-     *
-     * <p>The suffix may contain three different formatting pieces:</p>
-     * <p>{@code %l} - Gets replaced with the Level of the message.</p>
-     * <p>{@code %t} - Gets replaced with the current Timestamp of the message.</p>
-     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getName()}.</p>
-     * <p>{@code %c} - Gets replaced with the class name obtained by {@link Class#getSimpleName()}.</p>
-     *
-     * @param suffix The suffix to set.
-     */
-    public static void setSuffix(String suffix) {
-        ((ObjectNode) configuration).set("suffix", JsonHelper.nodeOf(suffix));
-    }
-
-    private static void initLogging() {
-        hasInit = true;
-        JsonNode node;
-        InputStream configStream = Logger.class.getResourceAsStream("/logging.json");
-        if (configStream != null) {
-            Scanner s = new Scanner(configStream).useDelimiter("\\A");
-            if (s.hasNext()) {
-                try {
-                    String content = s.next();
-                    ObjectMapper mapper = new ObjectMapper();
-                    node = mapper.readTree(content);
-                } catch (IOException ignored) {
-                    node = createDefaultConfig();
-                }
-            } else {
-                // file does not exist, go for defaults
-                node = createDefaultConfig();
-            }
-            configuration = node;
-            try {
-                configStream.close();
-            } catch (IOException ignored) {
-                System.out.println("test");
-            }
-        } else {
-            configuration = createDefaultConfig();
-        }
-
-        level = LoggingLevel.ofName(configuration.get("level").asText()).orElse(LoggingLevel.INFO);
-        ignored = createIgnoredList(configuration.get("ignored"));
-        String prefix = configuration.get("prefix").asText();
-        String suffix = configuration.get("suffix").asText();
-    }
-
-    /**
-     * A static method to catch exceptions.
-     * This method posts the given exception from a static logger for {@link StaticException}.
-     * This method can be used for {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
-     *
-     * @param throwable The exception to log.
-     * @param <T>       A type variable for the return.
-     * @return null
-     * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
-     */
-    public static <T> T get(Throwable throwable) {
-        staticLogger.exception(throwable);
-        return null;
-    }
-
-    private static ObjectNode createDefaultConfig() {
-        System.out.println("[INFO] No logger configuration file \"logger.json\" at resources root found. " +
-                "Using default configuration or code set preferences...");
-        ObjectNode data = JsonNodeFactory.instance.objectNode();
-
-        data.set("level", JsonHelper.nodeOf(DEFAULT_LEVEL.getName()));
-        data.set("ignored", JsonHelper.arrayNode(DEFAULT_IGNORED.stream().map(Class::getName).toArray()));
-        data.set("prefix", JsonHelper.nodeOf(DEFAULT_PREFIX));
-        data.set("suffix", JsonHelper.nodeOf(DEFAULT_SUFFIX));
-        data.set("blanked", JsonHelper.arrayNode(DEFAULT_BLANKED.toArray()));
-
-        return data;
-    }
-
-    private static List<Class> createIgnoredList(JsonNode data) {
-        List<Class> list = new ArrayList<>();
-
-        for (JsonNode clazz : data) {
-            try {
-                list.add(Class.forName(clazz.asText()));
-            } catch (ClassNotFoundException e) {
-                throw new NullPointerException(e.getMessage());
-            }
-        }
-
-        return list;
-    }
-
-    public static void addBlankedWord(String word) {
-        blanked.add(word);
     }
 }

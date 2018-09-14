@@ -12,8 +12,6 @@ import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
-import java.util.List;
-
 /**
  * https://discordapp.com/developers/docs/topics/gateway#message-create
  */

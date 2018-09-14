@@ -15,6 +15,12 @@ public class Payload {
     private long lastSeq;
     private boolean last = true;
 
+    public static Payload create(OpCode code, JsonNode node) {
+        return new Payload()
+                .opcode(code)
+                .node(node);
+    }
+
     Payload opcode(OpCode code) {
         this.code = code;
         return this;
@@ -65,11 +71,5 @@ public class Payload {
         ObjectNode node = this.node.isNull() ? JsonHelper.objectNode() : this.node.deepCopy();
         node.set(name, nodeOf);
         this.node = node;
-    }
-
-    public static Payload create(OpCode code, JsonNode node) {
-        return new Payload()
-                .opcode(code)
-                .node(node);
     }
 }

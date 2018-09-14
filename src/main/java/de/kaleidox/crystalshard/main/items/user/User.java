@@ -22,45 +22,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.crystalshard.core.net.request.Method.*;
+import static de.kaleidox.crystalshard.core.net.request.Method.GET;
 
 public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User> {
-    String getDiscriminatedName();
-
-    String getDiscriminator();
-
-    Optional<String> getNickname(Server inServer);
-
-    String getDisplayName(Server inServer);
-
-    String getNicknameMentionTag();
-
-    Optional<URL> getAvatarUrl();
-
-    boolean isBot();
-
-    boolean isVerified();
-
-    boolean hasMultiFactorAuthorization();
-
-    boolean isYourself();
-
-    Optional<String> getLocale();
-
-    Optional<String> getEmail();
-
-    default Optional<ServerMember> toServerMember() {
-        return castTo(ServerMember.class);
-    }
-
-    default ServerMember toServerMember(Server server) {
-        return null; // todo
-    }
-
-    Collection<Role> getRoles(Server server);
-
-    CompletableFuture<PrivateTextChannel> openPrivateChannel();
-
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;
 
@@ -126,4 +90,40 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
 
         return userFuture;
     }
+
+    String getDiscriminatedName();
+
+    String getDiscriminator();
+
+    Optional<String> getNickname(Server inServer);
+
+    String getDisplayName(Server inServer);
+
+    String getNicknameMentionTag();
+
+    Optional<URL> getAvatarUrl();
+
+    boolean isBot();
+
+    boolean isVerified();
+
+    boolean hasMultiFactorAuthorization();
+
+    boolean isYourself();
+
+    Optional<String> getLocale();
+
+    Optional<String> getEmail();
+
+    default Optional<ServerMember> toServerMember() {
+        return castTo(ServerMember.class);
+    }
+
+    default ServerMember toServerMember(Server server) {
+        return null; // todo
+    }
+
+    Collection<Role> getRoles(Server server);
+
+    CompletableFuture<PrivateTextChannel> openPrivateChannel();
 }

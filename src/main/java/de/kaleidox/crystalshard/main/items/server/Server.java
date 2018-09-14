@@ -24,6 +24,13 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer {
+    static CompletableFuture<Server> of(Discord discord, long id) {
+        CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
+        discord.getServerById(id).ifPresentOrElse(future::complete,
+                () -> future.completeExceptionally(new NoSuchElementException("Server is not available.")));
+        return future;
+    }
+
     Optional<URL> getIconUrl();
 
     Optional<URL> getSplashUrl();
@@ -83,11 +90,4 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
     Optional<User> getUserById(long id);
 
     CompletableFuture<Void> leave();
-
-    static CompletableFuture<Server> of(Discord discord, long id) {
-        CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
-        discord.getServerById(id).ifPresentOrElse(future::complete,
-                () -> future.completeExceptionally(new NoSuchElementException("Server is not available.")));
-        return future;
-    }
 }

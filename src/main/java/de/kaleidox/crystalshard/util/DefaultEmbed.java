@@ -25,32 +25,6 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         this.modifiers = new ArrayList<>();
     }
 
-    public DefaultEmbed addModifier(Consumer<Embed.Builder> modifier) {
-        modifiers.add(modifier);
-        return this;
-    }
-
-    @Override
-    public EmbedDraft get() {
-        if (modifiers.isEmpty()) {
-            return EMPTY_SUPPLIER.get();
-        } else {
-            Embed.Builder builder = Embed.BUILDER();
-            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
-            return builder.build();
-        }
-    }
-
-    public Embed.Builder getBuilder() {
-        if (modifiers.isEmpty()) {
-            return EMPTY_BUILDER.get();
-        } else {
-            Embed.Builder builder = EMPTY_BUILDER.get();
-            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
-            return builder;
-        }
-    }
-
     /**
      * A static implementation of the {@link DefaultEmbed#get()} method.
      * This method will first check if the current thread is a {@link ThreadPool.Worker} thread, and if so,
@@ -154,5 +128,31 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                 "thread, such as in listeners or scheduler tasks. You may not use it from contexts like " +
                 "CompletableFuture#thenAcceptAsync or such.");
+    }
+
+    public DefaultEmbed addModifier(Consumer<Embed.Builder> modifier) {
+        modifiers.add(modifier);
+        return this;
+    }
+
+    @Override
+    public EmbedDraft get() {
+        if (modifiers.isEmpty()) {
+            return EMPTY_SUPPLIER.get();
+        } else {
+            Embed.Builder builder = Embed.BUILDER();
+            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
+            return builder.build();
+        }
+    }
+
+    public Embed.Builder getBuilder() {
+        if (modifiers.isEmpty()) {
+            return EMPTY_BUILDER.get();
+        } else {
+            Embed.Builder builder = EMPTY_BUILDER.get();
+            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
+            return builder;
+        }
     }
 }

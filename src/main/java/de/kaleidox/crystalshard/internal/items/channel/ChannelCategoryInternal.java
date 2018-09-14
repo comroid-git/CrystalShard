@@ -1,16 +1,11 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.objects.Evaluation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,74 +13,22 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ChannelCategoryInternal extends ArrayList<Channel> implements ChannelCategory {
+public class ChannelCategoryInternal extends ChannelInternal implements ChannelCategory {
     final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
-    private final Discord discord;
-    private final Server server;
-    private final String name;
-    private final long id;
-    private List<? extends ChannelAttachableListener> listeners;
+    final String name;
+    final Server server;
+    private final List<PermissionOverride> overrides;
 
     private ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
-        this.discord = discord;
+        super(discord, data);
         this.server = server;
-        this.id = data.get("id").asLong();
-        this.name = data.path("name").asText("undefined");
-        listeners = new ArrayList<>();
-    }
+        this.name = data.path("name").asText("");
 
-    @Override
-    public Server getServer() {
-        return server;
-    }
+        this.overrides = new ArrayList<>();
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
 
-    @Override
-    public Optional<ChannelCategory> getCategory() {
-        return Optional.empty();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public ChannelType getType() {
-        return ChannelType.GUILD_CATEGORY;
-    }
-
-    @Override
-    public PermissionList getListFor(DiscordItem scope) {
-        return null;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public Discord getDiscord() {
-        return discord;
-    }
-
-    public List<? extends ChannelAttachableListener> getListeners() {
-        return listeners;
-    }
-
-    @Override
-    public <C extends ChannelAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null;
-    }
-
-    @Override
-    public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return "ChannelCategory with ID [" + id + "]";
+        instances.put(id, this);
     }
 
     public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
@@ -95,5 +38,25 @@ public class ChannelCategoryInternal extends ArrayList<Channel> implements Chann
             return instances.get(id);
         else
             return new ChannelCategoryInternal(discord, server, data);
+    }
+
+    @Override
+    public Server getServer() {
+        return server;
+    }
+
+    @Override
+    public Optional<ChannelCategory> getCategory() {
+        return Optional.of(this);
+    }
+
+    @Override
+    public List<PermissionOverride> getPermissionOverrides() {
+        return overrides;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

@@ -55,6 +55,22 @@ public class CustomEmojiInternal implements CustomEmoji {
         instances.put(id, this);
     }
 
+    public static CustomEmoji getInstance(Discord discord, Server server, JsonNode data, boolean partialData) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        return instances.getOrDefault(id, new CustomEmojiInternal(discord, server, data, partialData));
+    }
+
+    public static CompletableFuture<CustomEmoji> getInstance(Server server, String customEmojiMentionTag) {
+        String reverse = new StringBuilder(customEmojiMentionTag).reverse().toString();
+        int ind = reverse.indexOf(":");
+        long id = Long.parseLong(new StringBuilder(reverse.substring(1, ind)).reverse().toString());
+        return new WebRequest<CustomEmoji>(server.getDiscord())
+                .method(Method.GET)
+                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(server, id))
+                .execute(node -> getInstance(server.getDiscord(), server, node, false));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CustomEmoji)
@@ -190,21 +206,5 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public String getMentionTag() {
         return toDiscordPrintable();
-    }
-
-    public static CustomEmoji getInstance(Discord discord, Server server, JsonNode data, boolean partialData) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        return instances.getOrDefault(id, new CustomEmojiInternal(discord, server, data, partialData));
-    }
-
-    public static CompletableFuture<CustomEmoji> getInstance(Server server, String customEmojiMentionTag) {
-        String reverse = new StringBuilder(customEmojiMentionTag).reverse().toString();
-        int ind = reverse.indexOf(":");
-        long id = Long.parseLong(new StringBuilder(reverse.substring(1, ind)).reverse().toString());
-        return new WebRequest<CustomEmoji>(server.getDiscord())
-                .method(Method.GET)
-                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(server, id))
-                .execute(node -> getInstance(server.getDiscord(), server, node, false));
     }
 }

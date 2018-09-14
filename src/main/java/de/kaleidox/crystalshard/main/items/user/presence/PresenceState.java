@@ -39,16 +39,16 @@ public interface PresenceState {
             this.key = key;
         }
 
-        public String getKey() {
-            return key;
-        }
-
         public static Status getFromKey(String key) {
             return Stream.of(values())
                     .filter(status -> Objects.nonNull(status.key))
                     .filter(status -> status.key.equalsIgnoreCase(key))
                     .findAny()
                     .orElse(UNKNOWN);
+        }
+
+        public String getKey() {
+            return key;
         }
     }
 }

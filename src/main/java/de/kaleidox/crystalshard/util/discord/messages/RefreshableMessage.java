@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.util.discord.messages;
 
-import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
@@ -40,6 +39,31 @@ public class RefreshableMessage {
         }
     }
 
+    public final static RefreshableMessage get(MessageReciever forParent, Supplier<Object> defaultRefresher) {
+        if (selfMap.containsKey(forParent)) {
+            RefreshableMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return val;
+        } else {
+            return selfMap.put(forParent,
+                    new RefreshableMessage(
+                            forParent,
+                            defaultRefresher
+                    )
+            );
+        }
+    }
+
+    public final static Optional<RefreshableMessage> get(MessageReciever forParent) {
+        if (selfMap.containsKey(forParent)) {
+            RefreshableMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return Optional.of(val);
+        } else return Optional.empty();
+    }
+
     private void onRefresh(ReactionEvent event) {
         if (!event.getUser().isYourself()) {
             Emoji emoji = event.getEmoji();
@@ -73,30 +97,5 @@ public class RefreshableMessage {
                 msg.addReaction(REFRESH_EMOJI);
             });
         }
-    }
-
-    public final static RefreshableMessage get(MessageReciever forParent, Supplier<Object> defaultRefresher) {
-        if (selfMap.containsKey(forParent)) {
-            RefreshableMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return val;
-        } else {
-            return selfMap.put(forParent,
-                    new RefreshableMessage(
-                            forParent,
-                            defaultRefresher
-                    )
-            );
-        }
-    }
-
-    public final static Optional<RefreshableMessage> get(MessageReciever forParent) {
-        if (selfMap.containsKey(forParent)) {
-            RefreshableMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return Optional.of(val);
-        } else return Optional.empty();
     }
 }

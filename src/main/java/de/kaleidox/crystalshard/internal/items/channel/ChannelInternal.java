@@ -4,49 +4,33 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
+import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.annotations.Nullable;
+import de.kaleidox.util.objects.Evaluation;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class ChannelInternal implements Channel {
-    private final Discord discord;
-    private final ChannelType type;
-    private final long id;
+    final Discord discord;
+    final ChannelType type;
+    final boolean isPrivate;
+    final long id;
+    final List<ListenerManager<? extends ChannelAttachableListener>> listenerManagers;
 
     ChannelInternal(Discord discord, JsonNode data) {
         this.discord = discord;
         this.id = data.get("id").asLong();
         this.type = ChannelType.getFromId(data.get("type").asInt());
-    }
-
-    @Override
-    public ChannelType getType() {
-        return type;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public Discord getDiscord() {
-        return discord;
-    }
-
-    public abstract List<? extends ChannelAttachableListener> getListeners();
-
-    @Override
-    public String toString() {
-        return "Channel with ID [" + id + "]";
+        this.isPrivate = (type == ChannelType.DM || type == ChannelType.GROUP_DM);
+        this.listenerManagers = new ArrayList<>();
     }
 
     public static Channel getInstance(Discord discord, long id) {
@@ -57,23 +41,26 @@ public abstract class ChannelInternal implements Channel {
                 .orElseGet(() -> new WebRequest<Channel>(discord)
                         .method(Method.GET)
                         .endpoint(Endpoint.Location.CHANNEL.toEndpoint(id))
-                        .execute(node -> getInstance(discord, null, node))
+                        .execute(node -> getInstance(discord, node))
                         .join());
     }
 
-    public static Channel getInstance(Discord discord, @Nullable Server server, JsonNode data) {
-        if (data.has("guild_id")) {
-            if (data.has("bitrate")) {
-                return ServerVoiceChannelInternal.getInstance(discord, server, data);
-            } else {
+    public static Channel getInstance(Discord discord, JsonNode data) {
+        Server server = data.has("guild_id") ?
+                ServerInternal.getInstance(discord, data.get("guild_id").asLong()) : null;
+        switch (ChannelType.getFromId(data.get("type").asInt())) {
+            case GUILD_TEXT:
                 return ServerTextChannelInternal.getInstance(discord, server, data);
-            }
-        } else {
-            if (data.has("recipients")) {
-                return GroupChannelInternal.getInstance(discord, data);
-            } else {
+            case DM:
                 return PrivateTextChannelInternal.getInstance(discord, data);
-            }
+            case GUILD_VOICE:
+                return ServerVoiceChannelInternal.getInstance(discord, server, data);
+            case GROUP_DM:
+                return GroupChannelInternal.getInstance(discord, data);
+            case GUILD_CATEGORY:
+                return ChannelCategoryInternal.getInstance(discord, server, data);
+            default:
+                throw new NoSuchElementException("Unknown or no channel Type.");
         }
     }
 
@@ -105,5 +92,41 @@ public abstract class ChannelInternal implements Channel {
                 .map(Map.Entry::getValue)
                 .forEachOrdered(collect::add);
         return collect;
+    }
+
+    @Override
+    public Discord getDiscord() {
+        return discord;
+    }
+
+    @Override
+    public <C extends ChannelAttachableListener> ListenerManager<C> attachListener(C listener) {
+        ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
+        listenerManagers.add(manager);
+        return manager;
+    }
+
+    @Override
+    public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
+        ListenerManagerInternal<? extends ChannelAttachableListener> manager =
+                ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
+        return Evaluation.of(listenerManagers.remove(manager));
+    }
+
+    @Override
+    public Collection<ChannelAttachableListener> getAttachedListeners() {
+        return listenerManagers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ChannelType getType() {
+        return type;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 }

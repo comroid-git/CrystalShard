@@ -2,63 +2,19 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.Evaluation;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PrivateTextChannelInternal extends TextChannelInternal implements PrivateTextChannel {
     final static ConcurrentHashMap<Long, PrivateTextChannel> instances = new ConcurrentHashMap<>();
-    private final static Logger logger = new Logger(PrivateTextChannelInternal.class);
-    private final List<Message> messages = new ArrayList<>();
-    private final List<ChannelAttachableListener> listeners = new ArrayList<>();
-    private long id;
 
     private PrivateTextChannelInternal(DiscordInternal discord, JsonNode data) {
         super(discord, data);
-        logger.deeptrace("Creating PTC object for data: " + data.toString());
-        this.id = data.get("id").asLong();
-    }
 
-    public Message craftMessage(JsonNode data) {
-        MessageInternal messageInternal = (MessageInternal) MessageInternal.getInstance(getDiscord(), data);
-        this.messages.add(messageInternal);
-        return messageInternal;
-    }
-
-    @Override
-    public void attachMessageCreateListener(MessageCreateListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public List<? extends ChannelAttachableListener> getListeners() {
-        return listeners;
-    }
-
-    @Override
-    public <C extends ChannelAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null;
-    }
-
-    @Override
-    public Evaluation<Boolean> detachListener(ChannelAttachableListener listener) {
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        return "PrivateTextChannel with ID [" + id + "]";
+        instances.put(id, this);
     }
 
     public static PrivateTextChannel getInstance(Discord discord, JsonNode data) {

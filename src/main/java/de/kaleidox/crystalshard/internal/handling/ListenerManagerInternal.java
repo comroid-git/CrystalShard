@@ -25,6 +25,14 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         instances.putIfAbsent(listener.hashCode(), this);
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T extends Listener> ListenerManagerInternal<T> getInstance(
+            DiscordInternal discordInternal, T listener) {
+        if (instances.containsKey(listener.hashCode()))
+            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
+        else return new ListenerManagerInternal<>(discordInternal, listener);
+    }
+
     public <C extends ListenerAttachable<T>> void addAttached(C attached) {
         attachedTo.add(attached);
     }
@@ -63,13 +71,5 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
     public ListenerManager<T> onDetach(Runnable runnable) {
         detachRunnables.add(runnable);
         return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Listener> ListenerManagerInternal<T> getInstance(
-            DiscordInternal discordInternal, T listener) {
-        if (instances.containsKey(listener.hashCode()))
-            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
-        else return new ListenerManagerInternal<>(discordInternal, listener);
     }
 }

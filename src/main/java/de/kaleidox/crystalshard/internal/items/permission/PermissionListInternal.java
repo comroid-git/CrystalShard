@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.internal.items.permission;
 
 import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PermissionListInternal extends HashSet<Permission> implements PermissionList {
-    private final PermissionApplyable parent;
+    private final PermissionOverwritable parent;
 
-    public PermissionListInternal(PermissionApplyable parent, int permissionInteger) {
+    public PermissionListInternal(PermissionOverwritable parent, int permissionInteger) {
         super(Stream.of(Permission.values())
                 .filter(permission -> permission.partOf(permissionInteger))
                 .filter(permission -> permission != Permission.EMPTY)
@@ -20,7 +20,7 @@ public class PermissionListInternal extends HashSet<Permission> implements Permi
         this.parent = parent;
     }
 
-    public PermissionListInternal(PermissionApplyable parent) {
+    public PermissionListInternal(PermissionOverwritable parent) {
         super();
         this.parent = parent;
     }
@@ -39,7 +39,7 @@ public class PermissionListInternal extends HashSet<Permission> implements Permi
     }
 
     @Override
-    public Optional<PermissionApplyable> getParent() {
+    public Optional<PermissionOverwritable> getParent() {
         return Optional.ofNullable(parent);
     }
 

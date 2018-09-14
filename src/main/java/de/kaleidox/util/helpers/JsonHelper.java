@@ -62,8 +62,19 @@ public class JsonHelper {
         return JsonNodeFactory.instance.objectNode();
     }
 
-    public static JsonNode objectNode(String fieldName, Object fieldValue) {
-        return objectNode().set(fieldName, nodeOf(fieldName));
+    public static ObjectNode objectNode(String fieldName, Object fieldValue) {
+        return (ObjectNode) objectNode().set(fieldName, nodeOf(fieldName));
+    }
+
+    public static ObjectNode objectNode(Object... data) {
+        if (data.length % 2 != 0)
+            throw new IllegalArgumentException("You must provide an even amount of objects to be placed in the node.");
+        ObjectNode objectNode = objectNode();
+        List<List<Object>> dataPairs = ListHelper.everyOfList(2, List.of(data));
+
+        dataPairs.forEach(pair -> objectNode.set(pair.get(0).toString(), nodeOf(pair.get(1))));
+
+        return objectNode;
     }
 
     public static JsonNode parse(String body) {

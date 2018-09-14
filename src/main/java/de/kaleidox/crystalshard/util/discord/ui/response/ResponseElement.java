@@ -41,6 +41,10 @@ public abstract class ResponseElement<ResultType> {
         this.affiliateMessages = new ArrayList<>();
     }
 
+    public static Predicate<User> sameUserPredicate(User user) {
+        return usr -> usr.equals(user);
+    }
+
     public ResponseElement<ResultType> setParentBranch(DialogueBranch parentBranch) {
         this.parentBranch = parentBranch;
         return this;
@@ -97,9 +101,5 @@ public abstract class ResponseElement<ResultType> {
 
     public String getName() {
         return name;
-    }
-
-    public static Predicate<User> sameUserPredicate(User user) {
-        return usr -> usr.equals(user);
     }
 }

@@ -3,6 +3,12 @@ package de.kaleidox.crystalshard.main.util;
 import java.util.Optional;
 
 public interface Castable<C> {
+    @SuppressWarnings("unchecked")
+    private static <T> Optional<T> cast(Class<T> castTo, Object instance) {
+        return castTo.isAssignableFrom(instance.getClass()) ?
+                Optional.of(castTo.cast(instance)) : Optional.empty();
+    }
+
     default <T extends C> Optional<T> castTo(Class<T> castTo) {
         return cast(castTo, this);
     }
@@ -13,11 +19,5 @@ public interface Castable<C> {
 
     default <T extends C> T castOrNull(Class<T> castTo) {
         return castTo(castTo).orElse(null);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> Optional<T> cast(Class<T> castTo, Object instance) {
-        return castTo.isAssignableFrom(instance.getClass()) ?
-                Optional.of(castTo.cast(instance)) : Optional.empty();
     }
 }

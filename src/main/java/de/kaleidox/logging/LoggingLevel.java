@@ -54,6 +54,18 @@ public enum LoggingLevel {
     }
 
     /**
+     * Finds a logging level by its name.
+     *
+     * @param name The name to search for.
+     * @return The logging level with that name.
+     */
+    public static Optional<LoggingLevel> ofName(String name) {
+        return Stream.of(values())
+                .filter(level -> level.name.equalsIgnoreCase(name))
+                .findAny();
+    }
+
+    /**
      * Gets a severity integer of the level.
      *
      * @return The severity of the level.
@@ -69,17 +81,5 @@ public enum LoggingLevel {
      */
     public String getName() {
         return name;
-    }
-
-    /**
-     * Finds a logging level by its name.
-     *
-     * @param name The name to search for.
-     * @return The logging level with that name.
-     */
-    public static Optional<LoggingLevel> ofName(String name) {
-        return Stream.of(values())
-                .filter(level -> level.name.equalsIgnoreCase(name))
-                .findAny();
     }
 }

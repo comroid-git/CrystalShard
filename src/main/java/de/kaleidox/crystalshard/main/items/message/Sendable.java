@@ -6,14 +6,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import java.util.concurrent.CompletableFuture;
 
 public interface Sendable {
-    Sendable add(Object item);
-
-    Sendable add(String string);
-
-    Sendable add(Embed embed);
-
-    CompletableFuture<Message> send(MessageReciever reciever);
-
     static Sendable of(Object... items) {
         return new SendableInternal(items);
     }
@@ -21,4 +13,12 @@ public interface Sendable {
     static Sendable get() {
         return new SendableInternal();
     }
+
+    Sendable add(Object item);
+
+    Sendable add(String string);
+
+    Sendable add(Embed embed);
+
+    CompletableFuture<Message> send(MessageReciever reciever);
 }

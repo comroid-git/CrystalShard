@@ -16,7 +16,6 @@ import de.kaleidox.util.annotations.Nullable;
 import de.kaleidox.util.helpers.MapHelper;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReactionInternal implements Reaction {
     private final static ConcurrentHashMap<ReactionCriteria, Reaction> instances = new ConcurrentHashMap<>();
@@ -43,6 +42,18 @@ public class ReactionInternal implements Reaction {
         ReactionCriteria criteria = new ReactionCriteria(message, emoji);
         instances.put(criteria, this);
         counts.put(criteria, data.path("count").asInt(0));
+    }
+
+    public static Reaction getInstance(@Nullable Server server,
+                                       @NotNull Message message,
+                                       @Nullable User user,
+                                       @NotNull JsonNode data,
+                                       int delta) {
+        Emoji emoji = Emoji.of(message.getDiscord(), server, data.get("emoji"));
+        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
+        return ((ReactionInternal) MapHelper.getEquals(instances, criteria,
+                new ReactionInternal(message.getDiscord(), message, user, data)))
+                .changeCount(delta);
     }
 
     @Override
@@ -80,18 +91,6 @@ public class ReactionInternal implements Reaction {
     @Override
     public String toString() {
         return "Reaction at " + message + " with " + emoji;
-    }
-
-    public static Reaction getInstance(@Nullable Server server,
-                                       @NotNull Message message,
-                                       @Nullable User user,
-                                       @NotNull JsonNode data,
-                                       int delta) {
-        Emoji emoji = Emoji.of(message.getDiscord(), server, data.get("emoji"));
-        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
-        return ((ReactionInternal) MapHelper.getEquals(instances, criteria,
-                new ReactionInternal(message.getDiscord(), message, user, data)))
-                .changeCount(delta);
     }
 
     private static class ReactionCriteria {

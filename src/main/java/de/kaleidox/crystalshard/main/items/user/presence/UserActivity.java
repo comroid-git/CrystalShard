@@ -51,15 +51,15 @@ public interface UserActivity extends Nameable {
             this.value = value;
         }
 
-        public int getValue() {
-            return value;
-        }
-
         public static Flag getFromValue(int value) {
             return Stream.of(values())
                     .filter(flag -> flag.value == value)
                     .findAny()
                     .orElse(UNKNOWN);
+        }
+
+        public int getValue() {
+            return value;
         }
     }
 
@@ -80,6 +80,13 @@ public interface UserActivity extends Nameable {
             this.pattern = pattern;
         }
 
+        public static ActivityType getFromId(int id) {
+            return Stream.of(ActivityType.values())
+                    .filter(type -> type.id == id)
+                    .findAny()
+                    .orElse(UNKNOWN);
+        }
+
         public int getId() {
             return id;
         }
@@ -90,13 +97,6 @@ public interface UserActivity extends Nameable {
 
         public String format(String... param) {
             return String.format(pattern, (Object[]) param);
-        }
-
-        public static ActivityType getFromId(int id) {
-            return Stream.of(ActivityType.values())
-                    .filter(type -> type.id == id)
-                    .findAny()
-                    .orElse(UNKNOWN);
         }
     }
 

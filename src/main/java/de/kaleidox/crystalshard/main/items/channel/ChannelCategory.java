@@ -7,11 +7,10 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public interface ChannelCategory extends ServerChannel, List<Channel> {
+public interface ChannelCategory extends ServerChannel {
     default Builder BUILDER(Server server) {
         Objects.requireNonNull(server);
         return new ChannelBuilderInternal.ChannelCategoryBuilder(server);

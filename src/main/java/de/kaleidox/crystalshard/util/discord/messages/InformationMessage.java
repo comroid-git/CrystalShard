@@ -25,6 +25,11 @@ public class InformationMessage {
         selfMap.putIfAbsent(messageable, this);
     }
 
+    @SuppressWarnings("FinalStaticMethod")
+    public final static InformationMessage getInstance(MessageReciever messageable) {
+        return selfMap.getOrDefault(messageable, new InformationMessage(messageable));
+    }
+
     public InformationMessage addField(String name, String title, String text) {
         return addField(name, title, text, false);
     }
@@ -110,11 +115,6 @@ public class InformationMessage {
                     .thenAcceptAsync(msg -> myMessage.set(msg))
                     .exceptionally(Logger::get);
         }
-    }
-
-    @SuppressWarnings("FinalStaticMethod")
-    public final static InformationMessage getInstance(MessageReciever messageable) {
-        return selfMap.getOrDefault(messageable, new InformationMessage(messageable));
     }
 
     class InformationField {
