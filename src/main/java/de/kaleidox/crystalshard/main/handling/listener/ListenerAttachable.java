@@ -40,4 +40,11 @@ public interface ListenerAttachable<T extends Listener> {
      * @return A collection with the attached listeners.
      */
     Collection<T> getAttachedListeners();
+
+    /**
+     * Detached all listeners from the current object.
+     */
+    default void detachAllListeners() {
+        getAttachedListeners().forEach(this::detachListener);
+    }
 }
