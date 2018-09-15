@@ -46,6 +46,16 @@ public class PermissionOverrideInternal
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof PermissionOverride)) return false;
+        PermissionOverride other = (PermissionOverride) o;
+
+        return (getAllowed().toPermissionInt() == other.getAllowed().toPermissionInt()) &&
+                (getDenied().toPermissionInt() == other.getDenied().toPermissionInt());
+    }
+
+    @Override
     public Discord getDiscord() {
         return discord;
     }

@@ -2,11 +2,15 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.VoiceChannel;
 
+import java.util.Set;
+
 public abstract class VoiceChannelInternal extends ChannelInternal implements VoiceChannel {
-    final int bitrate;
-    final int limit;
+    int bitrate;
+    int limit;
 
     VoiceChannelInternal(Discord discord, JsonNode data) {
         super(discord, data);

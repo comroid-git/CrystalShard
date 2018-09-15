@@ -23,6 +23,8 @@ public interface PermissionOverride extends Map<Permission, OverrideState> {
 
     PermissionList getDenied();
 
+    boolean equals(Object other);
+
     enum Type {
         UNKNOWN(""),
 

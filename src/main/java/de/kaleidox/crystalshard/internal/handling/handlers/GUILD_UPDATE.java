@@ -19,7 +19,7 @@ public class GUILD_UPDATE extends HandlerBase {
 
         ServerEditEventInternal event = new ServerEditEventInternal(discord, server, editTraits);
 
-        collectListeners(ServerEditListener.class, null, discord, server)
+        collectListeners(ServerEditListener.class, discord, server)
                 .forEach(listener -> discord.getThreadPool()
                         .execute(() -> listener.onServerEdit(event)));
     }

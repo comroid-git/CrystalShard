@@ -47,6 +47,10 @@ public interface Channel extends DiscordItem, Castable<Channel>, ListenerAttacha
         return castTo(PrivateTextChannel.class);
     }
 
+    default Optional<Server> getServerOfChannel() {
+        return toServerChannel().map(ServerChannel::getServer);
+    }
+
     ChannelType getType();
 
     default Builder BUILDER() {

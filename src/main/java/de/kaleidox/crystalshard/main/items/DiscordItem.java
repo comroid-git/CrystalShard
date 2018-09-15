@@ -29,6 +29,7 @@ public interface DiscordItem {
      * @see Object#equals(Object)
      */
     default boolean equals(DiscordItem other) {
+        if (other == null) return false;
         return (this.getId() == other.getId());
     }
 }

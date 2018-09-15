@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerCreateEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerCreateEvent;
-import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class GUILD_CREATE extends HandlerBase {
@@ -16,7 +16,7 @@ public class GUILD_CREATE extends HandlerBase {
         ServerCreateEvent event = new ServerCreateEventInternal(discord, server);
         discord.addServer(server);
 
-        collectListeners(ServerCreateListener.class, null, discord)
+        collectListeners(ServerCreateListener.class, discord)
                 .forEach(listener -> listener.onServerCreate(event));
     }
 }

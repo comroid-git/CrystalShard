@@ -8,6 +8,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -32,6 +33,8 @@ public abstract class ChannelInternal implements Channel {
         this.isPrivate = (type == ChannelType.DM || type == ChannelType.GROUP_DM);
         this.listenerManagers = new ArrayList<>();
     }
+
+    public abstract Set<EditTrait<Channel>> updateData(JsonNode data);
 
     public static Channel getInstance(Discord discord, long id) {
         return collectInstances()

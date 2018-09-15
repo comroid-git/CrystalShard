@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.main.handling.listener.server;
+package de.kaleidox.crystalshard.main.handling.listener.server.generic;
 
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;

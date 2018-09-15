@@ -3,19 +3,19 @@ package de.kaleidox.crystalshard.internal.items.channel;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ChannelInternal implements ChannelCategory {
     final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
-    final String name;
+    String name;
     final Server server;
     private final List<PermissionOverride> overrides;
 
@@ -29,6 +29,18 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
                 .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
 
         instances.put(id, this);
+    }
+
+    @Override
+    public Set<EditTrait<Channel>> updateData(JsonNode data) {
+        Set<EditTrait<Channel>> traits = new HashSet<>();
+
+        if (!name.equals(data.path("name").asText(name))) {
+            name = data.get("name").asText();
+            traits.add(ChannelEditTrait.NAME);
+        }
+
+        return traits;
     }
 
     public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {

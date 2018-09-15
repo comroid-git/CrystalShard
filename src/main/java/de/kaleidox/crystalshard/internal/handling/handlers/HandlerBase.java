@@ -19,7 +19,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.annotations.MayContainNull;
 import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +58,8 @@ public abstract class HandlerBase {
 
     @SuppressWarnings("ConstantConditions")
     static <L extends Listener> List<L> collectListeners(@NotNull Class<L> listenerClass,
-                                                         @Nullable DiscordItem[] collectFrom,
                                                          @MayContainNull Object... collectIn) {
         List<L> list = new ArrayList<>();
-        boolean anyTarget = false;
-        if (collectFrom == null) anyTarget = true;
 
         for (Object obj : collectIn) {
             if (Objects.nonNull(obj)) {
@@ -77,23 +73,11 @@ public abstract class HandlerBase {
 
                 if (ServerAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Server) {
                     ServerInternal serverInternal = (ServerInternal) obj;
-                    if (anyTarget) {
-                        serverInternal.getListeners()
-                                .stream()
-                                .filter(listener -> listener.canCastTo(listenerClass))
-                                .map(listenerClass::cast)
-                                .forEachOrdered(list::add);
-                    } else {
-                        for (DiscordItem target : collectFrom) {
-                            if (target.equals(obj)) {
-                                serverInternal.getListeners()
-                                        .stream()
-                                        .filter(listener -> listener.canCastTo(listenerClass))
-                                        .map(listenerClass::cast)
-                                        .forEachOrdered(list::add);
-                            }
-                        }
-                    }
+                    serverInternal.getListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
 
                 if (ChannelAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Channel) {
@@ -103,43 +87,19 @@ public abstract class HandlerBase {
                         case GUILD_TEXT:
                         case GUILD_VOICE:
                             ChannelInternal channel = (ChannelInternal) obj;
-                            if (anyTarget) {
-                                channel.getAttachedListeners()
-                                        .stream()
-                                        .filter(listener -> listener.canCastTo(listenerClass))
-                                        .map(listenerClass::cast)
-                                        .forEachOrdered(list::add);
-                            } else {
-                                for (DiscordItem target : collectFrom) {
-                                    if (target.equals(obj)) {
-                                        channel.getAttachedListeners()
-                                                .stream()
-                                                .filter(listener -> listener.canCastTo(listenerClass))
-                                                .map(listenerClass::cast)
-                                                .forEachOrdered(list::add);
-                                    }
-                                }
-                            }
+                            channel.getAttachedListeners()
+                                    .stream()
+                                    .filter(listener -> listener.canCastTo(listenerClass))
+                                    .map(listenerClass::cast)
+                                    .forEachOrdered(list::add);
                             break;
                         case GUILD_CATEGORY:
                             ChannelCategoryInternal category = (ChannelCategoryInternal) obj;
-                            if (anyTarget) {
-                                category.getAttachedListeners()
-                                        .stream()
-                                        .filter(listener -> listener.canCastTo(listenerClass))
-                                        .map(listenerClass::cast)
-                                        .forEachOrdered(list::add);
-                            } else {
-                                for (DiscordItem target : collectFrom) {
-                                    if (target.equals(obj)) {
-                                        category.getAttachedListeners()
-                                                .stream()
-                                                .filter(listener -> listener.canCastTo(listenerClass))
-                                                .map(listenerClass::cast)
-                                                .forEachOrdered(list::add);
-                                    }
-                                }
-                            }
+                            category.getAttachedListeners()
+                                    .stream()
+                                    .filter(listener -> listener.canCastTo(listenerClass))
+                                    .map(listenerClass::cast)
+                                    .forEachOrdered(list::add);
                             break;
                         case UNKNOWN:
                             break;
@@ -148,23 +108,11 @@ public abstract class HandlerBase {
 
                 if (MessageAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Message) {
                     MessageInternal message = (MessageInternal) obj;
-                    if (anyTarget) {
-                        message.getAttachedListeners()
-                                .stream()
-                                .filter(listener -> listener.canCastTo(listenerClass))
-                                .map(listenerClass::cast)
-                                .forEachOrdered(list::add);
-                    } else {
-                        for (DiscordItem target : collectFrom) {
-                            if (target.equals(obj)) {
-                                message.getAttachedListeners()
-                                        .stream()
-                                        .filter(listener -> listener.canCastTo(listenerClass))
-                                        .map(listenerClass::cast)
-                                        .forEachOrdered(list::add);
-                            }
-                        }
-                    }
+                    message.getAttachedListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
             }
         }

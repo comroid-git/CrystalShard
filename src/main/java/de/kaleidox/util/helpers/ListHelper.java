@@ -114,4 +114,16 @@ public class ListHelper extends CollectionHelper {
 
         return val;
     }
+
+    public static <T> boolean equalContents(List<T> a, List<T> b) {
+        if (a == null || b == null) return false;
+        if (a.size() != b.size()) return false;
+        int matches = 0;
+
+        for (int i = 0; i < a.size(); i++) {
+            if (a.get(i).equals(b.get(i))) matches++;
+        }
+
+        return matches == a.size();
+    }
 }

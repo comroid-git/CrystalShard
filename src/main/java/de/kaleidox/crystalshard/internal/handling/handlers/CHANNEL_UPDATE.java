@@ -2,9 +2,14 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.event.channel.generic.ChannelEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.channel.*;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
+import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelEditListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
+import de.kaleidox.crystalshard.main.items.server.Server;
 
 import java.util.Set;
 
@@ -14,27 +19,15 @@ import java.util.Set;
 public class CHANNEL_UPDATE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Channel channel = ChannelInternal.getInstance(discord, data);
-        Set<ChannelEditTrait> traits;
+        ChannelInternal channel = (ChannelInternal) ChannelInternal.getInstance(discord, data);
+        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
+        Set<EditTrait<Channel>> traits = channel.updateData(data);
 
-        switch (channel.getType()) {
-            case UNKNOWN:
-                throw new AssertionError();
-            case GUILD_TEXT:
-                traits = ((ServerTextChannelInternal) channel).updateData(data);
-                break;
-            case DM:
-                traits = ((PrivateTextChannelInternal) channel).updateData(data);
-                break;
-            case GUILD_VOICE:
-                traits = ((ServerVoiceChannelInternal) channel).updateData(data);
-                break;
-            case GROUP_DM:
-                traits = ((GroupChannelInternal) channel).updateData(data);
-                break;
-            case GUILD_CATEGORY:
-                traits = ((ChannelCategoryInternal) channel).updateData(data);
-                break;
-        }
+        ChannelEditEventInternal event = new ChannelEditEventInternal(discord, channel, traits);
+
+        collectListeners(ChannelEditListener.class, discord, server, channel)
+                .forEach(listener -> discord.getThreadPool()
+                        .execute(() -> listener.onChannelEdit(event))
+                );
     }
 }

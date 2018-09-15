@@ -4,16 +4,15 @@ import de.kaleidox.crystalshard.main.handling.event.server.ServerEvent;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
 
-public interface ServerBanEvent extends ServerEvent {
-    Ban getBan();
+public interface ServerUnbanEvent extends ServerEvent {
+    Ban getUnban();
 
-    default ServerMember getBannedUser() {
-        return getBan().getUser();
+    default ServerMember getUnbannedUser() {
+        return getUnban().getUser();
     }
 
     default Server getServer() {
-        return getBan().getServer();
+        return getUnban().getServer();
     }
 }

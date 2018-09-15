@@ -18,5 +18,5 @@ public enum ChannelEditTrait implements EditTrait<Channel> {
 
     PERMISSION_OVERWRITES,
 
-    PARENT_ID
+    CATEGORY, PARENT_ID
 }

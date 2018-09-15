@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelCreateListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;

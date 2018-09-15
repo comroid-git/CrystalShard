@@ -2,9 +2,13 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroupChannelInternal extends TextChannelInternal implements GroupChannel {
@@ -14,6 +18,13 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
         super(discord, data);
 
         instances.put(id, this);
+    }
+
+    @Override
+    public Set<EditTrait<Channel>> updateData(JsonNode data) {
+        Set<EditTrait<Channel>> traits = new HashSet<>();
+
+        return traits;
     }
 
     public static GroupChannel getInstance(Discord discord, JsonNode data) {
