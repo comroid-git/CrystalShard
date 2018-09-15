@@ -14,20 +14,13 @@ public class MessageDeleteEventInternal extends EventBase implements MessageDele
     private final Message message;
     private final TextChannel channel;
     private final long messageId;
-    private final User deleter;
 
     public MessageDeleteEventInternal(DiscordInternal discordInternal,
-                                      Message message, User deleter) {
+                                      Message message) {
         super(discordInternal);
         this.message = message;
         this.messageId = message.getId();
         this.channel = message.getChannel();
-        this.deleter = deleter;
-    }
-
-    @Override
-    public Optional<User> getDeleter() {
-        return Optional.ofNullable(deleter);
     }
 
     @Override
