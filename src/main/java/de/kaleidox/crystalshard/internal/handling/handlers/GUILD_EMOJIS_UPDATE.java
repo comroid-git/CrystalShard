@@ -34,6 +34,7 @@ public class GUILD_EMOJIS_UPDATE extends HandlerBase {
             newEmojis.add(emoji);
         });
         diff = ListHelper.getDifference((List<CustomEmoji>) server.getCustomEmojis(), newEmojis);
+        server.replaceEmojis(newEmojis);
 
         ServerEmojiEditEventInternal event = new ServerEmojiEditEventInternal(
                 discord, server, diff.getAdded(), edited, diff.getRemoved(), traits);

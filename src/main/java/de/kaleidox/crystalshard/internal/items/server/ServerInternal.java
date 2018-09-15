@@ -505,4 +505,9 @@ public class ServerInternal implements Server {
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());
     }
+
+    public void replaceEmojis(List<CustomEmoji> newEmojis) {
+        emojis.clear();
+        emojis.addAll(newEmojis);
+    }
 }
