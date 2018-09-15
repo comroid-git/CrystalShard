@@ -7,16 +7,14 @@ import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,7 +25,7 @@ public class CustomEmojiInternal implements CustomEmoji {
     private final Server server;
     private final boolean partialData;
     private final long id;
-    private final String name;
+    private String name;
     private final long serverId;
     private boolean requireColons;
     private boolean managed;
@@ -206,5 +204,9 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public String getMentionTag() {
         return toDiscordPrintable();
+    }
+
+    public Set<EditTrait<CustomEmoji>> updateData(JsonNode data) {
+        return null;
     }
 }

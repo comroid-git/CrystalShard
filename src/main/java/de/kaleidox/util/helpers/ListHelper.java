@@ -1,5 +1,7 @@
 package de.kaleidox.util.helpers;
 
+import de.kaleidox.util.objects.Difference;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -116,7 +118,7 @@ public class ListHelper extends CollectionHelper {
     }
 
     public static <T> boolean equalContents(List<T> a, List<T> b) {
-        if (a == null || b == null) return false;
+        nullChecks(a, b);
         if (a.size() != b.size()) return false;
         int matches = 0;
 
@@ -125,5 +127,27 @@ public class ListHelper extends CollectionHelper {
         }
 
         return matches == a.size();
+    }
+
+    public static <T> boolean containsEquals(List<T> list, T item) {
+        requireNoNull(list);
+        for (T x : list) if (x.equals(item)) return true;
+        return false;
+    }
+
+    public static <T> Difference<T> getDifference(List<T> source, List<T> target) {
+        nullChecks(source, target);
+        Difference.Builder<T> difBuilder = new Difference.Builder<>();
+
+        for (T x : source) {
+            if (!containsEquals(target, x))
+                difBuilder.addAdded(x);
+        }
+        for (T x : target) {
+            if (!containsEquals(source, x))
+                difBuilder.addRemoved(x);
+        }
+
+        return difBuilder.build();
     }
 }

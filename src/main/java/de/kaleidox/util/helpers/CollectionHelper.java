@@ -1,6 +1,7 @@
 package de.kaleidox.util.helpers;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 public class CollectionHelper {
@@ -9,5 +10,12 @@ public class CollectionHelper {
             Objects.requireNonNull(item);
         }
         return collection;
+    }
+
+    static void nullChecks(Collection<?>... lists) {
+        for (Collection<?> x : lists) {
+            Objects.requireNonNull(x);
+            requireNoNull(x);
+        }
     }
 }
