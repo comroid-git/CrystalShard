@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 
 /**
  * https://discordapp.com/developers/docs/topics/gateway#message-create
@@ -21,10 +22,11 @@ public class MESSAGE_CREATE extends HandlerBase {
         Channel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong());
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
         Message message = MessageInternal.getInstance(discord, data);
+        AuthorUser user = message.getAuthorAsUser().orElse(null);
 
         MessageCreateEvent event = new MessageCreateEventInternal(discord, message);
 
-        collectListeners(MessageCreateListener.class, discord, channel, server)
+        collectListeners(MessageCreateListener.class, discord, server, channel, user)
                 .forEach(listener -> listener.onMessageCreate(event));
     }
 }

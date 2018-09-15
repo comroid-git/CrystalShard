@@ -47,7 +47,7 @@ public class ServerInternal implements Server {
     private final ArrayList<CustomEmoji> emojis = new ArrayList<>();
     private final ArrayList<String> features = new ArrayList<>();
     private final ArrayList<VoiceState> voiceStates = new ArrayList<>();
-    private final ArrayList<ServerMember> members = new ArrayList<>();
+    private final ArrayList<User> members = new ArrayList<>();
     private final ArrayList<ServerChannel> channels = new ArrayList<>();
     private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
     private final List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
@@ -102,8 +102,8 @@ public class ServerInternal implements Server {
                 CustomEmojiInternal.getInstance(getDiscord(), this, emoji, true)));
         data.path("features").forEach(feature -> features.add(feature.asText()));
         data.path("voice_states").forEach(state -> voiceStates.add(new VoiceStateInternal(state)));
-        data.path("members").forEach(member -> members.add(new ServerMemberInternal((DiscordInternal) discord,
-                this, member.get("user"))));
+        data.path("members").forEach(member -> members.add(
+                UserInternal.getInstance(discord, member).toServerMember(this)));
         data.path("channels").forEach(channel -> {
             ChannelType type = ChannelType.getFromId(channel.get("type").asInt(-1));
             switch (type) {
@@ -276,17 +276,17 @@ public class ServerInternal implements Server {
     }
 
     @Override
-    public Collection<Role> getRoles() {
+    public List<Role> getRoles() {
         return Collections.unmodifiableList(roles);
     }
 
     @Override
-    public Collection<CustomEmoji> getCustomEmojis() {
+    public List<CustomEmoji> getCustomEmojis() {
         return Collections.unmodifiableList(emojis);
     }
 
     @Override
-    public Collection<String> getFeatures() {
+    public List<String> getFeatures() {
         return Collections.unmodifiableList(features);
     }
 
@@ -316,17 +316,22 @@ public class ServerInternal implements Server {
     }
 
     @Override
-    public Collection<VoiceState> getVoiceStates() {
+    public List<VoiceState> getVoiceStates() {
         return Collections.unmodifiableList(voiceStates);
     }
 
     @Override
-    public Collection<ServerMember> getMembers() {
-        return Collections.unmodifiableList(members);
+    public List<ServerMember> getMembers() {
+        return members.stream()
+                .map(user -> {
+                    if (user instanceof ServerMember) return (ServerMember) this;
+                    return user.toServerMember(this);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<ServerChannel> getChannels() {
+    public List<ServerChannel> getChannels() {
         return Collections.unmodifiableList(channels);
     }
 
@@ -336,7 +341,7 @@ public class ServerInternal implements Server {
     }
 
     @Override
-    public Collection<PresenceState> getPresenceStates() {
+    public List<PresenceState> getPresenceStates() {
         return Collections.unmodifiableList(presenceStates);
     }
 
@@ -509,5 +514,13 @@ public class ServerInternal implements Server {
     public void replaceEmojis(List<CustomEmoji> newEmojis) {
         emojis.clear();
         emojis.addAll(newEmojis);
+    }
+
+    public void addUser(User user) {
+        members.add(user);
+    }
+
+    public void removeUser(User user) {
+        members.remove(user);
     }
 }

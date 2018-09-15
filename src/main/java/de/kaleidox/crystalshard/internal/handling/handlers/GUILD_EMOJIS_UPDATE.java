@@ -25,14 +25,14 @@ public class GUILD_EMOJIS_UPDATE extends HandlerBase {
         List<CustomEmoji> edited = new ArrayList<>();
         Difference<CustomEmoji> diff;
 
-        data.get("emojis").forEach(node -> {
+        for (JsonNode node : data.get("emojis")) {
             CustomEmojiInternal emoji = (CustomEmojiInternal) CustomEmojiInternal.getInstance(
                     discord, server, data, true);
             Set<EditTrait<CustomEmoji>> editTraits = emoji.updateData(node);
             if (!editTraits.isEmpty()) edited.add(emoji);
             traits.addAll(editTraits);
             newEmojis.add(emoji);
-        });
+        }
         diff = ListHelper.getDifference((List<CustomEmoji>) server.getCustomEmojis(), newEmojis);
         server.replaceEmojis(newEmojis);
 

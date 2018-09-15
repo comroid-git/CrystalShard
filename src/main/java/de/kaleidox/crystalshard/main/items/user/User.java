@@ -6,6 +6,8 @@ import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
@@ -24,7 +26,8 @@ import java.util.concurrent.CompletableFuture;
 
 import static de.kaleidox.crystalshard.core.net.request.Method.GET;
 
-public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User> {
+public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>,
+        ListenerAttachable<UserAttachableListener> {
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;
 
@@ -119,9 +122,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
         return castTo(ServerMember.class);
     }
 
-    default ServerMember toServerMember(Server server) {
-        return null; // todo
-    }
+    ServerMember toServerMember(Server server);
 
     Collection<Role> getRoles(Server server);
 
