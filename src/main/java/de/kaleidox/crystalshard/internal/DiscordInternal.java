@@ -204,7 +204,6 @@ public class DiscordInternal implements Discord {
     @Override
     public <T extends DiscordAttachableListener> ListenerManager<T> attachListener(T listener) {
         ListenerManagerInternal<T> manager = ListenerManagerInternal.getInstance(this, listener);
-        // manager.addAttached(this);
         listenerManangers.add(manager);
         return manager;
     }

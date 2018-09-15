@@ -128,4 +128,9 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
         return null;
     }
+
+    @Override
+    public Collection<DiscordAttachableListener> getAttachedListeners() {
+        return null;
+    }
 }

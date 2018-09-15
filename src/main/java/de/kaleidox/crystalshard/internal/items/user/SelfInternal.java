@@ -54,11 +54,6 @@ public class SelfInternal extends UserInternal implements Self {
     }
 
     @Override
-    public ScheduledFuture<Void> typeFor(long time, TimeUnit unit) {
-        throw new IllegalArgumentException("Cannot type to yourself!");
-    }
-
-    @Override
     public CompletableFuture<Void> setName(String name) {
         return new WebRequest<Void>(this.getDiscord())
                 .method(Method.PATCH)

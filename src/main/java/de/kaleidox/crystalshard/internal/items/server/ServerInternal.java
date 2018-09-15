@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.channel.*;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
@@ -26,6 +27,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
+import de.kaleidox.util.objects.Evaluation;
 
 import java.net.URL;
 import java.util.*;
@@ -480,5 +482,27 @@ public class ServerInternal implements Server {
             traits.add(SYSTEM_CHANNEL);
         }
         return traits;
+    }
+
+    @Override
+    public <C extends ServerAttachableListener> ListenerManager<C> attachListener(C listener) {
+        ListenerManagerInternal<C> manager =
+                ListenerManagerInternal.getInstance(discord, listener);
+        listenerManangers.add(manager);
+        return manager;
+    }
+
+    @Override
+    public Evaluation<Boolean> detachListener(ServerAttachableListener listener) {
+        ListenerManagerInternal<ServerAttachableListener> manager =
+                ListenerManagerInternal.getInstance(discord, listener);
+        return Evaluation.of(listenerManangers.remove(manager));
+    }
+
+    @Override
+    public Collection<ServerAttachableListener> getAttachedListeners() {
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
 }

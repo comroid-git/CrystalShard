@@ -17,7 +17,7 @@ import java.util.Objects;
 /**
  * This class is used to create a connection with Discord.
  */
-public class DiscordLoginTool implements ListenerAttachable<PreAttachableListener> {
+public class DiscordLoginTool {
     private String token = null;
     private AccountType type = AccountType.BOT;
     private int shardCount = 1;
@@ -100,15 +100,5 @@ public class DiscordLoginTool implements ListenerAttachable<PreAttachableListene
             loggedIn.add(new DiscordInternal(token, type, i, shardCount));
         }
         return new MultiShard(loggedIn);
-    }
-
-    @Override
-    public Evaluation<Boolean> detachListener(PreAttachableListener listener) {
-        return Evaluation.of(false);
-    }
-
-    @Override
-    public <C extends PreAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null; // todo
     }
 }

@@ -344,6 +344,11 @@ public class MessageInternal implements Message {
     }
 
     @Override
+    public Collection<MessageAttachableListener> getAttachedListeners() {
+        return null;
+    }
+
+    @Override
     public void removeAllListeners() {
 
     }

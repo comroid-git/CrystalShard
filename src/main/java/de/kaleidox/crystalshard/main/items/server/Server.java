@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.main.items.server;
 
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
@@ -23,7 +25,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer {
+public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer,
+        ListenerAttachable<ServerAttachableListener> {
     static CompletableFuture<Server> of(Discord discord, long id) {
         CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
         discord.getServerById(id).ifPresentOrElse(future::complete,
