@@ -18,6 +18,8 @@ public class JsonHelper extends NullHelper {
     public static JsonNode nodeOf(Object of) {
         if (of == null) {
             return JsonNodeFactory.instance.nullNode();
+        } else if (of instanceof JsonNode) {
+            return (JsonNode) of;
         } else if (of instanceof Integer) {
             return JsonNodeFactory.instance.numberNode((Integer) of);
         } else if (of instanceof Long) {
@@ -58,22 +60,13 @@ public class JsonHelper extends NullHelper {
         return node;
     }
 
-    public static ObjectNode objectNode() {
-        return JsonNodeFactory.instance.objectNode();
-    }
-
-    public static ObjectNode objectNode(String fieldName, Object fieldValue) {
-        return (ObjectNode) objectNode().set(fieldName, nodeOf(fieldName));
-    }
-
     public static ObjectNode objectNode(Object... data) {
+        if (data.length == 0) return JsonNodeFactory.instance.objectNode();
         if (data.length % 2 != 0)
             throw new IllegalArgumentException("You must provide an even amount of objects to be placed in the node.");
         ObjectNode objectNode = objectNode();
         List<List<Object>> dataPairs = ListHelper.everyOfList(2, List.of(data));
-
         dataPairs.forEach(pair -> objectNode.set(pair.get(0).toString(), nodeOf(pair.get(1))));
-
         return objectNode;
     }
 

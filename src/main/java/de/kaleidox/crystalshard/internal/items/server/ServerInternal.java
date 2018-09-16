@@ -100,7 +100,7 @@ public class ServerInternal implements Server {
         data.path("emojis").forEach(emoji -> emojis.add(
                 CustomEmojiInternal.getInstance(getDiscord(), this, emoji, true)));
         data.path("features").forEach(feature -> features.add(feature.asText()));
-        data.path("voice_states").forEach(state -> voiceStates.add(new VoiceStateInternal(state)));
+        data.path("voice_states").forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
         data.path("members").forEach(member -> members.add(
                 UserInternal.getInstance(discord, member).toServerMember(this)));
         data.path("channels").forEach(channel -> {
@@ -323,7 +323,6 @@ public class ServerInternal implements Server {
     public List<ServerMember> getMembers() {
         return members.stream()
                 .map(user -> {
-                    if (user instanceof ServerMember) return (ServerMember) this;
                     return user.toServerMember(this);
                 })
                 .collect(Collectors.toList());

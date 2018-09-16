@@ -30,7 +30,7 @@ public class InfoReaction {
                 message.getChannel().sendMessage(infoEmbed.build())
                         .thenAccept(myMsg -> {
                             sentMessage.set(myMsg);
-                            myMsg.addListener(deleteListener);
+                            myMsg.attachListener(deleteListener);
                         })
                         .thenAccept(nothing -> {
                             if (deleteAfterSend) {

@@ -14,7 +14,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
+import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.util.CompletableFutureExtended;
@@ -88,7 +88,7 @@ public interface Server extends DiscordItem, Nameable, UserContainer, ChannelCon
 
     ChannelStructure getChannelStructure();
 
-    Collection<PresenceState> getPresenceStates();
+    Collection<Presence> getPresenceStates();
 
     Optional<User> getUserById(long id);
 

@@ -83,14 +83,12 @@ public class WebSocketClient {
     }
 
     private void identification() {
-        ObjectNode data = JsonHelper.objectNode();
-        //data.set("token", JsonHelper.nodeOf(discord.getPrefixedToken()));
-        ObjectNode properties = (ObjectNode) data.set("properties", JsonHelper.objectNode());
-        properties.set("$os", JsonHelper.nodeOf(System.getProperty("os.name")));
-        properties.set("$browser", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT));
-        properties.set("$device", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT));
-        //data.set("large_threshold", JsonHelper.nodeOf(250));
-        //data.set("shard", JsonHelper.arrayNode(discord.getShardId(), discord.getShards()));
+        ObjectNode data = JsonHelper.objectNode(
+                "properties", JsonHelper.objectNode(
+                        "$os", JsonHelper.nodeOf(System.getProperty("os.name")),
+                        "$browser", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
+                        "$device", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT))
+        );
         sendPayload(Payload.create(OpCode.IDENTIFY, data))
                 .exceptionally(logger::exception);
     }

@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.channel.generic.ChannelEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelEditListener;
+import de.kaleidox.crystalshard.main.handling.listener.channel.generic.ChannelEditListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;

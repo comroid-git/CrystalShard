@@ -3,10 +3,6 @@ package de.kaleidox.crystalshard.main;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
@@ -26,8 +22,6 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     int getShardId();
 
     int getShards();
-
-    ListenerManager<ServerCreateListener> attachServerCreateListener(ServerCreateListener listener);
 
     DiscordUtils getUtilities();
 
@@ -54,8 +48,4 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     int getServerCount();
 
     int getUserCount();
-
-    ListenerManager<MessageCreateListener> attachMessageCreateListener(MessageCreateListener listener);
-
-    ListenerManager<ChannelCreateListener> attachChannelCreateListener(ChannelCreateListener listener);
 }

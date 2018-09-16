@@ -7,9 +7,6 @@ import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
@@ -98,16 +95,6 @@ public class DiscordInternal implements Discord {
         return 0;
     }
 
-    @Override
-    public ListenerManager<MessageCreateListener> attachMessageCreateListener(MessageCreateListener listener) {
-        return attachListener(listener);
-    }
-
-    @Override
-    public ListenerManager<ChannelCreateListener> attachChannelCreateListener(ChannelCreateListener listener) {
-        return attachListener(listener);
-    }
-
     public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers() {
         return listenerManangers;
     }
@@ -131,11 +118,6 @@ public class DiscordInternal implements Discord {
     @Override
     public int getShards() {
         return shardCount;
-    }
-
-    @Override
-    public ListenerManager<ServerCreateListener> attachServerCreateListener(ServerCreateListener listener) {
-        return null; // todo
     }
 
     @Override

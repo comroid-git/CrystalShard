@@ -3,9 +3,6 @@ package de.kaleidox.crystalshard.main;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
-import de.kaleidox.crystalshard.main.handling.listener.server.ServerCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
@@ -37,11 +34,6 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
     public int getShards() {
         return get(0).getShards();
-    }
-
-    @Override
-    public ListenerManager<ServerCreateListener> attachServerCreateListener(ServerCreateListener listener) {
-        return attachListener(listener);
     }
 
     @Override
@@ -97,16 +89,6 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
     public int getUserCount() {
         return 0;
-    }
-
-    @Override
-    public ListenerManager<MessageCreateListener> attachMessageCreateListener(MessageCreateListener listener) {
-        return null;
-    }
-
-    @Override
-    public ListenerManager<ChannelCreateListener> attachChannelCreateListener(ChannelCreateListener listener) {
-        return attachListener(listener);
     }
 
     @Override
