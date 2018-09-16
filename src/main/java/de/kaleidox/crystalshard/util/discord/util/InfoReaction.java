@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.util.discord.util;
 
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageDeleteListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;

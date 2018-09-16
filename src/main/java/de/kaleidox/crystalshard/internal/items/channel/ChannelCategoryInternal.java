@@ -15,9 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ChannelInternal implements ChannelCategory {
     final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
-    String name;
     final Server server;
     private final List<PermissionOverride> overrides;
+    String name;
 
     private ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
@@ -31,6 +31,15 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
         instances.put(id, this);
     }
 
+    public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else
+            return new ChannelCategoryInternal(discord, server, data);
+    }
+
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
@@ -41,15 +50,6 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
         }
 
         return traits;
-    }
-
-    public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (instances.containsKey(id))
-            return instances.get(id);
-        else
-            return new ChannelCategoryInternal(discord, server, data);
     }
 
     @Override

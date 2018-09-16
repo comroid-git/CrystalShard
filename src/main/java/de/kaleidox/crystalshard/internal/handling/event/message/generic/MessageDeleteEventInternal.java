@@ -6,9 +6,6 @@ import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageDelet
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.user.User;
-
-import java.util.Optional;
 
 public class MessageDeleteEventInternal extends EventBase implements MessageDeleteEvent {
     private final Message message;

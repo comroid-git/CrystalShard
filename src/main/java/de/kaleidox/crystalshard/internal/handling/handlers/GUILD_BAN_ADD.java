@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.main.handling.listener.server.ban.ServerBanListe
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 public class GUILD_BAN_ADD extends HandlerBase {
     @Override

@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.internal.handling.event.server.member.ServerMemb
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.member.ServerMemberJoinListener;
-import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class GUILD_MEMBER_ADD extends HandlerBase {

@@ -1,8 +1,5 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 

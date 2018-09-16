@@ -5,9 +5,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.member.ServerMemberLeaveEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
-import de.kaleidox.crystalshard.main.handling.event.server.member.ServerMemberLeaveEvent;
 import de.kaleidox.crystalshard.main.handling.listener.server.member.ServerMemberLeaveListener;
-import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 public class GUILD_MEMBER_REMOVE extends HandlerBase {

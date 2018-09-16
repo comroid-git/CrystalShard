@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.main.items.role;
 
+import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.Nameable;
@@ -10,7 +12,8 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
-public interface Role extends DiscordItem, Nameable, Mentionable, PermissionOverwritable {
+public interface Role extends DiscordItem, Nameable, Mentionable, PermissionOverwritable,
+        ListenerAttachable<RoleAttachableListener> {
     CompletableFuture<Server> getServer();
 
     Color getColor();

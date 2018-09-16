@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.handling.event.server.other.ServerEmojiEdit
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 

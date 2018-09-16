@@ -20,13 +20,6 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
         instances.put(id, this);
     }
 
-    @Override
-    public Set<EditTrait<Channel>> updateData(JsonNode data) {
-        Set<EditTrait<Channel>> traits = new HashSet<>();
-
-        return traits;
-    }
-
     public static GroupChannel getInstance(Discord discord, JsonNode data) {
         long id = data.get("id").asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
@@ -34,5 +27,12 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
             return instances.get(id);
         else
             return new GroupChannelInternal(discord, data);
+    }
+
+    @Override
+    public Set<EditTrait<Channel>> updateData(JsonNode data) {
+        Set<EditTrait<Channel>> traits = new HashSet<>();
+
+        return traits;
     }
 }

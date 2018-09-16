@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.channel.*;
 
 import java.util.Optional;
-import java.util.OptionalLong;
 
 public interface OptionalChannelEvent {
     Optional<Channel> getChannel();

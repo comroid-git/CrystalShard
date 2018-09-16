@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.internal.items.channel.*;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
-import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceStateInternal;
 import de.kaleidox.crystalshard.main.Discord;
@@ -522,5 +521,13 @@ public class ServerInternal implements Server {
 
     public void removeUser(User user) {
         members.remove(user);
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        roles.remove(role);
     }
 }

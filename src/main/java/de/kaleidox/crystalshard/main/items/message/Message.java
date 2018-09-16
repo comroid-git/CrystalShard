@@ -7,7 +7,7 @@ import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageDeleteListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;

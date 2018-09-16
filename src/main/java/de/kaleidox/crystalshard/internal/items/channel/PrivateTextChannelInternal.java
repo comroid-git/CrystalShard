@@ -21,13 +21,6 @@ public class PrivateTextChannelInternal extends TextChannelInternal implements P
         instances.put(id, this);
     }
 
-    @Override
-    public Set<EditTrait<Channel>> updateData(JsonNode data) {
-        Set<EditTrait<Channel>> traits = new HashSet<>();
-
-        return traits;
-    }
-
     public static PrivateTextChannel getInstance(Discord discord, JsonNode data) {
         long id = data.get("id").asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
@@ -35,5 +28,12 @@ public class PrivateTextChannelInternal extends TextChannelInternal implements P
             return instances.get(id);
         else
             return new PrivateTextChannelInternal((DiscordInternal) discord, data);
+    }
+
+    @Override
+    public Set<EditTrait<Channel>> updateData(JsonNode data) {
+        Set<EditTrait<Channel>> traits = new HashSet<>();
+
+        return traits;
     }
 }

@@ -5,4 +5,8 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 
 public interface RoleEvent extends ServerEvent {
     Role getRole();
+
+    default long getRoleId() {
+        return getRole().getId();
+    }
 }

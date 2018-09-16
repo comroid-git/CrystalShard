@@ -16,7 +16,6 @@ public class GUILD_UPDATE extends HandlerBase {
         Server server = ServerInternal.getInstance(discord, data); // get the old Server server
 
         Set<EditTrait<Server>> editTraits = ((ServerInternal) server).updateData(data);
-
         ServerEditEventInternal event = new ServerEditEventInternal(discord, server, editTraits);
 
         collectListeners(ServerEditListener.class, discord, server)

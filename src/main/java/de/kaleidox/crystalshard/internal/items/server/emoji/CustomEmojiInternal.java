@@ -25,8 +25,8 @@ public class CustomEmojiInternal implements CustomEmoji {
     private final Server server;
     private final boolean partialData;
     private final long id;
-    private String name;
     private final long serverId;
+    private String name;
     private boolean requireColons;
     private boolean managed;
     private User creator;

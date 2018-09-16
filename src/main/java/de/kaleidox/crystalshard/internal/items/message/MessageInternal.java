@@ -12,9 +12,10 @@ import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageDeleteListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageDeleteListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -371,5 +372,9 @@ public class MessageInternal implements Message {
     @Override
     public String toString() {
         return "Message with ID [" + id + "]";
+    }
+
+    public Set<EditTrait<Message>> updateData(JsonNode data) {
+        return null; // todo
     }
 }

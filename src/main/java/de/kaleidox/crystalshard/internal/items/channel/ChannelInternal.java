@@ -34,8 +34,6 @@ public abstract class ChannelInternal implements Channel {
         this.listenerManagers = new ArrayList<>();
     }
 
-    public abstract Set<EditTrait<Channel>> updateData(JsonNode data);
-
     public static Channel getInstance(Discord discord, long id) {
         return collectInstances()
                 .stream()
@@ -96,6 +94,8 @@ public abstract class ChannelInternal implements Channel {
                 .forEachOrdered(collect::add);
         return collect;
     }
+
+    public abstract Set<EditTrait<Channel>> updateData(JsonNode data);
 
     @Override
     public Discord getDiscord() {

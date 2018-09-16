@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInte
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
@@ -38,6 +37,16 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
                 .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
 
         instances.put(id, this);
+    }
+
+    public static ServerVoiceChannel getInstance(Discord discord, Server server, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else
+            return new ServerVoiceChannelInternal(discord, server, data);
     }
 
     @Override
@@ -76,16 +85,6 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
         }
 
         return traits;
-    }
-
-    public static ServerVoiceChannel getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
-        if (instances.containsKey(id))
-            return instances.get(id);
-        else
-            return new ServerVoiceChannelInternal(discord, server, data);
     }
 
     @Override

@@ -8,5 +8,5 @@ public enum RoleEditTrait implements EditTrait<Role> {
 
     MENTIONABILITY,
 
-    PERMISSION_OVERWRITES
+    NAME, COLOR, POSITION, MANAGED, PERMISSION_OVERWRITES
 }

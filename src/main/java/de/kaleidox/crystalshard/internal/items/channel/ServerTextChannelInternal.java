@@ -19,11 +19,11 @@ import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEdit
 
 public class ServerTextChannelInternal extends TextChannelInternal implements ServerTextChannel {
     final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
+    final List<PermissionOverride> overrides;
+    final Server server;
     boolean isNsfw;
     String topic;
     String name;
-    final List<PermissionOverride> overrides;
-    final Server server;
     ChannelCategory category;
 
     private ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
@@ -41,6 +41,16 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
                 .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
 
         instances.put(id, this);
+    }
+
+    public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
+        if (instances.containsKey(id))
+            return instances.get(id);
+        else
+            return new ServerTextChannelInternal(discord, server, data);
     }
 
     @Override
@@ -79,16 +89,6 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
         }
 
         return traits;
-    }
-
-    public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
-        if (instances.containsKey(id))
-            return instances.get(id);
-        else
-            return new ServerTextChannelInternal(discord, server, data);
     }
 
     @Override

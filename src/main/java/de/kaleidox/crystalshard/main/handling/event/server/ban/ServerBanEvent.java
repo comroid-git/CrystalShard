@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.main.handling.event.server.ServerEvent;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 public interface ServerBanEvent extends ServerEvent {
     Ban getBan();

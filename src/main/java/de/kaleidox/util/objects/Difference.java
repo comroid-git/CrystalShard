@@ -12,6 +12,10 @@ public class Difference<T> {
         this.removed = removed;
     }
 
+    public static <T> Difference<T> of(List<T> added, List<T> removed) {
+        return new Difference<>(added, removed);
+    }
+
     public List<T> getAdded() {
         return added;
     }
@@ -26,10 +30,6 @@ public class Difference<T> {
 
     public Evaluation<Boolean> hasRemoved() {
         return Evaluation.of(!removed.isEmpty());
-    }
-
-    public static <T> Difference<T> of(List<T> added, List<T> removed) {
-        return new Difference<>(added, removed);
     }
 
     public static class Builder<A> {

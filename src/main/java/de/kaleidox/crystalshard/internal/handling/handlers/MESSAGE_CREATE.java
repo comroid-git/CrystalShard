@@ -6,12 +6,16 @@ import de.kaleidox.crystalshard.internal.handling.event.message.generic.MessageC
 import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageCreateListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.AuthorUser;
+import de.kaleidox.crystalshard.main.items.user.User;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * https://discordapp.com/developers/docs/topics/gateway#message-create
@@ -22,11 +26,12 @@ public class MESSAGE_CREATE extends HandlerBase {
         Channel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong());
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
         Message message = MessageInternal.getInstance(discord, data);
-        AuthorUser user = message.getAuthorAsUser().orElse(null);
+        User user = message.getAuthorAsUser().orElse(null);
+        Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
 
         MessageCreateEvent event = new MessageCreateEventInternal(discord, message);
 
-        collectListeners(MessageCreateListener.class, discord, server, channel, user)
+        collectListeners(MessageCreateListener.class, discord, server, channel, user, roles.toArray(new Role[0]))
                 .forEach(listener -> listener.onMessageCreate(event));
     }
 }

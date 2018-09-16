@@ -84,7 +84,8 @@ public class ReactionInternal implements Reaction {
 
     private Reaction changeCount(int delta) {
         ReactionCriteria criteria = new ReactionCriteria(message, emoji);
-        counts.put(criteria, counts.getOrDefault(criteria, 0) + delta);
+        counts.put(criteria,
+                (delta == Integer.MIN_VALUE ? 0 : (counts.getOrDefault(criteria, 0) + delta)));
         return this;
     }
 

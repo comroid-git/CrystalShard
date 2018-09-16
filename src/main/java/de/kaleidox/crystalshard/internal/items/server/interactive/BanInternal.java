@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.items.server.interactive;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 public class BanInternal implements Ban {
     private final Server server;
