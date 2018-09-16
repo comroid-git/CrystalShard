@@ -9,7 +9,7 @@ import java.util.function.Function;
  * This class contains several methods that are helpful when handling any kind of {@link Map}.
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class MapHelper {
+public class MapHelper extends NullHelper {
     public static <K, V> V getEquals(Map<K, V> map, K key, V valueIfAbsent) {
         return map.entrySet()
                 .stream()

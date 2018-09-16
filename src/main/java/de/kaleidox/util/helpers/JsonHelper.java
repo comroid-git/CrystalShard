@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
-public class JsonHelper {
+public class JsonHelper extends NullHelper {
     private final static Logger logger = new Logger(JsonHelper.class);
 
     public static JsonNode nodeOf(Object of) {

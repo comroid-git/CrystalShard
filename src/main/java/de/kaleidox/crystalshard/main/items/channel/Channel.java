@@ -31,6 +31,10 @@ public interface Channel extends DiscordItem, Castable<Channel>, ListenerAttacha
         return castTo(TextChannel.class);
     }
 
+    default Optional<VoiceChannel> toVoiceChannel() {
+        return castTo(VoiceChannel.class);
+    }
+
     default Optional<GroupChannel> toGroupChannel() {
         return castTo(GroupChannel.class);
     }

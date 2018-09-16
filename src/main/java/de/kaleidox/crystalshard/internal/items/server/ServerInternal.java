@@ -11,7 +11,7 @@ import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
-import de.kaleidox.crystalshard.internal.items.user.presence.PresenceStateInternal;
+import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -23,7 +23,7 @@ import de.kaleidox.crystalshard.main.items.server.*;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.main.items.user.presence.PresenceState;
+import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.Evaluation;
@@ -48,7 +48,7 @@ public class ServerInternal implements Server {
     private final ArrayList<VoiceState> voiceStates = new ArrayList<>();
     private final ArrayList<User> members = new ArrayList<>();
     private final ArrayList<ServerChannel> channels = new ArrayList<>();
-    private final ArrayList<PresenceState> presenceStates = new ArrayList<>();
+    private final ArrayList<Presence> presenceStates = new ArrayList<>();
     private final List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
     private String name;
     private URL iconUrl;
@@ -122,7 +122,7 @@ public class ServerInternal implements Server {
             }
         });
         data.path("presenceStates").forEach(presence ->
-                presenceStates.add(new PresenceStateInternal(discord, this, presence)));
+                presenceStates.add(PresenceInternal.getInstance(discord, presence)));
         structure = new ChannelStructureInternal(channels);
 
         everyoneRole = roles.stream()
@@ -340,7 +340,7 @@ public class ServerInternal implements Server {
     }
 
     @Override
-    public List<PresenceState> getPresenceStates() {
+    public List<Presence> getPresenceStates() {
         return Collections.unmodifiableList(presenceStates);
     }
 

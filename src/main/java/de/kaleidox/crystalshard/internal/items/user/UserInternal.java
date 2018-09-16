@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
@@ -19,33 +20,33 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.Evaluation;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
     private final static Logger logger = new Logger(User.class);
     private final static ConcurrentHashMap<Long, User> instances = new ConcurrentHashMap<>();
     private final long id;
-    private final String name;
-    private final String discriminator;
-    private final URL avatarUrl;
     private final boolean bot;
-    private final boolean mfa;
-    private final boolean verified;
-    private final String locale;
-    private final String email;
     private final Discord discord;
     private final List<ListenerManager<? extends UserAttachableListener>> listenerManagers;
+    private String name;
+    private String discriminator;
+    private URL avatarUrl;
+    private boolean mfa;
+    private boolean verified;
+    private String locale;
+    private String email;
 
     UserInternal(User user) {
         this.id = user.getId();
@@ -251,5 +252,43 @@ public class UserInternal implements User {
     @Override
     public Collection<UserAttachableListener> getAttachedListeners() {
         return null;
+    }
+
+    public Set<EditTrait<User>> updateData(JsonNode data) {
+        Set<EditTrait<User>> traits = new HashSet<>();
+
+        if (!name.equals(data.path("name").asText(name))) {
+            name = data.get("name").asText();
+            traits.add(USERNAME);
+        }
+        if (!discriminator.equals(data.path("discriminator").asText(discriminator))) {
+            discriminator = data.get("discriminator").asText();
+            traits.add(DISCRIMINATOR);
+        }
+        if (!NullHelper.orDefault(locale, "")
+                .equals(data.path("avatar_url").asText(NullHelper.orDefault(locale, "")))) {
+            avatarUrl = UrlHelper.orNull(data.get("avatar_url").asText());
+            traits.add(AVATAR);
+        }
+        if (mfa != data.path("mfa_enabled").asBoolean(mfa)) {
+            mfa = data.get("mfa_enabled").asBoolean();
+            traits.add(MFA_STATE);
+        }
+        if (verified != data.path("verified").asBoolean(verified)) {
+            verified = data.get("verified").asBoolean();
+            traits.add(VERIFIED_STATE);
+        }
+        if (!NullHelper.orDefault(locale, "")
+                .equals(data.path("locale").asText(NullHelper.orDefault(locale, "")))) {
+            locale = data.get("locale").asText();
+            traits.add(LOCALE);
+        }
+        if (!NullHelper.orDefault(email, "")
+                .equals(data.path("email").asText(NullHelper.orDefault(email, "")))) {
+            email = data.get("email").asText();
+            traits.add(EMAIL);
+        }
+
+        return traits;
     }
 }

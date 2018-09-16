@@ -8,7 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
 
-public class UrlHelper {
+public class UrlHelper extends NullHelper {
     public final static String BASE_IMAGE_URL = "https://cdn.discordapp.com/";
     private final static Logger logger = new Logger(UrlHelper.class);
 

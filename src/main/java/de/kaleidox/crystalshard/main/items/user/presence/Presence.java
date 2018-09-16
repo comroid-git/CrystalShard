@@ -1,18 +1,14 @@
 package de.kaleidox.crystalshard.main.items.user.presence;
 
-import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface PresenceState {
-    User getUser();
-
-    Collection<Role> getRoles();
+public interface Presence {
+    ServerMember getUser();
 
     Optional<UserActivity> getActivity();
 

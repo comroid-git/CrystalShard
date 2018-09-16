@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class FutureHelper {
+public class FutureHelper extends NullHelper {
     /**
      * Links the CompletableFutures together.
      * When the parent future is done, the value gets passed to the other futures.

@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.internal.items.user.SelfInternal;
 public class READY extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        discord.getSelfFuture()
-                .complete(new SelfInternal(discord, data.get("user")));
+        discord.getSelfFuture().complete(new SelfInternal(discord, data.get("user")));
     }
 }
