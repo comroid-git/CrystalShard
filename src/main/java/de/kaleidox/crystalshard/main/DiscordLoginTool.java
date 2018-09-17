@@ -14,17 +14,17 @@ import java.util.Objects;
  * This class is used to create a connection with Discord.
  */
 public class DiscordLoginTool {
-    private String token = null;
-    private AccountType type = AccountType.BOT;
-    private int shardCount = 1;
-    private int shard = 0;
-
+    private String      token      = null;
+    private AccountType type       = AccountType.BOT;
+    private int         shardCount = 1;
+    private int         shard      = 0;
+    
     /**
      * Creates a new instance.
      */
     public DiscordLoginTool() {
     }
-
+    
     /**
      * Creates a new instance with a preset token.
      *
@@ -33,16 +33,7 @@ public class DiscordLoginTool {
     public DiscordLoginTool(String token) {
         this.token = token;
     }
-
-    /**
-     * Creates a new instance.
-     *
-     * @return The tool.
-     */
-    public static DiscordLoginTool get() {
-        return new DiscordLoginTool();
-    }
-
+    
     /**
      * Sets the token for this tool.
      *
@@ -53,22 +44,22 @@ public class DiscordLoginTool {
         this.token = token;
         return this;
     }
-
+    
     public DiscordLoginTool setAccountType(AccountType type) {
         this.type = type;
         return this;
     }
-
+    
     public DiscordLoginTool setShardCount(int count) {
         this.shardCount = count;
         return this;
     }
-
+    
     public DiscordLoginTool setCurrentShard(int shard) {
         this.shard = shard;
         return this;
     }
-
+    
     /**
      * Sets the shard count to discord's recommended shard count.
      *
@@ -79,22 +70,31 @@ public class DiscordLoginTool {
     public DiscordLoginTool setRecommendedShardCount() {
         Objects.requireNonNull(token, "Token must be set first!");
         Discord login = new DiscordInternal(token);
-        return new WebRequest<DiscordLoginTool>(login)
-                .method(Method.GET)
+        return new WebRequest<DiscordLoginTool>(login).method(Method.GET)
                 .endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint())
                 .execute(node -> setShardCount(node.path("shards").asInt(1)))
                 .join();
     }
-
+    
     public Discord login() {
         return new DiscordInternal(token, type, shard, shardCount);
     }
-
+    
     public MultiShard loginMultiShard() {
         List<Discord> loggedIn = new ArrayList<>();
         for (int i = 0; i < shardCount; i++) {
             loggedIn.add(new DiscordInternal(token, type, i, shardCount));
         }
         return new MultiShard(loggedIn);
+    }
+    
+// Static membe
+    /**
+     * Creates a new instance.
+     *
+     * @return The tool.
+     */
+    public static DiscordLoginTool get() {
+        return new DiscordLoginTool();
     }
 }

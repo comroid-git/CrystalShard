@@ -11,15 +11,16 @@ import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import java.util.concurrent.CompletableFuture;
 
 public class SendableInternal implements Sendable {
-    private EmbedDraft embed = null;
-    private String content = "";
-
+    private EmbedDraft embed   = null;
+    private String     content = "";
+    
     public SendableInternal(Object... items) {
         for (Object object : items) {
             add(object);
         }
     }
-
+    
+// Override Methods
     @Override
     public Sendable add(Object object) {
         if (object instanceof Embed && embed == null) {
@@ -32,24 +33,24 @@ public class SendableInternal implements Sendable {
         }
         return this;
     }
-
+    
     @Override
     public Sendable add(String string) {
         content = content + string;
         return this;
     }
-
+    
     @Override
     public Sendable add(Embed embed) {
         this.embed = embed.toEmbedDraft();
         return null;
     }
-
+    
     @Override
     public CompletableFuture<Message> send(MessageReciever reciever) {
         return reciever.sendMessage(this);
     }
-
+    
     public JsonNode toJsonNode(ObjectNode node) {
         return null;
     }

@@ -17,14 +17,40 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
+    default Builder BUILDER(Server server) {
+        Objects.requireNonNull(server);
+        return new ChannelBuilderInternal.ServerVoiceChannelBuilder(server);
+    }
+    
+    @SuppressWarnings("JavaDoc")
+    interface Builder {
+        Builder setServer(Server server);
+        
+        Builder setName(String name);
+        
+        Builder setBitrate(int bitrate);
+        
+        Builder setUserlimit(int limit);
+        
+        /**
+         * Builds and creates the ServerVoiceChannel, if possible.
+         *
+         * @return A future to contain the created ServerVoiceChannel.
+         * @throws DiscordPermissionException If the bot account does not have the permission to create a voice channel
+         *                                    in that guild.
+         */
+        CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException;
+    }
+    
+// Static membe
     static CompletableFuture<ServerVoiceChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerVoiceChannel> channelFuture = new CompletableFuture<>();
-
+        
         if (in instanceof Server) {
             Server srv = (Server) in;
             Discord discord = srv.getDiscord();
-
+            
             channelFuture = srv.getChannels()
                     .stream()
                     .filter(chl -> chl.getId() == id)
@@ -34,8 +60,7 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
                     .findAny()
                     .map(ServerVoiceChannel.class::cast)
                     .map(CompletableFuture::completedFuture)
-                    .orElseGet(() -> new WebRequest<ServerVoiceChannel>(discord)
-                            .method(Method.GET)
+                    .orElseGet(() -> new WebRequest<ServerVoiceChannel>(discord).method(Method.GET)
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
                             .execute(node -> {
                                 for (JsonNode channel : node) {
@@ -47,45 +72,19 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
                             }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;
-
+            
             CompletableFuture<ServerVoiceChannel> finalChannelFuture = channelFuture;
-            discord.getChannelById(id)
-                    .map(channel -> {
-                        assert channel.canCastTo(ServerVoiceChannel.class);
-                        return (ServerVoiceChannel) channel;
-                    })
-                    .ifPresentOrElse(channelFuture::complete, () -> finalChannelFuture
-                            .completeExceptionally(new UncachedItemException("Channel is not cached. ID: " + id, true)));
+            discord.getChannelById(id).map(channel -> {
+                assert channel.canCastTo(ServerVoiceChannel.class);
+                return (ServerVoiceChannel) channel;
+            }).ifPresentOrElse(channelFuture::complete,
+                               () -> finalChannelFuture.completeExceptionally(new UncachedItemException(
+                                       "Channel is not cached. ID: " + id,
+                                       true)));
         } else {
-            throw new IllegalArgumentException(
-                    in.getClass().getSimpleName() + " is not a valid ChannelContainer!");
+            throw new IllegalArgumentException(in.getClass().getSimpleName() + " is not a valid ChannelContainer!");
         }
-
+        
         return channelFuture;
-    }
-
-    default Builder BUILDER(Server server) {
-        Objects.requireNonNull(server);
-        return new ChannelBuilderInternal.ServerVoiceChannelBuilder(server);
-    }
-
-    @SuppressWarnings("JavaDoc")
-    interface Builder {
-        Builder setServer(Server server);
-
-        Builder setName(String name);
-
-        Builder setBitrate(int bitrate);
-
-        Builder setUserlimit(int limit);
-
-        /**
-         * Builds and creates the ServerVoiceChannel, if possible.
-         *
-         * @return A future to contain the created ServerVoiceChannel.
-         * @throws DiscordPermissionException If the bot account does not have the permission to create
-         *                                    a voice channel in that guild.
-         */
-        CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException;
     }
 }

@@ -25,72 +25,74 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface Server extends DiscordItem, Nameable, UserContainer, ChannelContainer,
-        ListenerAttachable<ServerAttachableListener> {
+public interface Server
+        extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener> {
+    Optional<URL> getIconUrl();
+    
+    Optional<URL> getSplashUrl();
+    
+    ServerMember getOwner();
+    
+    PermissionList getOwnPermissions();
+    
+    VoiceRegion getVoiceRegion();
+    
+    Optional<ServerVoiceChannel> getAfkChannel();
+    
+    int getAfkTimeout();
+    
+    boolean isEmbeddable();
+    
+    Optional<ServerChannel> getEmbedChannel();
+    
+    boolean isWidgetable();
+    
+    Optional<ServerChannel> getWidgetChannel();
+    
+    Optional<ServerTextChannel> getSystemChannel();
+    
+    VerificationLevel getVerificationLevel();
+    
+    DefaultMessageNotificationLevel getDefaultMessageNotificationLevel();
+    
+    ExplicitContentFilterLevel getExplicitContentFilterLevel();
+    
+    Collection<Role> getRoles();
+    
+    Collection<CustomEmoji> getCustomEmojis();
+    
+    Collection<String> getFeatures();
+    
+    MFALevel getMFALevel();
+    
+    boolean isLarge();
+    
+    boolean isUnavailable();
+    
+    int getMemberCount();
+    
+    Role getEveryoneRole();
+    
+    Collection<VoiceState> getVoiceStates();
+    
+    Collection<ServerMember> getMembers();
+    
+    Collection<ServerChannel> getChannels();
+    
+    ChannelStructure getChannelStructure();
+    
+    Collection<Presence> getPresenceStates();
+    
+    Optional<User> getUserById(long id);
+    
+    CompletableFuture<Void> leave();
+    
+// Static membe
     static CompletableFuture<Server> of(Discord discord, long id) {
         CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
         discord.getServerById(id).ifPresentOrElse(future::complete,
-                () -> future.completeExceptionally(new NoSuchElementException("Server is not available.")));
+                                                  () -> future.completeExceptionally(new NoSuchElementException(
+                                                          "Server is not available.")));
         return future;
     }
-
-    Optional<URL> getIconUrl();
-
-    Optional<URL> getSplashUrl();
-
-    ServerMember getOwner();
-
-    PermissionList getOwnPermissions();
-
-    VoiceRegion getVoiceRegion();
-
-    Optional<ServerVoiceChannel> getAfkChannel();
-
-    int getAfkTimeout();
-
-    boolean isEmbeddable();
-
-    Optional<ServerChannel> getEmbedChannel();
-
-    boolean isWidgetable();
-
-    Optional<ServerChannel> getWidgetChannel();
-
-    Optional<ServerTextChannel> getSystemChannel();
-
-    VerificationLevel getVerificationLevel();
-
-    DefaultMessageNotificationLevel getDefaultMessageNotificationLevel();
-
-    ExplicitContentFilterLevel getExplicitContentFilterLevel();
-
-    Collection<Role> getRoles();
-
-    Collection<CustomEmoji> getCustomEmojis();
-
-    Collection<String> getFeatures();
-
-    MFALevel getMFALevel();
-
-    boolean isLarge();
-
-    boolean isUnavailable();
-
-    int getMemberCount();
-
-    Role getEveryoneRole();
-
-    Collection<VoiceState> getVoiceStates();
-
-    Collection<ServerMember> getMembers();
-
-    Collection<ServerChannel> getChannels();
-
-    ChannelStructure getChannelStructure();
-
-    Collection<Presence> getPresenceStates();
-
-    Optional<User> getUserById(long id);
-
-    CompletableFuture<Void> leave();
 }

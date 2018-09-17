@@ -1,7 +1,11 @@
 package de.kaleidox.crystalshard.main.handling.event.channel;
 
 import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.crystalshard.main.items.channel.*;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 
 import java.util.Optional;
 

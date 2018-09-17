@@ -13,20 +13,22 @@ import de.kaleidox.crystalshard.main.items.server.Server;
  * https://discordapp.com/developers/docs/topics/gateway#channel-delete
  */
 public class CHANNEL_DELETE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Channel channel = ChannelInternal.getInstance(discord, data);
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
-
+        
         ChannelDeleteEventInternal event = new ChannelDeleteEventInternal(discord, channel);
-
+        
         // todo Mark old Channel as deletable
-
-        collectListeners(ChannelDeleteListener.class, discord, server, channel)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onChannelDelete(event))
-                );
-
+        
+        collectListeners(ChannelDeleteListener.class,
+                         discord,
+                         server,
+                         channel).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onChannelDelete(event)));
+        
         channel.detachAllListeners();
     }
 }

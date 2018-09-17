@@ -12,6 +12,6 @@ import java.util.Optional;
  */
 public interface Webhook extends DiscordItem, Nameable, Castable<Webhook> {
     Optional<URL> getAvatarUrl();
-
+    
     Optional<AuthorWebhook> toAuthorWebhook();
 }

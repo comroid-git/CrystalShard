@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableLi
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 
 @FunctionalInterface
-public interface ServerMemberUpdateListener extends DiscordAttachableListener, ServerAttachableListener,
-        UserAttachableListener {
+public interface ServerMemberUpdateListener
+        extends DiscordAttachableListener, ServerAttachableListener, UserAttachableListener {
     void onMemberUpdate(ServerMemberUpdateEvent event);
 }

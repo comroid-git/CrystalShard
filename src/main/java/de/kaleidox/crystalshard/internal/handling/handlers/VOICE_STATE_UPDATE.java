@@ -13,18 +13,20 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import java.util.Set;
 
 public class VOICE_STATE_UPDATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         VoiceStateInternal state = (VoiceStateInternal) VoiceStateInternal.getInstance(discord, data);
         Server server = state.getServer().orElse(null);
         User user = state.getUser();
-
+        
         Set<EditTrait<VoiceState>> traits = state.updateData(data);
         VoiceStateUpdateEventInternal event = new VoiceStateUpdateEventInternal(discord, state, traits);
-
-        collectListeners(VoiceStateUpdateListener.class, discord, server, user)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onVoiceStateUpdate(event))
-                );
+        
+        collectListeners(VoiceStateUpdateListener.class,
+                         discord,
+                         server,
+                         user).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onVoiceStateUpdate(event)));
     }
 }

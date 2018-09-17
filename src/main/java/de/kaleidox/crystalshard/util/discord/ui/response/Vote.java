@@ -23,61 +23,105 @@ import java.util.function.Supplier;
 /**
  * This class represents a Vote for any Discord Messageable.
  *
- * @param <ResultType> The Type that is voted for. You will later get a
- *                     CompletableFuture of this type, that will contain the voted object.
+ * @param <ResultType> The Type that is voted for. You will later get a CompletableFuture of this type, that will
+ *                     contain the voted object.
  */
 @SuppressWarnings({"unused", "ConstantConditions", "WeakerAccess"})
 public class Vote<ResultType> extends ResponseElement<ResultType> {
-    private final ArrayList<Option> optionsOrdered;
+    private final ArrayList<Option>        optionsOrdered;
     private final HashMap<Option, Integer> rankingMap;
-
+    
     /**
      * Creates a new Vote.
      *
-     * @param name              The name of the current response value. Will be stored with the value for {@link de.kaleidox.crystalshard.util.discord.ui.DialogueEndpoint}
+     * @param name              The name of the current response value. Will be stored with the value for {@link
+     *                          de.kaleidox.crystalshard.util.discord.ui.DialogueEndpoint}
      * @param parent            The Messageable to send the vote to.
      * @param embedBaseSupplier A @Nullable Supplier to provide a basic embed, must not contain any fields.
-     * @param userCanRespond    A @Nullable Predicate to check if a user is allowed to respond; if null; all are accepted.
+     * @param userCanRespond    A @Nullable Predicate to check if a user is allowed to respond; if null; all are
+     *                          accepted.
      */
-    public Vote(
-            String name,
-            MessageReciever parent,
-            Supplier<Embed.Builder> embedBaseSupplier,
-            Predicate<User> userCanRespond) {
+    public Vote(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier,
+                Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
-
+        
         this.optionsOrdered = new ArrayList<>();
         this.rankingMap = new HashMap<>();
     }
-
+    
+// Override Methods
+    @Override
+    public CompletableFuture<NamedItem<ResultType>> build() {
+        if (optionsOrdered.isEmpty()) {
+            throw new NullPointerException("No options registered!");
+        } else {
+            Embed.Builder embed = embedBaseSupplier.get();
+            embed.setDescription("Voting will continue for " + duration + " " + timeUnit.name().toLowerCase() +
+                                 ", beginning from the timestamp.").setTimestampNow();
+            optionsOrdered.forEach(option -> embed.addField(option.getEmoji() + " -> " + option.getName(),
+                                                            option.getDescription()));
+            
+            // send the message, but separately save the future for async listener registration
+            CompletableFuture<NamedItem<ResultType>> future = new CompletableFuture<>();
+            parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
+                affiliateMessages.add(message);
+                optionsOrdered.forEach(option -> message.addReaction(option.getEmoji()));
+                message.attachReactionAddListener(this::reactionAdd);
+                message.attachReactionRemoveListener(this::reactionRemove);
+                parent.getDiscord().getThreadPool().getScheduler().schedule(() -> {
+                    Optional<ResultType> representationOptional = rankingMap.entrySet()
+                            .stream()
+                            .max(Comparator.comparingInt(Entry::getValue))
+                            .map(Entry::getKey)
+                            .map(Option::getValue);
+                    if (representationOptional.isPresent()) {
+                        future.complete(new NamedItem<>(name, representationOptional.get()));
+                    } else {
+                        future.cancel(true);
+                    }
+                    message.removeAllReactions();
+                    Embed.Builder resultEmbed = embedBaseSupplier.get();
+                    message.edit(populateResultEmbed(resultEmbed).build());
+                    message.removeAllListeners();
+                }, duration, timeUnit);
+                if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(
+                        Logger::get);
+            }).exceptionally(Logger::get);
+            
+            return future;
+        }
+    }
+    
     /**
      * Adds a new option to the Vote.
      *
      * @param emoji          The representative emoji of the Option.
      * @param description    A short description for the Option.
-     * @param representation The representative value for this option.
-     *                       In this implementation, the class of {@code ResultType representation} needs
-     *                       to either override the method {@link Object#toString()} or be an {@link Enum}.
+     * @param representation The representative value for this option. In this implementation, the class of {@code
+     *                       ResultType representation} needs to either override the method {@link Object#toString()} or
+     *                       be an {@link Enum}.
      * @return The instance of the Vote for chaining methods.
-     * @throws RuntimeException    When the representation neither does override {@link Object#toString()}; nor is an {@link Enum}.
+     * @throws RuntimeException    When the representation neither does override {@link Object#toString()}; nor is an
+     *                             {@link Enum}.
      * @throws ArrayStoreException If there already is an option with the specified emoji.
      * @throws RuntimeException    If there already are 25 Options.
      */
     public Vote<ResultType> addOption(String emoji, String description, ResultType representation) {
         try {
             if (representation.getClass() == Enum.class ||
-                    representation.getClass().getMethod("toString").getDeclaringClass() == representation.getClass()) {
+                representation.getClass().getMethod("toString").getDeclaringClass() == representation.getClass()) {
                 return addOption(emoji, representation.toString(), description, representation);
             } else {
                 throw new RuntimeException("The Representation [" + representation + "] has to manually override " +
-                        "the method \"toString()\"; or you have to use the implementation of \"addOption(String, " +
-                        "String, String, ResultType)\".");
+                                           "the method \"toString()\"; or you have to use the implementation of " +
+                                           "\"addOption(String, " +
+                                           "String, String, ResultType)\".");
             }
         } catch (NoSuchMethodException ignored) { // this will never occur because everything has "toString"
             throw new AssertionError("Fatal internal error.");
         }
     }
-
+    
     /**
      * Adds a new option to the Vote.
      *
@@ -92,7 +136,7 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
     public Vote<ResultType> addOption(String emoji, String name, String description, ResultType representation) {
         return addOption(new Option(UnicodeEmoji.of(parent.getDiscord(), emoji), name, description, representation));
     }
-
+    
     /**
      * Adds a new option to the Vote.
      *
@@ -102,10 +146,7 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
      * @throws ArrayStoreException If there already is an option with the specified emoji.
      */
     public Vote<ResultType> addOption(Option option) {
-        if (optionsOrdered.stream()
-                .anyMatch(optionS -> optionS
-                        .getEmoji()
-                        .equals(option.getEmoji()))) {
+        if (optionsOrdered.stream().anyMatch(optionS -> optionS.getEmoji().equals(option.getEmoji()))) {
             throw new ArrayStoreException("Option Emojis can not duplicate!");
         } else if (optionsOrdered.size() == 25) {
             throw new RuntimeException("Only 25 options are allowed.");
@@ -113,60 +154,10 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
             optionsOrdered.add(option);
             rankingMap.put(option, 0);
         }
-
+        
         return this;
     }
-
-    @Override
-    public CompletableFuture<NamedItem<ResultType>> build() {
-        if (optionsOrdered.isEmpty()) {
-            throw new NullPointerException("No options registered!");
-        } else {
-            Embed.Builder embed = embedBaseSupplier.get();
-            embed.setDescription("Voting will continue for " + duration + " " + timeUnit.name().toLowerCase() +
-                    ", beginning from the timestamp.")
-                    .setTimestampNow();
-            optionsOrdered.forEach(option -> embed.addField(
-                    option.getEmoji() + " -> " + option.getName(),
-                    option.getDescription()
-            ));
-
-            // send the message, but separately save the future for async listener registration
-            CompletableFuture<NamedItem<ResultType>> future = new CompletableFuture<>();
-            parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
-                affiliateMessages.add(message);
-                optionsOrdered.forEach(option -> message.addReaction(option.getEmoji()));
-                message.attachReactionAddListener(this::reactionAdd);
-                message.attachReactionRemoveListener(this::reactionRemove);
-                parent.getDiscord()
-                        .getThreadPool()
-                        .getScheduler()
-                        .schedule(() -> {
-                            Optional<ResultType> representationOptional = rankingMap
-                                    .entrySet()
-                                    .stream()
-                                    .max(Comparator.comparingInt(Entry::getValue))
-                                    .map(Entry::getKey)
-                                    .map(Option::getValue);
-                            if (representationOptional.isPresent()) {
-                                future.complete(new NamedItem<>(name, representationOptional.get()));
-                            } else {
-                                future.cancel(true);
-                            }
-                            message.removeAllReactions();
-                            Embed.Builder resultEmbed = embedBaseSupplier.get();
-                            message.edit(populateResultEmbed(resultEmbed).build());
-                            message.removeAllListeners();
-                        }, duration, timeUnit);
-                if (deleteLater)
-                    future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
-                            .exceptionally(Logger::get);
-            }).exceptionally(Logger::get);
-
-            return future;
-        }
-    }
-
+    
     private Embed.Builder populateResultEmbed(Embed.Builder embed) {
         rankingMap.entrySet()
                 .stream()
@@ -174,111 +165,93 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
                 .forEachOrdered(entry -> {
                     Option option = entry.getKey();
                     embed.setDescription("Results are:");
-                    embed.addField(
-                            option.getEmoji() + " -> " + entry.getValue() + " Votes:",
-                            "**" + option.getName() + ":**\n" + option.getDescription()
-                    );
+                    embed.addField(option.getEmoji() + " -> " + entry.getValue() + " Votes:",
+                                   "**" + option.getName() + ":**\n" + option.getDescription());
                 });
-
+        
         return embed;
     }
-
+    
     @SuppressWarnings("unchecked")
     private void reactionAdd(ReactionAddEvent event) {
         affiliateMessages.add(event.getMessage());
         User user = event.getUser();
         Emoji emoji = event.getEmoji();
-
+        
         if (!user.isYourself()) {
             if (userCanRespond.test(user)) {
                 optionsOrdered.stream()
                         .filter(option -> emoji.equals(option.getEmoji()))
                         .findAny()
-                        .ifPresent(
-                                option -> rankingMap.put(
-                                        option,
-                                        rankingMap.getOrDefault(option, 0) + 1
-                                )
-                        );
+                        .ifPresent(option -> rankingMap.put(option, rankingMap.getOrDefault(option, 0) + 1));
             } else {
-                event.getMessage()
-                        .removeReactionsByEmoji(user, emoji);
+                event.getMessage().removeReactionsByEmoji(user, emoji);
             }
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     private void reactionRemove(ReactionRemoveEvent event) {
         affiliateMessages.add(event.getMessage());
         User user = event.getUser();
         Emoji emoji = event.getEmoji();
-
+        
         if (!user.isYourself()) {
             if (userCanRespond.test(user)) {
                 optionsOrdered.stream()
                         .filter(option -> emoji.equals(option.getEmoji()))
                         .findAny()
-                        .ifPresent(
-                                option -> rankingMap.put(
-                                        option,
-                                        rankingMap.getOrDefault(option, 1) - 1
-                                )
-                        );
+                        .ifPresent(option -> rankingMap.put(option, rankingMap.getOrDefault(option, 1) - 1));
             } else {
-                event.getMessage()
-                        .removeReactionsByEmoji(user, emoji);
+                event.getMessage().removeReactionsByEmoji(user, emoji);
             }
         }
     }
-
+    
     /**
      * This subclass represents a Voting Option.
      */
     public class Option {
-        private final Emoji emoji;
-        private final String description;
+        private final Emoji      emoji;
+        private final String     description;
         private final ResultType value;
-        private final String name;
-
+        private final String     name;
+        
         /**
-         * Builds a new Option.
-         * Can be used in {@code Vote#addOption(Option)}.
+         * Builds a new Option. Can be used in {@code Vote#addOption(Option)}.
          *
          * @param emoji       The representative emoji.
          * @param name        The name of the Option.
          * @param description A short description for the Option.
          * @param value       The representative Value of the Option.
          */
-        public Option(
-                Emoji emoji,
-                String name,
-                String description,
-                ResultType value) {
+        public Option(Emoji emoji, String name, String description, ResultType value) {
             this.emoji = emoji;
             this.name = name;
             this.description = description;
             this.value = value;
         }
-
-        public Emoji getEmoji() {
-            return emoji;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public ResultType getValue() {
-            return value;
-        }
-
+        
+// Override Methods
         @Override
         public String toString() {
             return "[" + emoji + "|" + name + "] with description [" + description + "]";
+        }
+        
+        public Emoji getEmoji() {
+            return emoji;
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
+        public String getDescription() {
+            return description;
+        }
+        
+        public ResultType getValue() {
+            return value;
         }
     }
 }

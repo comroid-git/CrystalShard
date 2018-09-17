@@ -12,46 +12,38 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ListenerManagerInternal<T extends Listener> implements ListenerManager<T> {
-    private final static ConcurrentHashMap<Integer, ListenerManagerInternal<? extends Listener>> instances =
+    private final static ConcurrentHashMap<Integer, ListenerManagerInternal<? extends Listener>> instances       =
             new ConcurrentHashMap<>();
-    private final DiscordInternal discord;
-    private final T listener;
-    private final List<ListenerAttachable<T>> attachedTo = new ArrayList<>();
-    private final List<Runnable> detachRunnables = new ArrayList<>();
-
+    private final        DiscordInternal                                                         discord;
+    private final        T                                                                       listener;
+    private final        List<ListenerAttachable<T>>                                             attachedTo      =
+            new ArrayList<>();
+    private final        List<Runnable>                                                          detachRunnables =
+            new ArrayList<>();
+    
     ListenerManagerInternal(DiscordInternal discord, T listener) {
         this.discord = discord;
         this.listener = listener;
         instances.putIfAbsent(listener.hashCode(), this);
     }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Listener> ListenerManagerInternal<T> getInstance(
-            DiscordInternal discordInternal, T listener) {
-        if (instances.containsKey(listener.hashCode()))
-            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
-        else return new ListenerManagerInternal<>(discordInternal, listener);
-    }
-
-    public <C extends ListenerAttachable<T>> void addAttached(C attached) {
-        attachedTo.add(attached);
-    }
-
+    
+// Override Methods
     @Override
     public DiscordInternal getDiscord() {
         return discord;
     }
-
+    
     @Override
     public T getListener() {
         return listener;
     }
-
+    
     @Override
     public ListenerManager<T> detachNow() {
         discord.getAllListenerManagers()
                 .stream()
-                .filter(manager -> listener.getClass().isAssignableFrom(manager.getListener().getClass()))
+                .filter(manager -> listener.getClass()
+                        .isAssignableFrom(manager.getListener().getClass()))
                 .filter(manager -> listener.equals(manager.getListener()))
                 .map(ListenerManagerInternal.class::cast)
                 .flatMap(manager -> (Stream<ListenerAttachable<T>>) manager.attachedTo.stream())
@@ -59,17 +51,29 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         detachRunnables.forEach(Runnable::run);
         return this;
     }
-
+    
     @Override
     public ListenerManager<T> detachIn(long time, TimeUnit unit) {
-        discord.getScheduler()
-                .schedule(this::detachNow, time, unit);
+        discord.getScheduler().schedule(this::detachNow, time, unit);
         return this;
     }
-
+    
     @Override
     public ListenerManager<T> onDetach(Runnable runnable) {
         detachRunnables.add(runnable);
         return this;
+    }
+    
+    public <C extends ListenerAttachable<T>> void addAttached(C attached) {
+        attachedTo.add(attached);
+    }
+    
+// Static membe
+    @SuppressWarnings("unchecked")
+    public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal,
+                                                                              T listener) {
+        if (instances.containsKey(listener.hashCode()))
+            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
+        else return new ListenerManagerInternal<>(discordInternal, listener);
     }
 }

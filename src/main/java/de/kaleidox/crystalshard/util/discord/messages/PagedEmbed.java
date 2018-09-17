@@ -16,20 +16,21 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class PagedEmbed {
-    public final static int FIELD_MAX_CHARS = 1024;
-    public final static int MAX_CHARS_PER_PAGE = 4500;
-    public final static int MAX_FIELDS_PER_PAGE = 8;
-    public final static String PREV_PAGE_EMOJI = "⬅";
-    public final static String NEXT_PAGE_EMOJI = "➡";
-
-    private final MessageReciever messageable;
-    private final Supplier<Embed.Builder> embedsupplier;
-
-    private ConcurrentHashMap<Integer, List<EmbedDraft.Field>> pages = new ConcurrentHashMap<>();
-    private List<EmbedDraft.Field> fields = new ArrayList<>();
-    private int page;
-    private AtomicReference<Message> sentMessage = new AtomicReference<>();
-
+// Static Fields
+    public final static int                                                FIELD_MAX_CHARS     = 1024;
+    public final static int                                                MAX_CHARS_PER_PAGE  = 4500;
+    public final static int                                                MAX_FIELDS_PER_PAGE = 8;
+    public final static String                                             PREV_PAGE_EMOJI     = "⬅";
+    public final static String                                             NEXT_PAGE_EMOJI     = "➡";
+    private final       MessageReciever                                    messageable;
+    private final       Supplier<Embed.Builder>                            embedsupplier;
+    private             ConcurrentHashMap<Integer, List<EmbedDraft.Field>> pages               =
+            new ConcurrentHashMap<>();
+    private             List<EmbedDraft.Field>                             fields              = new ArrayList<>();
+    private             int                                                page;
+    private             AtomicReference<Message>                           sentMessage         =
+            new AtomicReference<>();
+    
     /**
      * Creates a new PagedEmbed object.
      *
@@ -40,7 +41,7 @@ public class PagedEmbed {
         this.messageable = messageable;
         this.embedsupplier = embedsupplier;
     }
-
+    
     /**
      * Adds a new non-inline field to the paged embed.
      *
@@ -51,7 +52,7 @@ public class PagedEmbed {
     public PagedEmbed addField(String title, String text) {
         return addField(title, text, false);
     }
-
+    
     /**
      * Adds a new field to the pages embed.
      *
@@ -61,13 +62,11 @@ public class PagedEmbed {
      * @return The new, modified PageEmbed object.
      */
     public PagedEmbed addField(String title, String text, boolean inline) {
-        fields.add(
-                EmbedDraft.Field.BUILD(title, text, inline)
-        );
-
+        fields.add(EmbedDraft.Field.BUILD(title, text, inline));
+        
         return this;
     }
-
+    
     /**
      * Builds and sends the PagedEmbed.
      *
@@ -76,9 +75,9 @@ public class PagedEmbed {
     public CompletableFuture<Message> build() {
         page = 1;
         refreshPages();
-
+        
         CompletableFuture<Message> future = messageable.sendMessage(embedsupplier.get().build());
-
+        
         future.thenAcceptAsync(message -> {
             sentMessage.set(message);
             if (pages.size() != 1) {
@@ -87,21 +86,18 @@ public class PagedEmbed {
                 message.attachReactionAddListener(this::onReactionClick);
                 message.attachReactionRemoveListener(this::onReactionClick);
             }
-
+            
             message.attachMessageDeleteListener(delete -> {
-                messageable.getDiscord()
-                        .getThreadPool()
-                        .getScheduler()
-                        .schedule(() -> {
-                            sentMessage.get().removeAllReactions();
-                            sentMessage.get().removeAllListeners();
-                        }, 3, TimeUnit.HOURS);
+                messageable.getDiscord().getThreadPool().getScheduler().schedule(() -> {
+                    sentMessage.get().removeAllReactions();
+                    sentMessage.get().removeAllListeners();
+                }, 3, TimeUnit.HOURS);
             });
         }).exceptionally(Logger::get);
-
+        
         return future;
     }
-
+    
     /**
      * Firstly, clears all current pages from the embed.
      * <p>
@@ -112,70 +108,57 @@ public class PagedEmbed {
     private void refreshPages() {
         int fieldCount = 0, pageChars = 0, totalChars = 0, thisPage = 1;
         pages.clear();
-
+        
         for (EmbedDraft.Field field : fields) {
             pages.putIfAbsent(thisPage, new ArrayList<>());
-
-            if (fieldCount <= MAX_FIELDS_PER_PAGE &&
-                    pageChars <= FIELD_MAX_CHARS * fieldCount &&
-                    totalChars < MAX_CHARS_PER_PAGE) {
-                pages.get(thisPage)
-                        .add(field);
-
+            
+            if (fieldCount <= MAX_FIELDS_PER_PAGE && pageChars <= FIELD_MAX_CHARS * fieldCount &&
+                totalChars < MAX_CHARS_PER_PAGE) {
+                pages.get(thisPage).add(field);
+                
                 fieldCount++;
                 pageChars = pageChars + field.getTotalCharCount();
                 totalChars = totalChars + field.getTotalCharCount();
             } else {
                 thisPage++;
                 pages.putIfAbsent(thisPage, new ArrayList<>());
-
-                pages.get(thisPage)
-                        .add(field);
-
+                
+                pages.get(thisPage).add(field);
+                
                 fieldCount = 1;
                 pageChars = field.getTotalCharCount();
                 totalChars = field.getTotalCharCount();
             }
         }
-
+        
         // Refresh the embed to the current page
         Embed.Builder embed = embedsupplier.get();
-
-        pages.get(page)
-                .forEach(field -> {
-                    embed.addField(
-                            field.getTitle(),
-                            field.getText(),
-                            field.isInline()
-                    );
-                });
+        
+        pages.get(page).forEach(field -> {
+            embed.addField(field.getTitle(), field.getText(), field.isInline());
+        });
         embed.setFooter("Page " + page + " of " + pages.size());
-
+        
         // Edit sent message
         if (sentMessage.get() != null) {
-            sentMessage.get()
-                    .edit(embed.build());
+            sentMessage.get().edit(embed.build());
         }
     }
-
+    
     private void onReactionClick(ReactionEvent event) {
         event.getEmoji().toUnicodeEmoji().ifPresent(emoji -> {
             if (!event.getUser().isYourself()) {
                 switch (emoji.getMentionTag()) {
                     case PREV_PAGE_EMOJI:
-                        if (page > 1)
-                            page--;
-                        else if (page == 1)
-                            page = pages.size();
-
+                        if (page > 1) page--;
+                        else if (page == 1) page = pages.size();
+                        
                         this.refreshPages();
                         break;
                     case NEXT_PAGE_EMOJI:
-                        if (page < pages.size())
-                            page++;
-                        else if (page == pages.size())
-                            page = 1;
-
+                        if (page < pages.size()) page++;
+                        else if (page == pages.size()) page = 1;
+                        
                         this.refreshPages();
                         break;
                     default:
@@ -184,11 +167,11 @@ public class PagedEmbed {
             }
         });
     }
-
+    
     public Embed.Builder getRawEmbed() {
         return embedsupplier.get();
     }
-
+    
     public Supplier<Embed.Builder> getEmbedsupplier() {
         return embedsupplier;
     }

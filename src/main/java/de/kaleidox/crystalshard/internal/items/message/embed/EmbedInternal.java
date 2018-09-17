@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import java.util.Optional;
 
 public class EmbedInternal implements Embed {
+// Override Methods
     @Override
     public EmbedDraft toEmbedDraft() {
         if (this instanceof EmbedDraft) {
@@ -17,12 +18,12 @@ public class EmbedInternal implements Embed {
             throw new AssertionError();
         }
     }
-
+    
     @Override
     public Optional<SentEmbed> toSentEmbed() {
         return castTo(SentEmbed.class);
     }
-
+    
     @Override
     public Builder toBuilder() {
         if (this instanceof EmbedDraft) {

@@ -19,17 +19,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class WebSocketClient {
-    private static final Logger logger = new Logger(WebSocketClient.class);
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
-    private final DiscordInternal discord;
-    private final WebSocket webSocket;
-    private final AtomicLong lastPacket = new AtomicLong(0);
-    private final AtomicLong lastHeartbeat = new AtomicLong(0);
-    private final ThreadPool threadPool;
-
+    private static final Logger          logger        = new Logger(WebSocketClient.class);
+    private static final HttpClient      CLIENT        = HttpClient.newHttpClient();
+    private final        DiscordInternal discord;
+    private final        WebSocket       webSocket;
+    private final        AtomicLong      lastPacket    = new AtomicLong(0);
+    private final        AtomicLong      lastHeartbeat = new AtomicLong(0);
+    private final        ThreadPool      threadPool;
+    
     public WebSocketClient(Discord discordObject) {
-        URI gatewayUrl = new WebRequest<String>(discordObject)
-                .method(Method.GET)
+        URI gatewayUrl = new WebRequest<String>(discordObject).method(Method.GET)
                 .endpoint(Endpoint.Location.GATEWAY.toEndpoint())
                 .execute(node -> node.get("url").asText())
                 .exceptionally(throwable -> {
@@ -45,10 +44,9 @@ public class WebSocketClient {
                 .buildAsync(gatewayUrl, new WebSocketListener((DiscordInternal) discordObject))
                 .join();
         identification();
-        Runtime.getRuntime()
-                .addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
-
+    
     public CompletableFuture<WebSocket> sendPayload(Payload payload) {
         assert payload != null : "Payload must not be null!";
         CompletableFuture<WebSocket> future = new CompletableFuture<>();
@@ -81,24 +79,24 @@ public class WebSocketClient {
         });
         return future;
     }
-
+    
     private void identification() {
-        ObjectNode data = JsonHelper.objectNode(
-                "properties", JsonHelper.objectNode(
-                        "$os", JsonHelper.nodeOf(System.getProperty("os.name")),
-                        "$browser", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
-                        "$device", JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT))
-        );
-        sendPayload(Payload.create(OpCode.IDENTIFY, data))
-                .exceptionally(logger::exception);
+        ObjectNode data = JsonHelper.objectNode("properties",
+                                                JsonHelper.objectNode("$os",
+                                                                      JsonHelper.nodeOf(System.getProperty("os.name")),
+                                                                      "$browser",
+                                                                      JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
+                                                                      "$device",
+                                                                      JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
+        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
     }
-
+    
     public void heartbeat() {
         Payload payload = Payload.create(OpCode.HEARTBEAT, JsonHelper.nodeOf(null));
         sendPayload(payload);
         lastHeartbeat.set(System.currentTimeMillis());
     }
-
+    
     public boolean respondToHeartbeat() {
         if (lastHeartbeat.get() < System.currentTimeMillis() - 4000) {
             return true;

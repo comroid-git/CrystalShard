@@ -9,22 +9,22 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 
-public interface Role extends DiscordItem, Nameable, Mentionable, PermissionOverwritable,
-        ListenerAttachable<RoleAttachableListener> {
+public interface Role
+        extends DiscordItem, Nameable, Mentionable, PermissionOverwritable, ListenerAttachable<RoleAttachableListener> {
     CompletableFuture<Server> getServer();
-
+    
     Color getColor();
-
+    
     boolean isGrouping();
-
+    
     boolean isManaged();
-
+    
     boolean isMentionable();
-
+    
     int getPosition();
-
+    
     PermissionList getPermissions();
 }

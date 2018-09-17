@@ -7,22 +7,21 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class ServerWebhookUpdateEventInternal extends EventBase implements ServerWebhookUpdateEvent {
-    private final Server server;
+    private final Server  server;
     private final Channel channel;
-
-    public ServerWebhookUpdateEventInternal(DiscordInternal discordInternal,
-                                            Server server,
-                                            Channel channel) {
+    
+    public ServerWebhookUpdateEventInternal(DiscordInternal discordInternal, Server server, Channel channel) {
         super(discordInternal);
         this.server = server;
         this.channel = channel;
     }
-
+    
+// Override Methods
     @Override
     public Server getServer() {
         return server;
     }
-
+    
     @Override
     public Channel getChannel() {
         return channel;

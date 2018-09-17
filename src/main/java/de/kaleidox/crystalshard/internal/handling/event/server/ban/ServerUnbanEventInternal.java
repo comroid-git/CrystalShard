@@ -11,6 +11,7 @@ public class ServerUnbanEventInternal extends EventBase implements ServerUnbanEv
         super(discordInternal);
     }
 
+// Override Methods
     @Override
     public Ban getUnban() {
         return null;

@@ -7,17 +7,16 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class ServerMemberJoinEventInternal extends EventBase implements ServerMemberJoinEvent {
-    private final Server server;
+    private final Server       server;
     private final ServerMember member;
 
-    public ServerMemberJoinEventInternal(DiscordInternal discordInternal,
-                                         Server server,
-                                         ServerMember member) {
+    public ServerMemberJoinEventInternal(DiscordInternal discordInternal, Server server, ServerMember member) {
         super(discordInternal);
         this.server = server;
         this.member = member;
     }
 
+// Override Methods
     @Override
     public ServerMember getMember() {
         return member;

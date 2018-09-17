@@ -7,8 +7,8 @@ import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 
 public interface ReactionEvent extends MessageEvent, UserEvent {
     Reaction getReaction();
-
+    
     Emoji getEmoji();
-
+    
     int getCount();
 }

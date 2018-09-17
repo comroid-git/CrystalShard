@@ -8,7 +8,8 @@ import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachabl
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 
 @FunctionalInterface
-public interface MessageCreateListener extends DiscordAttachableListener, ServerAttachableListener,
-        ChannelAttachableListener, RoleAttachableListener, UserAttachableListener {
+public interface MessageCreateListener
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, RoleAttachableListener,
+        UserAttachableListener {
     void onMessageCreate(MessageCreateEvent event);
 }

@@ -11,6 +11,7 @@ public abstract class EventBase implements Event {
         this.discord = discordInternal;
     }
 
+// Override Methods
     @Override
     public Discord getDiscord() {
         return discord;

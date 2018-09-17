@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 
 @FunctionalInterface
-public interface ServerWebhookUpdateListener extends DiscordAttachableListener, ServerAttachableListener,
-        ChannelAttachableListener {
+public interface ServerWebhookUpdateListener
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener {
     void onWebhookUpdate(ServerWebhookUpdateEvent event);
 }

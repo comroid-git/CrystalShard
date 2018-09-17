@@ -18,34 +18,33 @@ import java.util.concurrent.ConcurrentHashMap;
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.*;
 
 /**
- * guild_id?	snowflake	    the guild id this voice state is for
- * channel_id	?snowflake	    the channel id this user is connected to
- * user_id      snowflake	    the user id this voice state is for
- * member?      member object	the guild member this voice state is for
- * session_id	string	        the session id for this voice state
- * deaf	bool	whether         this user is deafened by the server
- * mute	bool	whether         this user is muted by the server
- * self_deaf	bool	        whether this user is locally deafened
- * self_mute	bool	        whether this user is locally muted
- * suppress	    bool	        whether this user is muted by the current user
+ * guild_id?	snowflake	    the guild id this voice state is for channel_id	?snowflake	    the channel id this
+ * user is
+ * connected to user_id      snowflake	    the user id this voice state is for member?      member object	the guild
+ * member this voice state is for session_id	string	        the session id for this voice state deaf	bool
+ * whether
+ *  this user is deafened by the server mute	bool	whether         this user is muted by the server self_deaf
+ *  bool
+ *  whether this user is locally deafened self_mute	bool	        whether this user is locally muted suppress
+ *  bool
+ * whether this user is muted by the current user
  */
 public class VoiceStateInternal implements VoiceState {
     private final static ConcurrentHashMap<String, VoiceStateInternal> instances = new ConcurrentHashMap<>();
-    private final Discord discord;
-    private final Server server;
-    private final User user;
-    private final String sessionId;
-    private VoiceChannel channel;
-    private boolean deafened;
-    private boolean muted;
-    private boolean selfMuted;
-    private boolean selfDeafened;
-    private boolean suppressed;
-
+    private final        Discord                                       discord;
+    private final        Server                                        server;
+    private final        User                                          user;
+    private final        String                                        sessionId;
+    private              VoiceChannel                                  channel;
+    private              boolean                                       deafened;
+    private              boolean                                       muted;
+    private              boolean                                       selfMuted;
+    private              boolean                                       selfDeafened;
+    private              boolean                                       suppressed;
+    
     private VoiceStateInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.server = data.has("guild_id") ?
-                ServerInternal.getInstance(discord, data.get("guild_id").asLong()) : null;
+        this.server = data.has("guild_id") ? ServerInternal.getInstance(discord, data.get("guild_id").asLong()) : null;
         this.user = UserInternal.getInstance(discord, data.get("user_id").asLong());
         this.channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong())
                 .toVoiceChannel()
@@ -56,21 +55,63 @@ public class VoiceStateInternal implements VoiceState {
         this.selfMuted = data.get("self_mute").asBoolean();
         this.suppressed = data.get("suppress").asBoolean();
         this.sessionId = data.get("session_id").asText();
-
+        
         instances.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().getUser().equals(user))
                 .forEach(entry -> instances.remove(entry.getKey(), entry.getValue()));
         instances.put(sessionId, this);
     }
-
-    public static VoiceState getInstance(Discord discord, JsonNode data) {
-        return instances.getOrDefault(data.get("session_id").asText(), new VoiceStateInternal(discord, data));
+    
+// Override Methods
+    @Override
+    public Discord getDiscord() {
+        return null;
     }
-
+    
+    @Override
+    public Optional<Server> getServer() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public VoiceChannel getChannel() {
+        return null;
+    }
+    
+    @Override
+    public User getUser() {
+        return null;
+    }
+    
+    @Override
+    public boolean isDeafened() {
+        return false;
+    }
+    
+    @Override
+    public boolean isMuted() {
+        return false;
+    }
+    
+    @Override
+    public boolean isSelfDeafened() {
+        return false;
+    }
+    
+    @Override
+    public boolean isSelfMuted() {
+        return false;
+    }
+    
+    @Override
+    public boolean isSuppressed() {
+        return false;
+    }
+    
     public Set<EditTrait<VoiceState>> updateData(JsonNode data) {
         Set<EditTrait<VoiceState>> traits = new HashSet<>();
-
+        
         VoiceChannel newChannel = ChannelInternal.getInstance(discord, data.path("channel_id").asLong(channel.getId()))
                 .toVoiceChannel()
                 .orElseThrow(AssertionError::new);
@@ -98,52 +139,12 @@ public class VoiceStateInternal implements VoiceState {
             this.suppressed = data.get("suppress").asBoolean();
             traits.add(SUPPRESSED_STATE);
         }
-
+        
         return traits;
     }
-
-    @Override
-    public Discord getDiscord() {
-        return null;
-    }
-
-    @Override
-    public Optional<Server> getServer() {
-        return Optional.empty();
-    }
-
-    @Override
-    public VoiceChannel getChannel() {
-        return null;
-    }
-
-    @Override
-    public User getUser() {
-        return null;
-    }
-
-    @Override
-    public boolean isDeafened() {
-        return false;
-    }
-
-    @Override
-    public boolean isMuted() {
-        return false;
-    }
-
-    @Override
-    public boolean isSelfDeafened() {
-        return false;
-    }
-
-    @Override
-    public boolean isSelfMuted() {
-        return false;
-    }
-
-    @Override
-    public boolean isSuppressed() {
-        return false;
+    
+// Static membe
+    public static VoiceState getInstance(Discord discord, JsonNode data) {
+        return instances.getOrDefault(data.get("session_id").asText(), new VoiceStateInternal(discord, data));
     }
 }

@@ -8,7 +8,8 @@ import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableLi
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 
 @FunctionalInterface
-public interface MessageEditListener extends DiscordAttachableListener, ServerAttachableListener,
-        ChannelAttachableListener, UserAttachableListener, MessageAttachableListener {
+public interface MessageEditListener
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener,
+        MessageAttachableListener {
     void onMessageEdit(MessageEditEvent event);
 }

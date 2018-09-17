@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface ServerMemberUpdateEvent extends ServerMemberEvent, EditEvent<ServerMember> {
     List<Role> getMemberRoles();
-
+    
     Optional<String> getNickname();
 }

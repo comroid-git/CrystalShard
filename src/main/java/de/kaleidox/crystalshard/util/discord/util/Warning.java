@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Warning {
     private static final ConcurrentHashMap<MessageReciever, Long> timeoutMap = new ConcurrentHashMap<>();
-
+    
     public Warning(MessageReciever parent, String text, Embed.Builder baseEmbed, long timeout, TimeUnit timeUnit) {
         if (!timeoutMap.containsKey(parent)) {
             parent.sendMessage(baseEmbed.addField("Warning:", text).build());

@@ -16,17 +16,23 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 
 public class MESSAGE_REACTION_ADD extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        TextChannel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong()).toTextChannel().get();
+        TextChannel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong())
+                .toTextChannel()
+                .get();
         Message message = MessageInternal.getInstance(channel, data.get("message_id").asLong());
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
         User user = UserInternal.getInstance(discord, data.get("user_id").asLong());
-
+        
         Reaction reaction = ReactionInternal.getInstance(server, message, user, data, 1);
         ReactionAddEventInternal event = new ReactionAddEventInternal(discord, reaction, message);
-
-        collectListeners(ReactionAddListener.class, discord, server, channel, message)
-                .forEach(listener -> discord.getThreadPool().execute(() -> listener.onEvent(event)));
+        
+        collectListeners(ReactionAddListener.class,
+                         discord,
+                         server,
+                         channel,
+                         message).forEach(listener -> discord.getThreadPool().execute(() -> listener.onEvent(event)));
     }
 }

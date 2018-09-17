@@ -4,6 +4,6 @@ import java.util.Optional;
 
 public interface MessageActivity {
     MessageActivityType getType();
-
+    
     Optional<String> getPartyId();
 }

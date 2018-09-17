@@ -13,18 +13,14 @@ import java.util.Optional;
 import java.util.Set;
 
 public class ServerMemberUpdateEventInternal extends EventBase implements ServerMemberUpdateEvent {
-    private final List<Role> roles;
-    private final String nickname;
+    private final List<Role>                   roles;
+    private final String                       nickname;
     private final Set<EditTrait<ServerMember>> traits;
-    private final ServerMember member;
-    private final Server server;
+    private final ServerMember                 member;
+    private final Server                       server;
 
-    public ServerMemberUpdateEventInternal(DiscordInternal discordInternal,
-                                           List<Role> roles,
-                                           String nickname,
-                                           Set<EditTrait<ServerMember>> traits,
-                                           ServerMember member,
-                                           Server server) {
+    public ServerMemberUpdateEventInternal(DiscordInternal discordInternal, List<Role> roles, String nickname,
+                                           Set<EditTrait<ServerMember>> traits, ServerMember member, Server server) {
         super(discordInternal);
         this.roles = roles;
         this.nickname = nickname;
@@ -33,6 +29,7 @@ public class ServerMemberUpdateEventInternal extends EventBase implements Server
         this.server = server;
     }
 
+// Override Methods
     @Override
     public List<Role> getMemberRoles() {
         return roles;

@@ -15,23 +15,23 @@ public interface ChannelCategory extends ServerChannel {
         Objects.requireNonNull(server);
         return new ChannelBuilderInternal.ChannelCategoryBuilder(server);
     }
-
+    
     @SuppressWarnings("JavaDoc")
     interface Builder {
         Builder setServer(Server server);
-
+        
         Builder setName(String name);
-
+        
         Builder addPermissionOverwrite(User forUser, PermissionList permissions);
-
+        
         Builder addPermissionOverwrite(Role forRole, PermissionList permissions);
-
+        
         /**
          * Builds and creates the ChannelCategory, if possible.
          *
          * @return A future to contain the created ChannelCategory.
-         * @throws DiscordPermissionException If the bot account does not have the permission to create
-         *                                    a channel category in that guild.
+         * @throws DiscordPermissionException If the bot account does not have the permission to create a channel
+         *                                    category in that guild.
          */
         CompletableFuture<ChannelCategory> build() throws DiscordPermissionException;
     }

@@ -9,21 +9,18 @@ public enum MessageActivityType {
     SPECTATE(2),
     LISTEN(3),
     JOIN_REQUEST(5);
-
     private final int id;
-
+    
     MessageActivityType(int id) {
         this.id = id;
     }
-
-    public static MessageActivityType getById(int id) {
-        return Stream.of(values())
-                .filter(type -> type.id == id)
-                .findAny()
-                .orElse(UNKNOWN);
-    }
-
+    
     public int getId() {
         return id;
+    }
+    
+// Static membe
+    public static MessageActivityType getById(int id) {
+        return Stream.of(values()).filter(type -> type.id == id).findAny().orElse(UNKNOWN);
     }
 }

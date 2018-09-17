@@ -10,20 +10,19 @@ import java.util.function.Predicate;
 
 public class DialoguePassthrough<A> extends DialogueBranch<A> {
     private final Consumer<List<NamedItem>> responsesConsumer;
-
+    
     /**
      * Creates a new DialogueEndpoint object.
      *
      * @param questionElement   The the question element to execute here.
      * @param responsesConsumer A Consumer to handle the list of responses at the end.
      */
-    public DialoguePassthrough(
-            ResponseElement<A> questionElement,
-            Consumer<List<NamedItem>> responsesConsumer) {
+    public DialoguePassthrough(ResponseElement<A> questionElement, Consumer<List<NamedItem>> responsesConsumer) {
         super(questionElement);
         this.responsesConsumer = responsesConsumer;
     }
-
+    
+// Override Methods
     /**
      * Adds a new handling possibility to the current branch.
      *
@@ -33,12 +32,10 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
      * @return The instance for chaining methods.
      */
     @Override
-    public <B> DialoguePassthrough<A> addOption(
-            Predicate<A> tester,
-            DialogueBranch<B> followingBranch) {
+    public <B> DialoguePassthrough<A> addOption(Predicate<A> tester, DialogueBranch<B> followingBranch) {
         return addOption(new Option<B>(tester, this, followingBranch));
     }
-
+    
     /**
      * Adds a new handling possibility to the current branch.
      *
@@ -49,10 +46,10 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
     @Override
     public <B> DialoguePassthrough<A> addOption(Option<B> option) {
         options.add(option);
-
+        
         return this;
     }
-
+    
     @Override
     protected CompletableFuture<Void> runPassthrough(List<NamedItem> collectedItems) {
         return CompletableFuture.supplyAsync(() -> {

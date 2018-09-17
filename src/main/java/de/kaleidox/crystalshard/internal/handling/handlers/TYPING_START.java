@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class TYPING_START extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         TextChannel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong())
@@ -24,13 +25,10 @@ public class TYPING_START extends HandlerBase {
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
         User user = UserInternal.getInstance(discord, data.get("user_id").asLong());
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
-
+        
         TypingStartEventInternal event = new TypingStartEventInternal(discord, channel, user);
-
-        collectListeners(TypingStartListener.class,
-                discord, server, channel, roles.toArray(new Role[0]), user)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onTypingStart(event))
-                );
+        
+        collectListeners(TypingStartListener.class, discord, server, channel, roles.toArray(new Role[0]), user).forEach(
+                listener -> discord.getThreadPool().execute(() -> listener.onTypingStart(event)));
     }
 }

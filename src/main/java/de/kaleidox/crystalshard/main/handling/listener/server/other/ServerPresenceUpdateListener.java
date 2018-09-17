@@ -7,7 +7,7 @@ import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachabl
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 
 @FunctionalInterface
-public interface ServerPresenceUpdateListener extends DiscordAttachableListener, ServerAttachableListener,
-        RoleAttachableListener, UserAttachableListener {
+public interface ServerPresenceUpdateListener
+        extends DiscordAttachableListener, ServerAttachableListener, RoleAttachableListener, UserAttachableListener {
     void onPresenceUpdate(ServerPresenceUpdateEvent event);
 }

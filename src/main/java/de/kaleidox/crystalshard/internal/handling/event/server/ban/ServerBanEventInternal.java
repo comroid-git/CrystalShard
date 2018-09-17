@@ -14,6 +14,7 @@ public class ServerBanEventInternal extends EventBase implements ServerBanEvent 
         this.ban = ban;
     }
 
+// Override Methods
     @Override
     public Ban getBan() {
         return ban;

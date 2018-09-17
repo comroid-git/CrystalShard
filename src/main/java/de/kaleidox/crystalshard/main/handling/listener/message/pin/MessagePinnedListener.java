@@ -7,7 +7,8 @@ import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachable
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 
 @FunctionalInterface
-public interface MessagePinnedListener extends DiscordAttachableListener, ServerAttachableListener,
-        ChannelAttachableListener, MessageAttachableListener {
+public interface MessagePinnedListener
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener,
+        MessageAttachableListener {
     void onMessagePin(MessagePinnedEvent event);
 }

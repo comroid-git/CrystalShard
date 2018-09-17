@@ -23,17 +23,17 @@ import java.util.function.Consumer;
 
 public abstract class TextChannelInternal extends ChannelInternal implements TextChannel {
     final ConcurrentHashMap<Long, Message> messages;
-
+    
     TextChannelInternal(Discord discord, JsonNode data) {
         super(discord, data);
-
+        
         messages = new ConcurrentHashMap<>();
     }
-
+    
+// Override Methods
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
-        return new WebRequest<Message>(discord)
-                .method(Method.POST)
+        return new WebRequest<Message>(discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(((SendableInternal) content).toJsonNode(JsonHelper.objectNode()))
                 .execute(node -> {
@@ -42,24 +42,21 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                     return message;
                 });
     }
-
+    
     @Override
     public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        Embed.Builder builder = discord.getUtilities()
-                .getDefaultEmbed()
-                .getBuilder();
+        Embed.Builder builder = discord.getUtilities().getDefaultEmbed().getBuilder();
         defaultEmbedModifier.accept(builder);
         return sendMessage(builder.build());
     }
-
+    
     @Override
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
         ObjectNode data = JsonHelper.objectNode();
         data.set("content", JsonHelper.nodeOf(""));
         data.set("embed", ((EmbedDraftInternal) embedDraft).toJsonNode(JsonHelper.objectNode()));
         data.set("file", JsonHelper.nodeOf("content"));
-        return new WebRequest<Message>(discord)
-                .method(Method.POST)
+        return new WebRequest<Message>(discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(data)
                 .execute(node -> {
@@ -68,14 +65,13 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                     return message;
                 });
     }
-
+    
     @Override
     public CompletableFuture<Message> sendMessage(String content) {
         ObjectNode data = JsonHelper.objectNode();
         data.set("content", JsonHelper.nodeOf(content));
         data.set("file", JsonHelper.nodeOf("content"));
-        return new WebRequest<Message>(discord)
-                .method(Method.POST)
+        return new WebRequest<Message>(discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(data)
                 .execute(node -> {
@@ -84,15 +80,13 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                     return message;
                 });
     }
-
+    
     @Override
     public CompletableFuture<Void> typing() {
-        return new WebRequest<Void>(discord)
-                .method(Method.POST)
-                .endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this))
-                .execute(node -> null);
+        return new WebRequest<Void>(discord).method(Method.POST).endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(
+                this)).execute(node -> null);
     }
-
+    
     @Override
     public Collection<Message> getMessages() {
         return null;

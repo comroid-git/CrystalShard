@@ -14,19 +14,17 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class PRESENCE_UPDATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Presence presence = PresenceInternal.getInstance(discord, data);
         Server server = presence.getServer();
         ServerMember user = presence.getUser();
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
-
+        
         ServerPresenceUpdateEventInternal event = new ServerPresenceUpdateEventInternal(discord, presence);
-
-        collectListeners(ServerPresenceUpdateListener.class,
-                discord, server, user, roles.toArray(new Role[0]))
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onPresenceUpdate(event))
-                );
+        
+        collectListeners(ServerPresenceUpdateListener.class, discord, server, user, roles.toArray(new Role[0])).forEach(
+                listener -> discord.getThreadPool().execute(() -> listener.onPresenceUpdate(event)));
     }
 }

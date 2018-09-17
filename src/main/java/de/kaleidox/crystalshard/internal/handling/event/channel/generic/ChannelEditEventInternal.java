@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import java.util.Set;
 
 public class ChannelEditEventInternal extends EventBase implements ChannelEditEvent {
-    private final Channel channel;
+    private final Channel                 channel;
     private final Set<EditTrait<Channel>> traits;
 
     public ChannelEditEventInternal(DiscordInternal discordInternal, Channel channel, Set<EditTrait<Channel>> traits) {
@@ -18,6 +18,7 @@ public class ChannelEditEventInternal extends EventBase implements ChannelEditEv
         this.traits = traits;
     }
 
+// Override Methods
     @Override
     public Set<EditTrait<Channel>> getEditTraits() {
         return traits;

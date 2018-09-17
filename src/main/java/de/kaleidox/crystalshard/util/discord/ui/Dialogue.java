@@ -14,13 +14,13 @@ import java.util.function.Supplier;
 @SuppressWarnings({"WeakerAccess", "FieldCanBeLocal", "unused"})
 public class Dialogue<FirstBranchType> {
     private DialogueBranch<FirstBranchType> firstBranch;
-
+    
     /**
      * Creates a new Discord Dialogue
      */
     public Dialogue() {
     }
-
+    
     /**
      * Sets the first {@link DialogueBranch}.
      *
@@ -30,13 +30,12 @@ public class Dialogue<FirstBranchType> {
     public DialogueBranch<FirstBranchType> setFirstBranch(ResponseElement<FirstBranchType> firstElement) {
         DialogueBranch<FirstBranchType> firstBranch = new DialogueBranch<>(this, firstElement);
         this.firstBranch = firstBranch;
-
+        
         return firstBranch;
     }
-
+    
     /**
-     * Starts the first branch.
-     * This is the last method to be called.
+     * Starts the first branch. This is the last method to be called.
      *
      * @param listSupplier A Supplier to provide a new list where the collected items will get stored.
      * @see DialogueEndpoint

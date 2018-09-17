@@ -15,6 +15,7 @@ public class ChannelDeleteEventInternal extends EventBase implements ChannelDele
         this.channel = channel;
     }
 
+// Override Methods
     @Override
     public Optional<Channel> getChannel() {
         return Optional.ofNullable(channel);

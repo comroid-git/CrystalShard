@@ -5,8 +5,10 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 
 public enum RoleEditTrait implements EditTrait<Role> {
     GROUPING,
-
     MENTIONABILITY,
-
-    NAME, COLOR, POSITION, MANAGED, PERMISSION_OVERWRITES
+    NAME,
+    COLOR,
+    POSITION,
+    MANAGED,
+    PERMISSION_OVERWRITES
 }

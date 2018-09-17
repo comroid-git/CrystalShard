@@ -7,5 +7,4 @@ import de.kaleidox.crystalshard.main.DiscordLoginTool;
  *
  * @see DiscordLoginTool#attachListener(PreAttachableListener)
  */
-public interface PreAttachableListener extends Listener {
-}
+public interface PreAttachableListener extends Listener { }

@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 
 public interface MessageEvent extends Event {
     Message getMessage();
-
+    
     default long getMessageId() {
         return getMessage().getId();
     }

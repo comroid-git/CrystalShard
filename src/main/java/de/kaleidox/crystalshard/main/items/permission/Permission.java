@@ -32,21 +32,20 @@ public enum Permission {
     MANAGE_ROLES(0x10000000),
     MANAGE_WEBHOOKS(0x20000000),
     MANAGE_EMOJIS(0x40000000);
-
     private final int value;
-
+    
     Permission(int value) {
         this.value = value;
     }
-
+    
     public int getValue() {
         return value;
     }
-
+    
     public boolean partOf(int of) {
         return (of & getValue()) != 0;
     }
-
+    
     public int apply(int applyTo, boolean doChange) {
         if (doChange && !partOf(applyTo)) {
             return applyTo + getValue();
@@ -56,7 +55,7 @@ public enum Permission {
         }
         return applyTo;
     }
-
+    
     public int toggle(int toggleIn) {
         return apply(toggleIn, partOf(toggleIn));
     }

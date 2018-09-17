@@ -6,12 +6,13 @@ import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import java.util.concurrent.CompletableFuture;
 
 public class Wastebasket {
+// Static membe
     public static void add(Message msg) {
         if (msg.getAuthor().isYourself() && !msg.getPrivateTextChannel().isPresent()) {
             msg.addReaction("🗑");
             msg.attachReactionAddListener(event -> {
                 Emoji emoji = event.getEmoji();
-
+                
                 if (!event.getUser().isBot()) {
                     emoji.toUnicodeEmoji().ifPresent(then -> {
                         if (then.equals("🗑")) {
@@ -22,7 +23,7 @@ public class Wastebasket {
             });
         }
     }
-
+    
     public static void add(CompletableFuture<Message> messageCompletableFuture) {
         messageCompletableFuture.thenAcceptAsync(Wastebasket::add);
     }

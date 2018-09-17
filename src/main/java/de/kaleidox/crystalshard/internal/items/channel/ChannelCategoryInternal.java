@@ -10,65 +10,71 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ChannelInternal implements ChannelCategory {
-    final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
-    final Server server;
-    private final List<PermissionOverride> overrides;
+    final static  ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
+    final         Server                                   server;
+    private final List<PermissionOverride>                 overrides;
     String name;
-
+    
     private ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
         this.name = data.path("name").asText("");
-
+        
         this.overrides = new ArrayList<>();
-        data.path("permission_overwrites")
-                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
-
+        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord,
+                                                                                                        server,
+                                                                                                        node)));
+        
         instances.put(id, this);
     }
-
-    public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (instances.containsKey(id))
-            return instances.get(id);
-        else
-            return new ChannelCategoryInternal(discord, server, data);
-    }
-
+    
+// Override Methods
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
-
+        
         if (!name.equals(data.path("name").asText(name))) {
             name = data.get("name").asText();
             traits.add(ChannelEditTrait.NAME);
         }
-
+        
         return traits;
     }
-
+    
     @Override
     public Server getServer() {
         return server;
     }
-
+    
     @Override
     public Optional<ChannelCategory> getCategory() {
         return Optional.of(this);
     }
-
+    
     @Override
     public List<PermissionOverride> getPermissionOverrides() {
         return overrides;
     }
-
+    
     @Override
     public String getName() {
         return name;
+    }
+    
+// Static membe
+    public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
+        long id = data.get("id").asLong(-1);
+        if (id == -1) throw new NoSuchElementException("No valid ID found.");
+        if (instances.containsKey(id)) return instances.get(id);
+        else return new ChannelCategoryInternal(discord, server, data);
     }
 }

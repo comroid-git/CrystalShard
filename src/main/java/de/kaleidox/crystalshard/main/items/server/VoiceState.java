@@ -8,20 +8,20 @@ import java.util.Optional;
 
 public interface VoiceState {
     Discord getDiscord();
-
+    
     Optional<Server> getServer();
-
+    
     VoiceChannel getChannel();
-
+    
     User getUser();
-
+    
     boolean isDeafened();
-
+    
     boolean isMuted();
-
+    
     boolean isSelfDeafened();
-
+    
     boolean isSelfMuted();
-
+    
     boolean isSuppressed();
 }

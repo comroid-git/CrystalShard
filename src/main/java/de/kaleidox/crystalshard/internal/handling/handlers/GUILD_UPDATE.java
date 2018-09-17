@@ -11,15 +11,15 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import java.util.Set;
 
 public class GUILD_UPDATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Server server = ServerInternal.getInstance(discord, data); // get the old Server server
-
+        
         Set<EditTrait<Server>> editTraits = ((ServerInternal) server).updateData(data);
         ServerEditEventInternal event = new ServerEditEventInternal(discord, server, editTraits);
-
-        collectListeners(ServerEditListener.class, discord, server)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onServerEdit(event)));
+        
+        collectListeners(ServerEditListener.class, discord, server).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onServerEdit(event)));
     }
 }

@@ -10,20 +10,21 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 /**
- * guild_id	    snowflake	id of the guild
- * channel_id	snowflake	id of the channel
+ * guild_id	    snowflake	id of the guild channel_id	snowflake	id of the channel
  */
 public class WEBHOOKS_UPDATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Server server = ServerInternal.getInstance(discord, data.get("guild_id").asLong());
         Channel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong());
-
+        
         ServerWebhookUpdateEventInternal event = new ServerWebhookUpdateEventInternal(discord, server, channel);
-
-        collectListeners(ServerWebhookUpdateListener.class, discord, server, channel)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onWebhookUpdate(event))
-                );
+        
+        collectListeners(ServerWebhookUpdateListener.class,
+                         discord,
+                         server,
+                         channel).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onWebhookUpdate(event)));
     }
 }

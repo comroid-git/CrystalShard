@@ -10,7 +10,7 @@ import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 
-import java.awt.*;
+import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -21,28 +21,21 @@ import java.util.Optional;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class EmbedDraftInternal implements EmbedDraft {
-    private final static Logger logger = new Logger(EmbedDraftInternal.class);
-    private final String title;
-    private final String description;
-    private final URL url;
-    private final Instant timestamp;
-    private final Color color;
-    private final EmbedDraft.Footer footer;
-    private final EmbedDraft.Image image;
-    private final EmbedDraft.Thumbnail thumbnail;
-    private final EmbedDraft.Author author;
-    private final ArrayList<EmbedDraft.Field> fields;
-
-    public EmbedDraftInternal(String title,
-                              String description,
-                              URL url,
-                              Instant timestamp,
-                              Color color,
-                              EmbedDraft.Footer footer,
-                              EmbedDraft.Image image,
-                              EmbedDraft.Thumbnail thumbnail,
-                              EmbedDraft.Author author,
-                              ArrayList<EmbedDraft.Field> fields) {
+    private final static Logger                      logger = new Logger(EmbedDraftInternal.class);
+    private final        String                      title;
+    private final        String                      description;
+    private final        URL                         url;
+    private final        Instant                     timestamp;
+    private final        Color                       color;
+    private final        EmbedDraft.Footer           footer;
+    private final        EmbedDraft.Image            image;
+    private final        EmbedDraft.Thumbnail        thumbnail;
+    private final        EmbedDraft.Author           author;
+    private final        ArrayList<EmbedDraft.Field> fields;
+    
+    public EmbedDraftInternal(String title, String description, URL url, Instant timestamp, Color color,
+                              EmbedDraft.Footer footer, EmbedDraft.Image image, EmbedDraft.Thumbnail thumbnail,
+                              EmbedDraft.Author author, ArrayList<EmbedDraft.Field> fields) {
         this.title = title;
         this.description = description;
         this.url = url;
@@ -54,17 +47,18 @@ public class EmbedDraftInternal implements EmbedDraft {
         this.author = author;
         this.fields = fields;
     }
-
+    
+// Override Methods
     @Override
     public EmbedDraft toEmbedDraft() {
         return this;
     }
-
+    
     @Override
     public Optional<SentEmbed> toSentEmbed() {
         return Optional.empty();
     }
-
+    
     @Override
     public Builder toBuilder() {
         Builder builder = Embed.BUILDER()
@@ -80,57 +74,57 @@ public class EmbedDraftInternal implements EmbedDraft {
         fields.forEach(builder::addField);
         return builder;
     }
-
+    
     @Override
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
     }
-
+    
     @Override
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
     }
-
+    
     @Override
     public Optional<URL> getUrl() {
         return Optional.ofNullable(url);
     }
-
+    
     @Override
     public Optional<Instant> getTimestamp() {
         return Optional.ofNullable(timestamp);
     }
-
+    
     @Override
     public Optional<Color> getColor() {
         return Optional.ofNullable(color);
     }
-
+    
     @Override
     public Optional<EmbedDraft.Footer> getFooter() {
         return Optional.ofNullable(footer);
     }
-
+    
     @Override
     public Optional<EmbedDraft.Image> getImage() {
         return Optional.ofNullable(image);
     }
-
+    
     @Override
     public Optional<EmbedDraft.Thumbnail> getThumbnail() {
         return Optional.ofNullable(thumbnail);
     }
-
+    
     @Override
     public Optional<EmbedDraft.Author> getAuthor() {
         return Optional.ofNullable(author);
     }
-
+    
     @Override
     public List<EmbedDraft.Field> getFields() {
         return Collections.unmodifiableList(fields);
     }
-
+    
     public ObjectNode toJsonNode(ObjectNode object) {
         String footerText = null;
         String footerIconUrl = null;
@@ -162,7 +156,7 @@ public class EmbedDraftInternal implements EmbedDraft {
             thumbnailUrl = thumbnail.getUrl().map(URL::toExternalForm).orElse(null);
             thumbnailContainer = thumbnail.getContainer();
         }
-
+        
         object.put("type", "rich");
         if (title != null && !title.equals("")) {
             object.set("title", JsonHelper.nodeOf(title));
@@ -214,7 +208,8 @@ public class EmbedDraftInternal implements EmbedDraft {
             object.putObject("thumbnail").set("url", JsonHelper.nodeOf(thumbnailUrl));
         }
         if (thumbnailContainer != null) {
-            object.putObject("thumbnail").set("url", JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
+            object.putObject("thumbnail").set("url",
+                                              JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
         }
         if (fields.size() > 0) {
             ArrayNode jsonFields = object.putArray("fields");
@@ -227,141 +222,142 @@ public class EmbedDraftInternal implements EmbedDraft {
         }
         return object;
     }
-
+    
     public static class Footer implements EmbedDraft.Footer {
         private final String name;
-        private final URL url;
-
+        private final URL    url;
+        
         public Footer(String name, String iconUrl) {
             this.name = name;
             this.url = UrlHelper.orNull(iconUrl);
         }
-
+        
+// Override Methods
         public String getText() {
             return name;
         }
-
+        
         public Optional<URL> getIconUrl() {
             return Optional.ofNullable(url);
         }
-
+        
         @Override
         public Container getContainer() {
             return null;
         }
     }
-
+    
     public static class Image implements EmbedDraft.Image {
         private final URL url;
-
+        
         public Image(String url) {
             this.url = UrlHelper.require(url);
         }
-
+        
+// Override Methods
         public Optional<URL> getUrl() {
             return Optional.ofNullable(url);
         }
-
+        
         @Override
         public Container getContainer() {
             return null;
         }
     }
-
+    
     public static class Thumbnail implements EmbedDraft.Thumbnail {
         private final URL url;
-
+        
         public Thumbnail(String url) {
             this.url = UrlHelper.require(url);
         }
-
+        
+// Override Methods
         public Optional<URL> getUrl() {
             return Optional.ofNullable(url);
         }
-
+        
         @Override
         public Container getContainer() {
             return null;
         }
     }
-
+    
     public static class Author implements EmbedDraft.Author {
         private final String name;
-        private final URL url;
-        private final URL iconUrl;
-
+        private final URL    url;
+        private final URL    iconUrl;
+        
         public Author(String name, String url, String iconUrl) {
             this.name = name;
             this.url = UrlHelper.orNull(url);
             this.iconUrl = UrlHelper.orNull(iconUrl);
         }
-
+        
+// Override Methods
         public String getName() {
             return name;
         }
-
+        
         public Optional<URL> getUrl() {
             return Optional.ofNullable(url);
         }
-
+        
         public Optional<URL> getIconUrl() {
             return Optional.ofNullable(iconUrl);
         }
-
+        
         @Override
         public Container getContainer() {
             return null;
         }
     }
-
+    
     public static class Field implements EmbedDraft.Field {
-        String title;
-        String text;
+        String  title;
+        String  text;
         boolean inline;
-
+        
         public Field(String title, String text, boolean inline) {
             this.title = title;
             this.text = text;
             this.inline = inline;
         }
-
+        
+// Override Methods
         public String getTitle() {
             return title;
         }
-
+        
         public String getText() {
             return text;
         }
-
+        
         public boolean isInline() {
             return inline;
         }
-
+        
         @Override
         public int getTotalCharCount() {
             return title.length() + text.length();
         }
     }
-
+    
     public static class EditableField extends Field implements EmbedDraft.EditableField {
         public EditableField(EmbedDraft.Field field) {
-            super(
-                    field.getTitle(),
-                    field.getText(),
-                    field.isInline()
-            );
+            super(field.getTitle(), field.getText(), field.isInline());
         }
-
+        
         public EmbedDraft.EditableField setTitle(String title) {
             super.title = title;
             return this;
         }
-
+        
         public EmbedDraft.EditableField setText(String text) {
             super.text = text;
             return this;
         }
-
+        
         public EmbedDraft.EditableField setInline(boolean inline) {
             super.inline = inline;
             return this;

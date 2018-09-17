@@ -9,17 +9,17 @@ import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import java.util.Set;
 
 public class VoiceStateUpdateEventInternal extends EventBase implements VoiceStateUpdateEvent {
-    private final VoiceState voiceState;
+    private final VoiceState                 voiceState;
     private final Set<EditTrait<VoiceState>> traits;
 
-    public VoiceStateUpdateEventInternal(DiscordInternal discordInternal,
-                                         VoiceState voiceState,
+    public VoiceStateUpdateEventInternal(DiscordInternal discordInternal, VoiceState voiceState,
                                          Set<EditTrait<VoiceState>> traits) {
         super(discordInternal);
         this.voiceState = voiceState;
         this.traits = traits;
     }
 
+// Override Methods
     @Override
     public Set<EditTrait<VoiceState>> getEditTraits() {
         return traits;

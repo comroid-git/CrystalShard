@@ -9,10 +9,10 @@ public interface GroupChannel extends TextChannel {
     default Builder BUILDER(User... recipients) {
         return new ChannelBuilderInternal.GroupChannelBuilder(recipients);
     }
-
+    
     interface Builder {
         Builder addRecipient(User user);
-
+        
         /**
          * Builds and creates the GroupChannel.
          *

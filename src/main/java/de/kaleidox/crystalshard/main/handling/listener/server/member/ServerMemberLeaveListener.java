@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableLi
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 
 @FunctionalInterface
-public interface ServerMemberLeaveListener extends DiscordAttachableListener, ServerAttachableListener,
-        UserAttachableListener {
+public interface ServerMemberLeaveListener
+        extends DiscordAttachableListener, ServerAttachableListener, UserAttachableListener {
     void onMemberLeave(ServerMemberLeaveEvent event);
 }

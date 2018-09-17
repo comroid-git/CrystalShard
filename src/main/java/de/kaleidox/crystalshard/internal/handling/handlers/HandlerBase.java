@@ -31,15 +31,18 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class HandlerBase {
-    final static Logger baseLogger = new Logger(HandlerBase.class);
-    private final static Package handlerPackage = HandlerBase.class.getPackage();
-    private final static ConcurrentHashMap<String, HandlerBase> instances = new ConcurrentHashMap<>();
-
+    private final static Package                                handlerPackage = HandlerBase.class.getPackage();
+    private final static ConcurrentHashMap<String, HandlerBase> instances      = new ConcurrentHashMap<>();
+    final static         Logger                                 baseLogger     = new Logger(HandlerBase.class);
+    
+    public abstract void handle(DiscordInternal discord, JsonNode data);
+    
+// Static membe
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;
         String type = data.path("t").asText("");
-
+        
         if (instances.containsKey(type)) {
             handler = (T) instances.get(type);
             discord.getThreadPool().execute(() -> handler.handle(discord, data.get("d")));
@@ -49,8 +52,8 @@ public abstract class HandlerBase {
                 handler = tClass.getConstructor().newInstance();
                 instances.put(type, handler);
                 discord.getThreadPool().execute(() -> {
-                    baseLogger.trace("Dispatching event '" + data.get("t").asText() +
-                            "' with body: " + data.get("d").toString());
+                    baseLogger.trace("Dispatching event '" + data.get("t").asText() + "' with body: " +
+                                     data.get("d").toString());
                     handler.handle(discord, data.get("d"));
                 });
             } catch (ClassNotFoundException e) {
@@ -60,32 +63,26 @@ public abstract class HandlerBase {
             }
         }
     }
-
+    
     @SuppressWarnings("ConstantConditions")
-    static <L extends Listener> List<L> collectListeners(@NotNull Class<L> listenerClass,
-                                                         @MayContainNull Object... collectIn) {
+    static <L extends Listener> List<L> collectListeners(
+            @NotNull Class<L> listenerClass, @MayContainNull Object... collectIn) {
         Objects.requireNonNull(listenerClass);
         List<L> list = new ArrayList<>();
-
+        
         for (Object obj : collectIn) {
             if (Objects.nonNull(obj)) {
                 if (DiscordAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Discord) {
-                    ((DiscordInternal) obj).getAttachedListeners()
-                            .stream()
-                            .filter(listener -> listener.canCastTo(listenerClass))
-                            .map(listenerClass::cast)
-                            .forEachOrdered(list::add);
+                    ((DiscordInternal) obj).getAttachedListeners().stream().filter(listener -> listener.canCastTo(
+                            listenerClass)).map(listenerClass::cast).forEachOrdered(list::add);
                 }
-
+                
                 if (ServerAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Server) {
                     ServerInternal serverInternal = (ServerInternal) obj;
-                    serverInternal.getListeners()
-                            .stream()
-                            .filter(listener -> listener.canCastTo(listenerClass))
-                            .map(listenerClass::cast)
-                            .forEachOrdered(list::add);
+                    serverInternal.getListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
+                            listenerClass::cast).forEachOrdered(list::add);
                 }
-
+                
                 if (ChannelAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Channel) {
                     switch (((Channel) obj).getType()) {
                         case DM:
@@ -111,38 +108,27 @@ public abstract class HandlerBase {
                             break;
                     }
                 }
-
+                
                 if (UserAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof User) {
                     UserInternal user = (UserInternal) obj;
-                    user.getAttachedListeners()
-                            .stream()
-                            .filter(listener -> listener.canCastTo(listenerClass))
-                            .map(listenerClass::cast)
-                            .forEachOrdered(list::add);
+                    user.getAttachedListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
+                            listenerClass::cast).forEachOrdered(list::add);
                 }
-
+                
                 if (RoleAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Role) {
                     RoleInternal role = (RoleInternal) obj;
-                    role.getAttachedListeners()
-                            .stream()
-                            .filter(listener -> listener.canCastTo(listenerClass))
-                            .map(listenerClass::cast)
-                            .forEachOrdered(list::add);
+                    role.getAttachedListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
+                            listenerClass::cast).forEachOrdered(list::add);
                 }
-
+                
                 if (MessageAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Message) {
                     MessageInternal message = (MessageInternal) obj;
-                    message.getAttachedListeners()
-                            .stream()
-                            .filter(listener -> listener.canCastTo(listenerClass))
-                            .map(listenerClass::cast)
-                            .forEachOrdered(list::add);
+                    message.getAttachedListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
+                            listenerClass::cast).forEachOrdered(list::add);
                 }
             }
         }
-
+        
         return list;
     }
-
-    public abstract void handle(DiscordInternal discord, JsonNode data);
 }

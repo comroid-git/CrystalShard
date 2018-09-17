@@ -8,18 +8,17 @@ import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerDele
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class GUILD_DELETE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Server server = ServerInternal.getInstance(discord, data.get("id").asLong());
         boolean gotKicked = (!data.has("unavailable") || data.get("unavailable").isNull());
-
+        
         ServerDeleteEventInternal event = new ServerDeleteEventInternal(discord, server.getId(), gotKicked);
-
-        collectListeners(ServerDeleteListener.class, discord, server)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onServerDelete(event))
-                );
-
+        
+        collectListeners(ServerDeleteListener.class, discord, server).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onServerDelete(event)));
+        
         server.detachAllListeners();
     }
 }

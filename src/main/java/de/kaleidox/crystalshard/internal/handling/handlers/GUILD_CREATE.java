@@ -9,14 +9,14 @@ import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerCrea
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class GUILD_CREATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Server server = ServerInternal.getInstance(discord, data);
-
+        
         ServerCreateEvent event = new ServerCreateEventInternal(discord, server);
         discord.addServer(server);
-
-        collectListeners(ServerCreateListener.class, discord)
-                .forEach(listener -> listener.onServerCreate(event));
+        
+        collectListeners(ServerCreateListener.class, discord).forEach(listener -> listener.onServerCreate(event));
     }
 }

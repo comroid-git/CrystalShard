@@ -8,16 +8,15 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class RoleCreateEventInternal extends EventBase implements RoleCreateEvent {
     private final Server server;
-    private final Role role;
+    private final Role   role;
 
-    public RoleCreateEventInternal(DiscordInternal discordInternal,
-                                   Server server,
-                                   Role role) {
+    public RoleCreateEventInternal(DiscordInternal discordInternal, Server server, Role role) {
         super(discordInternal);
         this.server = server;
         this.role = role;
     }
 
+// Override Methods
     @Override
     public Role getRole() {
         return role;

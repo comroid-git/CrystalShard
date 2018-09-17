@@ -17,9 +17,52 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Emoji extends Mentionable, Castable<Emoji> {
-    static CompletableFuture<Emoji> of(@NotNull Discord discord,
-                                       @Nullable Server server,
-                                       @NotNull String anyEmoji) {
+    /**
+     * Gets the alias or name of this emoji.
+     *
+     * @return The alias of the emoji.
+     */
+    String toAlias();
+    
+    /**
+     * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji. This method
+     * is analogous to {@link Mentionable#getMentionTag()}.
+     *
+     * @return A discord-printable string of this emoji.
+     */
+    String toDiscordPrintable();
+    
+// Override Methods
+    /**
+     * Gets the universal replacement of this emoji.
+     *
+     * @return universal replacement of the emoji.
+     */
+    @Override
+    String toString();
+    
+    @Override
+    boolean equals(Object obj);
+    
+    /**
+     * Gets the name of this emoji.
+     *
+     * @return The name of the emoji.
+     */
+    default String getName() {
+        return this.toAlias();
+    }
+    
+    default Optional<UnicodeEmoji> toUnicodeEmoji() {
+        return castTo(UnicodeEmoji.class);
+    }
+    
+    default Optional<CustomEmoji> toCustomEmoji() {
+        return castTo(CustomEmoji.class);
+    }
+    
+// Static membe
+    static CompletableFuture<Emoji> of(@NotNull Discord discord, @Nullable Server server, @NotNull String anyEmoji) {
         Objects.requireNonNull(anyEmoji);
         String aliases = EmojiParser.parseToAliases(anyEmoji);
         String unicode = EmojiParser.parseToUnicode(anyEmoji);
@@ -31,57 +74,12 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
             return CompletableFuture.completedFuture(new UnicodeEmojiInternal(discord, aliases, unicode));
         }
     }
-
-    static Emoji of(@NotNull Discord discord,
-                    @Nullable Server server,
-                    @NotNull JsonNode data) {
+    
+    static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
         if (data.get("id").isNull()) {
             return new UnicodeEmojiInternal(discord, data, true);
         } else {
             return CustomEmojiInternal.getInstance(discord, server, data, true);
         }
-    }
-
-    /**
-     * Gets the alias or name of this emoji.
-     *
-     * @return The alias of the emoji.
-     */
-    String toAlias();
-
-    /**
-     * Gets the name of this emoji.
-     *
-     * @return The name of the emoji.
-     */
-    default String getName() {
-        return this.toAlias();
-    }
-
-    /**
-     * Gets the universal replacement of this emoji.
-     *
-     * @return universal replacement of the emoji.
-     */
-    @Override
-    String toString();
-
-    @Override
-    boolean equals(Object obj);
-
-    /**
-     * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji.
-     * This method is analogous to {@link Mentionable#getMentionTag()}.
-     *
-     * @return A discord-printable string of this emoji.
-     */
-    String toDiscordPrintable();
-
-    default Optional<UnicodeEmoji> toUnicodeEmoji() {
-        return castTo(UnicodeEmoji.class);
-    }
-
-    default Optional<CustomEmoji> toCustomEmoji() {
-        return castTo(CustomEmoji.class);
     }
 }

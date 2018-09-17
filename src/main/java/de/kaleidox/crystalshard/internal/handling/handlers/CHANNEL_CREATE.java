@@ -13,14 +13,15 @@ import de.kaleidox.crystalshard.main.items.server.Server;
  * https://discordapp.com/developers/docs/topics/gateway#channel-create
  */
 public class CHANNEL_CREATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Channel channel = ChannelInternal.getInstance(discord, data);
         Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
-
+        
         ChannelCreateEventInternal fireEvent = new ChannelCreateEventInternal(discord, channel);
-
-        collectListeners(ChannelCreateListener.class, discord, server)
-                .forEach(listener -> listener.onChannelCreate(fireEvent));
+        
+        collectListeners(ChannelCreateListener.class, discord, server).forEach(listener -> listener.onChannelCreate(
+                fireEvent));
     }
 }

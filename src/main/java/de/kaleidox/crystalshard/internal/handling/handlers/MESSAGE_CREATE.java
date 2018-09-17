@@ -21,6 +21,7 @@ import java.util.Collections;
  * https://discordapp.com/developers/docs/topics/gateway#message-create
  */
 public class MESSAGE_CREATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Channel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong());
@@ -28,10 +29,14 @@ public class MESSAGE_CREATE extends HandlerBase {
         Message message = MessageInternal.getInstance(discord, data);
         User user = message.getAuthorAsUser().orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
-
+        
         MessageCreateEvent event = new MessageCreateEventInternal(discord, message);
-
-        collectListeners(MessageCreateListener.class, discord, server, channel, user, roles.toArray(new Role[0]))
-                .forEach(listener -> listener.onMessageCreate(event));
+        
+        collectListeners(MessageCreateListener.class,
+                         discord,
+                         server,
+                         channel,
+                         user,
+                         roles.toArray(new Role[0])).forEach(listener -> listener.onMessageCreate(event));
     }
 }

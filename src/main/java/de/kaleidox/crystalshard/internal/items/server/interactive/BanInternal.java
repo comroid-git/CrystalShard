@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class BanInternal implements Ban {
-    private final Server server;
+    private final Server       server;
     private final ServerMember user;
 
     public BanInternal(Server server, ServerMember user) {
@@ -13,6 +13,7 @@ public class BanInternal implements Ban {
         this.user = user;
     }
 
+// Override Methods
     @Override
     public ServerMember getUser() {
         return user;

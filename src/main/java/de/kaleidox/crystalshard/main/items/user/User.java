@@ -24,35 +24,65 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.crystalshard.core.net.request.Method.GET;
+import static de.kaleidox.crystalshard.core.net.request.Method.*;
 
 public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>,
         ListenerAttachable<UserAttachableListener> {
+    String getDiscriminatedName();
+    
+    String getDiscriminator();
+    
+    Optional<String> getNickname(Server inServer);
+    
+    String getDisplayName(Server inServer);
+    
+    String getNicknameMentionTag();
+    
+    Optional<URL> getAvatarUrl();
+    
+    boolean isBot();
+    
+    boolean isVerified();
+    
+    boolean hasMultiFactorAuthorization();
+    
+    boolean isYourself();
+    
+    Optional<String> getLocale();
+    
+    Optional<String> getEmail();
+    
+    ServerMember toServerMember(Server server);
+    
+    Collection<Role> getRoles(Server server);
+    
+    CompletableFuture<PrivateTextChannel> openPrivateChannel();
+    
+    default Optional<ServerMember> toServerMember() {
+        return castTo(ServerMember.class);
+    }
+    
+// Static membe
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;
-
+        
         if (in instanceof Server) {
             Server srv = (Server) in;
             Discord discord = srv.getDiscord();
-
-            userFuture = srv.getUserById(id)
-                    .map(CompletableFuture::completedFuture)
-                    .orElseGet(() -> new WebRequest<User>(discord)
-                            .method(GET)
-                            .endpoint(Endpoint.of(Endpoint.Location.USER, id))
-                            .execute(node -> {
-                                if (node.isObject()) {
-                                    return new UserInternal(discord, node);
-                                } else throw new NoSuchElementException("No User with ID " + id + " found!");
-                            })
-                    );
+            
+            userFuture =
+                    srv.getUserById(id).map(CompletableFuture::completedFuture).orElseGet(() -> new WebRequest<User>(
+                            discord).method(GET).endpoint(Endpoint.of(Endpoint.Location.USER, id)).execute(node -> {
+                        if (node.isObject()) {
+                            return new UserInternal(discord, node);
+                        } else throw new NoSuchElementException("No User with ID " + id + " found!");
+                    }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;
-
+            
             userFuture = discord.getUserById(id)
                     .map(CompletableFuture::completedFuture)
-                    .orElseGet(() -> new WebRequest<User>(discord)
-                            .method(GET)
+                    .orElseGet(() -> new WebRequest<User>(discord).method(GET)
                             .endpoint(Endpoint.of(Endpoint.Location.USER, id))
                             .execute(node -> {
                                 if (node.isObject()) {
@@ -60,17 +90,15 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
                                 } else throw new NoSuchElementException("No User with ID " + id + " found!");
                             }));
         } else {
-            throw new IllegalArgumentException(
-                    in.getClass().getSimpleName() + " is not a valid UserContainer!");
+            throw new IllegalArgumentException(in.getClass().getSimpleName() + " is not a valid UserContainer!");
         }
-
+        
         return userFuture;
     }
-
+    
     /**
-     * Gets a user from only an ID.
-     * This method requires to be run from a Bot-Own Thread, see {@link ThreadPool#isBotOwnThread()}.
-     * This method must only be invoked from "bot-own" threads.
+     * Gets a user from only an ID. This method requires to be run from a Bot-Own Thread, see {@link
+     * ThreadPool#isBotOwnThread()}. This method must only be invoked from "bot-own" threads.
      *
      * @param id The ID to get a user for.
      * @return A future to contain a user with the given id.
@@ -78,11 +106,10 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
      */
     static CompletableFuture<User> of(long id) {
         CompletableFuture<User> userFuture = new CompletableFuture<>();
-
+        
         if (ThreadPool.isBotOwnThread()) {
             DiscordInternal discord = ((ThreadPool.Worker) Thread.currentThread()).getDiscord();
-            userFuture = new WebRequest<User>(discord)
-                    .method(GET)
+            userFuture = new WebRequest<User>(discord).method(GET)
                     .endpoint(Endpoint.of(Endpoint.Location.USER, id))
                     .execute(node -> {
                         if (node.isObject()) {
@@ -90,41 +117,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
                         } else throw new NoSuchElementException("No User with ID " + id + " found!");
                     });
         } else userFuture.completeExceptionally(ThreadPool.BOT_THREAD_EXCEPTION.get());
-
+        
         return userFuture;
     }
-
-    String getDiscriminatedName();
-
-    String getDiscriminator();
-
-    Optional<String> getNickname(Server inServer);
-
-    String getDisplayName(Server inServer);
-
-    String getNicknameMentionTag();
-
-    Optional<URL> getAvatarUrl();
-
-    boolean isBot();
-
-    boolean isVerified();
-
-    boolean hasMultiFactorAuthorization();
-
-    boolean isYourself();
-
-    Optional<String> getLocale();
-
-    Optional<String> getEmail();
-
-    default Optional<ServerMember> toServerMember() {
-        return castTo(ServerMember.class);
-    }
-
-    ServerMember toServerMember(Server server);
-
-    Collection<Role> getRoles(Server server);
-
-    CompletableFuture<PrivateTextChannel> openPrivateChannel();
 }

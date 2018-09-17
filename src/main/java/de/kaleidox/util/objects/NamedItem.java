@@ -7,8 +7,8 @@ package de.kaleidox.util.objects;
  */
 public class NamedItem<T> {
     private final String name;
-    private final T item;
-
+    private final T      item;
+    
     /**
      * Create a new NamedItem.
      *
@@ -19,17 +19,18 @@ public class NamedItem<T> {
         this.name = name;
         this.item = item;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public T getItem() {
-        return item;
-    }
-
+    
+// Override Methods
     @Override
     public String toString() {
         return "NamedItem (" + name + " with item " + item.toString() + ")";
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public T getItem() {
+        return item;
     }
 }

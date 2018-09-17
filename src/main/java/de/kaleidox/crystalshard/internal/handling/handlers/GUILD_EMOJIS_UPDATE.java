@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 public class GUILD_EMOJIS_UPDATE extends HandlerBase {
+// Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id").asLong());
@@ -24,10 +25,12 @@ public class GUILD_EMOJIS_UPDATE extends HandlerBase {
         Set<EditTrait<CustomEmoji>> traits = new HashSet<>();
         List<CustomEmoji> edited = new ArrayList<>();
         Difference<CustomEmoji> diff;
-
+        
         for (JsonNode node : data.get("emojis")) {
-            CustomEmojiInternal emoji = (CustomEmojiInternal) CustomEmojiInternal.getInstance(
-                    discord, server, data, true);
+            CustomEmojiInternal emoji = (CustomEmojiInternal) CustomEmojiInternal.getInstance(discord,
+                                                                                              server,
+                                                                                              data,
+                                                                                              true);
             Set<EditTrait<CustomEmoji>> editTraits = emoji.updateData(node);
             if (!editTraits.isEmpty()) edited.add(emoji);
             traits.addAll(editTraits);
@@ -35,13 +38,15 @@ public class GUILD_EMOJIS_UPDATE extends HandlerBase {
         }
         diff = ListHelper.getDifference((List<CustomEmoji>) server.getCustomEmojis(), newEmojis);
         server.replaceEmojis(newEmojis);
-
-        ServerEmojiEditEventInternal event = new ServerEmojiEditEventInternal(
-                discord, server, diff.getAdded(), edited, diff.getRemoved(), traits);
-
-        collectListeners(ServerEmojiEditListener.class, discord, server)
-                .forEach(listener -> discord.getThreadPool()
-                        .execute(() -> listener.onEmojiEdit(event))
-                );
+        
+        ServerEmojiEditEventInternal event = new ServerEmojiEditEventInternal(discord,
+                                                                              server,
+                                                                              diff.getAdded(),
+                                                                              edited,
+                                                                              diff.getRemoved(),
+                                                                              traits);
+        
+        collectListeners(ServerEmojiEditListener.class, discord, server).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onEmojiEdit(event)));
     }
 }

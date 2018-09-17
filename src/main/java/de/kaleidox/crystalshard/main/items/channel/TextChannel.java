@@ -14,34 +14,43 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 public interface TextChannel extends Channel, MessageReciever {
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    String getTopic();
+    
+    boolean isNsfw();
+    
+    default void attachMessageCreateListener(MessageCreateListener listener) {
+        attachListener(listener);
+    }
+    
+    interface Updater extends Channel.Updater {
+        Updater setTopic(String topic);
+        
+        Updater setNsfw(boolean nsfw);
+        
+        Updater setParent(ChannelCategory category);
+    }
+    
+// Static membe
     static CompletableFuture<TextChannel> of(Discord discord, long id) {
         CompletableFuture<TextChannel> future;
-
+        
         future = discord.getChannelById(id)
                 .filter(channel -> channel.canCastTo(TextChannel.class))
                 .map(TextChannel.class::cast)
                 .map(CompletableFutureExtended::completedFuture)
-                .orElseGet(() -> new WebRequest<TextChannel>(discord)
-                        .method(Method.GET)
+                .orElseGet(() -> new WebRequest<TextChannel>(discord).method(Method.GET)
                         .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, id))
                         .execute(node -> {
                             if (node.has("guild_id")) {
-                                return ServerTextChannelInternal.getInstance(discord, id)
-                                        .toTextChannel()
-                                        .get();
+                                return ServerTextChannelInternal.getInstance(discord, id).toTextChannel().orElseThrow(
+                                        AssertionError::new);
                             } else if (node.has("recipients")) {
-                                return PrivateTextChannelInternal.getInstance(discord, id)
-                                        .toTextChannel()
-                                        .get();
+                                return PrivateTextChannelInternal.getInstance(discord, id).toTextChannel().orElseThrow(
+                                        AssertionError::new);
                             }
                             throw new NoSuchElementException("Could not create TextChannel. ID: " + id);
                         }));
-
+        
         return future;
-    }
-
-    default void attachMessageCreateListener(MessageCreateListener listener) {
-        attachListener(listener);
     }
 }

@@ -10,5 +10,4 @@ import java.util.Collection;
  * @see Nullable
  */
 @Target(ElementType.PARAMETER)
-public @interface MayContainNull {
-}
+public @interface MayContainNull { }

@@ -13,17 +13,14 @@ public enum MessageType {
     CHANNEL_ICON_CHANGE(5),
     CHANNEL_PINNED_MESSAGE(6),
     GUILD_MEMBER_JOIN(7);
-
     private final int id;
-
+    
     MessageType(int id) {
         this.id = id;
     }
-
+    
+// Static membe
     public static MessageType getTypeById(int id) {
-        return Stream.of(values())
-                .filter(type -> type.id == id)
-                .findAny()
-                .orElse(UNKNOWN);
+        return Stream.of(values()).filter(type -> type.id == id).findAny().orElse(UNKNOWN);
     }
 }

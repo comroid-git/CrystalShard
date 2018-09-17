@@ -5,6 +5,6 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public interface Ban {
     ServerMember getUser();
-
+    
     Server getServer();
 }

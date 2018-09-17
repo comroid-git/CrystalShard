@@ -13,38 +13,32 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InfoReaction {
+// Static membe
     public static void add(Message message, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
         AtomicReference<Message> sentMessage = new AtomicReference<>();
-
-        message.addReaction(emoji)
-                .exceptionally(Logger::get);
-
+        
+        message.addReaction(emoji).exceptionally(Logger::get);
+        
         MessageDeleteListener deleteListener = event -> {
             message.removeOwnReactionsByEmoji(emoji);
             message.delete();
         };
-
+        
         ReactionAddListener addListener = event -> {
-            if (!event.getUser().isYourself() &&
-                    event.getEmoji().toUnicodeEmoji().map(emoji::equals).orElse(false)) {
-                message.getChannel().sendMessage(infoEmbed.build())
-                        .thenAccept(myMsg -> {
-                            sentMessage.set(myMsg);
-                            myMsg.attachListener(deleteListener);
-                        })
-                        .thenAccept(nothing -> {
-                            if (deleteAfterSend) {
-                                message.delete().exceptionally(Logger::get);
-                            }
-                        })
-                        .exceptionally(Logger::get);
+            if (!event.getUser().isYourself() && event.getEmoji().toUnicodeEmoji().map(emoji::equals).orElse(false)) {
+                message.getChannel().sendMessage(infoEmbed.build()).thenAccept(myMsg -> {
+                    sentMessage.set(myMsg);
+                    myMsg.attachListener(deleteListener);
+                }).thenAccept(nothing -> {
+                    if (deleteAfterSend) {
+                        message.delete().exceptionally(Logger::get);
+                    }
+                }).exceptionally(Logger::get);
             }
         };
-
-        ReactionRemoveListener removeListener = event -> event.getEmoji()
-                .toUnicodeEmoji()
-                .filter(emoji::equals)
-                .ifPresent(unicodeEmoji -> {
+        
+        ReactionRemoveListener removeListener =
+                event -> event.getEmoji().toUnicodeEmoji().filter(emoji::equals).ifPresent(unicodeEmoji -> {
                     if (!event.getUser().isYourself()) {
                         //noinspection OptionalGetWithoutIsPresent
                         if (event.getUser().equals(message.getAuthorAsUser().get())) {
@@ -52,19 +46,20 @@ public class InfoReaction {
                         }
                     }
                 });
-
+        
         message.attachReactionAddListener(addListener);
         message.attachReactionRemoveListener(removeListener);
     }
-
-    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
+    
+    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend,
+                           Embed.Builder infoEmbed) {
         add(msgFut.join(), emoji, deleteAfterSend, infoEmbed);
     }
-
+    
     public static void add(Message message, Embed.Builder infoEmbed) {
         add(message, UnicodeEmoji.of(message.getDiscord(), "ℹ"), false, infoEmbed);
     }
-
+    
     public static void add(CompletableFuture<Message> msgFut, Embed.Builder infoEmbed) {
         Message msg = msgFut.join();
         add(msg, UnicodeEmoji.of(msg.getDiscord(), "ℹ"), false, infoEmbed);

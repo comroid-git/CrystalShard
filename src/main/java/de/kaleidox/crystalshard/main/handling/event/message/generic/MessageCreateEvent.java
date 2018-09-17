@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public interface MessageCreateEvent extends MessageEvent, ChannelEvent, OptionalServerEvent {
     Author getMessageAuthor();
-
+    
     Optional<AuthorUser> getMessageAuthorUser();
-
+    
     String getMessageContent();
 }

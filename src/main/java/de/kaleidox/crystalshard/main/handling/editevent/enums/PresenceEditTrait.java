@@ -5,8 +5,6 @@ import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 
 public enum PresenceEditTrait implements EditTrait<Presence> {
     ROLES,
-
     ACTIVITY,
-
     STATUS
 }

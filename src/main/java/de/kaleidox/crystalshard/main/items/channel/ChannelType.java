@@ -9,17 +9,14 @@ public enum ChannelType {
     GUILD_VOICE(2),
     GROUP_DM(3),
     GUILD_CATEGORY(4);
-
     private int id;
-
+    
     ChannelType(int id) {
         this.id = id;
     }
-
+    
+// Static membe
     public static ChannelType getFromId(int id) {
-        return Stream.of(values())
-                .filter(type -> type.id == id)
-                .findAny()
-                .orElse(UNKNOWN);
+        return Stream.of(values()).filter(type -> type.id == id).findAny().orElse(UNKNOWN);
     }
 }

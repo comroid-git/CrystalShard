@@ -8,16 +8,15 @@ import de.kaleidox.crystalshard.main.items.user.User;
 
 public class TypingStartEventInternal extends EventBase implements TypingStartEvent {
     private final Channel channel;
-    private final User user;
+    private final User    user;
 
-    public TypingStartEventInternal(DiscordInternal discordInternal,
-                                    Channel channel,
-                                    User user) {
+    public TypingStartEventInternal(DiscordInternal discordInternal, Channel channel, User user) {
         super(discordInternal);
         this.channel = channel;
         this.user = user;
     }
 
+// Override Methods
     @Override
     public Channel getChannel() {
         return channel;
