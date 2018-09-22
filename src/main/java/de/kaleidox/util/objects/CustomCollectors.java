@@ -36,15 +36,7 @@ public class CustomCollectors {
             return left;
         }, CH_ID);
     }
-    
-    /**
-     * Merges a stream of Collections into one larger Collection.
-     *
-     * @param collectionSupplier
-     * @param <T>
-     * @param <L>
-     * @return A CustomCollector to collect items into a Collection.
-     */
+
     public static <T, L extends Collection<T>> Collector<Collection<T>, L, L> collectionMerge(Supplier<L> collectionSupplier) {
         return new CustomCollectorImpl<>(collectionSupplier, Collection::addAll, (left, right) -> {
             left.addAll(right);

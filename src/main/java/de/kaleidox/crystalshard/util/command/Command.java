@@ -21,13 +21,13 @@ import java.lang.annotation.Target;
  * Commands are always executed in {@link ThreadPool.Worker} threads.
  * <p>
  * Command methods may accept a varying assortment of parameters in any order. Supported Parameter types are:
- * - {@link MessageCreateEvent} -> The event that triggered the handler.
- * - {@link Discord} -> The event's discord object.
- * - {@link Server} -> The server that the command has been sent in. Will be {@code null} on private messages.
- * - {@link TextChannel} -> The channel that the command message has been sent in.
- * - {@link Message} -> The command message of the event.
- * - {@link Author} -> The author of the command message.
- * - {@link String} -> The contents of the command message.
+ * - {@link MessageCreateEvent} - The event that triggered the handler.
+ * - {@link Discord} - The event's discord object.
+ * - {@link Server} - The server that the command has been sent in. Will be {@code null} on private messages.
+ * - {@link TextChannel} - The channel that the command message has been sent in.
+ * - {@link Message} - The command message of the event.
+ * - {@link Author} - The author of the command message.
+ * - {@link String} - The contents of the command message.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -47,9 +47,7 @@ public @interface Command {
     String description() default "No description provided.";
     
     /**
-     * Defines whether the command is shown in the default help command. Default value is {@code TRUE}. If you dont
-     * initialize (-> {@link DiscordUtils#initCommandFramework(String, boolean)}) with "true" as second argument, the
-     * default help command will not be shown, and you can ignore this tag.
+     * Defines whether the command is shown in the default help command. Default value is {@code TRUE}.
      *
      * @return Whether to list this command in the default help command.
      */

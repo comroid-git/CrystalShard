@@ -47,6 +47,7 @@ public class CommandFramework {
      *
      * @param discord The discord object to attach to.
      * @param prefix  The prefix for commands. May end with a space.
+     * @param enableBuiltInHelpCommand Whether the default help command should be registered.
      */
     public CommandFramework(Discord discord, String prefix, boolean enableBuiltInHelpCommand) {
         this.discord = discord;
