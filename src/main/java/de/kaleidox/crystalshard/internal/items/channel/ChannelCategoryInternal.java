@@ -7,8 +7,10 @@ import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +39,7 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
         instances.put(id, this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
@@ -70,7 +72,29 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
         return name;
     }
     
-// Static membe
+    @Override
+    public int getPosition() {
+        return 0;
+    }
+    
+    @Override
+    public Updater getUpdater() {
+        return null;
+    }
+    
+    @Override
+    public boolean hasPermission(User user, Permission permission) {
+        return overrides.stream()
+                .filter(override -> override.getParent() != null)
+                .filter(override -> override.getParent().equals(user))
+                .map(override -> override.getAllowed().contains(permission))
+                .findAny()
+                .or(() -> Optional.of(server.getEveryoneRole().getPermissions().contains(permission)))
+                .orElse(true); // If no information could be acquired, assert TRUE
+    }
+    
+// Static members
+    // Static membe
     public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
         long id = data.get("id").asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");

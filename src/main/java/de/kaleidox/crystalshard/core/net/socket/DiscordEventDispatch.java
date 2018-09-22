@@ -8,7 +8,8 @@ import de.kaleidox.logging.Logger;
 public class DiscordEventDispatch {
     private final static Logger logger = new Logger(DiscordEventDispatch.class);
     
-// Static membe
+// Static members
+    // Static membe
     public static void handle(DiscordInternal discord, JsonNode data) {
         WebSocketClient webSocket = discord.getWebSocket();
         OpCode.getByCode(data.get("op").asInt()).ifPresent(opCode -> {

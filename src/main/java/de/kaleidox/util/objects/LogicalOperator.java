@@ -17,7 +17,7 @@ public enum LogicalOperator {
         this.name = name;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String toString() {
         return "LogicalOperator (" + name + ")";
@@ -47,7 +47,8 @@ public enum LogicalOperator {
         return name;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static Optional<LogicalOperator> find(String tag) {
         return Stream.of(values()).filter(lo -> lo.name.equalsIgnoreCase(tag)).findAny();
     }

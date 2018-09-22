@@ -87,7 +87,8 @@ public interface Server
     
     CompletableFuture<Void> leave();
     
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<Server> of(Discord discord, long id) {
         CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
         discord.getServerById(id).ifPresentOrElse(future::complete,

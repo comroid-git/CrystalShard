@@ -14,7 +14,8 @@ public interface Sendable {
     
     CompletableFuture<Message> send(MessageReciever reciever);
     
-// Static membe
+// Static members
+    // Static membe
     static Sendable of(Object... items) {
         return new SendableInternal(items);
     }

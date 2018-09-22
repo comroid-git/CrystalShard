@@ -9,4 +9,8 @@ public interface MessageEvent extends Event {
     default long getMessageId() {
         return getMessage().getId();
     }
+    
+    default boolean isPrivate() {
+        return getMessage().isPrivate();
+    }
 }

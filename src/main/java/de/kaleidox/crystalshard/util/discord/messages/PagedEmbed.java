@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.util.discord.messages;
 
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
+import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageDeleteListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -11,24 +14,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class PagedEmbed {
-// Static Fields
-    public final static int                                                FIELD_MAX_CHARS     = 1024;
-    public final static int                                                MAX_CHARS_PER_PAGE  = 4500;
-    public final static int                                                MAX_FIELDS_PER_PAGE = 8;
-    public final static String                                             PREV_PAGE_EMOJI     = "⬅";
-    public final static String                                             NEXT_PAGE_EMOJI     = "➡";
-    private final       MessageReciever                                    messageable;
-    private final       Supplier<Embed.Builder>                            embedsupplier;
-    private             ConcurrentHashMap<Integer, List<EmbedDraft.Field>> pages               =
+    // Static Fields
+    public final static int                                                        MAX_CHARS_PER_PAGE        = 4500;
+    public final static int                                                        MAX_FIELDS_PER_PAGE       = 8;
+    public final static int                                                        MAX_INSTANCES_PER_CHANNEL = 2;
+    public final static String                                                     PREV_PAGE_EMOJI           = "⬅";
+    public final static String                                                     NEXT_PAGE_EMOJI           = "➡";
+    public final static String                                                     DELETE_EMOJI              = "🗑";
+    public final static ConcurrentHashMap<Long, ConcurrentLinkedQueue<PagedEmbed>> instances                 =
             new ConcurrentHashMap<>();
-    private             List<EmbedDraft.Field>                             fields              = new ArrayList<>();
-    private             int                                                page;
-    private             AtomicReference<Message>                           sentMessage         =
+    private final       MessageReciever                                            messageable;
+    private final       Supplier<Embed.Builder>                                    embedsupplier;
+    private             ConcurrentHashMap<Integer, List<EmbedDraft.Field>>         pages                     =
+            new ConcurrentHashMap<>();
+    private             List<EmbedDraft.Field>                                     fields                    =
+            new ArrayList<>();
+    private             int                                                        page;
+    private             AtomicReference<Message>                                   sentMessage               =
             new AtomicReference<>();
     
     /**
@@ -38,8 +46,20 @@ public class PagedEmbed {
      * @param embedsupplier A Predicate to supply a new, clean EmbedBuilder, that the sent embed should be based on.
      */
     public PagedEmbed(MessageReciever messageable, Supplier<Embed.Builder> embedsupplier) {
+        instances.putIfAbsent(messageable.getId(), new ConcurrentLinkedQueue<>());
+        if (instances.get(messageable.getId()).size() >= MAX_INSTANCES_PER_CHANNEL) {
+            //noinspection ConstantConditions
+            instances.get(messageable.getId()).poll().destroy();
+        }
+        
         this.messageable = messageable;
         this.embedsupplier = embedsupplier;
+    }
+    
+    private void destroy() {
+        Message msg = sentMessage.get();
+        msg.detachAllListeners();
+        msg.delete("Deleted");
     }
     
     /**
@@ -83,14 +103,14 @@ public class PagedEmbed {
             if (pages.size() != 1) {
                 message.addReaction(PREV_PAGE_EMOJI);
                 message.addReaction(NEXT_PAGE_EMOJI);
-                message.attachReactionAddListener(this::onReactionClick);
-                message.attachReactionRemoveListener(this::onReactionClick);
+                message.attachListener((ReactionAddListener) this::onReactionClick);
+                message.attachListener((ReactionRemoveListener) this::onReactionClick);
             }
             
-            message.attachMessageDeleteListener(delete -> {
+            message.attachListener((MessageDeleteListener) delete -> {
                 messageable.getDiscord().getThreadPool().getScheduler().schedule(() -> {
                     sentMessage.get().removeAllReactions();
-                    sentMessage.get().removeAllListeners();
+                    sentMessage.get().detachAllListeners();
                 }, 3, TimeUnit.HOURS);
             });
         }).exceptionally(Logger::get);
@@ -112,7 +132,7 @@ public class PagedEmbed {
         for (EmbedDraft.Field field : fields) {
             pages.putIfAbsent(thisPage, new ArrayList<>());
             
-            if (fieldCount <= MAX_FIELDS_PER_PAGE && pageChars <= FIELD_MAX_CHARS * fieldCount &&
+            if (fieldCount <= MAX_FIELDS_PER_PAGE && pageChars <= Embed.Boundaries.FIELD_TEXT_LENGTH * fieldCount &&
                 totalChars < MAX_CHARS_PER_PAGE) {
                 pages.get(thisPage).add(field);
                 
@@ -160,6 +180,9 @@ public class PagedEmbed {
                         else if (page == pages.size()) page = 1;
                         
                         this.refreshPages();
+                        break;
+                    case DELETE_EMOJI:
+                        destroy();
                         break;
                     default:
                         break;

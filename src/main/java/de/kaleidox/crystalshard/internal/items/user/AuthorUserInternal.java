@@ -18,7 +18,7 @@ public class AuthorUserInternal extends UserInternal implements Author, AuthorUs
         this.message = messageParent;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Message getMessage() {
         return message;

@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class TYPING_START extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         TextChannel channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong())

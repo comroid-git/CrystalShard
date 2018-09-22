@@ -77,7 +77,7 @@ public enum OpCode {
         this.code = code;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String toString() {
         return this.name() + "(" + code + ")";
@@ -92,7 +92,8 @@ public enum OpCode {
         return code;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static Optional<OpCode> getByCode(int code) {
         return Stream.of(values()).filter(opCode -> opCode.code == code).findAny();
     }

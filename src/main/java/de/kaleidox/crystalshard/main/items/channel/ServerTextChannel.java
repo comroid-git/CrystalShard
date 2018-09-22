@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public interface ServerTextChannel extends ServerChannel, TextChannel {
-// Override Methods
+    // Override Methods
     String getTopic();
     
     default Builder BUILDER(Server server) {
@@ -54,7 +54,8 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
         CompletableFuture<ServerTextChannel> build() throws DiscordPermissionException;
     }
     
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<ServerTextChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerTextChannel> channelFuture = new CompletableFuture<>();

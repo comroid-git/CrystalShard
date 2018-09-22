@@ -13,7 +13,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
  * https://discordapp.com/developers/docs/topics/gateway#channel-create
  */
 public class CHANNEL_CREATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Channel channel = ChannelInternal.getInstance(discord, data);

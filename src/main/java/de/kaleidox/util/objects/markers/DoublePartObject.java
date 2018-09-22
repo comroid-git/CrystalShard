@@ -1,4 +1,4 @@
-package de.kaleidox.util.objects;
+package de.kaleidox.util.objects.markers;
 
 public class DoublePartObject<A, B> {
     private A partA;

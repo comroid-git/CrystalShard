@@ -54,7 +54,7 @@ public class ChannelUpdaterInternal {
             this.edited = new HashSet<>();
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public TextChannel.Updater setTopic(String topic) {
             this.topic = topic;
@@ -148,7 +148,7 @@ public class ChannelUpdaterInternal {
             this.edited = new HashSet<>();
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public VoiceChannel.Updater setBitrate(int bitrate) {
             this.bitrate = bitrate;

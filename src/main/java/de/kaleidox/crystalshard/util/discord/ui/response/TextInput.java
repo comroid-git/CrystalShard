@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;

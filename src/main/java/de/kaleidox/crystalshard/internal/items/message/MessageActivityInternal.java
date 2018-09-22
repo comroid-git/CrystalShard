@@ -15,7 +15,7 @@ public class MessageActivityInternal implements MessageActivity {
         this.partyId = data.get("party_id").asText(null);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public MessageActivityType getType() {
         return type;

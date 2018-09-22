@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.util.discord.ui;
 
 import de.kaleidox.crystalshard.util.discord.ui.response.ResponseElement;
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +22,8 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
         this.responsesConsumer = responsesConsumer;
     }
     
-// Override Methods
+    // Override Methods
+    
     /**
      * Adds a new handling possibility to the current branch.
      *

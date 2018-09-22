@@ -44,7 +44,7 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
         new PermissionListInternal(data.get("deny").asInt(0)).forEach(permission -> put(permission, DENIED));
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;

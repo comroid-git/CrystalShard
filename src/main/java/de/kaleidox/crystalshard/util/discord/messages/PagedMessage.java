@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.util.discord.messages;
 
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
@@ -77,8 +79,8 @@ public class PagedMessage {
         
         parent.sendMessage(getPageContent()).thenAcceptAsync(msg -> {
             lastMessage = msg;
-            msg.attachReactionAddListener(this::onPageClick);
-            msg.attachReactionRemoveListener(this::onPageClick);
+            msg.attachListener((ReactionAddListener) this::onPageClick);
+            msg.attachListener((ReactionRemoveListener) this::onPageClick);
             msg.addReaction(PREV_PAGE_EMOJI);
             msg.addReaction(NEXT_PAGE_EMOJI);
         });
@@ -116,7 +118,8 @@ public class PagedMessage {
         }
     }
     
-// Static membe
+// Static members
+    // Static membe
     public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead,
                                          Supplier<String> defaultBody) {
         if (selfMap.containsKey(forParent)) {

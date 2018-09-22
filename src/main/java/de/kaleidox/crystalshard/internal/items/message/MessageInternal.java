@@ -37,7 +37,7 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -60,7 +60,7 @@ public class MessageInternal implements Message {
     private final        long                                            channelId;
     private final        Author                                          author;
     private final        String                                          contentRaw;
-            // todo Format and store various content versions
+    // todo Format and store various content versions
     private final        Instant                                         timestamp;
     private final        Instant                                         editedTimestamp;
     private final        boolean                                         tts;
@@ -81,7 +81,7 @@ public class MessageInternal implements Message {
     private final        TextChannel                                     channel;
     private              Collection<? extends MessageAttachableListener> listeners;
     
-    private MessageInternal(Discord discord, JsonNode data) {
+    public MessageInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
         this.discord = discord;
@@ -139,7 +139,22 @@ public class MessageInternal implements Message {
         instances.put(id, this);
     }
     
-// Override Methods
+    public final static Message getInstance(Discord discord, JsonNode data) {
+        synchronized (instances) {
+            long id = data.get("id").asLong(-1);
+            if (id == -1) throw new NoSuchElementException("No valid ID found.");
+            return instances.getOrDefault(id, new MessageInternal(discord, data));
+        }
+    }
+    
+    public final static Message getInstance(TextChannel channel, long id) {
+        return instances.getOrDefault(id, new WebRequest<Message>(channel.getDiscord()).method(Method.GET)
+                .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
+                .execute(node -> getInstance(channel.getDiscord(), node))
+                .join());
+    }
+    
+    // Override Methods
     @Override
     public TextChannel getChannel() {
         return channel;
@@ -231,7 +246,7 @@ public class MessageInternal implements Message {
     }
     
     @Override
-    public List<Channel> getMentionedChannels() {
+    public List<Channel> getChannelMentions() {
         return Collections.unmodifiableList(channelMentions);
     }
     
@@ -344,19 +359,5 @@ public class MessageInternal implements Message {
         return null; // todo
     }
     
-// Static membe
-    public static Message getInstance(Discord discord, JsonNode data) {
-        synchronized (instances) {
-            long id = data.get("id").asLong(-1);
-            if (id == -1) throw new NoSuchElementException("No valid ID found.");
-            return instances.getOrDefault(id, new MessageInternal(discord, data));
-        }
-    }
-    
-    public static Message getInstance(TextChannel channel, long id) {
-        return instances.getOrDefault(id, new WebRequest<Message>(channel.getDiscord()).method(Method.GET)
-                .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
-                .execute(node -> getInstance(channel.getDiscord(), node))
-                .join());
-    }
+    // Static membe
 }

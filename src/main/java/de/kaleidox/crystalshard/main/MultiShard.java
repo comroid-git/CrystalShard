@@ -8,7 +8,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
         super(loggedIn);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String getPrefixedToken() {
         return get(0).getPrefixedToken();

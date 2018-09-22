@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
@@ -8,7 +9,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -49,7 +50,7 @@ public class YesNo extends ResponseElement<Boolean> {
             affiliateMessages.add(message);
             message.addReaction(EMOJI_YES);
             message.addReaction(EMOJI_NO);
-            message.attachReactionAddListener(event -> {
+            message.attachListener((ReactionAddListener) event -> {
                 affiliateMessages.add(event.getMessage());
                 Emoji emoji = event.getEmoji();
                 User user = event.getUser();
@@ -83,7 +84,7 @@ public class YesNo extends ResponseElement<Boolean> {
                                                                                                (result.getItem() ?
                                                                                                 "Yes" : "No")) :
                               embedBaseSupplier.get().addField("Answer:", (result.getItem() ? "Yes" : "No"))).build());
-                message.removeAllListeners();
+                message.detachAllListeners();
             }).exceptionally(Logger::get);
             if (deleteLater)
                 future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(Logger::get);

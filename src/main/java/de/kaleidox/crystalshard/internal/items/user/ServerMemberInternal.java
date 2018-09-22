@@ -11,7 +11,7 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
         this.server = server;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Server getServer() {
         return server;

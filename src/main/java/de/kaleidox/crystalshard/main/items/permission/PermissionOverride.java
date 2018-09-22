@@ -23,7 +23,7 @@ public interface PermissionOverride extends Map<Permission, OverrideState> {
     
     PermissionList getDenied();
     
-// Override Methods
+    // Override Methods
     boolean equals(Object other);
     
     enum Type {
@@ -40,7 +40,8 @@ public interface PermissionOverride extends Map<Permission, OverrideState> {
             return key;
         }
         
-// Static membe
+// Static members
+        // Static membe
         public static Type getByKey(String key) {
             return Stream.of(values()).filter(type -> type.key.equalsIgnoreCase(key)).findAny().orElse(UNKNOWN);
         }

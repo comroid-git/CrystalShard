@@ -22,12 +22,12 @@ import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateE
  * user is
  * connected to user_id      snowflake	    the user id this voice state is for member?      member object	the guild
  * member this voice state is for session_id	string	        the session id for this voice state deaf	bool
- * whether
- *  this user is deafened by the server mute	bool	whether         this user is muted by the server self_deaf
- *  bool
- *  whether this user is locally deafened self_mute	bool	        whether this user is locally muted suppress
- *  bool
- * whether this user is muted by the current user
+ * whether this
+ * user is deafened by the server mute	bool	whether         this user is muted by the server self_deaf bool
+ * whether this
+ * user is locally deafened self_mute	bool	        whether this user is locally muted suppress bool whether this
+ * user is
+ * muted by the current user
  */
 public class VoiceStateInternal implements VoiceState {
     private final static ConcurrentHashMap<String, VoiceStateInternal> instances = new ConcurrentHashMap<>();
@@ -63,7 +63,7 @@ public class VoiceStateInternal implements VoiceState {
         instances.put(sessionId, this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Discord getDiscord() {
         return null;
@@ -143,7 +143,8 @@ public class VoiceStateInternal implements VoiceState {
         return traits;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static VoiceState getInstance(Discord discord, JsonNode data) {
         return instances.getOrDefault(data.get("session_id").asText(), new VoiceStateInternal(discord, data));
     }

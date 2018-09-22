@@ -3,7 +3,8 @@ package de.kaleidox.util;
 import java.util.function.Function;
 
 public final class Functions {
-// Static membe
+// Static members
+    // Static membe
     public static <T> Function<T, T> sameItem() {
         return item -> item;
     }

@@ -23,7 +23,7 @@ public class CompletableFutureExtended<T> extends CompletableFuture<T> {
         this.threadPool = threadPool;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public <U> CompletableFuture<U> thenApplyAsync(Function<? super T, ? extends U> fn) {
         var ref = new Object() {

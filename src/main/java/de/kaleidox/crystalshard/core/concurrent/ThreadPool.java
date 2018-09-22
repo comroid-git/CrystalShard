@@ -31,7 +31,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ThreadPool {
-// Static Fields
+    // Static Fields
     public final static  Supplier<IllegalCallerException>         BOT_THREAD_EXCEPTION =
             () -> new IllegalCallerException("That method may only be called from a bot-own " +
                                              "thread, such as in listeners or scheduler tasks. You may not use it " +
@@ -165,7 +165,7 @@ public class ThreadPool {
     public class Factory implements ThreadFactory {
         private final AtomicInteger nameCounter = new AtomicInteger(1);
         
-// Override Methods
+        // Override Methods
         @Override
         public Thread newThread(Runnable r) {
             Worker worker = new Worker(r, discord, nameCounter.getAndIncrement());
@@ -213,7 +213,7 @@ public class ThreadPool {
             this.pool = pool;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public void execute(Runnable command) {
             pool.execute(command);
@@ -250,7 +250,7 @@ public class ThreadPool {
             this.runnableAttachedThread = true;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public void run() {
             if (!runnableAttachedThread) {
@@ -278,8 +278,7 @@ public class ThreadPool {
                                 logger.deeptrace((nextTask.isMarked() ? "Attached" : "Scheduled") +
                                         " task #" + task.hashCode() + " finished.");*/
                             unbusy();
-                            if (nextTask.isMarked()) nextTask.set(null,
-                                                                  false); // if nextTask is set, unset it, because
+                            if (nextTask.isMarked()) nextTask.set(null, false); // if nextTask is set, unset it, because
                             // its being run
                         } catch (Throwable e) {
                             assert task != null;
@@ -343,7 +342,7 @@ public class ThreadPool {
             this.description = description;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public void run() {
             try {
@@ -362,7 +361,9 @@ public class ThreadPool {
         }
     }
     
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Returns whether the current thread is a BotOwn thread; meaning the current thread is a {@link Worker} Thread.
      * This method is required if you statically want to get a Discord instance using {@link #getThreadDiscord()}.

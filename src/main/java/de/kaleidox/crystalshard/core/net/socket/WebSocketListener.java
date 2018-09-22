@@ -19,7 +19,7 @@ public class WebSocketListener implements WebSocket.Listener {
         this.discord = discordObject;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public void onOpen(WebSocket webSocket) {
         webSocket.request(1);

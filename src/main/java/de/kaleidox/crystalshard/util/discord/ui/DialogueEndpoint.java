@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.util.discord.ui;
 
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +28,7 @@ public class DialogueEndpoint extends DialogueBranch<Void> {
         this.responsesConsumer = responsesConsumer;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     protected CompletableFuture<Void> runEndpoint(List<NamedItem> collectedItems) {
         return CompletableFuture.supplyAsync(() -> {

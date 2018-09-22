@@ -40,7 +40,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -177,7 +177,7 @@ public class ServerInternal implements Server {
         instances.put(id, this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Optional<URL> getIconUrl() {
         return Optional.ofNullable(iconUrl);
@@ -503,7 +503,8 @@ public class ServerInternal implements Server {
         roles.remove(role);
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static Optional<Server> getInstance(long id) {
         return Optional.ofNullable(instances.getOrDefault(id, null));
     }

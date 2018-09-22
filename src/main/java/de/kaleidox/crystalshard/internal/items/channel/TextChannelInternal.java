@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -9,17 +8,21 @@ import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public abstract class TextChannelInternal extends ChannelInternal implements TextChannel {
     final ConcurrentHashMap<Long, Message> messages;
@@ -30,12 +33,15 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         messages = new ConcurrentHashMap<>();
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
+        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Sending Message to Text Channel [" + id + "])",
+                Permission.SEND_MESSAGES));
         return new WebRequest<Message>(discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
-                .node(((SendableInternal) content).toJsonNode(JsonHelper.objectNode()))
+                .node(((SendableInternal) content).toJsonNode(objectNode()))
                 .execute(node -> {
                     Message message = MessageInternal.getInstance(discord, node);
                     messages.put(message.getId(), message);
@@ -45,6 +51,9 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
+        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Sending Message to Text Channel [" + id + "])",
+                Permission.SEND_MESSAGES));
         Embed.Builder builder = discord.getUtilities().getDefaultEmbed().getBuilder();
         defaultEmbedModifier.accept(builder);
         return sendMessage(builder.build());
@@ -52,13 +61,17 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        ObjectNode data = JsonHelper.objectNode();
-        data.set("content", JsonHelper.nodeOf(""));
-        data.set("embed", ((EmbedDraftInternal) embedDraft).toJsonNode(JsonHelper.objectNode()));
-        data.set("file", JsonHelper.nodeOf("content"));
+        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Sending Message to Text Channel [" + id + "])",
+                Permission.SEND_MESSAGES));
         return new WebRequest<Message>(discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
-                .node(data)
+                .node(objectNode("content",
+                                 "",
+                                 "embed",
+                                 ((EmbedDraftInternal) embedDraft).toJsonNode(objectNode()),
+                                 "file",
+                                 "content"))
                 .execute(node -> {
                     Message message = MessageInternal.getInstance(discord, node);
                     messages.put(message.getId(), message);
@@ -68,12 +81,12 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Message> sendMessage(String content) {
-        ObjectNode data = JsonHelper.objectNode();
-        data.set("content", JsonHelper.nodeOf(content));
-        data.set("file", JsonHelper.nodeOf("content"));
+        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Sending Message to Text Channel [" + id + "])",
+                Permission.SEND_MESSAGES));
         return new WebRequest<Message>(discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
-                .node(data)
+                .node(objectNode("content", content, "file", "content"))
                 .execute(node -> {
                     Message message = MessageInternal.getInstance(discord, node);
                     messages.put(message.getId(), message);
@@ -90,5 +103,10 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     @Override
     public Collection<Message> getMessages() {
         return null;
+    }
+    
+    private boolean checkPermissions() {
+        return (!toServerChannel().map(ServerChannel::getServer).isEmpty() && !hasPermission(discord.getSelf(),
+                                                                                             Permission.SEND_MESSAGES));
     }
 }

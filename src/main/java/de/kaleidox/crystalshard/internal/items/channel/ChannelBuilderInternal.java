@@ -27,7 +27,7 @@ public class ChannelBuilderInternal implements Channel.Builder {
             this.server = server;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public ServerTextChannel.Builder setServer(Server server) {
             this.server = server;
@@ -84,7 +84,7 @@ public class ChannelBuilderInternal implements Channel.Builder {
             this.server = server;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public ServerVoiceChannel.Builder setServer(Server server) {
             this.server = server;
@@ -122,7 +122,7 @@ public class ChannelBuilderInternal implements Channel.Builder {
             this.server = server;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public ChannelCategory.Builder setServer(Server server) {
             return this;
@@ -158,7 +158,7 @@ public class ChannelBuilderInternal implements Channel.Builder {
             }
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public GroupChannel.Builder addRecipient(User user) {
             recipients.add(user);

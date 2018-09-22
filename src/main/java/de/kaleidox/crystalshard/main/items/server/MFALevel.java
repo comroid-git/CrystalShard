@@ -16,7 +16,8 @@ public enum MFALevel {
         return id;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static MFALevel getFromId(int id) {
         return Stream.of(values()).filter(level -> level.id == id).findAny().orElse(UNKNOWN);
     }

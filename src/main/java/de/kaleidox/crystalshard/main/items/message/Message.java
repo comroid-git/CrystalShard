@@ -70,7 +70,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     String getContent();
     
     /**
-     * Gets the readable content of the message. All mentions get replaced by their respective names. Mardown tags will
+     * Gets the readable content of the message. All mentions get replaced by their respective names. Markdown tags will
      * not get removed. See {@link #getTextContent()}.
      *
      * @return The readable content of the message.
@@ -170,7 +170,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      *
      * @return A list of mentioned channels.
      */
-    List<Channel> getMentionedChannels(); // TODO Discord may only send mentioned ServerTextChannels
+    List<Channel> getChannelMentions(); // TODO Discord may only send mentioned ServerTextChannels
     
     /**
      * Gets a list of the attachments to this message.

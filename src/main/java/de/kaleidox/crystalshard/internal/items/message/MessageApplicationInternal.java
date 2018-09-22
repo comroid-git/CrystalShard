@@ -18,7 +18,7 @@ public class MessageApplicationInternal implements MessageApplication {
         this.iconId = data.get("icon").asText();
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public long getId() {
         return id;

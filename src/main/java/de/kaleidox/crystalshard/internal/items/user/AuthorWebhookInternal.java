@@ -18,7 +18,7 @@ public class AuthorWebhookInternal extends WebhookInternal implements Author, Au
         this.message = message;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Message getMessage() {
         return message;

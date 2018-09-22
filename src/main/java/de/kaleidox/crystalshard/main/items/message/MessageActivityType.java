@@ -19,7 +19,8 @@ public enum MessageActivityType {
         return id;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static MessageActivityType getById(int id) {
         return Stream.of(values()).filter(type -> type.id == id).findAny().orElse(UNKNOWN);
     }

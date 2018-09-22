@@ -29,7 +29,7 @@ public class Endpoint {
         this.firstParam = (params.length == 0 ? null : params[0]);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Endpoint) {
@@ -153,7 +153,8 @@ public class Endpoint {
         }
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static Endpoint of(Location location, Object... parameter) {
         return location.toEndpoint(parameter);
     }

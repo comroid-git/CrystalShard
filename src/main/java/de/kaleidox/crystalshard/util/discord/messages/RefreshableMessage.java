@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.util.discord.messages;
 
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
@@ -31,8 +33,8 @@ public class RefreshableMessage {
         if (sent != null) {
             sent.thenAcceptAsync(msg -> {
                 lastMessage = msg;
-                msg.attachReactionAddListener(this::onRefresh);
-                msg.attachReactionRemoveListener(this::onRefresh);
+                msg.attachListener((ReactionAddListener) this::onRefresh);
+                msg.attachListener((ReactionRemoveListener) this::onRefresh);
                 msg.addReaction(REFRESH_EMOJI);
             });
         }
@@ -66,14 +68,15 @@ public class RefreshableMessage {
         if (sent != null) {
             sent.thenAcceptAsync(msg -> {
                 lastMessage = msg;
-                msg.attachReactionAddListener(this::onRefresh);
-                msg.attachReactionRemoveListener(this::onRefresh);
+                msg.attachListener((ReactionAddListener) this::onRefresh);
+                msg.attachListener((ReactionRemoveListener) this::onRefresh);
                 msg.addReaction(REFRESH_EMOJI);
             });
         }
     }
     
-// Static membe
+// Static members
+    // Static membe
     public final static RefreshableMessage get(MessageReciever forParent, Supplier<Object> defaultRefresher) {
         if (selfMap.containsKey(forParent)) {
             RefreshableMessage val = selfMap.get(forParent);

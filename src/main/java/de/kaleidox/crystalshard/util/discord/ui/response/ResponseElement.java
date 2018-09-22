@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.discord.ui.DialogueBranch;
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;

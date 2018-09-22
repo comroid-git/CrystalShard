@@ -15,7 +15,7 @@ public class ChannelStructureInternal extends ArrayList<ServerChannel> implement
         super(channels);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public int getPosition(ServerChannel channel) {
         return indexOf(channel);

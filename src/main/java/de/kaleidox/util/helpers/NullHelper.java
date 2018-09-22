@@ -3,7 +3,8 @@ package de.kaleidox.util.helpers;
 import java.util.Objects;
 
 public class NullHelper {
-// Static membe
+// Static members
+    // Static membe
     public static <T> T orDefault(T item, T def) {
         requireNonNull(item, def);
         return (item == null ? def : item);

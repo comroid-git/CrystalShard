@@ -98,7 +98,6 @@ public class WebRequest<T> {
         return request(method, endpoint, node);
     }
     
-    @SuppressWarnings({"SameParameterValue", "unchecked"})
     private CompletableFutureExtended<JsonNode> request(Method method, Endpoint endpoint, JsonNode data) {
         Objects.requireNonNull(method, "Method must not be null.");
         Objects.requireNonNull(endpoint, "Endpoint must not be null.");
@@ -117,12 +116,9 @@ public class WebRequest<T> {
                         requestBody);
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(urlExternal))
-                        .headers("User-Agent",
-                                 "DiscordBot (http://kaleidox.de, 0.1)",
-                                 "Content-Type",
-                                 "application/json",
-                                 "Authorization",
-                                 discord.getPrefixedToken())
+                        .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
+                                 "Content-Type", "application/json",
+                                 "Authorization", discord.getPrefixedToken())
                         .method(method.getDescriptor(), HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());

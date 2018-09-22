@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -14,18 +16,29 @@ import java.util.function.Supplier;
 /**
  * This class represents a default EmbedDraft. It is used to define a default EmbedDraft that will be used by methods
  * like {@link MessageReciever#sendMessage(Consumer)}, where no embed draft is specified but an embed modifier is.
+ *
+ * Basic DefaultEmbed traits can be set up in a settings.json configuration file at resources root.
  */
 public class DefaultEmbed implements Supplier<EmbedDraft> {
-// Static Fields
-    public final static Supplier<EmbedDraft>          EMPTY_SUPPLIER = () -> Embed.BUILDER().build();
-    public final static Supplier<Embed.Builder>       EMPTY_BUILDER  = Embed::BUILDER;
+    // Static Fields
+    public final Supplier<EmbedDraft>          EMPTY_SUPPLIER;
+    public final Supplier<Embed.Builder>       EMPTY_BUILDER;
     private final       List<Consumer<Embed.Builder>> modifiers;
+    private final Discord discord;
     
-    DefaultEmbed() {
+    DefaultEmbed(Discord discord, JsonNode data) {
+        this.discord = discord;
         this.modifiers = new ArrayList<>();
+    
+        EMPTY_BUILDER = data.isNull() ? Embed::BUILDER : () -> new SentEmbedInternal(null, data).toBuilder();
+        EMPTY_SUPPLIER = () -> EMPTY_BUILDER.get().build();
     }
     
-// Override Methods
+    public Discord getDiscord() {
+        return discord;
+    }
+    
+    // Override Methods
     @Override
     public EmbedDraft get() {
         if (modifiers.isEmpty()) {
@@ -52,7 +65,9 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         }
     }
     
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * A static implementation of the {@link DefaultEmbed#get()} method. This method will first check if the current
      * thread is a {@link ThreadPool.Worker} thread, and if so, will get the {@link Discord} item the Worker belongs to.
@@ -75,8 +90,7 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " +
-                                         "CompletableFuture#thenAcceptAsync or such.");
+                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
     }
     
     /**
@@ -97,8 +111,7 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " +
-                                         "CompletableFuture#thenAcceptAsync or such.");
+                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
     }
     
     /**
@@ -119,8 +132,7 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " +
-                                         "CompletableFuture#thenAcceptAsync or such.");
+                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
     }
     
     /**
@@ -140,7 +152,6 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " +
-                                         "CompletableFuture#thenAcceptAsync or such.");
+                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
     }
 }

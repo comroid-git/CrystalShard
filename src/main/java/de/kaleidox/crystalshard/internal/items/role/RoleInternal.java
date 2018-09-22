@@ -13,7 +13,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.awt.Color;
 import java.util.Collection;
@@ -55,7 +55,7 @@ public class RoleInternal implements Role {
         instances.putIfAbsent(id, this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public CompletableFuture<Server> getServer() {
         if (server != null) {
@@ -171,7 +171,8 @@ public class RoleInternal implements Role {
         return traits;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static Role getInstance(Server server, JsonNode data) {
         long id = data.path("id").asLong(-1);
         assert id != -1 : "No valid ID found.";

@@ -37,7 +37,8 @@ public abstract class HandlerBase {
     
     public abstract void handle(DiscordInternal discord, JsonNode data);
     
-// Static membe
+// Static members
+    // Static membe
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;

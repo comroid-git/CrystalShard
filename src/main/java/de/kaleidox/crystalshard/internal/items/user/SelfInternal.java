@@ -36,7 +36,7 @@ public class SelfInternal extends UserInternal implements Self {
         super(discord, data);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
         throw new AbstractMethodError("Cannot message yourself!");

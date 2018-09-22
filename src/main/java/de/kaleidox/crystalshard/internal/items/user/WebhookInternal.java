@@ -31,7 +31,7 @@ public class WebhookInternal implements Webhook {
         this.avatarUrl = tempAvatarUrl;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Optional<URL> getAvatarUrl() {
         return Optional.ofNullable(avatarUrl);

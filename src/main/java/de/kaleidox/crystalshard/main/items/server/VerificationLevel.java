@@ -25,7 +25,8 @@ public enum VerificationLevel {
         return description;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static VerificationLevel getFromId(int id) {
         return Stream.of(values()).filter(level -> level.id == id).findAny().orElse(UNKNOWN);
     }

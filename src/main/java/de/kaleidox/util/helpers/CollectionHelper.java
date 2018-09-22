@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.Objects;
 
 public class CollectionHelper extends NullHelper {
-// Static membe
+// Static members
+    // Static membe
     public static <T> Collection<T> requireNoNull(Collection<T> collection) {
         for (Object item : collection) {
             Objects.requireNonNull(item);

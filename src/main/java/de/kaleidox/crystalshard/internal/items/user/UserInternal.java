@@ -22,7 +22,7 @@ import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,11 +46,11 @@ public class UserInternal implements User {
     private final        Discord                                                 discord;
     private final        List<ListenerManager<? extends UserAttachableListener>> listenerManagers;
     private              String                                                  name;
-    private URL     avatarUrl;
-    private boolean mfa;
-    private boolean verified;
-    private String  locale;
-    private String  email;
+    private              URL                                                     avatarUrl;
+    private              boolean                                                 mfa;
+    private              boolean                                                 verified;
+    private              String                                                  locale;
+    private              String                                                  email;
     String discriminator;
     
     UserInternal(User user) {
@@ -87,7 +87,7 @@ public class UserInternal implements User {
         instances.putIfAbsent(id, this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String getDiscriminatedName() {
         return name + "#" + discriminator;
@@ -106,6 +106,7 @@ public class UserInternal implements User {
     
     @Override
     public String getDisplayName(Server inServer) {
+        if (inServer == null) return getName();
         return getNickname(inServer).orElseGet(this::getName);
     }
     
@@ -274,7 +275,8 @@ public class UserInternal implements User {
         return traits;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static User getInstance(Discord discord, long id) {
         assert id != -1 : "No valid ID found.";
         return instances.containsKey(id) ? instances.get(id) :

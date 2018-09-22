@@ -69,7 +69,9 @@ public enum LoggingLevel {
         return name;
     }
     
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Finds a logging level by its name.
      *

@@ -42,7 +42,8 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
         CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException;
     }
     
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<ServerVoiceChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerVoiceChannel> channelFuture = new CompletableFuture<>();

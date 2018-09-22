@@ -1,5 +1,7 @@
 package de.kaleidox.util.objects;
 
+import de.kaleidox.util.objects.functional.Evaluation;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,8 @@ public class Difference<T> {
         return Evaluation.of(!removed.isEmpty());
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static <T> Difference<T> of(List<T> added, List<T> removed) {
         return new Difference<>(added, removed);
     }

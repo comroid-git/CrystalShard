@@ -7,7 +7,9 @@ import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class FutureHelper extends NullHelper {
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Links the CompletableFutures together. When the parent future is done, the value gets passed to the other
      * futures. When the parent future completes exceptionally, the exception is passed to the other futures.

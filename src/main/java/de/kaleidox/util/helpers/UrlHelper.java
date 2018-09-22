@@ -9,11 +9,13 @@ import java.net.URL;
 import java.util.Objects;
 
 public class UrlHelper extends NullHelper {
-// Static Fields
+    // Static Fields
     public final static  String BASE_IMAGE_URL = "https://cdn.discordapp.com/";
     private final static Logger logger         = new Logger(UrlHelper.class);
     
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Creates an URL from the given String. Returns {@code null} if the given String is null. Returns {@code null} and
      * logs a {@link MalformedURLException} if the URL is malformed.

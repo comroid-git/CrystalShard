@@ -10,8 +10,8 @@ public abstract class FileType {
         this.regexPiece = regexPiece;
     }
     
-    public boolean isType(String regex) {
-        return regex.matches(".+" + regexPiece);
+    public boolean isType(String test) {
+        return test.matches(".+" + regexPiece);
     }
     
     public boolean isType(File file) {
@@ -19,7 +19,7 @@ public abstract class FileType {
     }
     
     public static class IMAGE extends FileType {
-// Static Fields
+        // Static Fields
         public final static IMAGE   PNG    = new IMAGE(".png");
         public final static IMAGE   JPEG   = new IMAGE(".jpe?g");
         public final static IMAGE   WebP   = new IMAGE(".webp");
@@ -33,7 +33,7 @@ public abstract class FileType {
     }
     
     public static class MUSIC extends FileType {
-// Static Fields
+        // Static Fields
         public final static MUSIC   MP3 = new MUSIC(".mp3");
         public final static MUSIC[] ALL = new MUSIC[]{MP3};
         
@@ -43,7 +43,7 @@ public abstract class FileType {
     }
     
     public static class VIDEO extends FileType {
-// Static Fields
+        // Static Fields
         public final static VIDEO   MP4 = new VIDEO(".mp4");
         public final static VIDEO[] ALL = new VIDEO[]{MP4};
         

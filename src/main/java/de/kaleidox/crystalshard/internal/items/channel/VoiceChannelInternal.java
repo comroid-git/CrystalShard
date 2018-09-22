@@ -14,7 +14,7 @@ public abstract class VoiceChannelInternal extends ChannelInternal implements Vo
         this.limit = data.path("user_limit").asInt(-1);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public int getBitrate() {
         return bitrate;

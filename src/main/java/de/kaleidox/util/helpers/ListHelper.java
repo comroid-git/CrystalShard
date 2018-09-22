@@ -14,7 +14,9 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ListHelper extends CollectionHelper {
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Moves all items within a list after the given {@code distance}. If an object is null or not available, it gets
      * replaced with {@code defaultValue}. All items that get moved below index {@code 0} get dropped. The given list

@@ -2,6 +2,8 @@ package de.kaleidox.crystalshard.util.discord.ui.response;
 
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionAddEvent;
 import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionRemoveEvent;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -9,7 +11,7 @@ import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,8 +68,8 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
             parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
                 affiliateMessages.add(message);
                 optionsOrdered.forEach(option -> message.addReaction(option.getEmoji()));
-                message.attachReactionAddListener(this::reactionAdd);
-                message.attachReactionRemoveListener(this::reactionRemove);
+                message.attachListener((ReactionAddListener) this::reactionAdd);
+                message.attachListener((ReactionRemoveListener) this::reactionRemove);
                 parent.getDiscord().getThreadPool().getScheduler().schedule(() -> {
                     Optional<ResultType> representationOptional = rankingMap.entrySet()
                             .stream()
@@ -82,7 +84,7 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
                     message.removeAllReactions();
                     Embed.Builder resultEmbed = embedBaseSupplier.get();
                     message.edit(populateResultEmbed(resultEmbed).build());
-                    message.removeAllListeners();
+                    message.detachAllListeners();
                 }, duration, timeUnit);
                 if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(
                         Logger::get);

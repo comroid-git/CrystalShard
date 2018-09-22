@@ -88,7 +88,9 @@ public class DiscordLoginTool {
         return new MultiShard(loggedIn);
     }
     
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Creates a new instance.
      *

@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
+import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -7,7 +8,7 @@ import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.NamedItem;
+import de.kaleidox.util.objects.markers.NamedItem;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,7 +61,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
             parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
                 affiliateMessages.add(message);
                 optionsOrdered.forEach(option -> message.addReaction(option.getEmoji()));
-                message.attachReactionAddListener(event -> {
+                message.attachListener((ReactionAddListener) event -> {
                     affiliateMessages.add(event.getMessage());
                     Emoji emoji = event.getEmoji();
                     User user = event.getUser();
@@ -77,7 +78,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
                 });
                 parent.getDiscord().getThreadPool().getScheduler().schedule(() -> {
                     message.removeAllReactions();
-                    message.removeAllListeners();
+                    message.detachAllListeners();
                 }, duration, timeUnit);
                 if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(
                         Logger::get);

@@ -11,7 +11,7 @@ import java.util.Objects;
 import static de.kaleidox.util.FileType.IMAGE.*;
 
 public class ImageEndpoint {
-// Static Fields
+    // Static Fields
     public final static String IMAGE_BASE_URL = "https://cdn.discordapp.com/";
     private final       URL    url;
     

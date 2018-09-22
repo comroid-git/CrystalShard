@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -165,6 +166,11 @@ public class EmbedBuilderInternal implements Embed.Builder {
     public Embed.Builder removeAllFields() {
         fields.clear();
         return this;
+    }
+    
+    @Override
+    public Collection<EmbedDraft.Field> getFields() {
+        return fields;
     }
     
     @Override

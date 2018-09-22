@@ -14,7 +14,7 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +41,7 @@ public abstract class ChannelInternal implements Channel {
     
     public abstract Set<EditTrait<Channel>> updateData(JsonNode data);
     
-// Override Methods
+    // Override Methods
     @Override
     public Discord getDiscord() {
         return discord;
@@ -76,7 +76,8 @@ public abstract class ChannelInternal implements Channel {
         return id;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static Channel getInstance(Discord discord, long id) {
         return collectInstances().stream()
                 .filter(channel -> channel.getId() == id)

@@ -11,7 +11,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import java.util.Set;
 
 public class USER_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         UserInternal user = (UserInternal) UserInternal.getInstance(discord, data);

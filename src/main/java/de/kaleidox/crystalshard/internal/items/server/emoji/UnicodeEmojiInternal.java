@@ -32,6 +32,8 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     public boolean equals(Object obj) {
         if (obj instanceof UnicodeEmoji)
             return ((UnicodeEmoji) obj).toDiscordPrintable().equalsIgnoreCase(this.toDiscordPrintable());
+        if (obj instanceof String)
+            return ((String) obj).equalsIgnoreCase(toDiscordPrintable());
         return false;
     }
     

@@ -14,7 +14,7 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.Evaluation;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public class DiscordInternal implements Discord {
         this.type = type;
         this.ratelimiter = new Ratelimiting(this);
         this.webSocket = new WebSocketClient(this);
-        this.utils = new DiscordUtils();
+        this.utils = new DiscordUtils(this);
         
         servers = new ArrayList<>();
         
@@ -73,7 +73,7 @@ public class DiscordInternal implements Discord {
         this.self = null;
     }
     
-// Override Methods
+    // Override Methods
     public ThreadPool getThreadPool() {
         return pool;
     }

@@ -7,9 +7,12 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.ListHelper;
 
 import java.util.ArrayList;
@@ -49,7 +52,7 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
         instances.put(id, this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
@@ -112,6 +115,11 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     }
     
     @Override
+    public int getPosition() {
+        return 0; // todo
+    }
+    
+    @Override
     public String getTopic() {
         return topic;
     }
@@ -126,7 +134,30 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
         return new ChannelUpdaterInternal.TextChannelUpdater(this);
     }
     
-// Static membe
+    @Override
+    public boolean hasPermission(User user, Permission permission) {
+        return overrides.stream()
+                .filter(override -> override.getParent() != null)
+                .filter(override -> override.getParent().equals(user))
+                .map(override -> override.getAllowed().contains(permission))
+                .findAny()
+                .or(() -> this.getCategory()
+                        .flatMap(channelCategory -> channelCategory.getPermissionOverrides()
+                                .stream()
+                                .filter(override -> override.getParent() != null)
+                                .filter(override -> override.getParent().equals(user))
+                                .findAny())
+                        .map(override -> override.getAllowed().contains(permission)))
+                .or(() -> Optional.of(toServerChannel().map(ServerChannel::getServer)
+                                              .orElseThrow(AssertionError::new)
+                                              .getEveryoneRole()
+                                              .getPermissions()
+                                              .contains(Permission.SEND_MESSAGES)))
+                .orElse(true); // if no information could be found, assert TRUE
+    }
+    
+// Static members
+    // Static membe
     public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
         long id = data.get("id").asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");

@@ -9,24 +9,27 @@ import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.logging.Logger;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-public class JsonHelper extends NullHelper {
+public final class JsonHelper extends NullHelper {
     private final static Logger logger = new Logger(JsonHelper.class);
     
-// Static membe
-    public static JsonNode nodeOf(Object of) {
+// Static members
+    public final static JsonNode nodeOf(Object of) {
         if (of == null) {
             return JsonNodeFactory.instance.nullNode();
         } else if (of instanceof JsonNode) {
             return (JsonNode) of;
         } else if (of instanceof OpCode) {
             return nodeOf(((OpCode) of).getCode());
-        } else if (of instanceof List) {
-            //noinspection unchecked
-            return arrayNode((List<Object>) of);
+        } else if (of instanceof Collection) {
+            return arrayNode((Collection) of);
+        } else if (of instanceof Stream) {
+            return arrayNode(((Stream) of).toArray());
         } else if (of instanceof Integer) {
             return JsonNodeFactory.instance.numberNode((Integer) of);
         } else if (of instanceof Long) {
@@ -42,19 +45,19 @@ public class JsonHelper extends NullHelper {
         }
     }
     
-    public static <T, N> ArrayNode arrayNode(List<T> items, Function<T, N> mapper) {
+    public final static <T, N> ArrayNode arrayNode(List<T> items, Function<T, N> mapper) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
         items.stream().map(mapper).map(JsonHelper::nodeOf).forEach(node::add);
         return node;
     }
     
-    public static <T> ArrayNode arrayNode(List<T> items) {
+    public final static <T> ArrayNode arrayNode(List<T> items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
         items.stream().map(JsonHelper::nodeOf).forEach(node::add);
         return node;
     }
     
-    public static ArrayNode arrayNode(Object... items) {
+    public final static ArrayNode arrayNode(Object... items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.length);
         
         List.of(items).forEach(item -> node.add(nodeOf(item)));
@@ -62,7 +65,7 @@ public class JsonHelper extends NullHelper {
         return node;
     }
     
-    public static ObjectNode objectNode(Object... data) {
+    public final static ObjectNode objectNode(Object... data) {
         if (data.length == 0) return JsonNodeFactory.instance.objectNode();
         if (data.length % 2 != 0) throw new IllegalArgumentException(
                 "You must provide an even amount of objects to be placed in the node.");
@@ -75,7 +78,7 @@ public class JsonHelper extends NullHelper {
         return objectNode;
     }
     
-    public static JsonNode parse(String body) {
+    public final static JsonNode parse(String body) {
         try {
             return new ObjectMapper().readTree(body);
         } catch (IOException e) {

@@ -75,6 +75,11 @@ public class SentEmbedInternal implements SentEmbed {
     }
     
     @Override
+    public Message getMessage() {
+        return message;
+    }
+    
+    @Override
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
     }
@@ -135,6 +140,92 @@ public class SentEmbedInternal implements SentEmbed {
     }
     
     @Override
+    public Updater getUpdater() throws IllegalAccessException {
+        if (!message.getAuthor().isYourself()) throw new IllegalAccessException("You cannot edit someone elses embed!");
+        return new Updater(this);
+    }
+    
+    public class Updater implements SentEmbed.Updater {
+        private final Builder builder;
+        private final Message message;
+    
+        public Updater(SentEmbed embed) {
+            this.builder = embed.toBuilder();
+            this.message = embed.getMessage();
+        }
+    
+        @Override
+        public SentEmbed.Updater setTitle(String title) {
+            builder.setTitle(title);
+            return this;
+        }
+    
+        @Override
+        public SentEmbed.Updater setDescription(String description) {
+            builder.setDescription(description);
+            return this;
+        }
+    
+        @Override
+        public SentEmbed.Updater setUrl(String url) {
+            builder.setUrl(url);
+            return this;
+        }
+    
+        @Override
+        public SentEmbed.Updater setTimestamp(Instant timestamp) {
+            builder.setTimestamp(timestamp);
+            return this;
+        }
+    
+        @Override
+        public SentEmbed.Updater setColor(Color color) {
+            builder.setColor(color);
+            return this;
+        }
+    
+        @Override
+        public SentEmbed.Updater modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier) {
+            Collection<EmbedDraft.EditableField> fields = builder.getFields()
+                    .stream()
+                    .map(EmbedDraftInternal.EditableField::new)
+                    .collect(Collectors.toList());
+            fieldModifier.accept(fields);
+            builder.removeAllFields();
+            fields.forEach(builder::addField);
+            return this;
+        }
+    
+        @Override
+        public SentEmbed.Updater modifyFields(Predicate<EmbedDraft.Field> tester,
+                                              Consumer<EmbedDraft.EditableField> fieldModifier) {
+            Collection<EmbedDraft.EditableField> fields = builder.getFields()
+                    .stream()
+                    .map(EmbedDraftInternal.EditableField::new)
+                    .collect(Collectors.toList());
+            builder.removeAllFields();
+            fields.stream()
+                    .map(field -> {
+                        if (tester.test(field)) {
+                            EmbedDraftInternal.EditableField editableField =
+                                    new EmbedDraftInternal.EditableField(field);
+                            fieldModifier.accept(editableField);
+                            return editableField;
+                        }
+                        return field;
+                    })
+                    .forEach(builder::addField);
+            return this;
+        }
+    
+        @Override
+        public CompletableFuture<SentEmbed> update() {
+            return message.edit(builder.build())
+                    .thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
+        }
+    }
+    
+    @Override
     public CompletableFuture<SentEmbed> setTitle(String title) {
         Builder builder = toBuilder();
         builder.setTitle(title);
@@ -177,7 +268,8 @@ public class SentEmbedInternal implements SentEmbed {
         Builder builder = toBuilder();
         builder.removeAllFields();
         fields.forEach(builder::addField);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
     }
     
     @Override
@@ -186,12 +278,18 @@ public class SentEmbedInternal implements SentEmbed {
         Builder builder = toBuilder();
         builder.removeAllFields();
         getFields().stream()
-                .filter(tester)
-                .map(SentEmbed.Field::toDraft)
-                .map(EmbedDraftInternal.EditableField::new)
-                .peek(fieldModifier)
+                .map(field -> {
+                    EmbedDraft.Field draftField = field.toDraft();
+                    if (tester.test(field)) {
+                        EmbedDraftInternal.EditableField editableField = new EmbedDraftInternal.EditableField(draftField);
+                        fieldModifier.accept(editableField);
+                        return editableField;
+                    }
+                    return draftField;
+                })
                 .forEach(builder::addField);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
     }
     
     public class Footer implements SentEmbed.Footer {

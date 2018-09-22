@@ -1,4 +1,4 @@
-package de.kaleidox.util.objects;
+package de.kaleidox.util.objects.functional;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -27,7 +27,7 @@ public class Evaluation<T> {
         this.result = tester.test(of);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String toString() {
         return "Evaluation [" + value.toString() + "; tested " + (result ? "TRUE" : "FALSE") + "]";
@@ -116,7 +116,9 @@ public class Evaluation<T> {
         return b;
     }
     
-// Static membe
+    // Static membe
+    
+// Static members
     /**
      * Creates a new Evaluation instance for a predefined boolean.
      *

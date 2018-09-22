@@ -30,7 +30,8 @@ public interface TextChannel extends Channel, MessageReciever {
         Updater setParent(ChannelCategory category);
     }
     
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<TextChannel> of(Discord discord, long id) {
         CompletableFuture<TextChannel> future;
         

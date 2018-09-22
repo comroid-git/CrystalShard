@@ -15,7 +15,8 @@ public enum ChannelType {
         this.id = id;
     }
     
-// Static membe
+// Static members
+    // Static membe
     public static ChannelType getFromId(int id) {
         return Stream.of(values()).filter(type -> type.id == id).findAny().orElse(UNKNOWN);
     }

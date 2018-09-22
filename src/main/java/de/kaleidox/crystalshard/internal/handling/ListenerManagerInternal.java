@@ -27,7 +27,7 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         instances.putIfAbsent(listener.hashCode(), this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public DiscordInternal getDiscord() {
         return discord;
@@ -68,7 +68,8 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         attachedTo.add(attached);
     }
     
-// Static membe
+// Static members
+    // Static membe
     @SuppressWarnings("unchecked")
     public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal,
                                                                               T listener) {

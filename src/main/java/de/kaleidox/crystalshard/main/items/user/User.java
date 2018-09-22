@@ -17,7 +17,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-
+import de.kaleidox.util.annotations.Nullable;
 import java.net.URL;
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -34,7 +34,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     
     Optional<String> getNickname(Server inServer);
     
-    String getDisplayName(Server inServer);
+    String getDisplayName(@Nullable Server inServer);
     
     String getNicknameMentionTag();
     
@@ -62,7 +62,8 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
         return castTo(ServerMember.class);
     }
     
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;
         

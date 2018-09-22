@@ -29,7 +29,7 @@ public class PermissionListInternal extends HashSet<Permission> implements Permi
         this(null, permissionInteger);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public int toPermissionInt() {
         int value = Permission.EMPTY.getValue();

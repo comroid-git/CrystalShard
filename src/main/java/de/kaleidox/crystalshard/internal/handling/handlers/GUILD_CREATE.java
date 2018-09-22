@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerCrea
 import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class GUILD_CREATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Server server = ServerInternal.getInstance(discord, data);

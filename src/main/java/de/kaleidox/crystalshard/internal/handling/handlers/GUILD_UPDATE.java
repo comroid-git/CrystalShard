@@ -11,7 +11,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import java.util.Set;
 
 public class GUILD_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Server server = ServerInternal.getInstance(discord, data); // get the old Server server

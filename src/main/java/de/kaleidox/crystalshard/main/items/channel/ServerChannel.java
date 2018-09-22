@@ -26,7 +26,8 @@ public interface ServerChannel extends Channel, Nameable {
     
     List<PermissionOverride> getPermissionOverrides();
     
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<ServerChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
         CompletableFuture<ServerChannel> channelFuture = new CompletableFuture<>();

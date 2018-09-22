@@ -13,7 +13,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InfoReaction {
-// Static membe
+// Static members
+    // Static membe
     public static void add(Message message, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
         AtomicReference<Message> sentMessage = new AtomicReference<>();
         
@@ -47,8 +48,8 @@ public class InfoReaction {
                     }
                 });
         
-        message.attachReactionAddListener(addListener);
-        message.attachReactionRemoveListener(removeListener);
+        message.attachListener((ReactionAddListener) addListener);
+        message.attachListener((ReactionRemoveListener) removeListener);
     }
     
     public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend,

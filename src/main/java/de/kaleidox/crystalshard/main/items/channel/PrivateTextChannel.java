@@ -10,7 +10,8 @@ import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import java.util.concurrent.CompletableFuture;
 
 public interface PrivateTextChannel extends PrivateChannel, TextChannel {
-// Static membe
+// Static members
+    // Static membe
     static CompletableFuture<PrivateTextChannel> of(ChannelContainer in, long id) {
         CompletableFuture<PrivateTextChannel> future = new CompletableFuture<>();
         

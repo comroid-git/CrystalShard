@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.main.util.Castable;
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -50,6 +51,8 @@ public interface Embed extends Castable<Embed> {
                 EmbedDraft.Field> updater);
         
         Builder removeAllFields();
+        
+        Collection<EmbedDraft.Field> getFields();
         
         EmbedDraft build();
         
