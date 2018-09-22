@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.cache.Cache;
+import de.kaleidox.crystalshard.core.cache.sub.MessageCache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -38,6 +40,7 @@ import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.objects.markers.IDPair;
 
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -359,5 +362,8 @@ public class MessageInternal implements Message {
         return null; // todo
     }
     
-    // Static membe
+    @Override
+    public Cache<Message, Long, IDPair> getCache() {
+        return discord.getMessageCache();
+    }
 }
