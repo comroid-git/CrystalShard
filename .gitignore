@@ -14,10 +14,9 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-# Ignore testing Class
-src/test/java/Test.java
+# Ignore testing dir
+/src/test/java/
 
 /out/
 CrystalShard.iml
-src/test/java/de/kaleidox/Test.java
 *.jar
