@@ -15,6 +15,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.objects.functional.LivingInt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DiscordInternal implements Discord {
@@ -40,9 +42,13 @@ public class DiscordInternal implements Discord {
     private final        int                                                              shardCount;
     private final        Self                                                             self;
     private              CompletableFuture<Self>                                          selfFuture;
+    private boolean init = false;
+    private LivingInt serversInit;
     
     public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
         selfFuture = new CompletableFuture<>();
+        serversInit = new LivingInt(5, 0, -1, 1, TimeUnit.SECONDS);
+        serversInit.onStopHit(() -> init = true);
         this.thisShard = thisShard;
         this.shardCount = ShardCount;
         this.pool = new ThreadPool(this);
@@ -73,7 +79,12 @@ public class DiscordInternal implements Discord {
         this.self = null;
     }
     
+    public boolean initFinished() {
+        return init;
+    }
+    
     // Override Methods
+    @Override
     public ThreadPool getThreadPool() {
         return pool;
     }
@@ -99,7 +110,9 @@ public class DiscordInternal implements Discord {
     }
     
     public Collection<DiscordAttachableListener> getAttachedListeners() {
-        return listenerManangers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -125,7 +138,8 @@ public class DiscordInternal implements Discord {
     @Override
     public Optional<Channel> getChannelById(long id) {
         return servers.stream()
-                .flatMap(server -> server.getChannels().stream())
+                .flatMap(server -> server.getChannels()
+                        .stream())
                 .filter(channel -> channel.getId() == id)
                 .map(Channel.class::cast)
                 .findAny();
@@ -143,7 +157,9 @@ public class DiscordInternal implements Discord {
     
     @Override
     public Optional<Server> getServerById(long id) {
-        return servers.stream().filter(server -> server.getId() == id).findAny();
+        return servers.stream()
+                .filter(server -> server.getId() == id)
+                .findAny();
     }
     
     @Override
@@ -163,12 +179,13 @@ public class DiscordInternal implements Discord {
     
     @Override
     public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
-        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener().equals(listener)));
+        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener()
+                .equals(listener)));
     }
     
     @Override
-    public <T extends DiscordAttachableListener> ListenerManager<T> attachListener(T listener) {
-        ListenerManagerInternal<T> manager = ListenerManagerInternal.getInstance(this, listener);
+    public <C extends DiscordAttachableListener> ListenerManager<C> attachListener(C listener) {
+        ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance(this, listener);
         listenerManangers.add(manager);
         return manager;
     }
@@ -200,5 +217,6 @@ public class DiscordInternal implements Discord {
     
     public void addServer(Server server) {
         servers.add(server);
+        serversInit.set(5);
     }
 }

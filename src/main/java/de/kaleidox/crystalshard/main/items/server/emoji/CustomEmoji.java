@@ -100,7 +100,8 @@ public interface CustomEmoji extends DiscordItem, Emoji {
      */
     CompletableFuture<Boolean> requestRequireColons();
     
-// Override Methods
+    // Override Methods
+    
     /**
      * {@inheritDoc} This method needs to know whether the emoji is animated, so it performs a blocking {@link
      * #requestIsAnimated()}.

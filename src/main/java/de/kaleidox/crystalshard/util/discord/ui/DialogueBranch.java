@@ -74,20 +74,23 @@ public class DialogueBranch<A> extends Dialogue {
     
     @SuppressWarnings("unchecked")
     protected void start(List<NamedItem> collectedItems) throws NullPointerException {
-        questionElement.setParentBranch(this).build().thenAcceptAsync(response -> options.stream()
-                .filter(option -> ((Predicate<A>) option.tester).test(response.getItem()))
-                .map(Option::getGoToBranch)
-                .forEachOrdered(branch -> {
-                    collectedItems.add(response);
-                    if (branch.getClass() == DialogueEndpoint.class) {
-                        branch.runEndpoint(collectedItems);
-                    } else if (branch.getClass() == DialoguePassthrough.class) {
-                        branch.runPassthrough(collectedItems);
-                        branch.start(new ArrayList<>());
-                    } else {
-                        branch.start(collectedItems);
-                    }
-                })).exceptionally(Logger::get);
+        questionElement.setParentBranch(this)
+                .build()
+                .thenAcceptAsync(response -> options.stream()
+                        .filter(option -> ((Predicate<A>) option.tester).test(response.getItem()))
+                        .map(Option::getGoToBranch)
+                        .forEachOrdered(branch -> {
+                            collectedItems.add(response);
+                            if (branch.getClass() == DialogueEndpoint.class) {
+                                branch.runEndpoint(collectedItems);
+                            } else if (branch.getClass() == DialoguePassthrough.class) {
+                                branch.runPassthrough(collectedItems);
+                                branch.start(new ArrayList<>());
+                            } else {
+                                branch.start(collectedItems);
+                            }
+                        }))
+                .exceptionally(Logger::get);
     }
     
     protected CompletableFuture<Void> runEndpoint(List<NamedItem> collectedItems) {

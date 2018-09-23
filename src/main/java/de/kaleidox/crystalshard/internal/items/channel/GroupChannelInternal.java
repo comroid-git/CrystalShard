@@ -52,7 +52,7 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
     public boolean isNsfw() {
         return false;
     }
-
+    
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
@@ -60,10 +60,11 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
         return traits;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static GroupChannel getInstance(Discord discord, JsonNode data) {
-        long id = data.get("id").asLong(-1);
+        long id = data.get("id")
+                .asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
         if (instances.containsKey(id)) return instances.get(id);
         else return new GroupChannelInternal(discord, data);

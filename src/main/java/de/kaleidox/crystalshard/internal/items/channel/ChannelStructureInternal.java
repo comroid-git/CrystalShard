@@ -42,7 +42,8 @@ public class ChannelStructureInternal extends ArrayList<ServerChannel> implement
     
     @Override
     public List<ChannelCategory> getAllCategories() {
-        return stream().filter(channel -> channel instanceof ChannelCategory).map(ChannelCategory.class::cast).collect(
-                Collectors.toList());
+        return stream().filter(channel -> channel instanceof ChannelCategory)
+                .map(ChannelCategory.class::cast)
+                .collect(Collectors.toList());
     }
 }

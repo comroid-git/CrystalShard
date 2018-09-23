@@ -25,7 +25,7 @@ public class MessageCreateEventInternal extends EventBase implements MessageCrea
         this.channel = message.getChannel();
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Message getMessage() {
         return message;
@@ -53,6 +53,8 @@ public class MessageCreateEventInternal extends EventBase implements MessageCrea
     
     @Override
     public Optional<Server> getServer() {
-        return message.getChannel().toServerChannel().map(ServerChannel::getServer);
+        return message.getChannel()
+                .toServerChannel()
+                .map(ServerChannel::getServer);
     }
 }

@@ -7,13 +7,13 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 
 public class ChannelCreateEventInternal extends EventBase implements ChannelCreateEvent {
     private final Channel createdChannel;
-
+    
     public ChannelCreateEventInternal(DiscordInternal discordInternal, Channel createdChannel) {
         super(discordInternal);
         this.createdChannel = createdChannel;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public Channel getChannel() {
         return createdChannel;

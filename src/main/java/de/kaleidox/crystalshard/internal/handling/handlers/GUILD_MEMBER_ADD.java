@@ -9,11 +9,12 @@ import de.kaleidox.crystalshard.main.handling.listener.server.member.ServerMembe
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class GUILD_MEMBER_ADD extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id"));
-        ServerMember member = UserInternal.getInstance(discord, data).toServerMember(server);
+        ServerMember member = UserInternal.getInstance(discord, data)
+                .toServerMember(server);
         
         server.addUser(member);
         ServerMemberJoinEventInternal event = new ServerMemberJoinEventInternal(discord, server, member);

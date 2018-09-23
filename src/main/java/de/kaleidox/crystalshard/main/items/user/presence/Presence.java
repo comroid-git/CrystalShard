@@ -33,7 +33,8 @@ public interface Presence {
             return key;
         }
         
-// Static membe
+        // Static members
+        // Static membe
         public static Status getFromKey(String key) {
             return Stream.of(values())
                     .filter(status -> Objects.nonNull(status.key))

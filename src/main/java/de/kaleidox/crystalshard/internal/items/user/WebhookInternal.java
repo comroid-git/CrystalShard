@@ -19,11 +19,14 @@ public class WebhookInternal implements Webhook {
     
     public WebhookInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.id = data.get("id").asLong();
-        this.name = data.get("username").asText();
+        this.id = data.get("id")
+                .asLong();
+        this.name = data.get("username")
+                .asText();
         URL tempAvatarUrl;
         try {
-            tempAvatarUrl = data.has("avatar") ? new URL(data.get("avatar").asText()) : null;
+            tempAvatarUrl = data.has("avatar") ? new URL(data.get("avatar")
+                                                                 .asText()) : null;
         } catch (MalformedURLException e) {
             logger.exception(e);
             tempAvatarUrl = null;

@@ -13,10 +13,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GUILD_ROLE_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id").asLong());
+        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord,
+                                                                            data.get("guild_id")
+                                                                                    .asLong());
         RoleInternal role = (RoleInternal) RoleInternal.getInstance(server, data.get("role"));
         
         Set<EditTrait<Role>> traits = new HashSet<>(role.updateData(data.get("role")));
@@ -25,6 +27,7 @@ public class GUILD_ROLE_UPDATE extends HandlerBase {
         collectListeners(ServerRoleEditListener.class,
                          discord,
                          server,
-                         role).forEach(listener -> discord.getThreadPool().execute(() -> listener.onRoleEdit(event)));
+                         role).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onRoleEdit(event)));
     }
 }

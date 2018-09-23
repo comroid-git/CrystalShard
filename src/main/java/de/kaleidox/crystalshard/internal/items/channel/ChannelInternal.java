@@ -33,8 +33,10 @@ public abstract class ChannelInternal implements Channel {
     
     ChannelInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.id = data.get("id").asLong();
-        this.type = ChannelType.getFromId(data.get("type").asInt());
+        this.id = data.get("id")
+                .asLong();
+        this.type = ChannelType.getFromId(data.get("type")
+                                                  .asInt());
         this.isPrivate = (type == ChannelType.DM || type == ChannelType.GROUP_DM);
         this.listenerManagers = new ArrayList<>();
     }
@@ -63,7 +65,9 @@ public abstract class ChannelInternal implements Channel {
     
     @Override
     public Collection<ChannelAttachableListener> getAttachedListeners() {
-        return listenerManagers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
+        return listenerManagers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -76,9 +80,13 @@ public abstract class ChannelInternal implements Channel {
         return id;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static Channel getInstance(Discord discord, long id) {
+        assert id != -1 : "Invalid ID";
+        if (id == 0) {
+            System.out.println("sout");
+        }
         return collectInstances().stream()
                 .filter(channel -> channel.getId() == id)
                 .findAny()
@@ -89,9 +97,11 @@ public abstract class ChannelInternal implements Channel {
     }
     
     public static Channel getInstance(Discord discord, JsonNode data) {
-        Server server = data.has("guild_id") ? ServerInternal.getInstance(discord, data.get("guild_id").asLong()) :
-                        null;
-        switch (ChannelType.getFromId(data.get("type").asInt())) {
+        Server server = data.has("guild_id") ? ServerInternal.getInstance(discord,
+                                                                          data.get("guild_id")
+                                                                                  .asLong()) : null;
+        switch (ChannelType.getFromId(data.get("type")
+                                              .asInt())) {
             case GUILD_TEXT:
                 return ServerTextChannelInternal.getInstance(discord, server, data);
             case DM:
@@ -109,11 +119,26 @@ public abstract class ChannelInternal implements Channel {
     
     private static Collection<Channel> collectInstances() {
         List<Channel> collect = new ArrayList<>();
-        ChannelCategoryInternal.instances.entrySet().stream().map(Map.Entry::getValue).forEachOrdered(collect::add);
-        GroupChannelInternal.instances.entrySet().stream().map(Map.Entry::getValue).forEachOrdered(collect::add);
-        PrivateTextChannelInternal.instances.entrySet().stream().map(Map.Entry::getValue).forEachOrdered(collect::add);
-        ServerTextChannelInternal.instances.entrySet().stream().map(Map.Entry::getValue).forEachOrdered(collect::add);
-        ServerVoiceChannelInternal.instances.entrySet().stream().map(Map.Entry::getValue).forEachOrdered(collect::add);
+        ChannelCategoryInternal.instances.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEachOrdered(collect::add);
+        GroupChannelInternal.instances.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEachOrdered(collect::add);
+        PrivateTextChannelInternal.instances.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEachOrdered(collect::add);
+        ServerTextChannelInternal.instances.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEachOrdered(collect::add);
+        ServerVoiceChannelInternal.instances.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .forEachOrdered(collect::add);
         return collect;
     }
 }

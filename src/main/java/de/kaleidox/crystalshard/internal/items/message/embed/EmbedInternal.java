@@ -7,7 +7,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import java.util.Optional;
 
 public class EmbedInternal implements Embed {
-// Override Methods
+    // Override Methods
     @Override
     public EmbedDraft toEmbedDraft() {
         if (this instanceof EmbedDraft) {

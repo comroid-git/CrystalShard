@@ -11,8 +11,10 @@ public class MessageActivityInternal implements MessageActivity {
     private final String              partyId;
     
     public MessageActivityInternal(JsonNode data) {
-        this.type = MessageActivityType.getById(data.get("type").asInt());
-        this.partyId = data.get("party_id").asText(null);
+        this.type = MessageActivityType.getById(data.get("type")
+                                                        .asInt());
+        this.partyId = data.get("party_id")
+                .asText(null);
     }
     
     // Override Methods

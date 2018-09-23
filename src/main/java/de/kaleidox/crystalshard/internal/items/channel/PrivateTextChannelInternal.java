@@ -53,7 +53,7 @@ public class PrivateTextChannelInternal extends TextChannelInternal implements P
     public boolean isNsfw() {
         return false;
     }
-
+    
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
@@ -61,10 +61,11 @@ public class PrivateTextChannelInternal extends TextChannelInternal implements P
         return traits;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static PrivateTextChannel getInstance(Discord discord, JsonNode data) {
-        long id = data.get("id").asLong(-1);
+        long id = data.get("id")
+                .asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
         if (instances.containsKey(id)) return instances.get(id);
         else return new PrivateTextChannelInternal((DiscordInternal) discord, data);

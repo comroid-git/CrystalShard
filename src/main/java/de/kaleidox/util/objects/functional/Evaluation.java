@@ -118,7 +118,8 @@ public class Evaluation<T> {
     
     // Static membe
     
-// Static members
+    // Static members
+    
     /**
      * Creates a new Evaluation instance for a predefined boolean.
      *

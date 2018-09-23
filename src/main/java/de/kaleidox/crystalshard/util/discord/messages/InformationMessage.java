@@ -78,16 +78,22 @@ public class InformationMessage {
     }
     
     public void refresh() {
-        Embed.Builder embed = this.messageable.getDiscord().getUtilities().getDefaultEmbed().getBuilder();
+        Embed.Builder embed = this.messageable.getDiscord()
+                .getUtilities()
+                .getDefaultEmbed()
+                .getBuilder();
         
         for (InformationField field : fields) {
             embed.addField(field.title, field.text, field.inline);
         }
         
         if (myMessage.get() != null) {
-            myMessage.get().delete().thenRunAsync(() -> messageable.sendMessage(embed.build())
-                    .thenAcceptAsync(myMessage::set)
-                    .exceptionally(Logger::get)).exceptionally(Logger::get);
+            myMessage.get()
+                    .delete()
+                    .thenRunAsync(() -> messageable.sendMessage(embed.build())
+                            .thenAcceptAsync(myMessage::set)
+                            .exceptionally(Logger::get))
+                    .exceptionally(Logger::get);
         } else {
             messageable.sendMessage(embed.build())
                     .thenAcceptAsync(msg -> myMessage.set(msg))

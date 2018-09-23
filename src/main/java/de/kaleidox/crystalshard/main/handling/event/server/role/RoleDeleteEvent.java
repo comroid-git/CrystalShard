@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface RoleDeleteEvent extends ServerEvent {
     Optional<Role> getRole();
-
+    
     default Optional<Long> getRoleId() {
         return getRole().map(DiscordItem::getId);
     }

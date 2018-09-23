@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.items.user.AccountType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class is used to create a connection with Discord.
@@ -72,12 +73,25 @@ public class DiscordLoginTool {
         Discord login = new DiscordInternal(token);
         return new WebRequest<DiscordLoginTool>(login).method(Method.GET)
                 .endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint())
-                .execute(node -> setShardCount(node.path("shards").asInt(1)))
+                .execute(node -> setShardCount(node.path("shards")
+                                                       .asInt(1)))
                 .join();
     }
     
     public Discord login() {
         return new DiscordInternal(token, type, shard, shardCount);
+    }
+    
+    public CompletableFuture<Discord> loginWaitForServers() {
+        return CompletableFuture.supplyAsync(() -> {
+            DiscordInternal discordInternal = new DiscordInternal(token, type, shard, shardCount);
+            while (!discordInternal.initFinished()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {}
+            }
+            return discordInternal;
+        });
     }
     
     public MultiShard loginMultiShard() {
@@ -90,7 +104,8 @@ public class DiscordLoginTool {
     
     // Static membe
     
-// Static members
+    // Static members
+    
     /**
      * Creates a new instance.
      *

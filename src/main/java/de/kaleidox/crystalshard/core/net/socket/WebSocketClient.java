@@ -30,10 +30,12 @@ public class WebSocketClient {
     public WebSocketClient(Discord discordObject) {
         URI gatewayUrl = new WebRequest<String>(discordObject).method(Method.GET)
                 .endpoint(Endpoint.Location.GATEWAY.toEndpoint())
-                .execute(node -> node.get("url").asText())
+                .execute(node -> node.get("url")
+                        .asText())
                 .exceptionally(throwable -> {
                     logger.exception(throwable);
-                    return "wss://gateway.discord.gg"; // default gateway if gateway couldn't be retrieved
+                    return "wss://gateway.discord.gg"; // default
+                    // gateway if gateway couldn't be retrieved
                 })
                 .thenApply(URI::create)
                 .join();
@@ -44,7 +46,8 @@ public class WebSocketClient {
                 .buildAsync(gatewayUrl, new WebSocketListener((DiscordInternal) discordObject))
                 .join();
         identification();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
+        Runtime.getRuntime()
+                .addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
     
     public CompletableFuture<WebSocket> sendPayload(Payload payload) {

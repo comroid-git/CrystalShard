@@ -35,45 +35,52 @@ public class TextInput extends ResponseElement<String> {
         super(name, parent, embedBaseSupplier, userCanRespond);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public CompletableFuture<NamedItem<String>> build() {
         CompletableFuture<NamedItem<String>> future = new CompletableFuture<>();
         Embed.Builder embed = embedBaseSupplier.get();
-        embed.setDescription("Please type in your response:").setTimestampNow();
+        embed.setDescription("Please type in your response:")
+                .setTimestampNow();
         if (field != null) embed.addField(field);
         
-        parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
-            affiliateMessages.add(message);
-            message.getChannel().attachMessageCreateListener(event -> {
-                affiliateMessages.add(event.getMessage());
-                Message msg = event.getMessage();
-                User user = msg.getAuthorAsUser().get();
-                
-                if (!user.isYourself() && userCanRespond.test(user)) {
-                    future.complete(new NamedItem<>(name,
-                                                    (style == Style.READABLE ? msg.getReadableContent() :
-                                                     msg.getContent())));
-                }
-            });
-            future.thenAcceptAsync(result -> {
-                if (result != null) {
-                    message.edit((field != null ? embedBaseSupplier.get().addField(field).addField("Answer:",
-                                                                                                   result.getItem()) :
-                                  embedBaseSupplier.get().addField("Answer:", result.getItem())).build());
-                } else {
-                    message.edit(embedBaseSupplier.get()
-                                         .addField(field)
-                                         .addField("Nobody typed anything.", "There was no valid answer.")
-                                         .build());
-                }
-            }).exceptionally(Logger::get);
-            parent.getDiscord().getThreadPool().getScheduler().schedule(() -> future.complete(null),
-                                                                        duration,
-                                                                        timeUnit);
-            if (deleteLater)
-                future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(Logger::get);
-        });
+        parent.sendMessage(embed.build())
+                .thenAcceptAsync(message -> {
+                    affiliateMessages.add(message);
+                    message.getChannel()
+                            .attachMessageCreateListener(event -> {
+                                affiliateMessages.add(event.getMessage());
+                                Message msg = event.getMessage();
+                                User user = msg.getAuthorAsUser()
+                                        .get();
+                                
+                                if (!user.isYourself() && userCanRespond.test(user)) {
+                                    future.complete(new NamedItem<>(name,
+                                                                    (style == Style.READABLE ?
+                                                                     msg.getReadableContent() : msg.getContent())));
+                                }
+                            });
+                    future.thenAcceptAsync(result -> {
+                        if (result != null) {
+                            message.edit((field != null ? embedBaseSupplier.get()
+                                    .addField(field)
+                                    .addField("Answer:", result.getItem()) : embedBaseSupplier.get()
+                                                  .addField("Answer:", result.getItem())).build());
+                        } else {
+                            message.edit(embedBaseSupplier.get()
+                                                 .addField(field)
+                                                 .addField("Nobody typed anything.", "There was no valid answer.")
+                                                 .build());
+                        }
+                    })
+                            .exceptionally(Logger::get);
+                    parent.getDiscord()
+                            .getThreadPool()
+                            .getScheduler()
+                            .schedule(() -> future.complete(null), duration, timeUnit);
+                    if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
+                            .exceptionally(Logger::get);
+                });
         
         return future;
     }

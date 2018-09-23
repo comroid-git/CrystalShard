@@ -32,7 +32,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
     private              ArrayList<EmbedDraft.Field> fields      = new ArrayList<>();
     private              int                         charCounter = 0;
     
-// Override Methods
+    // Override Methods
     @Override
     public Embed.Builder setTitle(String title) {
         charCounter = charCounter + title.length();
@@ -82,9 +82,11 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     @Override
     public Embed.Builder setFooter(EmbedDraft.Footer footer) {
-        charCounter = charCounter + footer.getText().length();
+        charCounter = charCounter + footer.getText()
+                .length();
         testCharCounter();
-        if (footer.getText().length() > Embed.Boundaries.FOOTER_LENGTH) {
+        if (footer.getText()
+                    .length() > Embed.Boundaries.FOOTER_LENGTH) {
             throw new IllegalArgumentException(
                     "Footer text must not exceed " + Embed.Boundaries.FOOTER_LENGTH + " characters!");
         }
@@ -106,9 +108,11 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     @Override
     public Embed.Builder setAuthor(EmbedDraft.Author author) {
-        charCounter = charCounter + author.getName().length();
+        charCounter = charCounter + author.getName()
+                .length();
         testCharCounter();
-        if (author.getName().length() > Embed.Boundaries.AUTHOR_NAME_LENGTH) {
+        if (author.getName()
+                    .length() > Embed.Boundaries.AUTHOR_NAME_LENGTH) {
             throw new IllegalArgumentException(
                     "Author name must not exceed " + Embed.Boundaries.AUTHOR_NAME_LENGTH + " characters!");
         }
@@ -126,22 +130,28 @@ public class EmbedBuilderInternal implements Embed.Builder {
     @Override
     public Embed.Builder addField(EmbedDraft.Field field) {
         Objects.requireNonNull(field);
-        charCounter = charCounter + field.getText().length() + field.getTitle().length();
+        charCounter = charCounter + field.getText()
+                .length() + field.getTitle()
+                              .length();
         testCharCounter();
         if (fields.size() >= Embed.Boundaries.FIELD_COUNT) {
             throw new IllegalArgumentException("Field amount must not exceed " + Embed.Boundaries.FIELD_COUNT + "!");
         }
-        if (field.getTitle().isBlank()) {
+        if (field.getTitle()
+                .isBlank()) {
             throw new IllegalArgumentException("Field title must not be blank!");
         }
-        if (field.getTitle().length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
+        if (field.getTitle()
+                    .length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
             throw new IllegalArgumentException(
                     "Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
         }
-        if (field.getText().isBlank()) {
+        if (field.getText()
+                .isBlank()) {
             throw new IllegalArgumentException("Field text must not be blank!");
         }
-        if (field.getText().length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
+        if (field.getText()
+                    .length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
             throw new IllegalArgumentException(
                     "Field text must not exceed " + Embed.Boundaries.FIELD_TEXT_LENGTH + " characters!");
         }
@@ -156,7 +166,9 @@ public class EmbedBuilderInternal implements Embed.Builder {
         for (int i = 0; i < fields.size(); i++) {
             EmbedDraft.Field field = fields.get(i);
             if (predicate.test(field)) {
-                fields.set(i, updater.apply(field.toEditableField().get()));
+                fields.set(i,
+                           updater.apply(field.toEditableField()
+                                                 .get()));
             }
         }
         return this;

@@ -11,19 +11,19 @@ import java.util.Optional;
 public class ServerDeleteEventInternal extends EventBase implements ServerDeleteEvent {
     private final boolean gotKicked;
     private final long    serverId;
-
+    
     public ServerDeleteEventInternal(DiscordInternal discordInternal, long serverId, boolean gotKicked) {
         super(discordInternal);
         this.serverId = serverId;
         this.gotKicked = gotKicked;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public boolean gotKicked() {
         return gotKicked;
     }
-
+    
     @Override
     public Optional<Server> getServer() {
         return ServerInternal.getInstance(serverId);

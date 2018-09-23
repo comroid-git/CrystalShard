@@ -54,7 +54,9 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Sending Message to Text Channel [" + id + "])",
                 Permission.SEND_MESSAGES));
-        Embed.Builder builder = discord.getUtilities().getDefaultEmbed().getBuilder();
+        Embed.Builder builder = discord.getUtilities()
+                .getDefaultEmbed()
+                .getBuilder();
         defaultEmbedModifier.accept(builder);
         return sendMessage(builder.build());
     }
@@ -96,8 +98,9 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Void> typing() {
-        return new WebRequest<Void>(discord).method(Method.POST).endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(
-                this)).execute(node -> null);
+        return new WebRequest<Void>(discord).method(Method.POST)
+                .endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this))
+                .execute(node -> null);
     }
     
     @Override
@@ -106,7 +109,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     }
     
     private boolean checkPermissions() {
-        return (!toServerChannel().map(ServerChannel::getServer).isEmpty() && !hasPermission(discord.getSelf(),
-                                                                                             Permission.SEND_MESSAGES));
+        return (!toServerChannel().map(ServerChannel::getServer)
+                .isEmpty() && !hasPermission(discord.getSelf(), Permission.SEND_MESSAGES));
     }
 }

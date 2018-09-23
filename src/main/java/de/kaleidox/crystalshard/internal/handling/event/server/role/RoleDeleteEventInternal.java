@@ -11,19 +11,19 @@ import java.util.Optional;
 public class RoleDeleteEventInternal extends EventBase implements RoleDeleteEvent {
     private final Role   role;
     private final Server server;
-
+    
     public RoleDeleteEventInternal(DiscordInternal discordInternal, Role role, Server server) {
         super(discordInternal);
         this.role = role;
         this.server = server;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public Optional<Role> getRole() {
         return Optional.ofNullable(role);
     }
-
+    
     @Override
     public Server getServer() {
         return server;

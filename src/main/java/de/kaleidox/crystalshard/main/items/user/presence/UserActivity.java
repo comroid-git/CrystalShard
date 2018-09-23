@@ -48,9 +48,13 @@ public interface UserActivity extends Nameable {
             return value;
         }
         
-// Static membe
+        // Static members
+        // Static membe
         public static Flag getFromValue(int value) {
-            return Stream.of(values()).filter(flag -> flag.value == value).findAny().orElse(UNKNOWN);
+            return Stream.of(values())
+                    .filter(flag -> flag.value == value)
+                    .findAny()
+                    .orElse(UNKNOWN);
         }
     }
     
@@ -79,9 +83,13 @@ public interface UserActivity extends Nameable {
             return String.format(pattern, (Object[]) param);
         }
         
-// Static membe
+        // Static members
+        // Static membe
         public static Type getFromId(int id) {
-            return Stream.of(Type.values()).filter(type -> type.id == id).findAny().orElse(UNKNOWN);
+            return Stream.of(Type.values())
+                    .filter(type -> type.id == id)
+                    .findAny()
+                    .orElse(UNKNOWN);
         }
     }
     

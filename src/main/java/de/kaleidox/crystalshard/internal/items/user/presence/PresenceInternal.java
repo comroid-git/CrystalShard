@@ -21,15 +21,19 @@ public class PresenceInternal implements Presence {
     private              Status                                      status;
     
     private PresenceInternal(Discord discord, Server server, JsonNode data) {
-        this.user = UserInternal.getInstance(discord, data.get("user").get("id").asLong());
+        this.user = UserInternal.getInstance(discord,
+                                             data.get("user")
+                                                     .get("id")
+                                                     .asLong());
         this.server = server;
         this.game = data.has("game") ? new UserActivityInternal(data.get("game")) : null;
-        this.status = Status.getFromKey(data.get("status").asText());
+        this.status = Status.getFromKey(data.get("status")
+                                                .asText());
         
         instances.put(server.getId() + "/" + user.getId(), this);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public ServerMember getUser() {
         return user.toServerMember(server);
@@ -52,15 +56,21 @@ public class PresenceInternal implements Presence {
     
     private Presence updateData(JsonNode data) {
         this.game = data.has("game") ? new UserActivityInternal(data.get("game")) : null;
-        this.status = Status.getFromKey(data.get("status").asText());
+        this.status = Status.getFromKey(data.get("status")
+                                                .asText());
         return this;
     }
     
-// Static membe
+    // Static members
+    // Static membe
     public static Presence getInstance(Discord discord, JsonNode data) {
-        long id = data.get("user").get("id").asLong(-1);
+        long id = data.get("user")
+                .get("id")
+                .asLong(-1);
         assert id != -1 : "No valid ID found.";
-        Server server = ServerInternal.getInstance(discord, data.get("guild_id").asLong());
+        Server server = ServerInternal.getInstance(discord,
+                                                   data.get("guild_id")
+                                                           .asLong());
         return instances.getOrDefault(server.getId() + "/" + id, new PresenceInternal(discord, server, data))
                 .updateData(data);
     }

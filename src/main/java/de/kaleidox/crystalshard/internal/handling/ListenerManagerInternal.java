@@ -43,7 +43,8 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         discord.getAllListenerManagers()
                 .stream()
                 .filter(manager -> listener.getClass()
-                        .isAssignableFrom(manager.getListener().getClass()))
+                        .isAssignableFrom(manager.getListener()
+                                                  .getClass()))
                 .filter(manager -> listener.equals(manager.getListener()))
                 .map(ListenerManagerInternal.class::cast)
                 .flatMap(manager -> (Stream<ListenerAttachable<T>>) manager.attachedTo.stream())
@@ -54,7 +55,8 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
     
     @Override
     public ListenerManager<T> detachIn(long time, TimeUnit unit) {
-        discord.getScheduler().schedule(this::detachNow, time, unit);
+        discord.getScheduler()
+                .schedule(this::detachNow, time, unit);
         return this;
     }
     
@@ -68,7 +70,7 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         attachedTo.add(attached);
     }
     
-// Static members
+    // Static members
     // Static membe
     @SuppressWarnings("unchecked")
     public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal,

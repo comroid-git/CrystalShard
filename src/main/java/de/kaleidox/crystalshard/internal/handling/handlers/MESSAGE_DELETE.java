@@ -20,16 +20,22 @@ import java.util.Collections;
  * https://discordapp.com/developers/docs/topics/gateway#message-delete
  */
 public class MESSAGE_DELETE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        TextChannel channel = TextChannelInternal.getInstance(discord, data.get("channel_id").asLong())
+        TextChannel channel = TextChannelInternal.getInstance(discord,
+                                                              data.get("channel_id")
+                                                                      .asLong())
                 .toTextChannel()
                 .orElseThrow(AssertionError::new);
-        Message message = MessageInternal.getInstance(channel, data.get("id").asLong());
-        Server server = data.has("guild_id") ? ServerInternal.getInstance(discord, data.get("guild_id").asLong()) :
-                        null;
-        User user = message.getAuthorAsUser().orElse(null);
+        Message message = MessageInternal.getInstance(channel,
+                                                      data.get("id")
+                                                              .asLong());
+        Server server = data.has("guild_id") ? ServerInternal.getInstance(discord,
+                                                                          data.get("guild_id")
+                                                                                  .asLong()) : null;
+        User user = message.getAuthorAsUser()
+                .orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
         
         MessageDeleteEventInternal event = new MessageDeleteEventInternal(discord, message);

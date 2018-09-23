@@ -2,7 +2,6 @@ package de.kaleidox.logging;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.LowStackTraceable;
@@ -28,36 +27,27 @@ import java.util.stream.Stream;
 public class Logger {
     private final static LoggingLevel                 DEFAULT_LEVEL           = LoggingLevel.DEBUG;
     private final static List<Class>                  DEFAULT_IGNORED         = new ArrayList<>();
-    private final static String                       DEFAULT_PREFIX          = "[%l] %t - %c:";
-    private final static String                       DEFAULT_SUFFIX          = null;
+    private final static String                       DEFAULT_PREFIX          = "[%l]\t%t\t%c:";
+    private final static String                       DEFAULT_SUFFIX          = "{%r}";
     private final static List<String>                 DEFAULT_BLANKED         = new ArrayList<>();
+    private final static JsonNode                     configuration;
     private static       LoggingLevel                 level;
     private static       List<Class>                  ignored                 = new ArrayList<>();
     private static       List<String>                 blanked                 = new ArrayList<>();
-    private final static       JsonNode                     configuration;
     private static       Logger                       staticLogger            = new Logger(StaticException.class);
     private static       List<CustomHandler>          customHandlers          = new ArrayList<>();
     private static       List<CustomExceptionHandler> customExceptionHandlers = new ArrayList<>();
     private final        Class                        loggingClass;
     
 // Init Blocks
+    // Init Blocks
+    // Init Blocks
     static {
         InputStream configStream = Logger.class.getResourceAsStream("/logging.json");
         if (configStream != null) {
             JsonNode node;
             Scanner s = new Scanner(configStream).useDelimiter("\\A");
-            if (s.hasNext()) {
-                try {
-                    String content = s.next();
-                    ObjectMapper mapper = new ObjectMapper();
-                    node = mapper.readTree(content);
-                } catch (IOException ignored) {
-                    node = createDefaultConfig();
-                }
-            } else {
-                // file does not exist, go for defaults
-                node = createDefaultConfig();
-            }
+            node = getJsonNode(s, createDefaultConfig());
             configuration = node;
             try {
                 configStream.close();
@@ -69,11 +59,14 @@ public class Logger {
             configuration = createDefaultConfig();
         }
         
-        level = LoggingLevel.ofName(configuration.get("level").asText()).orElse(DEFAULT_LEVEL);
-        ignored = configuration.has("ignored") ?
-                  createIgnoredList(configuration.get("ignored")) : DEFAULT_IGNORED;
-        String prefix = configuration.get("prefix").asText(DEFAULT_PREFIX);
-        String suffix = configuration.get("suffix").asText(DEFAULT_SUFFIX);
+        level = LoggingLevel.ofName(configuration.get("level")
+                                            .asText())
+                .orElse(DEFAULT_LEVEL);
+        ignored = configuration.has("ignored") ? createIgnoredList(configuration.get("ignored")) : DEFAULT_IGNORED;
+        String prefix = configuration.get("prefix")
+                .asText(DEFAULT_PREFIX);
+        String suffix = configuration.get("suffix")
+                .asText(DEFAULT_SUFFIX);
     }
     
     /**
@@ -196,16 +189,21 @@ public class Logger {
                                                                                makePermList((DiscordPermissionException) throwable) +
                                                                                " Thread \"" :
                              "\nException in thread \""))
-                    .append(Thread.currentThread().getName())
+                    .append(Thread.currentThread()
+                                    .getName())
                     .append("\" ")
-                    .append(throwable.getClass().getName());
+                    .append(throwable.getClass()
+                                    .getName());
             
             if (throwable instanceof LowStackTraceable) {
                 if (((LowStackTraceable) throwable).lowStackTrace()) {
-                    sb.append("\n\t").append(throwable.getStackTrace()[0]);
+                    sb.append("\n\t")
+                            .append(throwable.getStackTrace()[0]);
                 }
             } else {
-                List.of(throwable.getStackTrace()).forEach(line -> sb.append("\n\t").append(line));
+                List.of(throwable.getStackTrace())
+                        .forEach(line -> sb.append("\n\t")
+                                .append(line));
             }
             
             customExceptionHandlers.forEach(handler -> handler.apply(throwable));
@@ -249,16 +247,17 @@ public class Logger {
         }
     }
     
-    // Static membe
-    
     private String newFix(LoggingLevel level, int x) {
-        String fix = configuration.get(x < 0 ? "prefix" : "suffix").asText();
+        String fix = configuration.get(x < 0 ? "prefix" : "suffix")
+                .asText();
         
         fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
         fix = fix.replace("%c", loggingClass.getName());
         fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
         fix = fix.replace("%l", level.getName());
-        fix = fix.replace("%r", Thread.currentThread().getName());
+        fix = fix.replace("%r",
+                          Thread.currentThread()
+                                  .getName());
 
         /*
         if (x > 0) {
@@ -292,7 +291,26 @@ public class Logger {
         return fix.equals("null") ? "" : fix;
     }
     
+    // Static membe
+    
     // Static members
+    public static JsonNode getJsonNode(Scanner s, JsonNode base) {
+        JsonNode node;
+        if (s.hasNext()) {
+            try {
+                String content = s.next();
+                ObjectMapper mapper = new ObjectMapper();
+                node = mapper.readTree(content);
+            } catch (IOException ignored) {
+                node = base;
+            }
+        } else {
+            // file does not exist, go for defaults
+            node = base;
+        }
+        return node;
+    }
+    
     /**
      * Registers the given CustomHandler for handling any post message.
      *
@@ -383,13 +401,18 @@ public class Logger {
     private static ObjectNode createDefaultConfig() {
         System.out.println("[INFO] No logger configuration file \"logger.json\" at resources root found. " +
                            "Using default configuration or code set preferences...");
-        return JsonHelper.objectNode(
-                "level", DEFAULT_LEVEL.getName(),
-                "ignored", DEFAULT_IGNORED.stream().map(Class::getName).toArray(),
-                "prefix", DEFAULT_PREFIX,
-                "suffix", DEFAULT_SUFFIX,
-                "blanked", DEFAULT_BLANKED.toArray()
-        );
+        return JsonHelper.objectNode("level",
+                                     DEFAULT_LEVEL.getName(),
+                                     "ignored",
+                                     DEFAULT_IGNORED.stream()
+                                             .map(Class::getName)
+                                             .toArray(),
+                                     "prefix",
+                                     DEFAULT_PREFIX,
+                                     "suffix",
+                                     DEFAULT_SUFFIX,
+                                     "blanked",
+                                     DEFAULT_BLANKED.toArray());
     }
     
     private static List<Class> createIgnoredList(JsonNode data) {

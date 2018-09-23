@@ -32,7 +32,8 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      */
     String toDiscordPrintable();
     
-// Override Methods
+    // Override Methods
+    
     /**
      * Gets the universal replacement of this emoji.
      *
@@ -61,14 +62,16 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
         return castTo(CustomEmoji.class);
     }
     
-// Static membe
+    // Static members
+    // Static membe
     static CompletableFuture<Emoji> of(@NotNull Discord discord, @Nullable Server server, @NotNull String anyEmoji) {
         Objects.requireNonNull(anyEmoji);
         String aliases = EmojiParser.parseToAliases(anyEmoji);
         String unicode = EmojiParser.parseToUnicode(anyEmoji);
         if (aliases.equalsIgnoreCase(anyEmoji) && unicode.equalsIgnoreCase(anyEmoji)) {
             // is likely customEmoji
-            return CustomEmojiInternal.getInstance(server, anyEmoji).thenApply(Emoji.class::cast);
+            return CustomEmojiInternal.getInstance(server, anyEmoji)
+                    .thenApply(Emoji.class::cast);
         } else {
             // is likely unicodeEmoji
             return CompletableFuture.completedFuture(new UnicodeEmojiInternal(discord, aliases, unicode));
@@ -76,7 +79,8 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
     }
     
     static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
-        if (data.get("id").isNull()) {
+        if (data.get("id")
+                .isNull()) {
             return new UnicodeEmojiInternal(discord, data, true);
         } else {
             return CustomEmojiInternal.getInstance(discord, server, data, true);

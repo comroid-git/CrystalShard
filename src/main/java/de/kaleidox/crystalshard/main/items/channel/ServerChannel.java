@@ -26,7 +26,7 @@ public interface ServerChannel extends Channel, Nameable {
     
     List<PermissionOverride> getPermissionOverrides();
     
-// Static members
+    // Static members
     // Static membe
     static CompletableFuture<ServerChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
@@ -49,8 +49,10 @@ public interface ServerChannel extends Channel, Nameable {
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
                             .execute(node -> {
                                 for (JsonNode channel : node) {
-                                    if (channel.get("id").asLong() == id) {
-                                        ChannelType type = ChannelType.getFromId(node.get("type").asInt(-1));
+                                    if (channel.get("id")
+                                                .asLong() == id) {
+                                        ChannelType type = ChannelType.getFromId(node.get("type")
+                                                                                         .asInt(-1));
                                         switch (type) {
                                             case UNKNOWN:
                                             case DM:
@@ -74,15 +76,18 @@ public interface ServerChannel extends Channel, Nameable {
             Discord discord = (Discord) in;
             
             CompletableFuture<ServerChannel> finalChannelFuture = channelFuture;
-            discord.getChannelById(id).map(channel -> {
-                assert channel.canCastTo(ServerChannel.class);
-                return (ServerChannel) channel;
-            }).ifPresentOrElse(channelFuture::complete,
-                               () -> finalChannelFuture.completeExceptionally(new UncachedItemException(
-                                       "Channel is not cached. ID: " + id,
-                                       true)));
+            discord.getChannelById(id)
+                    .map(channel -> {
+                        assert channel.canCastTo(ServerChannel.class);
+                        return (ServerChannel) channel;
+                    })
+                    .ifPresentOrElse(channelFuture::complete,
+                                     () -> finalChannelFuture.completeExceptionally(new UncachedItemException(
+                                             "Channel is not cached. ID: " + id,
+                                             true)));
         } else {
-            throw new IllegalArgumentException(in.getClass().getSimpleName() + " is not a valid ChannelContainer!");
+            throw new IllegalArgumentException(in.getClass()
+                                                       .getSimpleName() + " is not a valid ChannelContainer!");
         }
         
         return channelFuture;

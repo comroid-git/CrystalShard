@@ -16,14 +16,19 @@ import java.util.Collections;
 import java.util.List;
 
 public class GUILD_MEMBER_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Server server = ServerInternal.getInstance(discord, data.get("guild_id").asLong());
+        Server server = ServerInternal.getInstance(discord,
+                                                   data.get("guild_id")
+                                                           .asLong());
         List<Role> userRoles = new ArrayList<>();
-        data.get("roles").forEach(role_id -> userRoles.add(RoleInternal.getInstance(server, role_id.asLong())));
-        ServerMember user = UserInternal.getInstance(discord, data.get("user")).toServerMember(server);
-        String nickname = data.get("nick").asText();
+        data.get("roles")
+                .forEach(role_id -> userRoles.add(RoleInternal.getInstance(server, role_id.asLong())));
+        ServerMember user = UserInternal.getInstance(discord, data.get("user"))
+                .toServerMember(server);
+        String nickname = data.get("nick")
+                .asText();
         
         ServerMemberUpdateEventInternal event = new ServerMemberUpdateEventInternal(discord,
                                                                                     userRoles,

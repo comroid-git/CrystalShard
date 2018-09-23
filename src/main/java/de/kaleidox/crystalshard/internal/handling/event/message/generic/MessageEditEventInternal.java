@@ -30,7 +30,7 @@ public class MessageEditEventInternal extends EventBase implements MessageEditEv
         this.prevEmbed = prevEmbed;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Message getMessage() {
         return message;
@@ -58,7 +58,9 @@ public class MessageEditEventInternal extends EventBase implements MessageEditEv
     
     @Override
     public Optional<Server> getServer() {
-        return message.getChannel().toServerChannel().map(ServerChannel::getServer);
+        return message.getChannel()
+                .toServerChannel()
+                .map(ServerChannel::getServer);
     }
     
     @Override

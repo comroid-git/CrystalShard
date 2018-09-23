@@ -29,12 +29,12 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     private ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
-        this.name = data.path("name").asText("");
+        this.name = data.path("name")
+                .asText("");
         
         this.overrides = new ArrayList<>();
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord,
-                                                                                                        server,
-                                                                                                        node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         
         instances.put(id, this);
     }
@@ -44,8 +44,10 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
         
-        if (!name.equals(data.path("name").asText(name))) {
-            name = data.get("name").asText();
+        if (!name.equals(data.path("name")
+                                 .asText(name))) {
+            name = data.get("name")
+                    .asText();
             traits.add(ChannelEditTrait.NAME);
         }
         
@@ -86,17 +88,22 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent().equals(user))
-                .map(override -> override.getAllowed().contains(permission))
+                .filter(override -> override.getParent()
+                        .equals(user))
+                .map(override -> override.getAllowed()
+                        .contains(permission))
                 .findAny()
-                .or(() -> Optional.of(server.getEveryoneRole().getPermissions().contains(permission)))
+                .or(() -> Optional.of(server.getEveryoneRole()
+                                              .getPermissions()
+                                              .contains(permission)))
                 .orElse(true); // If no information could be acquired, assert TRUE
     }
     
-// Static members
+    // Static members
     // Static membe
     public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
+        long id = data.get("id")
+                .asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
         if (instances.containsKey(id)) return instances.get(id);
         else return new ChannelCategoryInternal(discord, server, data);

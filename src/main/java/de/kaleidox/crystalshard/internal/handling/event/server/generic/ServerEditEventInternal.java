@@ -13,20 +13,20 @@ import java.util.Set;
 public class ServerEditEventInternal extends EventBase implements ServerEditEvent {
     private final Server                 server;
     private final Set<EditTrait<Server>> editTraits;
-
+    
     public ServerEditEventInternal(DiscordInternal discordInternal,
                                    @NotNull Server server, @MayNotContainNull Set<EditTrait<Server>> editTraits) {
         super(discordInternal);
         this.server = server;
         this.editTraits = editTraits;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public Set<EditTrait<Server>> getEditTraits() {
         return editTraits;
     }
-
+    
     @Override
     public Server getServer() {
         return server;

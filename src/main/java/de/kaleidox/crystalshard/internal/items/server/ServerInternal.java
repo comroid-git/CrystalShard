@@ -14,6 +14,7 @@ import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInterna
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
+import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
 import de.kaleidox.crystalshard.main.Discord;
@@ -98,78 +99,110 @@ public class ServerInternal implements Server {
     private ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());
         this.discord = (DiscordInternal) discord;
-        id = data.get("id").asLong();
-        name = data.get("name").asText();
-        iconUrl = UrlHelper.orNull(data.path("icon").asText(null));
-        splashUrl = UrlHelper.orNull(data.path("splashUrl").asText(null));
+        id = data.get("id")
+                .asLong();
+        name = data.get("name")
+                .asText();
+        iconUrl = UrlHelper.orNull(data.path("icon")
+                                           .asText(null));
+        splashUrl = UrlHelper.orNull(data.path("splashUrl")
+                                             .asText(null));
         owner = getOwnerPrivate(data);
-        ownPermissions = data.has("permissions") ? new PermissionListInternal(data.get("permissions").asInt()) :
+        ownPermissions = data.has("permissions") ? new PermissionListInternal(data.get("permissions")
+                                                                                      .asInt()) :
                          PermissionList.EMPTY_LIST;
-        voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").asText(null));
-        afkTimeout = data.get("afk_timeout").asInt(-1);
-        embedEnabled = data.path("embed_enabled").asBoolean(false);
-        verificationLevel = VerificationLevel.getFromId(data.get("verification_level").asInt(-1));
+        voiceRegion = VoiceRegion.getFromRegionKey(data.path("region")
+                                                           .asText(null));
+        afkTimeout = data.get("afk_timeout")
+                .asInt(-1);
+        embedEnabled = data.path("embed_enabled")
+                .asBoolean(false);
+        verificationLevel = VerificationLevel.getFromId(data.get("verification_level")
+                                                                .asInt(-1));
         defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get(
-                "default_message_notifications").asInt(-1));
+                "default_message_notifications")
+                                                                                            .asInt(-1));
         explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter")
                                                                                   .asInt(-1));
-        mfaLevel = MFALevel.getFromId(data.get("mfa_level").asInt(-1));
-        widgetEnabled = data.path("widget_enabled").asBoolean(false);
-        large = data.path("large").asBoolean(false);
-        unavailable = data.path("unavailable").asBoolean(false);
-        memberCount = data.path("member_count").asInt(-1);
-        
-        data.path("roles").forEach(role -> roles.add(RoleInternal.getInstance(this, role)));
-        data.path("emojis").forEach(emoji -> emojis.add(CustomEmojiInternal.getInstance(getDiscord(),
-                                                                                        this,
-                                                                                        emoji,
-                                                                                        true)));
-        data.path("features").forEach(feature -> features.add(feature.asText()));
-        data.path("voice_states").forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
-        data.path("members").forEach(member -> members.add(UserInternal.getInstance(discord, member)
-                                                                   .toServerMember(this)));
-        data.path("channels").forEach(channel -> {
-            ChannelType type = ChannelType.getFromId(channel.get("type").asInt(-1));
-            switch (type) {
-                case UNKNOWN:
-                case DM:
-                case GROUP_DM:
-                    break;
-                case GUILD_TEXT:
-                    channels.add(ServerTextChannelInternal.getInstance(discord, this, channel));
-                    break;
-                case GUILD_VOICE:
-                    channels.add(ServerVoiceChannelInternal.getInstance(discord, this, channel));
-                    break;
-                case GUILD_CATEGORY:
-                    channels.add(ChannelCategoryInternal.getInstance(discord, this, channel));
-                    break;
-            }
-        });
-        data.path("presenceStates").forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord,
-                                                                                                        presence)));
+        mfaLevel = MFALevel.getFromId(data.get("mfa_level")
+                                              .asInt(-1));
+        widgetEnabled = data.path("widget_enabled")
+                .asBoolean(false);
+        large = data.path("large")
+                .asBoolean(false);
+        unavailable = data.path("unavailable")
+                .asBoolean(false);
+        memberCount = data.path("member_count")
+                .asInt(-1);
+    
+        data.path("roles")
+                .forEach(role -> roles.add(RoleInternal.getInstance(this, role)));
+        data.path("features")
+                .forEach(feature -> features.add(feature.asText()));
+        data.path("voice_states")
+                .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
+        data.path("members")
+                .forEach(member -> ServerMemberInternal.getInstance(UserInternal.getInstance(discord,
+                                                                                             member.get("user")),
+                                                                    this,
+                                                                    member));
+        data.path("channels")
+                .forEach(channel -> {
+                    ChannelType type = ChannelType.getFromId(channel.get("type")
+                                                                     .asInt(-1));
+                    switch (type) {
+                        default:
+                            throw new AssertionError("Channel of illegal type detected within Server: " + channel);
+                        case GUILD_TEXT:
+                            channels.add(ServerTextChannelInternal.getInstance(discord, this, channel));
+                            break;
+                        case GUILD_VOICE:
+                            channels.add(ServerVoiceChannelInternal.getInstance(discord, this, channel));
+                            break;
+                        case GUILD_CATEGORY:
+                            channels.add(ChannelCategoryInternal.getInstance(discord, this, channel));
+                            break;
+                    }
+                });
+        data.path("presenceStates")
+                .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
+        data.path("emojis")
+                .forEach(emoji -> emojis.add(CustomEmojiInternal.getInstance(getDiscord(), this, emoji, true)));
         structure = new ChannelStructureInternal(channels);
         
         everyoneRole = roles.stream()
-                .filter(role -> role.getName().equalsIgnoreCase("@everyone"))
+                .filter(role -> role.getName()
+                        .equalsIgnoreCase("@everyone"))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("No @everyone role found for " + this));
         
-        long afk_channel_id = data.path("afk_channel_id").asLong(-1);
+        long afk_channel_id = data.path("afk_channel_id")
+                .asLong(-1);
         if (afk_channel_id != -1) {
-            afkChannel = ChannelInternal.getInstance(discord, afk_channel_id).toServerVoiceChannel().orElse(null);
+            afkChannel = ChannelInternal.getInstance(discord, afk_channel_id)
+                    .toServerVoiceChannel()
+                    .orElse(null);
         }
-        long embed_channel_id = data.path("embed_channel_id").asLong(-1);
+        long embed_channel_id = data.path("embed_channel_id")
+                .asLong(-1);
         if (embed_channel_id != -1) {
-            embedChannel = ChannelInternal.getInstance(discord, embed_channel_id).toServerChannel().orElse(null);
+            embedChannel = ChannelInternal.getInstance(discord, embed_channel_id)
+                    .toServerChannel()
+                    .orElse(null);
         }
-        long widget_channel_id = data.path("widget_channel_id").asLong(-1);
+        long widget_channel_id = data.path("widget_channel_id")
+                .asLong(-1);
         if (widget_channel_id != -1) {
-            widgetChannel = ChannelInternal.getInstance(discord, widget_channel_id).toServerChannel().orElse(null);
+            widgetChannel = ChannelInternal.getInstance(discord, widget_channel_id)
+                    .toServerChannel()
+                    .orElse(null);
         }
-        long system_channel_id = data.path("system_channel_id").asLong(-1);
+        long system_channel_id = data.path("system_channel_id")
+                .asLong(-1);
         if (system_channel_id != -1) {
-            systemChannel = ChannelInternal.getInstance(discord, system_channel_id).toServerTextChannel().orElse(null);
+            systemChannel = ChannelInternal.getInstance(discord, system_channel_id)
+                    .toServerTextChannel()
+                    .orElse(null);
         }
         
         listenerManangers = new ArrayList<>();
@@ -300,9 +333,11 @@ public class ServerInternal implements Server {
     
     @Override
     public List<ServerMember> getMembers() {
-        return members.stream().map(user -> {
-            return user.toServerMember(this);
-        }).collect(Collectors.toList());
+        return members.stream()
+                .map(user -> {
+                    return user.toServerMember(this);
+                })
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -327,8 +362,9 @@ public class ServerInternal implements Server {
     
     @Override
     public CompletableFuture<Void> leave() {
-        return new WebRequest<Void>(discord).method(Method.DELETE).endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD,
-                                                                                        this)).execute(node -> null);
+        return new WebRequest<Void>(discord).method(Method.DELETE)
+                .endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD, this))
+                .execute(node -> null);
     }
     
     @Override
@@ -367,35 +403,49 @@ public class ServerInternal implements Server {
     
     @Override
     public Collection<ServerAttachableListener> getAttachedListeners() {
-        return listenerManangers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
     
     private User getOwnerPrivate(JsonNode data) {
         if (data.has("owner_id")) {
             //return new UserInternal(discord, data.get("application_id").asLong());
-            return UserInternal.getInstance(discord, data.get("owner_id").asLong());
+            return UserInternal.getInstance(discord,
+                                            data.get("owner_id")
+                                                    .asLong());
         } else {
             return null;
         }
     }
     
     public List<ServerAttachableListener> getListeners() {
-        return listenerManangers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
     
     public Set<EditTrait<Server>> updateData(JsonNode data) {
         HashSet<EditTrait<Server>> traits = new HashSet<>();
         
-        if (!name.equals(data.path("name").asText(""))) {
-            name = data.get("name").asText();
+        if (!name.equals(data.path("name")
+                                 .asText(""))) {
+            name = data.get("name")
+                    .asText();
             traits.add(NAME);
         }
-        if (iconUrl != null && !UrlHelper.equals(iconUrl, data.path("icon").asText(null))) {
-            iconUrl = UrlHelper.orNull(data.path("icon").asText(null));
+        if (iconUrl != null && !UrlHelper.equals(iconUrl,
+                                                 data.path("icon")
+                                                         .asText(null))) {
+            iconUrl = UrlHelper.orNull(data.path("icon")
+                                               .asText(null));
             traits.add(ICON);
         }
-        if (splashUrl != null && !UrlHelper.equals(splashUrl, data.path("splash_url").asText(null))) {
-            splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl").asText(null));
+        if (splashUrl != null && !UrlHelper.equals(splashUrl,
+                                                   data.path("splash_url")
+                                                           .asText(null))) {
+            splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl")
+                                                       .asText(null));
             traits.add(SPLASH);
         }
         if ((owner != null ? owner.getId() : -1) != data.path((data.has("owner_id") ? "owner_id" : "application_id"))
@@ -403,78 +453,113 @@ public class ServerInternal implements Server {
             owner = getOwnerPrivate(data);
             traits.add(OWNER);
         }
-        if ((ownPermissions != null ? ownPermissions.toPermissionInt() : 0) != data.path("permissions").asInt(0)) {
-            ownPermissions = new PermissionListInternal(data.get("permissions").asInt(0));
+        if ((ownPermissions != null ? ownPermissions.toPermissionInt() : 0) != data.path("permissions")
+                .asInt(0)) {
+            ownPermissions = new PermissionListInternal(data.get("permissions")
+                                                                .asInt(0));
             traits.add(OWN_PERMISSIONS);
         }
-        if (!voiceRegion.getRegionKey().equalsIgnoreCase(data.path("region").asText(voiceRegion.getRegionKey()))) {
-            voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").asText(""));
+        if (!voiceRegion.getRegionKey()
+                .equalsIgnoreCase(data.path("region")
+                                          .asText(voiceRegion.getRegionKey()))) {
+            voiceRegion = VoiceRegion.getFromRegionKey(data.path("region")
+                                                               .asText(""));
             traits.add(REGION);
         }
-        if (afkTimeout != data.path("afk_timeout").asInt(-1)) {
-            afkTimeout = data.get("afk_timeout").asInt(-1);
+        if (afkTimeout != data.path("afk_timeout")
+                .asInt(-1)) {
+            afkTimeout = data.get("afk_timeout")
+                    .asInt(-1);
             traits.add(AFK_TIMEOUT);
         }
-        if (embedEnabled != data.path("embed_enabled").asBoolean(embedEnabled)) {
-            embedEnabled = data.path("embed_enabled").asBoolean(false);
+        if (embedEnabled != data.path("embed_enabled")
+                .asBoolean(embedEnabled)) {
+            embedEnabled = data.path("embed_enabled")
+                    .asBoolean(false);
             traits.add(EMBED_ENABLED);
         }
-        if (verificationLevel.getId() != data.path("verification_level").asInt(-1)) {
-            verificationLevel = VerificationLevel.getFromId(data.get("verification_level").asInt(-1));
+        if (verificationLevel.getId() != data.path("verification_level")
+                .asInt(-1)) {
+            verificationLevel = VerificationLevel.getFromId(data.get("verification_level")
+                                                                    .asInt(-1));
             traits.add(VERIFICATION_LEVEL);
         }
-        if (defaultMessageNotificationLevel.getId() != data.path("default_message_notification").asInt(
-                defaultMessageNotificationLevel.getId())) {
+        if (defaultMessageNotificationLevel.getId() != data.path("default_message_notification")
+                .asInt(defaultMessageNotificationLevel.getId())) {
             defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get(
-                    "default_message_notifications").asInt(-1));
+                    "default_message_notifications")
+                                                                                                .asInt(-1));
             traits.add(DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
         }
-        if (explicitContentFilterLevel.getId() != data.path("explicit_content_filter").asInt(-1)) {
+        if (explicitContentFilterLevel.getId() != data.path("explicit_content_filter")
+                .asInt(-1)) {
             explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter")
                                                                                       .asInt(-1));
             traits.add(EXPLICIT_CONTENT_FILTER_LEVEL);
         }
-        if (mfaLevel.getId() != data.path("mfa_level").asInt(-1)) {
-            mfaLevel = MFALevel.getFromId(data.get("mfa_level").asInt(-1));
+        if (mfaLevel.getId() != data.path("mfa_level")
+                .asInt(-1)) {
+            mfaLevel = MFALevel.getFromId(data.get("mfa_level")
+                                                  .asInt(-1));
             traits.add(MFA_LEVEL);
         }
-        if (widgetEnabled != data.path("widget_enabled").asBoolean(widgetEnabled)) {
-            widgetEnabled = data.path("widget_enabled").asBoolean(false);
+        if (widgetEnabled != data.path("widget_enabled")
+                .asBoolean(widgetEnabled)) {
+            widgetEnabled = data.path("widget_enabled")
+                    .asBoolean(false);
             traits.add(WIDGET_ENABLED);
         }
-        if (large != data.path("large").asBoolean(false)) {
-            large = data.path("large").asBoolean(false);
+        if (large != data.path("large")
+                .asBoolean(false)) {
+            large = data.path("large")
+                    .asBoolean(false);
             traits.add(LARGE);
         }
-        if (unavailable != data.path("unavailable").asBoolean(false)) {
-            unavailable = data.path("unavailable").asBoolean(false);
+        if (unavailable != data.path("unavailable")
+                .asBoolean(false)) {
+            unavailable = data.path("unavailable")
+                    .asBoolean(false);
             traits.add(AVAILABILITY);
         }
-        if (memberCount != data.path("member_count").asInt(memberCount)) {
-            memberCount = data.path("member_count").asInt(-1);
+        if (memberCount != data.path("member_count")
+                .asInt(memberCount)) {
+            memberCount = data.path("member_count")
+                    .asInt(-1);
             traits.add(MEMBER_COUNT);
         }
         
-        if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id").asLong(-1)) {
-            afkChannel = ServerVoiceChannelInternal.getInstance(discord, data.path("afk_channel_id").asLong(-1))
+        if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id")
+                .asLong(-1)) {
+            afkChannel = ServerVoiceChannelInternal.getInstance(discord,
+                                                                data.path("afk_channel_id")
+                                                                        .asLong(-1))
                     .toServerVoiceChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(AFK_CHANNEL);
         }
-        if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id").asLong(-1)) {
-            embedChannel = ChannelInternal.getInstance(discord, data.path("embed_channel_id").asLong(-1))
+        if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id")
+                .asLong(-1)) {
+            embedChannel = ChannelInternal.getInstance(discord,
+                                                       data.path("embed_channel_id")
+                                                               .asLong(-1))
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(EMBED_CHANNEL);
         }
-        if ((widgetChannel != null ? widgetChannel.getId() : -1) != data.path("widget_channel_id").asLong(-1)) {
-            widgetChannel = ChannelInternal.getInstance(discord, data.path("widget_channel_id").asLong(-1))
+        if ((widgetChannel != null ? widgetChannel.getId() : -1) != data.path("widget_channel_id")
+                .asLong(-1)) {
+            widgetChannel = ChannelInternal.getInstance(discord,
+                                                        data.path("widget_channel_id")
+                                                                .asLong(-1))
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(WIDGET_CHANNEL);
         }
-        if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id").asLong(-1)) {
-            systemChannel = ServerTextChannelInternal.getInstance(discord, data.path("system_channel_id").asLong(-1))
+        if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id")
+                .asLong(-1)) {
+            systemChannel = ServerTextChannelInternal.getInstance(discord,
+                                                                  data.path("system_channel_id")
+                                                                          .asLong(-1))
                     .toServerTextChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(SYSTEM_CHANNEL);
@@ -503,7 +588,7 @@ public class ServerInternal implements Server {
         roles.remove(role);
     }
     
-// Static members
+    // Static members
     // Static membe
     public static Optional<Server> getInstance(long id) {
         return Optional.ofNullable(instances.getOrDefault(id, null));
@@ -521,11 +606,10 @@ public class ServerInternal implements Server {
     }
     
     public static Server getInstance(Discord discord, JsonNode data) {
-        long id = data.get("id").asLong(-1);
+        long id = data.get("id")
+                .asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
         if (instances.containsKey(id)) return instances.get(id);
-        else {
-            return new ServerInternal(discord, data);
-        }
+        else return new ServerInternal(discord, data);
     }
 }

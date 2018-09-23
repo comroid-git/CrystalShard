@@ -9,19 +9,19 @@ import de.kaleidox.crystalshard.main.items.user.User;
 public class ServerMemberLeaveEventInternal extends EventBase implements ServerMemberLeaveEvent {
     private final Server server;
     private final User   user;
-
+    
     public ServerMemberLeaveEventInternal(DiscordInternal discordInternal, Server server, User user) {
         super(discordInternal);
         this.server = server;
         this.user = user;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public Server getServer() {
         return server;
     }
-
+    
     @Override
     public User getUser() {
         return user;

@@ -11,11 +11,16 @@ public class MessageApplicationInternal implements MessageApplication {
     private final String iconId;
     
     public MessageApplicationInternal(JsonNode data) {
-        this.id = data.get("id").asLong();
-        this.name = data.get("name").asText();
-        this.description = data.get("description").asText();
-        this.coverId = data.get("cover_image").asText();
-        this.iconId = data.get("icon").asText();
+        this.id = data.get("id")
+                .asLong();
+        this.name = data.get("name")
+                .asText();
+        this.description = data.get("description")
+                .asText();
+        this.coverId = data.get("cover_image")
+                .asText();
+        this.iconId = data.get("icon")
+                .asText();
     }
     
     // Override Methods

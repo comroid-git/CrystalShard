@@ -19,7 +19,7 @@ public class MessageDeleteEventInternal extends EventBase implements MessageDele
         this.channel = message.getChannel();
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Message getMessage() {
         return message;

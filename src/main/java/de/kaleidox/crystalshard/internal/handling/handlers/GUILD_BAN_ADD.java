@@ -15,8 +15,11 @@ public class GUILD_BAN_ADD extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Server server = ServerInternal.getInstance(discord, data.get("guild_id").asLong());
-        ServerMember user = UserInternal.getInstance(discord, data.get("user")).toServerMember(server);
+        Server server = ServerInternal.getInstance(discord,
+                                                   data.get("guild_id")
+                                                           .asLong());
+        ServerMember user = UserInternal.getInstance(discord, data.get("user"))
+                .toServerMember(server);
         Ban ban = new BanInternal(server, user);
         
         ServerBanEventInternal event = new ServerBanEventInternal(discord, ban);

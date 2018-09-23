@@ -11,8 +11,11 @@ public class GUILD_DELETE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Server server = ServerInternal.getInstance(discord, data.get("id").asLong());
-        boolean gotKicked = (!data.has("unavailable") || data.get("unavailable").isNull());
+        Server server = ServerInternal.getInstance(discord,
+                                                   data.get("id")
+                                                           .asLong());
+        boolean gotKicked = (!data.has("unavailable") || data.get("unavailable")
+                .isNull());
         
         ServerDeleteEventInternal event = new ServerDeleteEventInternal(discord, server.getId(), gotKicked);
         

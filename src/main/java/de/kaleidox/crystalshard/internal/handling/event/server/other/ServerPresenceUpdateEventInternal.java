@@ -18,7 +18,7 @@ public class ServerPresenceUpdateEventInternal extends EventBase implements Serv
         this.presence = presence;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Presence getPresence() {
         return presence;

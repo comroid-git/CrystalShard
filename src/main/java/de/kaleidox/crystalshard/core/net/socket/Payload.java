@@ -67,9 +67,10 @@ public class Payload {
         this.node = node;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static Payload create(OpCode code, JsonNode node) {
-        return new Payload().opcode(code).node(node);
+        return new Payload().opcode(code)
+                .node(node);
     }
 }

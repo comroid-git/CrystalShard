@@ -16,26 +16,24 @@ import java.util.function.Supplier;
 /**
  * This class represents a default EmbedDraft. It is used to define a default EmbedDraft that will be used by methods
  * like {@link MessageReciever#sendMessage(Consumer)}, where no embed draft is specified but an embed modifier is.
- *
+ * <p>
  * Basic DefaultEmbed traits can be set up in a settings.json configuration file at resources root.
  */
 public class DefaultEmbed implements Supplier<EmbedDraft> {
     // Static Fields
-    public final Supplier<EmbedDraft>          EMPTY_SUPPLIER;
-    public final Supplier<Embed.Builder>       EMPTY_BUILDER;
-    private final       List<Consumer<Embed.Builder>> modifiers;
-    private final Discord discord;
+    // Fields
+    public final  Supplier<EmbedDraft>          EMPTY_SUPPLIER;
+    public final  Supplier<Embed.Builder>       EMPTY_BUILDER;
+    private final List<Consumer<Embed.Builder>> modifiers;
+    private final Discord                       discord;
     
     DefaultEmbed(Discord discord, JsonNode data) {
         this.discord = discord;
         this.modifiers = new ArrayList<>();
-    
+        
         EMPTY_BUILDER = data.isNull() ? Embed::BUILDER : () -> new SentEmbedInternal(null, data).toBuilder();
-        EMPTY_SUPPLIER = () -> EMPTY_BUILDER.get().build();
-    }
-    
-    public Discord getDiscord() {
-        return discord;
+        EMPTY_SUPPLIER = () -> EMPTY_BUILDER.get()
+                .build();
     }
     
     // Override Methods
@@ -48,6 +46,10 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
             modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
             return builder.build();
         }
+    }
+    
+    public Discord getDiscord() {
+        return discord;
     }
     
     public DefaultEmbed addModifier(Consumer<Embed.Builder> modifier) {
@@ -67,7 +69,8 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
     
     // Static membe
     
-// Static members
+    // Static members
+    
     /**
      * A static implementation of the {@link DefaultEmbed#get()} method. This method will first check if the current
      * thread is a {@link ThreadPool.Worker} thread, and if so, will get the {@link Discord} item the Worker belongs to.
@@ -83,8 +86,11 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         Thread thread = Thread.currentThread();
         
         if (thread instanceof ThreadPool.Worker) {
-            Embed.Builder builder =
-                    ((ThreadPool.Worker) thread).getDiscord().getUtilities().getDefaultEmbed().get().toBuilder();
+            Embed.Builder builder = ((ThreadPool.Worker) thread).getDiscord()
+                    .getUtilities()
+                    .getDefaultEmbed()
+                    .get()
+                    .toBuilder();
             defaultEmbedModifier.accept(builder);
             return builder.build();
         }
@@ -107,7 +113,10 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         Thread thread = Thread.currentThread();
         
         if (thread instanceof ThreadPool.Worker) {
-            return ((ThreadPool.Worker) thread).getDiscord().getUtilities().getDefaultEmbed().get();
+            return ((ThreadPool.Worker) thread).getDiscord()
+                    .getUtilities()
+                    .getDefaultEmbed()
+                    .get();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +
@@ -128,7 +137,10 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         Thread thread = Thread.currentThread();
         
         if (thread instanceof ThreadPool.Worker) {
-            return ((ThreadPool.Worker) thread).getDiscord().getUtilities().getDefaultEmbed().getBuilder();
+            return ((ThreadPool.Worker) thread).getDiscord()
+                    .getUtilities()
+                    .getDefaultEmbed()
+                    .getBuilder();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +
@@ -148,7 +160,9 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
         Thread thread = Thread.currentThread();
         
         if (thread instanceof ThreadPool.Worker) {
-            return ((ThreadPool.Worker) thread).getDiscord().getUtilities().getDefaultEmbed();
+            return ((ThreadPool.Worker) thread).getDiscord()
+                    .getUtilities()
+                    .getDefaultEmbed();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                                          "thread, such as in listeners or scheduler tasks. You may not use it from " +

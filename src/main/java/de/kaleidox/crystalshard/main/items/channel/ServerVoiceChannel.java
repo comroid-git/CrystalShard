@@ -42,7 +42,7 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
         CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException;
     }
     
-// Static members
+    // Static members
     // Static membe
     static CompletableFuture<ServerVoiceChannel> of(ChannelContainer in, long id) {
         if (id == -1) return CompletableFuture.completedFuture(null);
@@ -65,7 +65,8 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
                             .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, srv))
                             .execute(node -> {
                                 for (JsonNode channel : node) {
-                                    if (channel.get("id").asLong() == id) {
+                                    if (channel.get("id")
+                                                .asLong() == id) {
                                         return ServerVoiceChannelInternal.getInstance(discord, srv, node);
                                     }
                                 }
@@ -75,15 +76,18 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
             Discord discord = (Discord) in;
             
             CompletableFuture<ServerVoiceChannel> finalChannelFuture = channelFuture;
-            discord.getChannelById(id).map(channel -> {
-                assert channel.canCastTo(ServerVoiceChannel.class);
-                return (ServerVoiceChannel) channel;
-            }).ifPresentOrElse(channelFuture::complete,
-                               () -> finalChannelFuture.completeExceptionally(new UncachedItemException(
-                                       "Channel is not cached. ID: " + id,
-                                       true)));
+            discord.getChannelById(id)
+                    .map(channel -> {
+                        assert channel.canCastTo(ServerVoiceChannel.class);
+                        return (ServerVoiceChannel) channel;
+                    })
+                    .ifPresentOrElse(channelFuture::complete,
+                                     () -> finalChannelFuture.completeExceptionally(new UncachedItemException(
+                                             "Channel is not cached. ID: " + id,
+                                             true)));
         } else {
-            throw new IllegalArgumentException(in.getClass().getSimpleName() + " is not a valid ChannelContainer!");
+            throw new IllegalArgumentException(in.getClass()
+                                                       .getSimpleName() + " is not a valid ChannelContainer!");
         }
         
         return channelFuture;

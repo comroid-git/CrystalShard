@@ -26,7 +26,8 @@ public class MapHelper extends NullHelper {
     public static <K, V> V getEquals(Map<K, V> map, K key, V valueIfAbsent) {
         return map.entrySet()
                 .stream()
-                .filter(entry -> entry.getKey().equals(key))
+                .filter(entry -> entry.getKey()
+                        .equals(key))
                 .map(Map.Entry::getValue)
                 .findAny()
                 .orElse(valueIfAbsent);
@@ -40,12 +41,14 @@ public class MapHelper extends NullHelper {
      * @param key The key to look for.
      * @param <K> Type variable for the keys.
      * @param <V> Type variable for the values.
-     *
      * @return Whether the map contains the key.
      * @see Map#containsKey(Object)
      */
     public static <K, V> boolean containsKey(Map<K, V> map, K key) {
-        return map.entrySet().stream().map(Map.Entry::getKey).anyMatch(check -> check.equals(key));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .anyMatch(check -> check.equals(key));
     }
     
     /**
@@ -56,12 +59,14 @@ public class MapHelper extends NullHelper {
      * @param value The value to look for.
      * @param <K>   Type variable for the keys.
      * @param <V>   Type variable for the values.
-     *
      * @return Whether the map contains the key.
      * @see Map#containsValue(Object)
      */
     public static <K, V> boolean containsValue(Map<K, V> map, V value) {
-        return map.entrySet().stream().map(Map.Entry::getValue).anyMatch(check -> check.equals(value));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .anyMatch(check -> check.equals(value));
     }
     
     /**
@@ -74,11 +79,14 @@ public class MapHelper extends NullHelper {
      * @param <K>       Type variable for the keys.
      * @param <V>       Type variable for the values.
      * @param <T>       Type variable for the item to check for.
-     *
      * @return Whether the map contains a key that can be mapped to the value.
      */
     public static <K, V, T> boolean containsKey(Map<K, V> map, T value, Function<K, T> extractor) {
-        return map.entrySet().stream().map(Map.Entry::getKey).map(extractor).anyMatch(t -> t.equals(value));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .map(extractor)
+                .anyMatch(t -> t.equals(value));
     }
     
     /**
@@ -91,11 +99,14 @@ public class MapHelper extends NullHelper {
      * @param <K>       Type variable for the keys.
      * @param <V>       Type variable for the values.
      * @param <T>       Type variable for the item to check for.
-     *
      * @return Whether the map contains a key that can be mapped to the value.
      */
     public static <K, V, T> boolean containsValue(Map<K, V> map, T value, Function<V, T> extractor) {
-        return map.entrySet().stream().map(Map.Entry::getValue).map(extractor).anyMatch(t -> t.equals(value));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .map(extractor)
+                .anyMatch(t -> t.equals(value));
     }
     
     public static <K, V> int countKeyOccurrences(Map<K, V> map, K key) {
@@ -119,7 +130,8 @@ public class MapHelper extends NullHelper {
         getMapOfParent(map, newMap);
         map.forEach((key, value) -> {
             newMap.putIfAbsent(value, new ArrayList<>());
-            newMap.get(value).add(key);
+            newMap.get(value)
+                    .add(key);
         });
         return newMap;
     }
@@ -129,7 +141,6 @@ public class MapHelper extends NullHelper {
      *
      * @param ofMap The map to get all keys from.
      * @param <T>   The type of the keys.
-     *
      * @return A list which contains all keys from the map.
      */
     public static <T> List<T> getAllKeys(Map<T, ?> ofMap) {
@@ -147,7 +158,6 @@ public class MapHelper extends NullHelper {
      *
      * @param ofMap The map to get all values from.
      * @param <T>   The type of the values.
-     *
      * @return A list which contains all values from the map.
      */
     public static <T> List<T> getAllValues(Map<?, T> ofMap) {
@@ -175,7 +185,6 @@ public class MapHelper extends NullHelper {
      * @param <oV>                  Output map Value type.
      * @param <iMap>                Type variable for the input map.
      * @param <oMap>                Type variable for the output map.
-     *
      * @return The pointer to the new map.
      */
     public static <iK, iV, oK, oV, iMap extends TreeMap<iK, iV>, oMap extends TreeMap<oK, oV>> oMap reformat(iMap map
@@ -202,7 +211,6 @@ public class MapHelper extends NullHelper {
      * @param <oV>                  Output map Value type.
      * @param <iMap>                Type variable for the input map.
      * @param <oMap>                Type variable for the output map.
-     *
      * @return The pointer to the new map.
      */
     public static <iK, iV, oK, oV, iMap extends TreeMap<iK, iV>, oMap extends TreeMap<oK, oV>> oMap reformat(iMap map
@@ -229,7 +237,6 @@ public class MapHelper extends NullHelper {
      * @param <oV>        Output map Value type.
      * @param <iMap>      Type variable for the input map.
      * @param <oMap>      Type variable for the output map.
-     *
      * @return The pointer to the new map.
      * @see #reformat(Map, Map, Function, Function)
      */
@@ -256,7 +263,6 @@ public class MapHelper extends NullHelper {
      * @param <oV>             Output map Value type.
      * @param <iMap>           Type variable for the input map.
      * @param <oMap>           Type variable for the output map.
-     *
      * @return The pointer to the new map.
      * @throws ClassCastException If the map is a TreeMap whose comparator can't be {@code Comparator<\? super oK>}.
      */
@@ -295,7 +301,6 @@ public class MapHelper extends NullHelper {
      * @param <iV>      Input map Value type.
      * @param <oK>      Output map Key type.
      * @param <oV>      Output map Value type.
-     *
      * @return The newly created {@code [PARENT]Map<oK, oV>}, casted down to {@link Map}.
      */
     @SuppressWarnings("ParameterCanBeLocal")
@@ -322,20 +327,20 @@ public class MapHelper extends NullHelper {
         if (!containsKey(map, superKey, keyFunction)) return defaultValue.get();
         return map.entrySet()
                 .stream()
-                .filter(entry -> keyFunction.apply(entry.getKey()).equals(superKey))
+                .filter(entry -> keyFunction.apply(entry.getKey())
+                        .equals(superKey))
                 .map(Map.Entry::getValue)
                 .findAny()
                 .orElseGet(defaultValue);
     }
     
-    public static <K, V, T> V getSpecialComparator(Map<K, V> map, T superKey, Supplier<V> defaultValue,
-                                                   BiFunction<K, T, Boolean> keyFunction) {
+    public static <K, V, T> V getSpecialComparator(Map<K, V> map, T superKey, Supplier<V> defaultValue, BiFunction<K,
+            T, Boolean> keyFunction) {
         return map.entrySet()
                 .stream()
                 .filter(entry -> keyFunction.apply(entry.getKey(), superKey))
                 .map(Map.Entry::getValue)
                 .findAny()
                 .orElseGet(defaultValue);
-                
     }
 }

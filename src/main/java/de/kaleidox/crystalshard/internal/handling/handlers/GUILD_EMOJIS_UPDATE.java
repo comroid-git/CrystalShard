@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.Set;
 
 public class GUILD_EMOJIS_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id").asLong());
+        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord,
+                                                                            data.get("guild_id")
+                                                                                    .asLong());
         List<CustomEmoji> newEmojis = new ArrayList<>();
         Set<EditTrait<CustomEmoji>> traits = new HashSet<>();
         List<CustomEmoji> edited = new ArrayList<>();

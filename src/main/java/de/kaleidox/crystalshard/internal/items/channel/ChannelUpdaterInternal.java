@@ -47,7 +47,9 @@ public class ChannelUpdaterInternal {
             this.topic = channel.getTopic();
             this.position = channel.getPosition();
             this.nsfw = channel.isNsfw();
-            this.parent = channel.toServerChannel().flatMap(ServerChannel::getCategory).orElse(null);
+            this.parent = channel.toServerChannel()
+                    .flatMap(ServerChannel::getCategory)
+                    .orElse(null);
             this.overrides = channel.toServerChannel()
                     .map(ServerChannel::getPermissionOverrides)
                     .orElse(Collections.emptyList());
@@ -141,7 +143,9 @@ public class ChannelUpdaterInternal {
             this.bitrate = channel.getBitrate();
             this.position = channel.getPosition();
             this.limit = channel.getUserLimit();
-            this.parent = channel.toServerChannel().flatMap(ServerChannel::getCategory).orElse(null);
+            this.parent = channel.toServerChannel()
+                    .flatMap(ServerChannel::getCategory)
+                    .orElse(null);
             this.overrides = channel.toServerChannel()
                     .map(ServerChannel::getPermissionOverrides)
                     .orElse(Collections.emptyList());

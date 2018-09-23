@@ -8,18 +8,18 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 
 public class ServerBanEventInternal extends EventBase implements ServerBanEvent {
     private final Ban ban;
-
+    
     public ServerBanEventInternal(DiscordInternal discordInternal, Ban ban) {
         super(discordInternal);
         this.ban = ban;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public Ban getBan() {
         return ban;
     }
-
+    
     @Override
     public Server getServer() {
         return ban.getServer();

@@ -32,8 +32,11 @@ public class ReactionInternal implements Reaction {
         this.discord = discord;
         this.message = message;
         this.user = user;
-        this.me = data.path("me").asBoolean(false);
-        this.emoji = data.get("emoji").get("id").isNull() ? new UnicodeEmojiInternal(discord, data.get("emoji"), true) :
+        this.me = data.path("me")
+                .asBoolean(false);
+        this.emoji = data.get("emoji")
+                             .get("id")
+                             .isNull() ? new UnicodeEmojiInternal(discord, data.get("emoji"), true) :
                      CustomEmojiInternal.getInstance(discord,
                                                      message.getChannel()
                                                              .toServerChannel()
@@ -44,10 +47,12 @@ public class ReactionInternal implements Reaction {
         
         ReactionCriteria criteria = new ReactionCriteria(message, emoji);
         instances.put(criteria, this);
-        counts.put(criteria, data.path("count").asInt(0));
+        counts.put(criteria,
+                   data.path("count")
+                           .asInt(0));
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Discord getDiscord() {
         return discord;
@@ -85,15 +90,18 @@ public class ReactionInternal implements Reaction {
         return this;
     }
     
-// Static membe
+    // Static members
+    // Static membe
     public static Reaction getInstance(
             @Nullable Server server, @NotNull Message message, @Nullable User user, @NotNull JsonNode data, int delta) {
         Emoji emoji = Emoji.of(message.getDiscord(), server, data.get("emoji"));
         ReactionCriteria criteria = new ReactionCriteria(message, emoji);
         return ((ReactionInternal) MapHelper.getEquals(instances,
                                                        criteria,
-                                                       new ReactionInternal(message.getDiscord(), message, user, data)))
-                .changeCount(delta);
+                                                       new ReactionInternal(message.getDiscord(),
+                                                                            message,
+                                                                            user,
+                                                                            data))).changeCount(delta);
     }
     
     private static class ReactionCriteria {
@@ -105,7 +113,7 @@ public class ReactionInternal implements Reaction {
             this.emoji = emoji;
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof ReactionCriteria) return (((ReactionCriteria) obj).message.equals(message)) &&

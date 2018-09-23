@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface OptionalServerEvent {
     Optional<Server> getServer();
-
+    
     default Optional<Long> getServerId() {
         return getServer().map(DiscordItem::getId);
     }

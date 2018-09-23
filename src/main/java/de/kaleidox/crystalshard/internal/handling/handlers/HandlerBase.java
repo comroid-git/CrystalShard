@@ -37,26 +37,33 @@ public abstract class HandlerBase {
     
     public abstract void handle(DiscordInternal discord, JsonNode data);
     
-// Static members
-    // Static membe
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;
-        String type = data.path("t").asText("");
+        String type = data.path("t")
+                .asText("");
         
         if (instances.containsKey(type)) {
             handler = (T) instances.get(type);
-            discord.getThreadPool().execute(() -> handler.handle(discord, data.get("d")));
+            discord.getThreadPool()
+                    .execute(() -> handler.handle(discord, data.get("d")));
         } else if (!type.isBlank() && !type.isEmpty()) {
             try {
                 Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
-                handler = tClass.getConstructor().newInstance();
+                handler = tClass.getConstructor()
+                        .newInstance();
                 instances.put(type, handler);
-                discord.getThreadPool().execute(() -> {
-                    baseLogger.trace("Dispatching event '" + data.get("t").asText() + "' with body: " +
-                                     data.get("d").toString());
-                    handler.handle(discord, data.get("d"));
-                });
+                discord.getThreadPool()
+                        .execute(() -> {
+                            try {
+                                baseLogger.trace("Dispatching event '" + data.get("t")
+                                        .asText() + "' with body: " + data.get("d")
+                                                         .toString());
+                                handler.handle(discord, data.get("d"));
+                            } catch (Exception e) {
+                                baseLogger.exception(e, "Exception in Handler: "+type);
+                            }
+                        });
             } catch (ClassNotFoundException e) {
                 baseLogger.error("Failed to dispatch unknown type: " + data.get("t"));
             } catch (Exception e) {
@@ -74,14 +81,20 @@ public abstract class HandlerBase {
         for (Object obj : collectIn) {
             if (Objects.nonNull(obj)) {
                 if (DiscordAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Discord) {
-                    ((DiscordInternal) obj).getAttachedListeners().stream().filter(listener -> listener.canCastTo(
-                            listenerClass)).map(listenerClass::cast).forEachOrdered(list::add);
+                    ((DiscordInternal) obj).getAttachedListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
                 
                 if (ServerAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Server) {
                     ServerInternal serverInternal = (ServerInternal) obj;
-                    serverInternal.getListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
-                            listenerClass::cast).forEachOrdered(list::add);
+                    serverInternal.getListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
                 
                 if (ChannelAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Channel) {
@@ -112,20 +125,29 @@ public abstract class HandlerBase {
                 
                 if (UserAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof User) {
                     UserInternal user = (UserInternal) obj;
-                    user.getAttachedListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
-                            listenerClass::cast).forEachOrdered(list::add);
+                    user.getAttachedListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
                 
                 if (RoleAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Role) {
                     RoleInternal role = (RoleInternal) obj;
-                    role.getAttachedListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
-                            listenerClass::cast).forEachOrdered(list::add);
+                    role.getAttachedListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
                 
                 if (MessageAttachableListener.class.isAssignableFrom(listenerClass) && obj instanceof Message) {
                     MessageInternal message = (MessageInternal) obj;
-                    message.getAttachedListeners().stream().filter(listener -> listener.canCastTo(listenerClass)).map(
-                            listenerClass::cast).forEachOrdered(list::add);
+                    message.getAttachedListeners()
+                            .stream()
+                            .filter(listener -> listener.canCastTo(listenerClass))
+                            .map(listenerClass::cast)
+                            .forEachOrdered(list::add);
                 }
             }
         }

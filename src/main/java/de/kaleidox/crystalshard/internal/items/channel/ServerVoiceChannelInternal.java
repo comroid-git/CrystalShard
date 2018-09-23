@@ -36,15 +36,17 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     private ServerVoiceChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
-        this.name = data.path("name").asText("");
-        this.category = ChannelInternal.getInstance(discord, data.path("parent_id").asLong(0))
+        this.name = data.path("name")
+                .asText("");
+        this.category = ChannelInternal.getInstance(discord,
+                                                    data.path("parent_id")
+                                                            .asLong(0))
                 .toChannelCategory()
                 .orElse(null);
         
         this.overrides = new ArrayList<>();
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord,
-                                                                                                        server,
-                                                                                                        node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         
         instances.put(id, this);
     }
@@ -54,12 +56,16 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
         
-        if (bitrate != data.path("bitrate").asInt(bitrate)) {
-            bitrate = data.get("bitrate").asInt();
+        if (bitrate != data.path("bitrate")
+                .asInt(bitrate)) {
+            bitrate = data.get("bitrate")
+                    .asInt();
             traits.add(BITRATE);
         }
-        if (limit != data.path("limit").asInt(limit)) {
-            limit = data.get("limit").asInt();
+        if (limit != data.path("limit")
+                .asInt(limit)) {
+            limit = data.get("limit")
+                    .asInt();
             traits.add(USER_LIMIT);
         }
         if (this.category == null && data.has("parent_id")) {
@@ -74,14 +80,15 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
                 traits.add(CATEGORY);
             }
         }
-        if (!name.equals(data.path("name").asText(name))) {
-            name = data.get("name").asText();
+        if (!name.equals(data.path("name")
+                                 .asText(name))) {
+            name = data.get("name")
+                    .asText();
             traits.add(NAME);
         }
         List<PermissionOverride> overrides = new ArrayList<>();
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord,
-                                                                                                        server,
-                                                                                                        node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         if (!ListHelper.equalContents(overrides, this.overrides)) {
             this.overrides.clear();
             this.overrides.addAll(overrides);
@@ -125,16 +132,20 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent().equals(user))
-                .map(override -> override.getAllowed().contains(permission))
+                .filter(override -> override.getParent()
+                        .equals(user))
+                .map(override -> override.getAllowed()
+                        .contains(permission))
                 .findAny()
                 .or(() -> this.getCategory()
                         .flatMap(channelCategory -> channelCategory.getPermissionOverrides()
                                 .stream()
                                 .filter(override -> override.getParent() != null)
-                                .filter(override -> override.getParent().equals(user))
+                                .filter(override -> override.getParent()
+                                        .equals(user))
                                 .findAny())
-                        .map(override -> override.getAllowed().contains(permission)))
+                        .map(override -> override.getAllowed()
+                                .contains(permission)))
                 .orElseGet(() -> toServerChannel().map(ServerChannel::getServer)
                         .orElseThrow(AssertionError::new)
                         .getEveryoneRole()
@@ -142,12 +153,15 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
                         .contains(Permission.SEND_MESSAGES));
     }
     
-// Static members
+    // Static members
     // Static membe
     public static ServerVoiceChannel getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
+        long id = data.get("id")
+                .asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
+        if (server == null) server = ServerInternal.getInstance(discord,
+                                                                data.path("guild_id")
+                                                                        .asLong(0));
         if (instances.containsKey(id)) return instances.get(id);
         else return new ServerVoiceChannelInternal(discord, server, data);
     }

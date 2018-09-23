@@ -68,8 +68,9 @@ public class SelfInternal extends UserInternal implements Self {
                 .endpoint(Endpoint.of(Endpoint.Location.SELF_INFO))
                 .node(objectNode().set("username", JsonHelper.nodeOf(name)))
                 .execute(data -> {
-                    if (!discriminator.equals(data.path("discriminator").asText(discriminator)))
-                        discriminator = data.get("discriminator").asText();
+                    if (!discriminator.equals(data.path("discriminator")
+                                                      .asText(discriminator))) discriminator = data.get("discriminator")
+                            .asText();
                     return null;
                 });
     }
@@ -107,28 +108,23 @@ public class SelfInternal extends UserInternal implements Self {
     }
     
     private CompletableFuture<Void> sendStatus() {
-        return ((DiscordInternal) getDiscord()).getWebSocket().sendPayload(Payload.create(OpCode.STATUS_UPDATE,
-                                                                                          objectNode("since",
-                                                                                                     (status ==
-                                                                                                      Presence.Status.IDLE ?
-                                                                                                      System.currentTimeMillis() :
-                                                                                                      null),
-                                                                                                     "game",
-                                                                                                     objectNode("type",
-                                                                                                                type.getId(),
-                                                                                                                "name",
-                                                                                                                title,
-                                                                                                                // only include an URL if there is a URL actually set, else include nothing
-                                                                                                                (url !=
-                                                                                                                 null ?
-                                                                                                                 new Object[]{
-                                                                                                                         "url",
-                                                                                                                         url} :
-                                                                                                                 new Object[0])),
-                                                                                                     "status",
-                                                                                                     status.getKey(),
-                                                                                                     "afk",
-                                                                                                     false))).thenApply(
-                e -> null);
+        return ((DiscordInternal) getDiscord()).getWebSocket()
+                .sendPayload(Payload.create(OpCode.STATUS_UPDATE,
+                                            objectNode("since",
+                                                       (status == Presence.Status.IDLE ? System.currentTimeMillis() :
+                                                        null),
+                                                       "game",
+                                                       objectNode("type", type.getId(), "name", title,
+                                                                  // only include an
+                                                                  // URL if there is a
+                                                                  // URL actually set,
+                                                                  // else include nothing
+                                                                  (url != null ? new Object[]{"url", url} :
+                                                                   new Object[0])),
+                                                       "status",
+                                                       status.getKey(),
+                                                       "afk",
+                                                       false)))
+                .thenApply(e -> null);
     }
 }

@@ -16,7 +16,7 @@ public class ServerWebhookUpdateEventInternal extends EventBase implements Serve
         this.channel = channel;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Server getServer() {
         return server;

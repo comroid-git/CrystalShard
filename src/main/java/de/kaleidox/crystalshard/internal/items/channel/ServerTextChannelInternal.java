@@ -37,17 +37,22 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     private ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
-        this.name = data.path("name").asText("");
-        this.isNsfw = data.path("nsfw").asBoolean(false);
-        this.topic = data.path("topic").asText(null);
-        this.category = ChannelInternal.getInstance(discord, data.path("parent_id").asLong(0))
-                .toChannelCategory()
-                .orElse(null);
+        this.name = data.path("name")
+                .asText("");
+        this.isNsfw = data.path("nsfw")
+                .asBoolean(false);
+        this.topic = data.path("topic")
+                .asText(null);
+        this.category = data.has("parent_id") && !data.path("parent_id")
+                .isNull() ? ChannelInternal.getInstance(discord,
+                                                        data.path("parent_id")
+                                                                .asLong())
+                                .toChannelCategory()
+                                .orElse(null) : null;
         
         this.overrides = new ArrayList<>();
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord,
-                                                                                                        server,
-                                                                                                        node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         
         instances.put(id, this);
     }
@@ -57,16 +62,22 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
         
-        if (isNsfw != data.path("nsfw").asBoolean(isNsfw)) {
-            isNsfw = data.get("nsfw").asBoolean();
+        if (isNsfw != data.path("nsfw")
+                .asBoolean(isNsfw)) {
+            isNsfw = data.get("nsfw")
+                    .asBoolean();
             traits.add(NSFW_FLAG);
         }
-        if (!topic.equals(data.path("topic").asText(topic))) {
-            topic = data.get("topic").asText();
+        if (!topic.equals(data.path("topic")
+                                  .asText(topic))) {
+            topic = data.get("topic")
+                    .asText();
             traits.add(TOPIC);
         }
-        if (!name.equals(data.path("name").asText(name))) {
-            name = data.get("name").asText();
+        if (!name.equals(data.path("name")
+                                 .asText(name))) {
+            name = data.get("name")
+                    .asText();
             traits.add(NAME);
         }
         if (this.category == null && data.has("parent_id")) {
@@ -82,9 +93,8 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
             }
         }
         List<PermissionOverride> overrides = new ArrayList<>();
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord,
-                                                                                                        server,
-                                                                                                        node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         if (!ListHelper.equalContents(overrides, this.overrides)) {
             this.overrides.clear();
             this.overrides.addAll(overrides);
@@ -138,16 +148,20 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent().equals(user))
-                .map(override -> override.getAllowed().contains(permission))
+                .filter(override -> override.getParent()
+                        .equals(user))
+                .map(override -> override.getAllowed()
+                        .contains(permission))
                 .findAny()
                 .or(() -> this.getCategory()
                         .flatMap(channelCategory -> channelCategory.getPermissionOverrides()
                                 .stream()
                                 .filter(override -> override.getParent() != null)
-                                .filter(override -> override.getParent().equals(user))
+                                .filter(override -> override.getParent()
+                                        .equals(user))
                                 .findAny())
-                        .map(override -> override.getAllowed().contains(permission)))
+                        .map(override -> override.getAllowed()
+                                .contains(permission)))
                 .or(() -> Optional.of(toServerChannel().map(ServerChannel::getServer)
                                               .orElseThrow(AssertionError::new)
                                               .getEveryoneRole()
@@ -156,12 +170,14 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
                 .orElse(true); // if no information could be found, assert TRUE
     }
     
-// Static members
-    // Static membe
+    // Static members
     public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id").asLong(-1);
+        long id = data.get("id")
+                .asLong(-1);
         if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (server == null) server = ServerInternal.getInstance(discord, data.path("guild_id").asLong(0));
+        if (server == null) server = ServerInternal.getInstance(discord,
+                                                                data.path("guild_id")
+                                                                        .asLong(0));
         if (instances.containsKey(id)) return instances.get(id);
         else return new ServerTextChannelInternal(discord, server, data);
     }

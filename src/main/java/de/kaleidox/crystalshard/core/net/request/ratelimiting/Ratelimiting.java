@@ -41,7 +41,8 @@ public class Ratelimiting {
         assureAtomicValues(endpoint);
         AtomicInteger remaining = remainingMap.get(endpoint);
         AtomicReference<Instant> reset = resetMap.get(endpoint);
-        if (remaining.get() == 0 && reset.get().isAfter(Instant.now())) {
+        if (remaining.get() == 0 && reset.get()
+                .isAfter(Instant.now())) {
             remaining.incrementAndGet();
         }
         return remaining;
@@ -74,11 +75,17 @@ public class Ratelimiting {
                 // set fail-safe map elements, if not set for this endpoint
                 headers.firstValue("X-RateLimit-Remaining")
                         .map(Integer::parseInt)
-                        .ifPresent(readyAt -> remainingMap.get(endpoint).set(readyAt));
-                headers.firstValue("X-RateLimit-Limit").map(Integer::parseInt).ifPresent(limit -> limitMap.get(endpoint)
-                        .set(limit));
-                headers.firstValue("X-RateLimit-Reset").map(Long::parseLong).map(Instant::ofEpochMilli).ifPresent(
-                        retryAt -> resetMap.get(endpoint).set(retryAt));
+                        .ifPresent(readyAt -> remainingMap.get(endpoint)
+                                .set(readyAt));
+                headers.firstValue("X-RateLimit-Limit")
+                        .map(Integer::parseInt)
+                        .ifPresent(limit -> limitMap.get(endpoint)
+                                .set(limit));
+                headers.firstValue("X-RateLimit-Reset")
+                        .map(Long::parseLong)
+                        .map(Instant::ofEpochMilli)
+                        .ifPresent(retryAt -> resetMap.get(endpoint)
+                                .set(retryAt));
             } catch (NullPointerException e) {
                 logger.exception(e, "NPE on Ratelimit header evaluation.");
             }
@@ -90,6 +97,8 @@ public class Ratelimiting {
     private void assureAtomicValues(Endpoint endpoint) {
         remainingMap.putIfAbsent(endpoint, new AtomicInteger(1));
         limitMap.putIfAbsent(endpoint, new AtomicInteger(1));
-        resetMap.putIfAbsent(endpoint, new AtomicReference<>(Instant.now().minusSeconds(1)));
+        resetMap.putIfAbsent(endpoint,
+                             new AtomicReference<>(Instant.now()
+                                                           .minusSeconds(1)));
     }
 }

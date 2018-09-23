@@ -54,6 +54,12 @@ public class WebRequest<T> {
         this.node = node;
     }
     
+// Override Methods
+    @Override
+    public String toString() {
+        return method + " @ " + endpoint;
+    }
+    
     public WebRequest<T> discord(Discord discord) {
         this.discord = (DiscordInternal) discord;
         return this;
@@ -109,46 +115,61 @@ public class WebRequest<T> {
         final JsonNode finalData = data;
         ratelimiter.schedule(this, headersFuture, () -> {
             try {
-                String urlExternal = endpoint.getUrl().toExternalForm();
+                String urlExternal = endpoint.getUrl()
+                        .toExternalForm();
                 String requestBody = (method == Method.GET ? "" : finalData.toString());
-                logger.trace(
-                        "Creating request: " + method.getDescriptor() + " " + urlExternal + " with responseBody: " +
-                        requestBody);
+                logger.trace("Creating request: " + toString() + " with request body: " + requestBody);
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(urlExternal))
-                        .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
-                                 "Content-Type", "application/json",
-                                 "Authorization", discord.getPrefixedToken())
+                        .headers("User-Agent",
+                                 "DiscordBot (http://kaleidox.de, 0.1)",
+                                 "Content-Type",
+                                 "application/json",
+                                 "Authorization",
+                                 discord.getPrefixedToken())
                         .method(method.getDescriptor(), HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
                 String responseBody = response.body();
+                int statusCode = response.statusCode();
                 headersFuture.complete(response.headers());
-                switch (response.statusCode()) {
+                JsonNode responseNode = JsonHelper.parse(responseBody);
+                boolean unknown = true;
+                switch (statusCode) {
                     case 200: // 200 OK
                     case 204: // 204 OK is a successful DELETE method
-                        future.complete(JsonHelper.parse(responseBody));
-                    case 429: // 429 Ratelimited
-                        JsonNode responseNode = JsonHelper.parse(responseBody);
-                        logger.warn("Warning: " + responseNode.get("message"));
-                        // wait for ratelimiter retry
+                        future.complete(responseNode);
                         break;
+                    case 429: // 429 Ratelimited
+                        logger.warn("{429} Warning: Ratelimit was hit with request: " + toString() + ". Response was:" +
+                                    responseNode + "\n\t\tPlease contact the developer!");
+                        // wait for ratelimiter retry
+                        return;
                     case 400: // 400 Bad Request
                         logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " + urlExternal +
                                      " with response responseBody: " + responseBody + " and request responseBody: " +
                                      requestBody);
                         break;
+                    // Non-Unknown codes, yet dont need special treatment:
+                    case 404: // Not Found
+                        unknown = false;
                     default: // Anything else
-                        logger.traceElseInfo("Recieved unknown status code " + response.statusCode() +
-                                             " from Discord with responseBody: " + responseBody,
-                                             "Recieved unknown status code: " + response.statusCode());
+                        logger.traceElseInfo("{" + statusCode + ":" + responseNode.get("code")
+                                                     .asText() + ":\"" + responseNode.get("message")
+                                                     .asText() + "\"} " + (unknown ?
+                                                                        "Recieved unknown status code from Discord " +
+                                                                        "with responseBody: " +
+                                                                        responseBody :
+                                                                        "Untreated code recieved with body: " +
+                                                                        responseBody),
+                                             "Recieved unknown status code: " + statusCode);
                         future.completeExceptionally(new DiscordResponseException(
-                                "Discord Responded with unknown status code " + response.statusCode() +
-                                " and message: " + responseBody));
+                                "Discord Responded with unknown status code " + statusCode + " and message: " +
+                                responseBody));
                         break;
                 }
             } catch (Throwable e) {
-                logger.exception(e, "Error in WebRequest @ " + endpoint);
+                logger.exception(e, "Error in WebRequest " + toString());
             }
         });
         

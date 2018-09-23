@@ -9,10 +9,12 @@ import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleCre
 import de.kaleidox.crystalshard.main.items.role.Role;
 
 public class GUILD_ROLE_CREATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id").asLong());
+        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord,
+                                                                            data.get("guild_id")
+                                                                                    .asLong());
         Role role = RoleInternal.getInstance(server, data.get("role"));
         
         server.addRole(role);

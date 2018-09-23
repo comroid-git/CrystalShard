@@ -71,7 +71,8 @@ public enum LoggingLevel {
     
     // Static membe
     
-// Static members
+    // Static members
+    
     /**
      * Finds a logging level by its name.
      *
@@ -79,6 +80,8 @@ public enum LoggingLevel {
      * @return The logging level with that name.
      */
     public static Optional<LoggingLevel> ofName(String name) {
-        return Stream.of(values()).filter(level -> level.name.equalsIgnoreCase(name)).findAny();
+        return Stream.of(values())
+                .filter(level -> level.name.equalsIgnoreCase(name))
+                .findAny();
     }
 }

@@ -17,7 +17,9 @@ public class CHANNEL_CREATE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Channel channel = ChannelInternal.getInstance(discord, data);
-        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
+        Server server = channel.toServerChannel()
+                .map(ServerChannel::getServer)
+                .orElse(null);
         
         ChannelCreateEventInternal fireEvent = new ChannelCreateEventInternal(discord, channel);
         

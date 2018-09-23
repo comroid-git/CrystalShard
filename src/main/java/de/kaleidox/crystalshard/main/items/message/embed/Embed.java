@@ -81,7 +81,9 @@ public interface Embed extends Castable<Embed> {
         default Builder setAuthor(User user, String url) {
             return setAuthor(EmbedDraft.Author.BUILD(user.getName(),
                                                      url,
-                                                     user.getAvatarUrl().map(URL::toExternalForm).orElse(null)));
+                                                     user.getAvatarUrl()
+                                                             .map(URL::toExternalForm)
+                                                             .orElse(null)));
         }
         
         default Builder setAuthor(User user) {
@@ -110,7 +112,7 @@ public interface Embed extends Castable<Embed> {
     }
     
     interface Boundaries {
-// Static Fields
+        // Static Fields
         int TITLE_LENGTH       = 256;
         
         int DESCRIPTION_LENGTH = 2048;
@@ -128,7 +130,8 @@ public interface Embed extends Castable<Embed> {
         int TOTAL_CHAR_COUNT   = 6000;
     }
     
-// Static membe
+    // Static members
+    // Static membe
     static Builder BUILDER() {
         return new EmbedBuilderInternal();
     }

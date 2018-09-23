@@ -21,7 +21,7 @@ public interface PermissionList extends Set<Permission> {
     @Override
     boolean remove(Object o);
     
-// Static members
+    // Static members
     // Static membe
     static PermissionList emptyListOf(PermissionOverwritable parent) {
         return new PermissionListInternal(parent, 0);

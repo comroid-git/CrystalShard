@@ -87,13 +87,14 @@ public interface Server
     
     CompletableFuture<Void> leave();
     
-// Static members
+    // Static members
     // Static membe
     static CompletableFuture<Server> of(Discord discord, long id) {
         CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
-        discord.getServerById(id).ifPresentOrElse(future::complete,
-                                                  () -> future.completeExceptionally(new NoSuchElementException(
-                                                          "Server is not available.")));
+        discord.getServerById(id)
+                .ifPresentOrElse(future::complete,
+                                 () -> future.completeExceptionally(new NoSuchElementException(
+                                         "Server is not " + "available.")));
         return future;
     }
 }

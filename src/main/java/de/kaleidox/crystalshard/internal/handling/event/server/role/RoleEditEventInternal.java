@@ -13,7 +13,7 @@ public class RoleEditEventInternal extends EventBase implements RoleEditEvent {
     private final Server               server;
     private final Role                 role;
     private final Set<EditTrait<Role>> traits;
-
+    
     public RoleEditEventInternal(DiscordInternal discordInternal, Server server, Role role,
                                  Set<EditTrait<Role>> traits) {
         super(discordInternal);
@@ -21,18 +21,18 @@ public class RoleEditEventInternal extends EventBase implements RoleEditEvent {
         this.role = role;
         this.traits = traits;
     }
-
-// Override Methods
+    
+    // Override Methods
     @Override
     public Set<EditTrait<Role>> getEditTraits() {
         return traits;
     }
-
+    
     @Override
     public Role getRole() {
         return role;
     }
-
+    
     @Override
     public Server getServer() {
         return server;

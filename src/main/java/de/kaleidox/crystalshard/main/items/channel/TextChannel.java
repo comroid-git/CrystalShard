@@ -30,7 +30,7 @@ public interface TextChannel extends Channel, MessageReciever {
         Updater setParent(ChannelCategory category);
     }
     
-// Static members
+    // Static members
     // Static membe
     static CompletableFuture<TextChannel> of(Discord discord, long id) {
         CompletableFuture<TextChannel> future;
@@ -43,11 +43,13 @@ public interface TextChannel extends Channel, MessageReciever {
                         .endpoint(Endpoint.of(Endpoint.Location.CHANNEL, id))
                         .execute(node -> {
                             if (node.has("guild_id")) {
-                                return ServerTextChannelInternal.getInstance(discord, id).toTextChannel().orElseThrow(
-                                        AssertionError::new);
+                                return ServerTextChannelInternal.getInstance(discord, id)
+                                        .toTextChannel()
+                                        .orElseThrow(AssertionError::new);
                             } else if (node.has("recipients")) {
-                                return PrivateTextChannelInternal.getInstance(discord, id).toTextChannel().orElseThrow(
-                                        AssertionError::new);
+                                return PrivateTextChannelInternal.getInstance(discord, id)
+                                        .toTextChannel()
+                                        .orElseThrow(AssertionError::new);
                             }
                             throw new NoSuchElementException("Could not create TextChannel. ID: " + id);
                         }));

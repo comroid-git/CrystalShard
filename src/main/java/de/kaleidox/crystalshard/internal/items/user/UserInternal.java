@@ -57,12 +57,15 @@ public class UserInternal implements User {
         this.id = user.getId();
         this.name = user.getName();
         this.discriminator = user.getDiscriminator();
-        this.avatarUrl = user.getAvatarUrl().orElse(null);
+        this.avatarUrl = user.getAvatarUrl()
+                .orElse(null);
         this.bot = user.isBot();
         this.mfa = user.hasMultiFactorAuthorization();
         this.verified = user.isVerified();
-        this.locale = user.getLocale().orElse(null);
-        this.email = user.getEmail().orElse(null);
+        this.locale = user.getLocale()
+                .orElse(null);
+        this.email = user.getEmail()
+                .orElse(null);
         this.discord = user.getDiscord();
         this.listenerManagers = ((UserInternal) user).listenerManagers;
     }
@@ -70,17 +73,26 @@ public class UserInternal implements User {
     public UserInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating user object for data: " + data.toString());
         this.discord = discord;
-        this.id = data.get("id").asLong();
-        this.name = data.path("username").asText(null);
-        this.discriminator = data.get("discriminator").asText();
-        this.avatarUrl = data.has("avatar_url") ? UrlHelper.orNull(data.get("avatar_url").asText()) : null;
-        this.bot = data.path("bot").asBoolean(false);
+        this.id = data.get("id")
+                .asLong();
+        this.name = data.path("username")
+                .asText(null);
+        this.discriminator = data.get("discriminator")
+                .asText();
+        this.avatarUrl = data.has("avatar_url") ? UrlHelper.orNull(data.get("avatar_url")
+                                                                           .asText()) : null;
+        this.bot = data.path("bot")
+                .asBoolean(false);
         //noinspection SimplifiableConditionalExpression
-        this.mfa = data.has("mfa") ? data.get("mfa_enabled").asBoolean(false) : false;
-        this.locale = data.has("locale") ? data.get("locale").asText(null) : null;
+        this.mfa = data.has("mfa") ? data.get("mfa_enabled")
+                .asBoolean(false) : false;
+        this.locale = data.has("locale") ? data.get("locale")
+                .asText(null) : null;
         //noinspection SimplifiableConditionalExpression
-        this.verified = data.has("verified") ? data.get("verified").asBoolean(false) : false;
-        this.email = data.has("email") ? data.get("email").asText(null) : null;
+        this.verified = data.has("verified") ? data.get("verified")
+                .asBoolean(false) : false;
+        this.email = data.has("email") ? data.get("email")
+                .asText(null) : null;
         listenerManagers = new ArrayList<>();
         
         logger.nonNullChecks(name, discriminator);
@@ -153,7 +165,7 @@ public class UserInternal implements User {
     @Override
     public ServerMember toServerMember(Server server) {
         if (this instanceof ServerMember) return (ServerMember) this;
-        return new ServerMemberInternal(this, server);
+        return ServerMemberInternal.getInstance(this, server);
     }
     
     @Override
@@ -242,50 +254,68 @@ public class UserInternal implements User {
     public Set<EditTrait<User>> updateData(JsonNode data) {
         Set<EditTrait<User>> traits = new HashSet<>();
         
-        if (!name.equals(data.path("name").asText(name))) {
-            name = data.get("name").asText();
+        if (!name.equals(data.path("name")
+                                 .asText(name))) {
+            name = data.get("name")
+                    .asText();
             traits.add(USERNAME);
         }
-        if (!discriminator.equals(data.path("discriminator").asText(discriminator))) {
-            discriminator = data.get("discriminator").asText();
+        if (!discriminator.equals(data.path("discriminator")
+                                          .asText(discriminator))) {
+            discriminator = data.get("discriminator")
+                    .asText();
             traits.add(DISCRIMINATOR);
         }
-        if (!NullHelper.orDefault(locale, "").equals(data.path("avatar_url")
-                                                             .asText(NullHelper.orDefault(locale, "")))) {
-            avatarUrl = UrlHelper.orNull(data.get("avatar_url").asText());
+        if (!NullHelper.orDefault(locale, "")
+                .equals(data.path("avatar_url")
+                                .asText(NullHelper.orDefault(locale, "")))) {
+            avatarUrl = UrlHelper.orNull(data.get("avatar_url")
+                                                 .asText());
             traits.add(AVATAR);
         }
-        if (mfa != data.path("mfa_enabled").asBoolean(mfa)) {
-            mfa = data.get("mfa_enabled").asBoolean();
+        if (mfa != data.path("mfa_enabled")
+                .asBoolean(mfa)) {
+            mfa = data.get("mfa_enabled")
+                    .asBoolean();
             traits.add(MFA_STATE);
         }
-        if (verified != data.path("verified").asBoolean(verified)) {
-            verified = data.get("verified").asBoolean();
+        if (verified != data.path("verified")
+                .asBoolean(verified)) {
+            verified = data.get("verified")
+                    .asBoolean();
             traits.add(VERIFIED_STATE);
         }
-        if (!NullHelper.orDefault(locale, "").equals(data.path("locale").asText(NullHelper.orDefault(locale, "")))) {
-            locale = data.get("locale").asText();
+        if (!NullHelper.orDefault(locale, "")
+                .equals(data.path("locale")
+                                .asText(NullHelper.orDefault(locale, "")))) {
+            locale = data.get("locale")
+                    .asText();
             traits.add(LOCALE);
         }
-        if (!NullHelper.orDefault(email, "").equals(data.path("email").asText(NullHelper.orDefault(email, "")))) {
-            email = data.get("email").asText();
+        if (!NullHelper.orDefault(email, "")
+                .equals(data.path("email")
+                                .asText(NullHelper.orDefault(email, "")))) {
+            email = data.get("email")
+                    .asText();
             traits.add(EMAIL);
         }
         
         return traits;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static User getInstance(Discord discord, long id) {
         assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) :
-               new WebRequest<User>(discord).method(Method.GET).endpoint(Endpoint.Location.USER.toEndpoint(id)).execute(
-                       node -> getInstance(discord, node)).join();
+        return instances.containsKey(id) ? instances.get(id) : new WebRequest<User>(discord).method(Method.GET)
+                .endpoint(Endpoint.Location.USER.toEndpoint(id))
+                .execute(node -> getInstance(discord, node))
+                .join();
     }
     
     public static User getInstance(Discord discord, JsonNode data) {
-        long id = data.path("id").asLong(-1);
+        long id = data.path("id")
+                .asLong(-1);
         assert id != -1 : "No valid ID found.";
         return instances.containsKey(id) ? instances.get(id) : new UserInternal(discord, data);
     }

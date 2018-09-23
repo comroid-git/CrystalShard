@@ -7,12 +7,12 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public interface ServerUnbanEvent extends ServerEvent {
     Ban getUnban();
-
-// Override Methods
+    
+    // Override Methods
     default Server getServer() {
         return getUnban().getServer();
     }
-
+    
     default ServerMember getUnbannedUser() {
         return getUnban().getUser();
     }
