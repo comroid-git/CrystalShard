@@ -33,7 +33,7 @@ public class WebSocketListener implements WebSocket.Listener {
     }
     
     @Override
-    public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
+    public CompletionStage<String> onText(WebSocket webSocket, CharSequence data, boolean last) {
         webSocket.request(1);
         onTextBuilder.append(data);
         if (last) {
@@ -41,10 +41,10 @@ public class WebSocketListener implements WebSocket.Listener {
             onTextBuilder = new StringBuilder();
             CompletableFuture<String> returning = onTextFuture;
             onTextFuture = new CompletableFuture<>();
-            returning.thenAcceptAsync(logger::deeptrace, discord.getExecutor());
+            returning.thenAcceptAsync(logger::deeptrace);
             returning.exceptionally(logger::exception)
-                    .thenApplyAsync(JsonHelper::parse, discord.getExecutor())
-                    .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node), discord.getExecutor());
+                    .thenApplyAsync(JsonHelper::parse)
+                    .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node));
             return returning;
         }
         return onTextFuture;
