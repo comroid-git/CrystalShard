@@ -25,8 +25,7 @@ public class DiscordEventDispatch {
                                     .startHeartbeat(heartbeat_interval);
                             break;
                         case DISPATCH:
-                            discord.getThreadPool()
-                                    .execute(() -> HandlerBase.tryHandle(discord, data));
+                            HandlerBase.tryHandle(discord, data);
                             break;
                         case HEARTBEAT:
                             webSocket.heartbeat();

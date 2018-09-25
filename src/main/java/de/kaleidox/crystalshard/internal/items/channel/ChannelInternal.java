@@ -84,9 +84,6 @@ public abstract class ChannelInternal implements Channel {
     // Static membe
     public static Channel getInstance(Discord discord, long id) {
         assert id != -1 : "Invalid ID";
-        if (id == 0) {
-            System.out.println("sout");
-        }
         return collectInstances().stream()
                 .filter(channel -> channel.getId() == id)
                 .findAny()

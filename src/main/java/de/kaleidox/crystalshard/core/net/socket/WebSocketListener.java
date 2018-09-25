@@ -40,11 +40,11 @@ public class WebSocketListener implements WebSocket.Listener {
             onTextFuture.complete(onTextBuilder.toString());
             onTextBuilder = new StringBuilder();
             CompletableFuture<String> returning = onTextFuture;
-            onTextFuture = new CompletableFuture<>();
             returning.thenAcceptAsync(logger::deeptrace);
             returning.exceptionally(logger::exception)
                     .thenApplyAsync(JsonHelper::parse)
                     .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node));
+            onTextFuture = new CompletableFuture<>();
             return returning;
         }
         return onTextFuture;
