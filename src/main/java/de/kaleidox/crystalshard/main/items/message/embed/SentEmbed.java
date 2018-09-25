@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.message.Message;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -114,8 +113,9 @@ public interface SentEmbed extends Embed {
     Updater getUpdater() throws IllegalAccessException;
     
     /**
-     * Modifies the title of the sent embed. If this embed was not sent by the bot, the returned future will complete
-     * exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the title of the sent embed.
+     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -127,8 +127,9 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setTitle(String title);
     
     /**
-     * Modifies the description of the sent embed. If this embed was not sent by the bot, the returned future will
-     * complete exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the description of the sent embed.
+     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -140,8 +141,9 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setDescription(String description);
     
     /**
-     * Modifies the URL of the sent embed. If this embed was not sent by the bot, the returned future will complete
-     * exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the URL of the sent embed.
+     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -153,8 +155,9 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setUrl(String url);
     
     /**
-     * Modifies the timestamp of the sent embed. If this embed was not sent by the bot, the returned future will
-     * complete exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the timestamp of the sent embed.
+     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -166,8 +169,9 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setTimestamp(Instant timestamp);
     
     /**
-     * Modifies the color of the sent embed. If this embed was not sent by the bot, the returned future will complete
-     * exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the color of the sent embed.
+     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -178,10 +182,10 @@ public interface SentEmbed extends Embed {
      */
     CompletableFuture<SentEmbed> setColor(Color color);
     
-    /**
+    /**7
      * Modifies the fields within the embed after the given modifying consumer. If this embed was not sent by the bot,
      * the returned future will complete exceptionally with a {@link IllegalAccessException}, as you may never edit
-     * someone else's messages.
+     * someone else's messages.7
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -192,10 +196,11 @@ public interface SentEmbed extends Embed {
      */
     CompletableFuture<SentEmbed> modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier);
     
-    /**
-     * Modifies all fields that match the given predicate. The modifier will only be applied to the fields that test
-     * TRUE. If this embed was not sent by the bot, the returned future will complete exceptionally with a {@link
-     * IllegalAccessException}, as you may never edit someone else's messages.
+    /**7
+     * Modifies all fields that match the given predicate.
+     * The modifier will only be applied to the fields that test TRUE.
+     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.7
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -264,8 +269,8 @@ public interface SentEmbed extends Embed {
         Updater modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier);
         
         /**
-         * Modifies all fields that match the given predicate. The modifier will only be applied to the fields that test
-         * TRUE.
+         * Modifies all fields that match the given predicate.
+         * The modifier will only be applied to the fields that test TRUE.
          *
          * @param tester        The predicate to filter fields.
          * @param fieldModifier A consumer to modify the field.

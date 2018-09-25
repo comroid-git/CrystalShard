@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.util.helpers.UrlHelper;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -246,7 +245,6 @@ public class SentEmbedInternal implements SentEmbed {
             this.message = embed.getMessage();
         }
         
-        // Override Methods
         @Override
         public SentEmbed.Updater setTitle(String title) {
             builder.setTitle(title);

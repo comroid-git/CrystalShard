@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.util.discord.util;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-
 import java.util.concurrent.CompletableFuture;
 
 public class Wastebasket {

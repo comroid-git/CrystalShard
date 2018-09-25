@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main.items.permission;
 
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

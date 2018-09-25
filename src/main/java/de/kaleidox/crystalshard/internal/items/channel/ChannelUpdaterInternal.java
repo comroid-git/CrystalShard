@@ -14,7 +14,6 @@ import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.channel.VoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;

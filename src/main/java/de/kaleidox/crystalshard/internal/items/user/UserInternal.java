@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -23,7 +23,6 @@ import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -178,7 +177,10 @@ public class UserInternal implements User {
         return new WebRequest<PrivateTextChannel>(discord).method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.SELF_CHANNELS))
                 .node(JsonHelper.objectNode("recipient_id", id))
-                .execute(node -> PrivateTextChannelInternal.getInstance(discord, node));
+                .execute(node -> discord.getChannelCache()
+                        .getOrCreate(discord, node)
+                        .toPrivateTextChannel()
+                        .orElseThrow(AssertionError::new));
     }
     
     @Override
@@ -251,6 +253,11 @@ public class UserInternal implements User {
         return null;
     }
     
+    @Override
+    public Cache<User, Long, Long> getCache() {
+        return discord.getUserCache();
+    }
+    
     public Set<EditTrait<User>> updateData(JsonNode data) {
         Set<EditTrait<User>> traits = new HashSet<>();
         
@@ -301,22 +308,5 @@ public class UserInternal implements User {
         }
         
         return traits;
-    }
-    
-    // Static members
-    // Static membe
-    public static User getInstance(Discord discord, long id) {
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) : new WebRequest<User>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.USER.toEndpoint(id))
-                .execute(node -> getInstance(discord, node))
-                .join();
-    }
-    
-    public static User getInstance(Discord discord, JsonNode data) {
-        long id = data.path("id")
-                .asLong(-1);
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) : new UserInternal(discord, data);
     }
 }

@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;

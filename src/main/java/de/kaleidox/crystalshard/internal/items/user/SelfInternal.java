@@ -18,7 +18,6 @@ import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -114,11 +113,12 @@ public class SelfInternal extends UserInternal implements Self {
                                                        (status == Presence.Status.IDLE ? System.currentTimeMillis() :
                                                         null),
                                                        "game",
-                                                       objectNode("type", type.getId(), "name", title,
-                                                                  // only include an
-                                                                  // URL if there is a
-                                                                  // URL actually set,
-                                                                  // else include nothing
+                                                       objectNode("type",
+                                                                  type.getId(),
+                                                                  "name",
+                                                                  title,
+                                                                  // only include an URL if there is a URL actually
+                                                                  // set, else include nothing
                                                                   (url != null ? new Object[]{"url", url} :
                                                                    new Object[0])),
                                                        "status",

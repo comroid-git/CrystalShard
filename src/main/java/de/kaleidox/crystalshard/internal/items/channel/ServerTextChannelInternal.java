@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -14,11 +13,9 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.ListHelper;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,21 +31,10 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     String          name;
     ChannelCategory category;
     
-    private ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
+    public ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
-        this.name = data.path("name")
-                .asText("");
-        this.isNsfw = data.path("nsfw")
-                .asBoolean(false);
-        this.topic = data.path("topic")
-                .asText(null);
-        this.category = data.has("parent_id") && !data.path("parent_id")
-                .isNull() ? ChannelInternal.getInstance(discord,
-                                                        data.path("parent_id")
-                                                                .asLong())
-                                .toChannelCategory()
-                                .orElse(null) : null;
+        updateData(data);
         
         this.overrides = new ArrayList<>();
         data.path("permission_overwrites")
@@ -81,16 +67,14 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
             traits.add(NAME);
         }
         if (this.category == null && data.has("parent_id")) {
-            ChannelCategory category = ChannelInternal.getInstance(discord,
-                                                                   data.path("parent_id")
-                                                                           .asLong(this.category == null ? 0 :
-                                                                                   this.category.getId()))
+            long parentId = data.path("parent_id")
+                    .asLong();
+            this.category = parentId == -1 ? null : discord.getChannelCache()
+                    .getOrRequest(parentId, parentId)
                     .toChannelCategory()
                     .orElse(null);
-            if (!this.category.equals(category)) {
-                this.category = category;
-                traits.add(CATEGORY);
-            }
+        } else if (this.category != null && !data.has("parent_id")) {
+            this.category = null;
         }
         List<PermissionOverride> overrides = new ArrayList<>();
         data.path("permission_overwrites")
@@ -168,17 +152,5 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
                                               .getPermissions()
                                               .contains(Permission.SEND_MESSAGES)))
                 .orElse(true); // if no information could be found, assert TRUE
-    }
-    
-    // Static members
-    public static ServerTextChannel getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id")
-                .asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (server == null) server = ServerInternal.getInstance(discord,
-                                                                data.path("guild_id")
-                                                                        .asLong(0));
-        if (instances.containsKey(id)) return instances.get(id);
-        else return new ServerTextChannelInternal(discord, server, data);
     }
 }

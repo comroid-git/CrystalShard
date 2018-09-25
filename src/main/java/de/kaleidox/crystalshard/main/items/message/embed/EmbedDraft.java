@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.internal.util.Container;
 import de.kaleidox.crystalshard.main.items.Nameable;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -38,8 +37,6 @@ public interface EmbedDraft extends Embed {
         
         Optional<URL> getIconUrl();
         
-        // Static members
-        // Static membe
         static Footer BUILD(String text, String iconUrl) {
             return new EmbedDraftInternal.Footer(text, iconUrl);
         }
@@ -48,8 +45,6 @@ public interface EmbedDraft extends Embed {
     interface Image extends Container.Interface {
         Optional<URL> getUrl();
         
-        // Static members
-        // Static membe
         static Image BUILD(String url) {
             return new EmbedDraftInternal.Image(url);
         }
@@ -60,8 +55,6 @@ public interface EmbedDraft extends Embed {
         
         Optional<URL> getIconUrl();
         
-        // Static members
-        // Static membe
         static Author BUILD(String name, String url, String iconUrl) {
             return new EmbedDraftInternal.Author(name, url, iconUrl);
         }
@@ -70,8 +63,6 @@ public interface EmbedDraft extends Embed {
     interface Thumbnail extends Container.Interface {
         Optional<URL> getUrl();
         
-        // Static members
-        // Static membe
         static Thumbnail BUILD(String url) {
             return new EmbedDraftInternal.Thumbnail(url);
         }
@@ -90,16 +81,12 @@ public interface EmbedDraft extends Embed {
             return Optional.of(new EmbedDraftInternal.EditableField(this));
         }
         
-        // Static members
-        // Static membe
         static Field BUILD(String title, String text, boolean inline) {
             return new EmbedDraftInternal.Field(title, text, (Objects.nonNull(inline) && inline));
         }
     }
     
     interface EditableField extends Field {
-        // Static members
-        // Static membe
         static EditableField BUILD(Field fromField) {
             return new EmbedDraftInternal.EditableField(fromField);
         }

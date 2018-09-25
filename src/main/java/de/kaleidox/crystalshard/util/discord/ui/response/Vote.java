@@ -12,7 +12,6 @@ import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.markers.NamedItem;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;

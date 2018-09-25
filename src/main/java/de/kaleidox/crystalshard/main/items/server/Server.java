@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.main.items.server;
 
-import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.core.cache.CacheStorable;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -17,16 +18,14 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-import de.kaleidox.util.CompletableFutureExtended;
-
 import java.net.URL;
 import java.util.Collection;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Server
-        extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener> {
+        extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>,
+        Cacheable<Server, Long, Long>, CacheStorable {
     Optional<URL> getIconUrl();
     
     Optional<URL> getSplashUrl();
@@ -86,15 +85,4 @@ public interface Server
     Optional<User> getUserById(long id);
     
     CompletableFuture<Void> leave();
-    
-    // Static members
-    // Static membe
-    static CompletableFuture<Server> of(Discord discord, long id) {
-        CompletableFutureExtended<Server> future = new CompletableFutureExtended<>(discord.getThreadPool());
-        discord.getServerById(id)
-                .ifPresentOrElse(future::complete,
-                                 () -> future.completeExceptionally(new NoSuchElementException(
-                                         "Server is not " + "available.")));
-        return future;
-    }
 }

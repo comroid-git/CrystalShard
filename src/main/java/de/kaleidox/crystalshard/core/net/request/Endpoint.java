@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.core.net.request;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.util.helpers.UrlHelper;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
@@ -125,7 +125,12 @@ public class Endpoint {
         public Endpoint toEndpoint(Object... parameter) {
             String[] params = new String[parameter.length];
             int parameterCount = getParameterCount();
-        
+            if (parameter.length == 1 && parameterCount == 2) {
+                if (parameter[0] instanceof IDPair) {
+                    IDPair pair = (IDPair) parameter[0];
+                    return toEndpoint(pair.getOne(), pair.getTwo());
+                }
+            }
             for (int i = 0; i < parameter.length; i++) {
                 Object x = parameter[i];
             
@@ -159,8 +164,6 @@ public class Endpoint {
         }
     }
     
-    // Static members
-    // Static membe
     public static Endpoint of(Location location, Object... parameter) {
         return location.toEndpoint(parameter);
     }

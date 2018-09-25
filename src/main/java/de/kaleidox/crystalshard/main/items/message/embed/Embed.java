@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.Castable;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -130,8 +129,6 @@ public interface Embed extends Castable<Embed> {
         int TOTAL_CHAR_COUNT   = 6000;
     }
     
-    // Static members
-    // Static membe
     static Builder BUILDER() {
         return new EmbedBuilderInternal();
     }

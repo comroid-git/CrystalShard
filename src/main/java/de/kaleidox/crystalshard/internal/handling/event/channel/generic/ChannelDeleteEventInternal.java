@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.event.channel.generic.ChannelDeleteEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
-
 import java.util.Optional;
 
 public class ChannelDeleteEventInternal extends EventBase implements ChannelDeleteEvent {

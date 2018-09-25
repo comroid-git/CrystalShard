@@ -1,14 +1,16 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
+import de.kaleidox.crystalshard.core.cache.CacheStorable;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
-public interface CustomEmoji extends DiscordItem, Emoji {
+public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, Long, IDPair>, CacheStorable {
     /**
      * Gets the server that this custom emoji is in.
      *

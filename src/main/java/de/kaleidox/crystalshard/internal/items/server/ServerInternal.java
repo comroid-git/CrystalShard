@@ -1,28 +1,27 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
+<<<<<<< HEAD
+=======
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
+>>>>>>> development
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
@@ -42,7 +41,6 @@ import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -96,9 +94,19 @@ public class ServerInternal implements Server {
     private              int                                                       memberCount;
     private              ChannelStructureInternal                                  structure;
     
-    private ServerInternal(Discord discord, JsonNode data) {
+    public ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());
         this.discord = (DiscordInternal) discord;
+<<<<<<< HEAD
+        this.id = data.get("id")
+                .asLong();
+        updateData(data);
+        this.everyoneRole = roles.stream()
+                .filter(role -> role.getName()
+                        .equalsIgnoreCase("@everyone"))
+                .findAny()
+                .orElseThrow(() -> new NoSuchElementException("No @everyone Role found!"));
+=======
         id = data.get("id")
                 .asLong();
         name = data.get("name")
@@ -205,6 +213,7 @@ public class ServerInternal implements Server {
                     .orElse(null);
         }
         
+>>>>>>> development
         listenerManangers = new ArrayList<>();
         
         instances.put(id, this);
@@ -406,14 +415,29 @@ public class ServerInternal implements Server {
         return listenerManangers.stream()
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());
+<<<<<<< HEAD
+    }
+    
+    @Override
+    public Cache<Server, Long, Long> getCache() {
+        return discord.getServerCache();
+=======
+>>>>>>> development
     }
     
     private User getOwnerPrivate(JsonNode data) {
         if (data.has("owner_id")) {
             //return new UserInternal(discord, data.get("application_id").asLong());
+<<<<<<< HEAD
+            long userId = data.get("owner_id")
+                    .asLong();
+            return discord.getUserCache()
+                    .getOrRequest(userId, userId);
+=======
             return UserInternal.getInstance(discord,
                                             data.get("owner_id")
                                                     .asLong());
+>>>>>>> development
         } else {
             return null;
         }
@@ -530,36 +554,64 @@ public class ServerInternal implements Server {
         
         if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id")
                 .asLong(-1)) {
+<<<<<<< HEAD
+            long afkChannelId = data.path("afk_channel_id")
+                    .asLong(-1);
+            afkChannel = discord.getChannelCache()
+                    .getOrRequest(afkChannelId, afkChannelId)
+=======
             afkChannel = ServerVoiceChannelInternal.getInstance(discord,
                                                                 data.path("afk_channel_id")
                                                                         .asLong(-1))
+>>>>>>> development
                     .toServerVoiceChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(AFK_CHANNEL);
         }
         if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id")
                 .asLong(-1)) {
+<<<<<<< HEAD
+            long embedChannelId = data.path("embed_channel_id")
+                    .asLong(-1);
+            embedChannel = discord.getChannelCache()
+                    .getOrRequest(embedChannelId, embedChannelId)
+=======
             embedChannel = ChannelInternal.getInstance(discord,
                                                        data.path("embed_channel_id")
                                                                .asLong(-1))
+>>>>>>> development
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(EMBED_CHANNEL);
         }
         if ((widgetChannel != null ? widgetChannel.getId() : -1) != data.path("widget_channel_id")
                 .asLong(-1)) {
+<<<<<<< HEAD
+            long widgetChannelId = data.path("widget_channel_id")
+                    .asLong(-1);
+            widgetChannel = discord.getChannelCache()
+                    .getOrRequest(widgetChannelId, widgetChannelId)
+=======
             widgetChannel = ChannelInternal.getInstance(discord,
                                                         data.path("widget_channel_id")
                                                                 .asLong(-1))
+>>>>>>> development
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(WIDGET_CHANNEL);
         }
         if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id")
                 .asLong(-1)) {
+<<<<<<< HEAD
+            long systemChannelId = data.path("system_channel_id")
+                    .asLong(-1);
+            systemChannel = discord.getChannelCache()
+                    .getOrRequest(systemChannelId, systemChannelId)
+=======
             systemChannel = ServerTextChannelInternal.getInstance(discord,
                                                                   data.path("system_channel_id")
                                                                           .asLong(-1))
+>>>>>>> development
                     .toServerTextChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(SYSTEM_CHANNEL);
@@ -587,6 +639,8 @@ public class ServerInternal implements Server {
     public void removeRole(Role role) {
         roles.remove(role);
     }
+<<<<<<< HEAD
+=======
     
     // Static members
     // Static membe
@@ -612,4 +666,5 @@ public class ServerInternal implements Server {
         if (instances.containsKey(id)) return instances.get(id);
         else return new ServerInternal(discord, data);
     }
+>>>>>>> development
 }

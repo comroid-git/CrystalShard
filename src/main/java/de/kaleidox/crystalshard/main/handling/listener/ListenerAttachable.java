@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.util.Collection;
 
 /**

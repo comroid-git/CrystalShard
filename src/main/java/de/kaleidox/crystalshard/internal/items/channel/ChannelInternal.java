@@ -1,26 +1,19 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,62 +73,8 @@ public abstract class ChannelInternal implements Channel {
         return id;
     }
     
-    // Static members
-    // Static membe
-    public static Channel getInstance(Discord discord, long id) {
-        assert id != -1 : "Invalid ID";
-        return collectInstances().stream()
-                .filter(channel -> channel.getId() == id)
-                .findAny()
-                .orElseGet(() -> new WebRequest<Channel>(discord).method(Method.GET)
-                        .endpoint(Endpoint.Location.CHANNEL.toEndpoint(id))
-                        .execute(node -> getInstance(discord, node))
-                        .join());
-    }
-    
-    public static Channel getInstance(Discord discord, JsonNode data) {
-        Server server = data.has("guild_id") ? ServerInternal.getInstance(discord,
-                                                                          data.get("guild_id")
-                                                                                  .asLong()) : null;
-        switch (ChannelType.getFromId(data.get("type")
-                                              .asInt())) {
-            case GUILD_TEXT:
-                return ServerTextChannelInternal.getInstance(discord, server, data);
-            case DM:
-                return PrivateTextChannelInternal.getInstance(discord, data);
-            case GUILD_VOICE:
-                return ServerVoiceChannelInternal.getInstance(discord, server, data);
-            case GROUP_DM:
-                return GroupChannelInternal.getInstance(discord, data);
-            case GUILD_CATEGORY:
-                return ChannelCategoryInternal.getInstance(discord, server, data);
-            default:
-                throw new NoSuchElementException("Unknown or no channel Type.");
-        }
-    }
-    
-    private static Collection<Channel> collectInstances() {
-        List<Channel> collect = new ArrayList<>();
-        ChannelCategoryInternal.instances.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .forEachOrdered(collect::add);
-        GroupChannelInternal.instances.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .forEachOrdered(collect::add);
-        PrivateTextChannelInternal.instances.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .forEachOrdered(collect::add);
-        ServerTextChannelInternal.instances.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .forEachOrdered(collect::add);
-        ServerVoiceChannelInternal.instances.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .forEachOrdered(collect::add);
-        return collect;
+    @Override
+    public Cache<Channel, Long, Long> getCache() {
+        return discord.getChannelCache();
     }
 }

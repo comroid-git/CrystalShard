@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.user.presence;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.util.BiTimestamp;
-
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -48,8 +47,6 @@ public interface UserActivity extends Nameable {
             return value;
         }
         
-        // Static members
-        // Static membe
         public static Flag getFromValue(int value) {
             return Stream.of(values())
                     .filter(flag -> flag.value == value)
@@ -83,8 +80,6 @@ public interface UserActivity extends Nameable {
             return String.format(pattern, (Object[]) param);
         }
         
-        // Static members
-        // Static membe
         public static Type getFromId(int id) {
             return Stream.of(Type.values())
                     .filter(type -> type.id == id)

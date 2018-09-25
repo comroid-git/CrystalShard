@@ -11,7 +11,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;

@@ -3,17 +3,18 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerDeleteEventInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerDeleteListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import java.util.concurrent.TimeUnit;
 
 public class GUILD_DELETE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Server server = ServerInternal.getInstance(discord,
-                                                   data.get("id")
-                                                           .asLong());
+        long serverId = data.get("id")
+                .asLong();
+        Server server = discord.getServerCache()
+                .getOrNull(serverId);
         boolean gotKicked = (!data.has("unavailable") || data.get("unavailable")
                 .isNull());
         
@@ -23,5 +24,9 @@ public class GUILD_DELETE extends HandlerBase {
                 .execute(() -> listener.onServerDelete(event)));
         
         server.detachAllListeners();
+        discord.getThreadPool()
+                .getScheduler()
+                .schedule(() -> discord.getServerCache()
+                        .destroyFromCache(serverId), 30, TimeUnit.MINUTES);
     }
 }

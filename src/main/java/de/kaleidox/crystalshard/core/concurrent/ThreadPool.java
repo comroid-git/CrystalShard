@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.CompletableFutureExtended;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

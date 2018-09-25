@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-
 import java.util.concurrent.CompletableFuture;
 
 public class SendableInternal implements Sendable {

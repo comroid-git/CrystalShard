@@ -39,7 +39,9 @@ public class DiscordUtils {
         this.discord = discord;
         
         commandFramework = new CommandFramework(discord,
-                                                configuration.path("commands").path("prefix").asText("!"),
+                                                configuration.path("commands")
+                                                        .path("prefix")
+                                                        .asText("!"),
                                                 configuration.path("commands")
                                                         .path("enable_default_help")
                                                         .asBoolean(true));

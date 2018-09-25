@@ -1,5 +1,12 @@
 package de.kaleidox.crystalshard.internal;
 
+import de.kaleidox.crystalshard.core.cache.Cache;
+import de.kaleidox.crystalshard.core.cache.sub.ChannelCache;
+import de.kaleidox.crystalshard.core.cache.sub.EmojiCache;
+import de.kaleidox.crystalshard.core.cache.sub.MessageCache;
+import de.kaleidox.crystalshard.core.cache.sub.RoleCache;
+import de.kaleidox.crystalshard.core.cache.sub.ServerCache;
+import de.kaleidox.crystalshard.core.cache.sub.UserCache;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
@@ -8,15 +15,18 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.objects.markers.IDPair;
 import de.kaleidox.util.objects.functional.LivingInt;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +51,12 @@ public class DiscordInternal implements Discord {
     private final        int                                                              thisShard;
     private final        int                                                              shardCount;
     private final        Self                                                             self;
+    private final        ServerCache                                                      serverCache;
+    private final        UserCache                                                        userCache;
+    private final        RoleCache                                                        roleCache;
+    private final        ChannelCache                                                     channelCache;
+    private final        MessageCache                                                     messageCache;
+    private final        EmojiCache                                                       emojiCache;
     private              CompletableFuture<Self>                                          selfFuture;
     private boolean init = false;
     private LivingInt serversInit;
@@ -58,6 +74,13 @@ public class DiscordInternal implements Discord {
         this.ratelimiter = new Ratelimiting(this);
         this.webSocket = new WebSocketClient(this);
         this.utils = new DiscordUtils(this);
+        
+        this.serverCache = new ServerCache(this);
+        this.userCache = new UserCache(this);
+        this.roleCache = new RoleCache(this);
+        this.channelCache = new ChannelCache(this);
+        this.messageCache = new MessageCache(this);
+        this.emojiCache = new EmojiCache(this);
         
         servers = new ArrayList<>();
         
@@ -77,6 +100,12 @@ public class DiscordInternal implements Discord {
         this.thisShard = 0;
         this.shardCount = 1;
         this.self = null;
+        this.serverCache = null;
+        this.userCache = null;
+        this.roleCache = null;
+        this.channelCache = null;
+        this.messageCache = null;
+        this.emojiCache = null;
     }
     
     public boolean initFinished() {
@@ -107,6 +136,36 @@ public class DiscordInternal implements Discord {
     @Override
     public int getUserCount() {
         return 0;
+    }
+    
+    @Override
+    public Cache<Server, Long, Long> getServerCache() {
+        return serverCache;
+    }
+    
+    @Override
+    public Cache<User, Long, Long> getUserCache() {
+        return userCache;
+    }
+    
+    @Override
+    public Cache<Role, Long, IDPair> getRoleCache() {
+        return roleCache;
+    }
+    
+    @Override
+    public Cache<Channel, Long, Long> getChannelCache() {
+        return channelCache;
+    }
+    
+    @Override
+    public Cache<Message, Long, IDPair> getMessageCache() {
+        return messageCache;
+    }
+    
+    @Override
+    public Cache<CustomEmoji, Long, IDPair> getEmojiCache() {
+        return emojiCache;
     }
     
     public Collection<DiscordAttachableListener> getAttachedListeners() {

@@ -13,7 +13,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,8 @@ public class MESSAGE_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        MessageInternal message = (MessageInternal) MessageInternal.getInstance(discord, data);
+        MessageInternal message = (MessageInternal) discord.getMessageCache()
+                .getOrCreate(discord, data);
         TextChannel channel = message.getChannel();
         Server server = channel.toServerChannel()
                 .map(ServerChannel::getServer)

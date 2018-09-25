@@ -1,9 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
@@ -14,11 +12,10 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +36,7 @@ public class RoleInternal implements Role {
     private              boolean                       managed;
     private              boolean                       mentionable;
     
-    private RoleInternal(Discord discord, Server server, JsonNode data) {
+    public RoleInternal(Discord discord, Server server, JsonNode data) {
         logger.deeptrace("Creating role object for data: " + data.toString());
         this.discordInternal = discord;
         this.server = server;
@@ -144,6 +141,11 @@ public class RoleInternal implements Role {
         return null;
     }
     
+    @Override
+    public Cache<Role, Long, IDPair> getCache() {
+        return discordInternal.getRoleCache();
+    }
+    
     public Set<EditTrait<Role>> updateData(JsonNode data) {
         HashSet<EditTrait<Role>> traits = new HashSet<>();
         
@@ -191,35 +193,5 @@ public class RoleInternal implements Role {
         }
         
         return traits;
-    }
-    
-    // Static members
-    // Static membe
-    public static Role getInstance(Server server, JsonNode data) {
-        long id = data.path("id")
-                .asLong(-1);
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) : new RoleInternal(server.getDiscord(), server, data);
-    }
-    
-    public static Role getInstance(Server server, long id) {
-        assert id != -1 : "No valid ID found.";
-        if (instances.containsKey(id)) {
-            return instances.get("id");
-        } else {
-            return new WebRequest<Role>(server.getDiscord()).endpoint(Endpoint.Location.GUILD_ROLES.toEndpoint(
-                    server))
-                    .method(Method.GET)
-                    .execute(node -> {
-                        for (JsonNode role : node) {
-                            if (role.get("id")
-                                        .asLong() == id)
-                                return new RoleInternal(server.getDiscord(), server, role);
-                        }
-                        throw new NoSuchElementException(
-                                "No Role with ID [" + id + "] found.");
-                    })
-                    .join();
-        }
     }
 }

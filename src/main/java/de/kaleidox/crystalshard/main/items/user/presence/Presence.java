@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.user.presence;
 
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,8 +32,6 @@ public interface Presence {
             return key;
         }
         
-        // Static members
-        // Static membe
         public static Status getFromKey(String key) {
             return Stream.of(values())
                     .filter(status -> Objects.nonNull(status.key))

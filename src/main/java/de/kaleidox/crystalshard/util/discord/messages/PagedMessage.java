@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -16,4 +16,8 @@ public class DoublePartObject<A, B> {
     public B getB() {
         return partB;
     }
+    
+    public static <A, B> DoublePartObject<A, B> of(A a, B b) {
+        return new DoublePartObject<>(a, b);
+    }
 }

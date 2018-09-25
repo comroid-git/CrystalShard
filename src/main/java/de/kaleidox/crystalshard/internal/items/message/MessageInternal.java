@@ -1,13 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
-import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
@@ -38,14 +34,13 @@ import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -89,7 +84,8 @@ public class MessageInternal implements Message {
                 .asLong();
         this.channelId = data.get("channel_id")
                 .asLong();
-        this.channel = ChannelInternal.getInstance(discord, channelId)
+        this.channel = discord.getChannelCache()
+                .getOrRequest(channelId, channelId)
                 .toTextChannel()
                 .get();
         if (channel.toServerChannel()
@@ -131,7 +127,8 @@ public class MessageInternal implements Message {
         }
         
         for (JsonNode role : data.get("mention_roles")) {
-            roleMentions.add(RoleInternal.getInstance(server, role));
+            roleMentions.add(discord.getRoleCache()
+                                     .getOrCreate(discord, server, role));
         }
         
         for (JsonNode attachment : data.get("attachments")) {
@@ -153,24 +150,6 @@ public class MessageInternal implements Message {
         instances.put(id, this);
     }
     
-    public final static Message getInstance(Discord discord, JsonNode data) {
-        synchronized (instances) {
-            long id = data.get("id")
-                    .asLong(-1);
-            if (id == -1) throw new NoSuchElementException("No valid ID found.");
-            return instances.getOrDefault(id, new MessageInternal(discord, data));
-        }
-    }
-    
-    public final static Message getInstance(TextChannel channel, long id) {
-        return instances.getOrDefault(id,
-                                      new WebRequest<Message>(channel.getDiscord()).method(Method.GET)
-                                              .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
-                                              .execute(node -> getInstance(channel.getDiscord(), node))
-                                              .join());
-    }
-    
-    // Override Methods
     @Override
     public TextChannel getChannel() {
         return channel;
@@ -371,9 +350,12 @@ public class MessageInternal implements Message {
         return "Message with ID [" + id + "]";
     }
     
+    @Override
+    public Cache<Message, Long, IDPair> getCache() {
+        return discord.getMessageCache();
+    }
+    
     public Set<EditTrait<Message>> updateData(JsonNode data) {
         return null; // todo
     }
-    
-    // Static membe
 }

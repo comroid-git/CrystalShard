@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,7 +20,6 @@ import java.util.function.Supplier;
  */
 public class DefaultEmbed implements Supplier<EmbedDraft> {
     // Static Fields
-    // Fields
     public final  Supplier<EmbedDraft>          EMPTY_SUPPLIER;
     public final  Supplier<Embed.Builder>       EMPTY_BUILDER;
     private final List<Consumer<Embed.Builder>> modifiers;

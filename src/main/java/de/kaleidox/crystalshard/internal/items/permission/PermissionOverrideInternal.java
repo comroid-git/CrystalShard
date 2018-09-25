@@ -1,8 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.permission;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
-import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.permission.OverrideState;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
@@ -11,7 +9,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.helpers.JsonHelper;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -35,14 +33,16 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
             default:
                 throw new AssertionError();
             case ROLE:
-                this.parent = RoleInternal.getInstance(server,
-                                                       data.get("id")
-                                                               .asLong());
+                long roleId = data.get("id")
+                        .asLong();
+                this.parent = discord.getRoleCache()
+                        .getOrRequest(roleId, IDPair.of(server.getId(), roleId));
                 break;
             case USER:
-                this.parent = UserInternal.getInstance(discord,
-                                                       data.get("id")
-                                                               .asLong())
+                long userId = data.get("user_id")
+                        .asLong();
+                this.parent = discord.getUserCache()
+                        .getOrRequest(userId, userId)
                         .toServerMember(server);
                 break;
         }

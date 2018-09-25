@@ -14,7 +14,6 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.util.discord.messages.PagedEmbed;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Switch;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

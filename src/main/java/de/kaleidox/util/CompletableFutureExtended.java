@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -16,112 +17,68 @@ import java.util.function.Function;
  * @param <T> The type variable of the Item.
  */
 public class CompletableFutureExtended<T> extends CompletableFuture<T> {
-    private final ThreadPool threadPool;
+    private final Executor executor;
     
-    public CompletableFutureExtended(ThreadPool threadPool) {
+    public CompletableFutureExtended(Executor executor) {
         super();
-        this.threadPool = threadPool;
+        this.executor = executor;
     }
     
     // Override Methods
     @Override
     public <U> CompletableFuture<U> thenApplyAsync(Function<? super T, ? extends U> fn) {
-        var ref = new Object() {
-            CompletableFuture<U> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.thenApply(fn));
-        return ref.future;
+        return super.thenApplyAsync(fn, executor);
     }
     
     @Override
     public CompletableFuture<Void> thenAcceptAsync(Consumer<? super T> action) {
-        var ref = new Object() {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.thenAccept(action));
-        return ref.future;
+        return thenAcceptAsync(action, executor);
     }
     
     @Override
     public <U, V> CompletableFuture<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T, ?
             super U, ? extends V> fn) {
-        var ref = new Object() {
-            CompletableFuture<V> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.thenCombine(other, fn));
-        return ref.future;
+        return super.thenCombineAsync(other, fn, executor);
     }
     
     @Override
     public <U> CompletableFuture<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T,
             ? super U> action) {
-        var ref = new Object() {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.thenAcceptBoth(other, action));
-        return ref.future;
+        return super.thenAcceptBothAsync(other, action, executor);
     }
     
     @Override
     public CompletableFuture<Void> runAfterBothAsync(CompletionStage<?> other, Runnable action) {
-        var ref = new Object() {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.runAfterBoth(other, action));
-        return ref.future;
+        return super.runAfterBothAsync(other, action, executor);
     }
     
     @Override
     public <U> CompletableFuture<U> applyToEitherAsync(CompletionStage<? extends T> other, Function<? super T, U> fn) {
-        var ref = new Object() {
-            CompletableFuture<U> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.applyToEither(other, fn));
-        return ref.future;
+        return super.applyToEitherAsync(other, fn, executor);
     }
     
     @Override
     public CompletableFuture<Void> acceptEitherAsync(CompletionStage<? extends T> other, Consumer<? super T> action) {
-        var ref = new Object() {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.acceptEither(other, action));
-        return ref.future;
+        return super.acceptEitherAsync(other, action, executor);
     }
     
     @Override
     public CompletableFuture<Void> runAfterEitherAsync(CompletionStage<?> other, Runnable action) {
-        var ref = new Object() {
-            CompletableFuture<Void> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.runAfterEither(other, action));
-        return ref.future;
+        return super.runAfterEitherAsync(other, action, executor);
     }
     
     @Override
     public <U> CompletableFuture<U> thenComposeAsync(Function<? super T, ? extends CompletionStage<U>> fn) {
-        var ref = new Object() {
-            CompletableFuture<U> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.thenCompose(fn));
-        return ref.future;
+        return super.thenComposeAsync(fn, executor);
     }
     
     @Override
     public CompletableFuture<T> whenCompleteAsync(BiConsumer<? super T, ? super Throwable> action) {
-        var ref = new Object() {
-            CompletableFuture<T> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.whenComplete(action));
-        return ref.future;
+        return super.whenCompleteAsync(action, executor);
     }
     
     @Override
     public <U> CompletableFuture<U> handleAsync(BiFunction<? super T, Throwable, ? extends U> fn) {
-        var ref = new Object() {
-            CompletableFuture<U> future = new CompletableFuture<>();
-        };
-        threadPool.execute(() -> ref.future = super.handle(fn));
-        return ref.future;
+        return super.handleAsync(fn, executor);
     }
 }

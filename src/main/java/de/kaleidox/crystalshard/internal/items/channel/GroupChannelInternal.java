@@ -7,16 +7,14 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroupChannelInternal extends TextChannelInternal implements GroupChannel {
     final static ConcurrentHashMap<Long, GroupChannel> instances = new ConcurrentHashMap<>();
     
-    GroupChannelInternal(Discord discord, JsonNode data) {
+    public GroupChannelInternal(Discord discord, JsonNode data) {
         super(discord, data);
         
         instances.put(id, this);
@@ -58,15 +56,5 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
         Set<EditTrait<Channel>> traits = new HashSet<>();
         
         return traits;
-    }
-    
-    // Static members
-    // Static membe
-    public static GroupChannel getInstance(Discord discord, JsonNode data) {
-        long id = data.get("id")
-                .asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (instances.containsKey(id)) return instances.get(id);
-        else return new GroupChannelInternal(discord, data);
     }
 }

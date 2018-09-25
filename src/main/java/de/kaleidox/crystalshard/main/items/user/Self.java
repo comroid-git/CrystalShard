@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.main.items.user;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
-
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 

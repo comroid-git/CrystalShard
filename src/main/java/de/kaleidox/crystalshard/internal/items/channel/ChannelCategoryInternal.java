@@ -11,11 +11,9 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,7 +24,7 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     private final List<PermissionOverride>                 overrides;
     String name;
     
-    private ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
+    public ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
         this.name = data.path("name")
@@ -97,15 +95,5 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
                                               .getPermissions()
                                               .contains(permission)))
                 .orElse(true); // If no information could be acquired, assert TRUE
-    }
-    
-    // Static members
-    // Static membe
-    public static ChannelCategory getInstance(Discord discord, Server server, JsonNode data) {
-        long id = data.get("id")
-                .asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (instances.containsKey(id)) return instances.get(id);
-        else return new ChannelCategoryInternal(discord, server, data);
     }
 }

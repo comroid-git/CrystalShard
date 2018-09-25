@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

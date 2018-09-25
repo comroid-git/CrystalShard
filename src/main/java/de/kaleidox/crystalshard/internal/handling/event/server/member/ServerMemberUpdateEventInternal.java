@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.handling.event.server.member.ServerMemberUp
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

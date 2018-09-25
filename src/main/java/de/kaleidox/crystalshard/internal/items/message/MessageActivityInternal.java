@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.items.message;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.items.message.MessageActivity;
 import de.kaleidox.crystalshard.main.items.message.MessageActivityType;
-
 import java.util.Optional;
 
 public class MessageActivityInternal implements MessageActivity {

@@ -2,10 +2,8 @@ package de.kaleidox.crystalshard.internal.handling.event.server.generic;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerDeleteEvent;
 import de.kaleidox.crystalshard.main.items.server.Server;
-
 import java.util.Optional;
 
 public class ServerDeleteEventInternal extends EventBase implements ServerDeleteEvent {
@@ -26,6 +24,13 @@ public class ServerDeleteEventInternal extends EventBase implements ServerDelete
     
     @Override
     public Optional<Server> getServer() {
-        return ServerInternal.getInstance(serverId);
+        Server server;
+        try {
+            server = getDiscord().getServerCache()
+                    .get(serverId);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(server);
     }
 }

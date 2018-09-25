@@ -3,8 +3,6 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.generic.MessageCreateEventInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
-import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -13,7 +11,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.Collection;
 import java.util.Collections;
 
@@ -24,13 +21,15 @@ public class MESSAGE_CREATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Channel channel = ChannelInternal.getInstance(discord,
-                                                      data.get("channel_id")
-                                                              .asLong());
+        long channel_id = data.get("channel_id")
+                .asLong();
+        Channel channel = discord.getChannelCache()
+                .getOrRequest(channel_id, channel_id);
         Server server = channel.toServerChannel()
                 .map(ServerChannel::getServer)
                 .orElse(null);
-        Message message = MessageInternal.getInstance(discord, data);
+        Message message = discord.getMessageCache()
+                .getOrCreate(discord, data);
         User user = message.getAuthorAsUser()
                 .orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
