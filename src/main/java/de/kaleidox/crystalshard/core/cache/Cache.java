@@ -347,7 +347,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
                             CacheReference<T, R> ref = entry.getValue();
                             instances.remove(entry.getKey(), ref);
                             ref.uncache();
-                            ref = null;
+                            ref.close();
                         } finally {
                             list.add(ident);
                         }

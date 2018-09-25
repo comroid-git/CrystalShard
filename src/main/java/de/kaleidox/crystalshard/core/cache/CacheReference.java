@@ -52,17 +52,12 @@ class CacheReference<T extends CacheStorable, R> {
         throw new CloneNotSupportedException("Cannot clone CacheReferences!");
     }
     
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.reference = null;
-            this.recentRequestor = null;
-            this.recentParameters = null;
-            this.lastAccess = null;
-            this.cached = null;
-        } finally {
-            super.finalize();
-        }
+    public void close() {
+        this.reference = null;
+        this.recentRequestor = null;
+        this.recentParameters = null;
+        this.lastAccess = null;
+        this.cached = null;
     }
     
     public synchronized Object[] getRecentParameters() {

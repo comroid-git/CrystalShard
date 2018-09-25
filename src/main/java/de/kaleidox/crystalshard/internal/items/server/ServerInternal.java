@@ -9,11 +9,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
-import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
-import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
-import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
-import de.kaleidox.crystalshard.internal.items.user.UserInternal;
-import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -52,10 +47,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.*;
-
-<<<<<<<HEAD
-        =======
-                >>>>>>>development
 
 public class ServerInternal implements Server {
     private final static ConcurrentHashMap<Long, ServerInternal>                   instances      =
@@ -98,7 +89,7 @@ public class ServerInternal implements Server {
     public ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());
         this.discord = (DiscordInternal) discord;
-<<<<<<<HEAD this.id = data.get("id")
+        this.id = data.get("id")
                 .asLong();
         updateData(data);
         this.everyoneRole = roles.stream()
@@ -106,114 +97,7 @@ public class ServerInternal implements Server {
                         .equalsIgnoreCase("@everyone"))
                 .findAny()
                 .orElseThrow(() -> new NoSuchElementException("No @everyone Role found!"));
-=======
-        id = data.get("id")
-                .asLong();
-        name = data.get("name")
-                .asText();
-        iconUrl = UrlHelper.orNull(data.path("icon")
-                                           .asText(null));
-        splashUrl = UrlHelper.orNull(data.path("splashUrl")
-                                             .asText(null));
-        owner = getOwnerPrivate(data);
-        ownPermissions = data.has("permissions") ? new PermissionListInternal(data.get("permissions")
-                                                                                      .asInt()) :
-                         PermissionList.EMPTY_LIST;
-        voiceRegion = VoiceRegion.getFromRegionKey(data.path("region")
-                                                           .asText(null));
-        afkTimeout = data.get("afk_timeout")
-                .asInt(-1);
-        embedEnabled = data.path("embed_enabled")
-                .asBoolean(false);
-        verificationLevel = VerificationLevel.getFromId(data.get("verification_level")
-                                                                .asInt(-1));
-        defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get(
-                "default_message_notifications")
-                                                                                            .asInt(-1));
-        explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter")
-                                                                                  .asInt(-1));
-        mfaLevel = MFALevel.getFromId(data.get("mfa_level")
-                                              .asInt(-1));
-        widgetEnabled = data.path("widget_enabled")
-                .asBoolean(false);
-        large = data.path("large")
-                .asBoolean(false);
-        unavailable = data.path("unavailable")
-                .asBoolean(false);
-        memberCount = data.path("member_count")
-                .asInt(-1);
-        
-        data.path("roles")
-                .forEach(role -> roles.add(RoleInternal.getInstance(this, role)));
-        data.path("features")
-                .forEach(feature -> features.add(feature.asText()));
-        data.path("voice_states")
-                .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
-        data.path("members")
-                .forEach(member -> ServerMemberInternal.getInstance(UserInternal.getInstance(discord,
-                                                                                             member.get("user")),
-                                                                    this,
-                                                                    member));
-        data.path("channels")
-                .forEach(channel -> {
-                    ChannelType type = ChannelType.getFromId(channel.get("type")
-                                                                     .asInt(-1));
-                    switch (type) {
-                        default:
-                            throw new AssertionError("Channel of illegal type detected within Server: " + channel);
-                        case GUILD_TEXT:
-                            channels.add(ServerTextChannelInternal.getInstance(discord, this, channel));
-                            break;
-                        case GUILD_VOICE:
-                            channels.add(ServerVoiceChannelInternal.getInstance(discord, this, channel));
-                            break;
-                        case GUILD_CATEGORY:
-                            channels.add(ChannelCategoryInternal.getInstance(discord, this, channel));
-                            break;
-                    }
-                });
-        data.path("presenceStates")
-                .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
-        data.path("emojis")
-                .forEach(emoji -> emojis.add(CustomEmojiInternal.getInstance(getDiscord(), this, emoji, true)));
-        structure = new ChannelStructureInternal(channels);
-        
-        everyoneRole = roles.stream()
-                .filter(role -> role.getName()
-                        .equalsIgnoreCase("@everyone"))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("No @everyone role found for " + this));
-        
-        long afk_channel_id = data.path("afk_channel_id")
-                .asLong(-1);
-        if (afk_channel_id != -1) {
-            afkChannel = ChannelInternal.getInstance(discord, afk_channel_id)
-                    .toServerVoiceChannel()
-                    .orElse(null);
-        }
-        long embed_channel_id = data.path("embed_channel_id")
-                .asLong(-1);
-        if (embed_channel_id != -1) {
-            embedChannel = ChannelInternal.getInstance(discord, embed_channel_id)
-                    .toServerChannel()
-                    .orElse(null);
-        }
-        long widget_channel_id = data.path("widget_channel_id")
-                .asLong(-1);
-        if (widget_channel_id != -1) {
-            widgetChannel = ChannelInternal.getInstance(discord, widget_channel_id)
-                    .toServerChannel()
-                    .orElse(null);
-        }
-        long system_channel_id = data.path("system_channel_id")
-                .asLong(-1);
-        if (system_channel_id != -1) {
-            systemChannel = ChannelInternal.getInstance(discord, system_channel_id)
-                    .toServerTextChannel()
-                    .orElse(null);
-        }
-        
->>>>>>>development listenerManangers = new ArrayList<>();
+        listenerManangers = new ArrayList<>();
         
         instances.put(id, this);
     }
@@ -414,28 +298,20 @@ public class ServerInternal implements Server {
         return listenerManangers.stream()
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());
-<<<<<<<HEAD
     }
     
     @Override
     public Cache<Server, Long, Long> getCache() {
         return discord.getServerCache();
-=======
->>>>>>>development
     }
     
     private User getOwnerPrivate(JsonNode data) {
         if (data.has("owner_id")) {
             //return new UserInternal(discord, data.get("application_id").asLong());
-<<<<<<<HEAD long userId = data.get("owner_id")
+            long userId = data.get("owner_id")
                     .asLong();
             return discord.getUserCache()
                     .getOrRequest(userId, userId);
-=======
-            return UserInternal.getInstance(discord,
-                                            data.get("owner_id")
-                                                    .asLong());
->>>>>>>development
         } else {
             return null;
         }
@@ -552,51 +428,45 @@ public class ServerInternal implements Server {
         
         if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id")
                 .asLong(-1)) {
-<<<<<<<HEAD long afkChannelId = data.path("afk_channel_id")
+            long afkChannelId = data.path("afk_channel_id")
                     .asLong(-1);
             afkChannel = discord.getChannelCache()
-                                 .getOrRequest(afkChannelId, afkChannelId) =======
-            afkChannel = ServerVoiceChannelInternal.getInstance(discord,
-                                                                data.path("afk_channel_id")
-                                                                        .asLong(-1)) >>>>>>>
-            development.toServerVoiceChannel()
+                    .getOrRequest(afkChannelId, afkChannelId)
+                    .toServerVoiceChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(AFK_CHANNEL);
-        } if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id")
+        }
+        if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id")
                 .asLong(-1)) {
-<<<<<<<HEAD long embedChannelId = data.path("embed_channel_id")
+            long embedChannelId = data.path("embed_channel_id")
                     .asLong(-1);
             embedChannel = discord.getChannelCache()
-                                   .getOrRequest(embedChannelId, embedChannelId) =======
-            embedChannel = ChannelInternal.getInstance(discord,
-                                                       data.path("embed_channel_id")
-                                                               .asLong(-1)) >>>>>>>development.toServerChannel()
+                    .getOrRequest(embedChannelId, embedChannelId)
+                    .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(EMBED_CHANNEL);
-        } if ((widgetChannel != null ? widgetChannel.getId() : -1) != data.path("widget_channel_id")
+        }
+        if ((widgetChannel != null ? widgetChannel.getId() : -1) != data.path("widget_channel_id")
                 .asLong(-1)) {
-<<<<<<<HEAD long widgetChannelId = data.path("widget_channel_id")
+            long widgetChannelId = data.path("widget_channel_id")
                     .asLong(-1);
             widgetChannel = discord.getChannelCache()
-                                    .getOrRequest(widgetChannelId, widgetChannelId) =======
-            widgetChannel = ChannelInternal.getInstance(discord,
-                                                        data.path("widget_channel_id")
-                                                                .asLong(-1)) >>>>>>>development.toServerChannel()
+                    .getOrRequest(widgetChannelId, widgetChannelId)
+                    .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(WIDGET_CHANNEL);
-        } if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id")
+        }
+        if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id")
                 .asLong(-1)) {
-<<<<<<<HEAD long systemChannelId = data.path("system_channel_id")
+            long systemChannelId = data.path("system_channel_id")
                     .asLong(-1);
             systemChannel = discord.getChannelCache()
-                                    .getOrRequest(systemChannelId, systemChannelId) =======
-            systemChannel = ServerTextChannelInternal.getInstance(discord,
-                                                                  data.path("system_channel_id")
-                                                                          .asLong(-1)) >>>>>>>
-            development.toServerTextChannel()
+                    .getOrRequest(systemChannelId, systemChannelId)
+                    .toServerTextChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(SYSTEM_CHANNEL);
-        } return traits;
+        }
+        return traits;
     }
     
     public void replaceEmojis(List<CustomEmoji> newEmojis) {
@@ -619,32 +489,4 @@ public class ServerInternal implements Server {
     public void removeRole(Role role) {
         roles.remove(role);
     }
-<<<<<<<HEAD
-=======
-    
-    // Static members
-    // Static membe
-    public static Optional<Server> getInstance(long id) {
-        return Optional.ofNullable(instances.getOrDefault(id, null));
-    }
-    
-    public static Server getInstance(Discord discord, long id) {
-        return discord.getServers()
-                .stream()
-                .filter(server -> server.getId() == id)
-                .findAny()
-                .orElseGet(() -> new WebRequest<Server>(discord).method(Method.GET)
-                        .endpoint(Endpoint.Location.GUILD_SPECIFIC.toEndpoint(id))
-                        .execute(node -> getInstance(discord, node))
-                        .join());
-    }
-    
-    public static Server getInstance(Discord discord, JsonNode data) {
-        long id = data.get("id")
-                .asLong(-1);
-        if (id == -1) throw new NoSuchElementException("No valid ID found.");
-        if (instances.containsKey(id)) return instances.get(id);
-        else return new ServerInternal(discord, data);
-    }
->>>>>>>development
 }

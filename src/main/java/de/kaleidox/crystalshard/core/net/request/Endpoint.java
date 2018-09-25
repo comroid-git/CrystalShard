@@ -82,7 +82,7 @@ public class Endpoint {
         GUILD_WEBHOOK("/guilds/%s/webhooks"),
         INVITE("/invites/%s"),
         MESSAGE("/channels/%s/messages"),
-        MESSAGES_BULK_DELETE("/channels/%s/messages/bulk-delete"),
+        MESSAGES_BULK_DELETE("/channels/%s/messages/bulk-close"),
         MESSAGE_DELETE("/channels/%s/messages"),
         MESSAGE_SPECIFIC("/channels/%s/messages/%s"),
         PINS("/channels/%s/pins"),

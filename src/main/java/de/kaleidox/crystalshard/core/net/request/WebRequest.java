@@ -157,8 +157,7 @@ public class WebRequest<T> {
                                                      .asText() + ":\"" + responseNode.get("message")
                                                      .asText() + "\"} " + (unknown ?
                                                                            "Recieved unknown status code from Discord" +
-                                                                           " " +
-                                                                           "with responseBody: " + responseBody :
+                                                                           " " + "with responseBody: " + responseBody :
                                                                            "Untreated code recieved with body: " +
                                                                            responseBody),
                                              "Recieved unknown status code: " + statusCode);

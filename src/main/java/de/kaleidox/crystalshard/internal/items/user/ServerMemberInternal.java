@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.util.objects.markers.IDPair;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -28,10 +28,13 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
     private final        Instant                                                        joined;
     
     private ServerMemberInternal(Discord discord, Server server, JsonNode data) {
-        super(UserInternal.getInstance(discord,
-                                       data.get("user")
-                                               .get("id")
-                                               .asLong()));
+        super(discord.getUserCache()
+                      .getOrRequest(data.get("user")
+                                            .get("id")
+                                            .asLong(),
+                                    data.get("user")
+                                            .get("id")
+                                            .asLong()));
         this.server = server;
         this.nickname = data.path("nick")
                 .asText(null);
@@ -50,7 +53,10 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
         this.joined = joined1;
         this.roles = new ArrayList<>();
         data.path("roles")
-                .forEach(roleIdNode -> roles.add(RoleInternal.getInstance(server, roleIdNode.asLong())));
+                .forEach(roleIdNode -> roles.add(discord.getRoleCache()
+                                                         .getOrRequest(roleIdNode.asLong(),
+                                                                       IDPair.of(server.getId(),
+                                                                                 roleIdNode.asLong()))));
         
         instances.get(super.getId())
                 .put(server.getId(), this);

@@ -6,7 +6,9 @@ import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
@@ -95,7 +97,17 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     }
     
     @Override
+    public Cache<Server, Long, Long> getServerCache() {
+        return null;
+    }
+    
+    @Override
     public Cache<Message, Long, IDPair> getMessageCache() {
+        return null;
+    }
+    
+    @Override
+    public Cache<CustomEmoji, Long, IDPair> getEmojiCache() {
         return null;
     }
     
@@ -106,6 +118,11 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     
     @Override
     public Cache<User, Long, Long> getUserCache() {
+        return null;
+    }
+    
+    @Override
+    public Cache<Role, Long, IDPair> getRoleCache() {
         return null;
     }
     

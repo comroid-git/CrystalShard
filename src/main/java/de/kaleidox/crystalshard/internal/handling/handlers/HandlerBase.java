@@ -43,25 +43,13 @@ public abstract class HandlerBase {
         
         if (instances.containsKey(type)) {
             handler = (T) instances.get(type);
-<<<<<<<HEAD discord.getThreadPool()
-                    .execute(() -> handler.handle(discord, data.get("d")));
-=======
             handler.handle(discord, data.get("d"));
->>>>>>>development
         } else if (!type.isBlank() && !type.isEmpty()) {
             try {
                 Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
                 handler = tClass.getConstructor()
                         .newInstance();
                 instances.put(type, handler);
-<<<<<<<HEAD discord.getThreadPool()
-                        .execute(() -> {
-                            baseLogger.trace("Dispatching event '" + data.get("t")
-                                    .asText() + "' with body: " + data.get("d")
-                                                     .toString());
-                            handler.handle(discord, data.get("d"));
-                        });
-=======
                 try {
                     baseLogger.trace("Dispatching event '" + data.get("t")
                             .asText() + "' with body: " + data.get("d")
@@ -70,7 +58,6 @@ public abstract class HandlerBase {
                 } catch (Exception e) {
                     baseLogger.exception(e, "Exception in Handler: " + type);
                 }
->>>>>>>development
             } catch (ClassNotFoundException e) {
                 baseLogger.error("Failed to dispatch unknown type: " + data.get("t"));
             } catch (Exception e) {

@@ -37,7 +37,7 @@ public class RoleCache extends Cache<Role, Long, IDPair> {
     public CompletableFuture<Object[]> requestConstructorParameters(IDPair requestIdent) {
         Server server = Cacheable.getInstance(Server.class, requestIdent.getOne());
         return new WebRequest<Object[]>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.ROLE.toEndpoint(requestIdent))
+                .endpoint(Endpoint.Location.GUILD_ROLES.toEndpoint(requestIdent))
                 .execute(node -> {
                     for (JsonNode role : node) {
                         if (role.get("id")

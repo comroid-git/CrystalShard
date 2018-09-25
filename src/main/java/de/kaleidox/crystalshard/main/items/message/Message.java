@@ -255,10 +255,10 @@ public interface Message
      * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method
      * requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The returned future
      * will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission
-     * required to delete this message. This will always occur in a private chat, as the bot can never have the
-     * theoretical permissions to delete other peoples messages within a private chat.
+     * required to close this message. This will always occur in a private chat, as the bot can never have the
+     * theoretical permissions to close other peoples messages within a private chat.
      *
-     * @param reason The reason to delete the message for.
+     * @param reason The reason to close the message for.
      * @return A future that completes when the message has been deleted.
      */
     CompletableFuture<Void> delete(String reason);
@@ -358,9 +358,9 @@ public interface Message
     /**
      * Deletes the current message. If the bot is not the owner of the message, this method requires the bot to have the
      * {@link Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally
-     * with a {@link DiscordPermissionException} if the bot does not have the permission required to delete this
+     * with a {@link DiscordPermissionException} if the bot does not have the permission required to close this
      * message. This will always occur in a private chat, as the bot can never have the theoretical permissions to
-     * delete other peoples messages within a private chat.
+     * close other peoples messages within a private chat.
      *
      * @return A future that completes when the message has been deleted.
      */
