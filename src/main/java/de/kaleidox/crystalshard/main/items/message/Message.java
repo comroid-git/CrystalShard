@@ -25,7 +25,6 @@ import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.annotations.MayNotContainNull;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +33,9 @@ import java.util.concurrent.CompletableFuture;
 /**
  * This interface represents a normal Discord message.
  */
-public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener>,
-        Cacheable<Message, Long, IDPair>, CacheStorable {
+public interface Message
+        extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair>,
+        CacheStorable {
     /**
      * Gets the TextChannel that the message has been sent in.
      *

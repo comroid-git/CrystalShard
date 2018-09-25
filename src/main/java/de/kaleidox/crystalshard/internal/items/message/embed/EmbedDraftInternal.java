@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -48,7 +47,7 @@ public class EmbedDraftInternal implements EmbedDraft {
         this.fields = fields;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public EmbedDraft toEmbedDraft() {
         return this;
@@ -139,21 +138,31 @@ public class EmbedDraftInternal implements EmbedDraft {
         Container thumbnailContainer = null;
         if (footer != null) {
             footerText = footer.getText();
-            footerIconUrl = footer.getIconUrl().map(URL::toExternalForm).orElse(null);
+            footerIconUrl = footer.getIconUrl()
+                    .map(URL::toExternalForm)
+                    .orElse(null);
             footerIconContainer = footer.getContainer();
         }
         if (image != null) {
-            imageUrl = image.getUrl().map(URL::toExternalForm).orElse(null);
+            imageUrl = image.getUrl()
+                    .map(URL::toExternalForm)
+                    .orElse(null);
             imageContainer = image.getContainer();
         }
         if (author != null) {
             authorName = author.getName();
-            authorUrl = author.getUrl().map(URL::toExternalForm).orElse(null);
-            authorIconUrl = author.getIconUrl().map(URL::toExternalForm).orElse(null);
+            authorUrl = author.getUrl()
+                    .map(URL::toExternalForm)
+                    .orElse(null);
+            authorIconUrl = author.getIconUrl()
+                    .map(URL::toExternalForm)
+                    .orElse(null);
             authorIconContainer = author.getContainer();
         }
         if (thumbnail != null) {
-            thumbnailUrl = thumbnail.getUrl().map(URL::toExternalForm).orElse(null);
+            thumbnailUrl = thumbnail.getUrl()
+                    .map(URL::toExternalForm)
+                    .orElse(null);
             thumbnailContainer = thumbnail.getContainer();
         }
         
@@ -186,10 +195,12 @@ public class EmbedDraftInternal implements EmbedDraft {
             }
         }
         if (imageUrl != null && !imageUrl.equals("")) {
-            object.putObject("image").set("url", JsonHelper.nodeOf(imageUrl));
+            object.putObject("image")
+                    .set("url", JsonHelper.nodeOf(imageUrl));
         }
         if (imageContainer != null) {
-            object.putObject("image").set("url", JsonHelper.nodeOf("attachment://" + imageContainer.getFullName()));
+            object.putObject("image")
+                    .set("url", JsonHelper.nodeOf("attachment://" + imageContainer.getFullName()));
         }
         if (authorName != null && !authorName.equals("")) {
             ObjectNode author = object.putObject("author");
@@ -205,11 +216,12 @@ public class EmbedDraftInternal implements EmbedDraft {
             }
         }
         if (thumbnailUrl != null && !thumbnailUrl.equals("")) {
-            object.putObject("thumbnail").set("url", JsonHelper.nodeOf(thumbnailUrl));
+            object.putObject("thumbnail")
+                    .set("url", JsonHelper.nodeOf(thumbnailUrl));
         }
         if (thumbnailContainer != null) {
-            object.putObject("thumbnail").set("url",
-                                              JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
+            object.putObject("thumbnail")
+                    .set("url", JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
         }
         if (fields.size() > 0) {
             ArrayNode jsonFields = object.putArray("fields");
@@ -232,7 +244,7 @@ public class EmbedDraftInternal implements EmbedDraft {
             this.url = UrlHelper.orNull(iconUrl);
         }
         
-// Override Methods
+        // Override Methods
         public String getText() {
             return name;
         }
@@ -254,7 +266,7 @@ public class EmbedDraftInternal implements EmbedDraft {
             this.url = UrlHelper.require(url);
         }
         
-// Override Methods
+        // Override Methods
         public Optional<URL> getUrl() {
             return Optional.ofNullable(url);
         }
@@ -272,7 +284,7 @@ public class EmbedDraftInternal implements EmbedDraft {
             this.url = UrlHelper.require(url);
         }
         
-// Override Methods
+        // Override Methods
         public Optional<URL> getUrl() {
             return Optional.ofNullable(url);
         }
@@ -294,7 +306,7 @@ public class EmbedDraftInternal implements EmbedDraft {
             this.iconUrl = UrlHelper.orNull(iconUrl);
         }
         
-// Override Methods
+        // Override Methods
         public String getName() {
             return name;
         }
@@ -324,7 +336,7 @@ public class EmbedDraftInternal implements EmbedDraft {
             this.inline = inline;
         }
         
-// Override Methods
+        // Override Methods
         public String getTitle() {
             return title;
         }

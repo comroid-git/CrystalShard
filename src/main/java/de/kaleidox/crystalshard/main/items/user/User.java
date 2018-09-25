@@ -64,7 +64,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
         return castTo(ServerMember.class);
     }
     
-// Static members
+    // Static members
     // Static membe
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;
@@ -73,13 +73,15 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
             Server srv = (Server) in;
             Discord discord = srv.getDiscord();
             
-            userFuture =
-                    srv.getUserById(id).map(CompletableFuture::completedFuture).orElseGet(() -> new WebRequest<User>(
-                            discord).method(GET).endpoint(Endpoint.of(Endpoint.Location.USER, id)).execute(node -> {
-                        if (node.isObject()) {
-                            return new UserInternal(discord, node);
-                        } else throw new NoSuchElementException("No User with ID " + id + " found!");
-                    }));
+            userFuture = srv.getUserById(id)
+                    .map(CompletableFuture::completedFuture)
+                    .orElseGet(() -> new WebRequest<User>(discord).method(GET)
+                            .endpoint(Endpoint.of(Endpoint.Location.USER, id))
+                            .execute(node -> {
+                                if (node.isObject()) {
+                                    return new UserInternal(discord, node);
+                                } else throw new NoSuchElementException("No User with ID " + id + " found!");
+                            }));
         } else if (in instanceof Discord) {
             Discord discord = (Discord) in;
             
@@ -93,7 +95,8 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
                                 } else throw new NoSuchElementException("No User with ID " + id + " found!");
                             }));
         } else {
-            throw new IllegalArgumentException(in.getClass().getSimpleName() + " is not a valid UserContainer!");
+            throw new IllegalArgumentException(in.getClass()
+                                                       .getSimpleName() + " is not a valid UserContainer!");
         }
         
         return userFuture;

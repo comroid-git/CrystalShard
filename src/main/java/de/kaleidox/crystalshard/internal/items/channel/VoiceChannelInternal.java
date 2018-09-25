@@ -10,8 +10,10 @@ public abstract class VoiceChannelInternal extends ChannelInternal implements Vo
     
     VoiceChannelInternal(Discord discord, JsonNode data) {
         super(discord, data);
-        this.bitrate = data.path("bitrate").asInt(0);
-        this.limit = data.path("user_limit").asInt(-1);
+        this.bitrate = data.path("bitrate")
+                .asInt(0);
+        this.limit = data.path("user_limit")
+                .asInt(-1);
     }
     
     // Override Methods

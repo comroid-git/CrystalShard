@@ -9,18 +9,20 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.generic.ChannelEd
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
-
 import java.util.Set;
 
 /**
  * https://discordapp.com/developers/docs/topics/gateway#channel-update
  */
 public class CHANNEL_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        ChannelInternal channel = (ChannelInternal) ChannelInternal.getInstance(discord, data);
-        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
+        ChannelInternal channel = (ChannelInternal) discord.getChannelCache()
+                .getOrCreate(discord, data);
+        Server server = channel.toServerChannel()
+                .map(ServerChannel::getServer)
+                .orElse(null);
         Set<EditTrait<Channel>> traits = channel.updateData(data);
         
         ChannelEditEventInternal event = new ChannelEditEventInternal(discord, channel, traits);

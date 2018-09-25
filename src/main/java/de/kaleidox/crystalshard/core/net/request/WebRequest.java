@@ -8,7 +8,6 @@ import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
@@ -46,7 +45,7 @@ public class WebRequest<T> {
         if (Objects.nonNull(future)) {
             this.future = future;
         } else {
-            this.future = new CompletableFutureExtended<>(discord.getThreadPool());
+            this.future = new CompletableFutureExtended<>(discord.getExecutor());
         }
         this.discord = discord;
         this.method = method;
@@ -103,22 +102,26 @@ public class WebRequest<T> {
         Objects.requireNonNull(endpoint, "Endpoint must not be null.");
         if (data == null) data = JsonHelper.objectNode();
         if (data.isNull()) data = JsonHelper.objectNode();
-        CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getThreadPool());
-        CompletableFutureExtended<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getThreadPool());
+        CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getExecutor());
+        CompletableFutureExtended<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getExecutor());
         Ratelimiting ratelimiter = discord.getRatelimiter();
         final JsonNode finalData = data;
         ratelimiter.schedule(this, headersFuture, () -> {
             try {
-                String urlExternal = endpoint.getUrl().toExternalForm();
+                String urlExternal = endpoint.getUrl()
+                        .toExternalForm();
                 String requestBody = (method == Method.GET ? "" : finalData.toString());
                 logger.trace(
                         "Creating request: " + method.getDescriptor() + " " + urlExternal + " with responseBody: " +
                         requestBody);
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(urlExternal))
-                        .headers("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)",
-                                 "Content-Type", "application/json",
-                                 "Authorization", discord.getPrefixedToken())
+                        .headers("User-Agent",
+                                 "DiscordBot (http://kaleidox.de, 0.1)",
+                                 "Content-Type",
+                                 "application/json",
+                                 "Authorization",
+                                 discord.getPrefixedToken())
                         .method(method.getDescriptor(), HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());

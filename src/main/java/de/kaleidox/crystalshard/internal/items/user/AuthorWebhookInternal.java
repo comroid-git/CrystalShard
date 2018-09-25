@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
-
 import java.util.Optional;
 
 public class AuthorWebhookInternal extends WebhookInternal implements Author, AuthorWebhook {

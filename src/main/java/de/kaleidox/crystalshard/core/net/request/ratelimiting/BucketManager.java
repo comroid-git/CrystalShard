@@ -6,14 +6,13 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.MapHelper;
 import de.kaleidox.util.helpers.QueueHelper;
-
-import javax.naming.LimitExceededException;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.naming.LimitExceededException;
 
 class BucketManager {
     private final static Logger                        logger = new Logger(BucketManager.class);
@@ -83,17 +82,22 @@ class BucketManager {
             this.requests = new ConcurrentHashMap<>();
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public String toString() {
             int numEndpoints = requests.size();
-            int numRequests = requests.entrySet().stream().map(Map.Entry::getValue).mapToInt(arr -> arr.length).sum();
+            int numRequests = requests.entrySet()
+                    .stream()
+                    .map(Map.Entry::getValue)
+                    .mapToInt(arr -> arr.length)
+                    .sum();
             return "Bucket [" + numEndpoints + " Endpoint" + (numEndpoints == 1 ? "" : "s") + ", " + numRequests +
                    " Requests]";
         }
         
         boolean canAccept(Endpoint endpoint) {
-            return (MapHelper.countKeyOccurrences(requests, endpoint) < ratelimiting.getLimit(endpoint).get());
+            return (MapHelper.countKeyOccurrences(requests, endpoint) < ratelimiting.getLimit(endpoint)
+                    .get());
         }
         
         void addRequest(Endpoint endpoint, Runnable requestExecution) throws LimitExceededException {
@@ -135,7 +139,8 @@ class BucketManager {
         long waitDuration() {
             long val = 0;
             for (Map.Entry<Endpoint, Runnable[]> endpointEntry : requests.entrySet()) {
-                Instant reset = ratelimiting.getReset(endpointEntry.getKey()).get();
+                Instant reset = ratelimiting.getReset(endpointEntry.getKey())
+                        .get();
                 long calc = TimeUnit.SECONDS.toMillis(reset.getEpochSecond()) +
                             TimeUnit.NANOSECONDS.toMillis(reset.getNano());
                 if (calc > val) val = calc;
@@ -144,8 +149,12 @@ class BucketManager {
         }
         
         private int numberRequests(Endpoint endpoint) {
-            return requests.entrySet().stream().filter(entry -> entry.getKey().equals(endpoint)).mapToInt(entry -> entry
-                    .getValue().length).sum();
+            return requests.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getKey()
+                            .equals(endpoint))
+                    .mapToInt(entry -> entry.getValue().length)
+                    .sum();
         }
         
         private Runnable[] addToArray(Runnable[] arr, Runnable add) {

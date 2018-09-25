@@ -2,14 +2,8 @@ package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.cache.Cache;
-import de.kaleidox.crystalshard.core.cache.sub.MessageCache;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
-import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
@@ -41,14 +35,12 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -88,25 +80,40 @@ public class MessageInternal implements Message {
         logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
         this.discord = discord;
-        this.id = data.get("id").asLong();
-        this.channelId = data.get("channel_id").asLong();
-        this.channel = ChannelInternal.getInstance(discord, channelId).toTextChannel().get();
-        if (channel.toServerChannel().isPresent()) {
-            this.server = channel.toServerChannel().map(ServerChannel::getServer).get();
+        this.id = data.get("id")
+                .asLong();
+        this.channelId = data.get("channel_id")
+                .asLong();
+        this.channel = discord.getChannelCache()
+                .getOrRequest(channelId, channelId)
+                .toTextChannel()
+                .get();
+        if (channel.toServerChannel()
+                .isPresent()) {
+            this.server = channel.toServerChannel()
+                    .map(ServerChannel::getServer)
+                    .get();
         } else this.server = null;
-        this.contentRaw = data.get("content").asText();
+        this.contentRaw = data.get("content")
+                .asText();
         try {
-            timestamp1 = Instant.parse(data.get("timestamp").asText());
+            timestamp1 = Instant.parse(data.get("timestamp")
+                                               .asText());
         } catch (DateTimeException ignored) {
             timestamp1 = null;
         }
         this.timestamp = timestamp1;
-        this.editedTimestamp = data.has("edited_timestamp") && !data.get("edited_timestamp").isNull() ? Instant.parse(
-                data.get("edited_timestamp").asText()) : null;
-        this.tts = data.get("tts").asBoolean(false);
-        this.mentionsEveryone = data.get("tts").asBoolean(false);
-        this.pinned = data.get("pinned").asBoolean(false);
-        this.type = MessageType.getTypeById(data.get("type").asInt());
+        this.editedTimestamp = data.has("edited_timestamp") && !data.get("edited_timestamp")
+                .isNull() ? Instant.parse(data.get("edited_timestamp")
+                                                  .asText()) : null;
+        this.tts = data.get("tts")
+                .asBoolean(false);
+        this.mentionsEveryone = data.get("tts")
+                .asBoolean(false);
+        this.pinned = data.get("pinned")
+                .asBoolean(false);
+        this.type = MessageType.getTypeById(data.get("type")
+                                                    .asInt());
         this.activity = data.has("activity") ? new MessageActivityInternal(data.get("activity")) : null;
         this.application = data.has("application") ? new MessageApplicationInternal(data.get("application")) : null;
         if (!data.has("webhook_id")) {
@@ -120,7 +127,8 @@ public class MessageInternal implements Message {
         }
         
         for (JsonNode role : data.get("mention_roles")) {
-            roleMentions.add(RoleInternal.getInstance(server, role));
+            roleMentions.add(discord.getRoleCache()
+                                     .getOrCreate(discord, server, role));
         }
         
         for (JsonNode attachment : data.get("attachments")) {
@@ -140,21 +148,6 @@ public class MessageInternal implements Message {
         listeners = new ArrayList<>();
         
         instances.put(id, this);
-    }
-    
-    public final static Message getInstance(Discord discord, JsonNode data) {
-        synchronized (instances) {
-            long id = data.get("id").asLong(-1);
-            if (id == -1) throw new NoSuchElementException("No valid ID found.");
-            return instances.getOrDefault(id, new MessageInternal(discord, data));
-        }
-    }
-    
-    public final static Message getInstance(TextChannel channel, long id) {
-        return instances.getOrDefault(id, new WebRequest<Message>(channel.getDiscord()).method(Method.GET)
-                .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channel, id))
-                .execute(node -> getInstance(channel.getDiscord(), node))
-                .join());
     }
     
     // Override Methods
@@ -358,12 +351,12 @@ public class MessageInternal implements Message {
         return "Message with ID [" + id + "]";
     }
     
-    public Set<EditTrait<Message>> updateData(JsonNode data) {
-        return null; // todo
-    }
-    
     @Override
     public Cache<Message, Long, IDPair> getCache() {
         return discord.getMessageCache();
+    }
+    
+    public Set<EditTrait<Message>> updateData(JsonNode data) {
+        return null; // todo
     }
 }

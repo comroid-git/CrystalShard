@@ -1,15 +1,12 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
-import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.channel.VoiceChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -44,21 +41,23 @@ public class VoiceStateInternal implements VoiceState {
     
     private VoiceStateInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.server = data.has("guild_id") ? ServerInternal.getInstance(discord, data.get("guild_id").asLong()) : null;
-        this.user = UserInternal.getInstance(discord, data.get("user_id").asLong());
-        this.channel = ChannelInternal.getInstance(discord, data.get("channel_id").asLong())
-                .toVoiceChannel()
-                .orElseThrow(AssertionError::new);
-        this.deafened = data.get("deaf").asBoolean();
-        this.muted = data.get("mute").asBoolean();
-        this.selfDeafened = data.get("self_deaf").asBoolean();
-        this.selfMuted = data.get("self_mute").asBoolean();
-        this.suppressed = data.get("suppress").asBoolean();
-        this.sessionId = data.get("session_id").asText();
+        long serverId = data.get("guild_id")
+                .asLong(-1);
+        this.server = serverId == -1 ? null : discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        long userId = data.get("user_id")
+                .asLong();
+        User user = discord.getUserCache()
+                .getOrRequest(userId, userId);
+        this.sessionId = data.get("session_id")
+                .asText();
+        updateData(data);
         
         instances.entrySet()
                 .stream()
-                .filter(entry -> entry.getValue().getUser().equals(user))
+                .filter(entry -> entry.getValue()
+                        .getUser()
+                        .equals(user))
                 .forEach(entry -> instances.remove(entry.getKey(), entry.getValue()));
         instances.put(sessionId, this);
     }
@@ -112,40 +111,54 @@ public class VoiceStateInternal implements VoiceState {
     public Set<EditTrait<VoiceState>> updateData(JsonNode data) {
         Set<EditTrait<VoiceState>> traits = new HashSet<>();
         
-        VoiceChannel newChannel = ChannelInternal.getInstance(discord, data.path("channel_id").asLong(channel.getId()))
+        long channelId = data.path("channel_id")
+                .asLong(channel.getId());
+        VoiceChannel newChannel = discord.getChannelCache()
+                .getOrRequest(channelId, channelId)
                 .toVoiceChannel()
                 .orElseThrow(AssertionError::new);
         if (!channel.equals(newChannel)) {
             this.channel = newChannel;
             traits.add(CHANNEL);
         }
-        if (deafened != data.path("deaf").asBoolean(deafened)) {
-            this.deafened = data.get("deaf").asBoolean();
+        if (deafened != data.path("deaf")
+                .asBoolean(deafened)) {
+            this.deafened = data.get("deaf")
+                    .asBoolean();
             traits.add(DEAFENED_STATE);
         }
-        if (muted != data.path("mute").asBoolean(muted)) {
-            this.muted = data.get("mute").asBoolean();
+        if (muted != data.path("mute")
+                .asBoolean(muted)) {
+            this.muted = data.get("mute")
+                    .asBoolean();
             traits.add(MUTED_STATE);
         }
-        if (selfDeafened != data.path("self_deaf").asBoolean(selfDeafened)) {
-            this.selfDeafened = data.get("self_deaf").asBoolean();
+        if (selfDeafened != data.path("self_deaf")
+                .asBoolean(selfDeafened)) {
+            this.selfDeafened = data.get("self_deaf")
+                    .asBoolean();
             traits.add(SELF_DEAFENED_STATE);
         }
-        if (selfMuted != data.get("self_mute").asBoolean(selfMuted)) {
-            this.selfMuted = data.get("self_mute").asBoolean();
+        if (selfMuted != data.get("self_mute")
+                .asBoolean(selfMuted)) {
+            this.selfMuted = data.get("self_mute")
+                    .asBoolean();
             traits.add(SELF_MUTED_STATE);
         }
-        if (suppressed != data.get("suppress").asBoolean(suppressed)) {
-            this.suppressed = data.get("suppress").asBoolean();
+        if (suppressed != data.get("suppress")
+                .asBoolean(suppressed)) {
+            this.suppressed = data.get("suppress")
+                    .asBoolean();
             traits.add(SUPPRESSED_STATE);
         }
         
         return traits;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static VoiceState getInstance(Discord discord, JsonNode data) {
-        return instances.getOrDefault(data.get("session_id").asText(), new VoiceStateInternal(discord, data));
+        return instances.getOrDefault(data.get("session_id")
+                                              .asText(), new VoiceStateInternal(discord, data));
     }
 }

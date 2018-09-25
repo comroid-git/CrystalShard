@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +41,8 @@ public class ChannelStructureInternal extends ArrayList<ServerChannel> implement
     
     @Override
     public List<ChannelCategory> getAllCategories() {
-        return stream().filter(channel -> channel instanceof ChannelCategory).map(ChannelCategory.class::cast).collect(
-                Collectors.toList());
+        return stream().filter(channel -> channel instanceof ChannelCategory)
+                .map(ChannelCategory.class::cast)
+                .collect(Collectors.toList());
     }
 }

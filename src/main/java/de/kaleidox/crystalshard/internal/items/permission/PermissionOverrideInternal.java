@@ -1,8 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.permission;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
-import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.permission.OverrideState;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
@@ -11,7 +9,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.helpers.JsonHelper;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -29,19 +27,29 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
         super();
         this.discord = discord;
         this.server = server;
-        this.type = Type.getByKey(data.get("type").asText());
+        this.type = Type.getByKey(data.get("type")
+                                          .asText());
         switch (type) {
             default:
                 throw new AssertionError();
             case ROLE:
-                this.parent = RoleInternal.getInstance(server, data.get("id").asLong());
+                long roleId = data.get("id")
+                        .asLong();
+                this.parent = discord.getRoleCache()
+                        .getOrRequest(roleId, IDPair.of(server.getId(), roleId));
                 break;
             case USER:
-                this.parent = UserInternal.getInstance(discord, data.get("id").asLong()).toServerMember(server);
+                long userId = data.get("user_id")
+                        .asLong();
+                this.parent = discord.getUserCache()
+                        .getOrRequest(userId, userId)
+                        .toServerMember(server);
                 break;
         }
-        new PermissionListInternal(data.get("allow").asInt(0)).forEach(permission -> put(permission, ALLOWED));
-        new PermissionListInternal(data.get("deny").asInt(0)).forEach(permission -> put(permission, DENIED));
+        new PermissionListInternal(data.get("allow")
+                                           .asInt(0)).forEach(permission -> put(permission, ALLOWED));
+        new PermissionListInternal(data.get("deny")
+                                           .asInt(0)).forEach(permission -> put(permission, DENIED));
     }
     
     // Override Methods
@@ -51,8 +59,9 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
         if (!(o instanceof PermissionOverride)) return false;
         PermissionOverride other = (PermissionOverride) o;
         
-        return (getAllowed().toPermissionInt() == other.getAllowed().toPermissionInt()) &&
-               (getDenied().toPermissionInt() == other.getDenied().toPermissionInt());
+        return (getAllowed().toPermissionInt() == other.getAllowed()
+                .toPermissionInt()) && (getDenied().toPermissionInt() == other.getDenied()
+                .toPermissionInt());
     }
     
     @Override
@@ -106,7 +115,8 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
     
     public JsonNode toJsonNode() {
         return JsonHelper.objectNode("id",
-                                     Long.toUnsignedString(Objects.requireNonNull(parent).getId()),
+                                     Long.toUnsignedString(Objects.requireNonNull(parent)
+                                                                   .getId()),
                                      "type",
                                      type.getKey(),
                                      "allow",

@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.CompletableFutureExtended;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -118,10 +117,8 @@ public class ThreadPool {
      * @param heartbeat The heartbeat interval.
      */
     public void startHeartbeat(long heartbeat) {
-        scheduler.scheduleAtFixedRate(() -> discord.getWebSocket().heartbeat(),
-                                      heartbeat,
-                                      heartbeat,
-                                      TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> discord.getWebSocket()
+                .heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
     }
     
     /**
@@ -156,7 +153,8 @@ public class ThreadPool {
      * thread.
      */
     void cleanupThreads() {
-        factoriedThreads.stream().filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
+        factoriedThreads.stream()
+                .filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
                 .peek(Worker::interrupt) // interrupt the thread
                 .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one each thread
                 .forEach(factoriedThreads::remove); // remove the thread from the list
@@ -182,7 +180,8 @@ public class ThreadPool {
         public Worker getOrCreateWorker() {
             return threads.entrySet()
                     .stream()
-                    .filter(entry -> !entry.getValue().get())
+                    .filter(entry -> !entry.getValue()
+                            .get())
                     .findFirst()
                     .map(Map.Entry::getKey)
                     .orElseGet(() -> {
@@ -363,7 +362,8 @@ public class ThreadPool {
     
     // Static membe
     
-// Static members
+    // Static members
+    
     /**
      * Returns whether the current thread is a BotOwn thread; meaning the current thread is a {@link Worker} Thread.
      * This method is required if you statically want to get a Discord instance using {@link #getThreadDiscord()}.
@@ -422,6 +422,8 @@ public class ThreadPool {
      * @return Whether the task is most likely from an async stage.
      */
     private static boolean nonFutureTask(Runnable task) {
-        return !task.toString().toLowerCase().contains("future");
+        return !task.toString()
+                .toLowerCase()
+                .contains("future");
     }
 }

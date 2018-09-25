@@ -14,7 +14,6 @@ import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.channel.VoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -47,7 +46,9 @@ public class ChannelUpdaterInternal {
             this.topic = channel.getTopic();
             this.position = channel.getPosition();
             this.nsfw = channel.isNsfw();
-            this.parent = channel.toServerChannel().flatMap(ServerChannel::getCategory).orElse(null);
+            this.parent = channel.toServerChannel()
+                    .flatMap(ServerChannel::getCategory)
+                    .orElse(null);
             this.overrides = channel.toServerChannel()
                     .map(ServerChannel::getPermissionOverrides)
                     .orElse(Collections.emptyList());
@@ -141,7 +142,9 @@ public class ChannelUpdaterInternal {
             this.bitrate = channel.getBitrate();
             this.position = channel.getPosition();
             this.limit = channel.getUserLimit();
-            this.parent = channel.toServerChannel().flatMap(ServerChannel::getCategory).orElse(null);
+            this.parent = channel.toServerChannel()
+                    .flatMap(ServerChannel::getCategory)
+                    .orElse(null);
             this.overrides = channel.toServerChannel()
                     .map(ServerChannel::getPermissionOverrides)
                     .orElse(Collections.emptyList());

@@ -7,7 +7,7 @@ import de.kaleidox.crystalshard.main.Discord;
 public interface UnicodeEmoji extends Emoji {
     Discord getDiscord();
     
-// Static membe
+    // Static membe
     static UnicodeEmoji of(Discord discord, String emojiOrAlias) {
         String aliases = EmojiParser.parseToAliases(emojiOrAlias);
         String unicode = EmojiParser.parseToUnicode(emojiOrAlias);

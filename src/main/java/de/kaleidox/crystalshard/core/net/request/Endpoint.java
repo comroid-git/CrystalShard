@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.core.net.request;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.util.helpers.UrlHelper;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
@@ -111,13 +111,21 @@ public class Endpoint {
         
         public int getParameterCount() {
             int splitted = location.split("%s").length - 1;
-            int end = (location.substring(location.length() - 2).equalsIgnoreCase("%s") ? 1 : 0);
+            int end = (location.substring(location.length() - 2)
+                               .equalsIgnoreCase("%s") ? 1 : 0);
             return splitted + end;
         }
         
         public Endpoint toEndpoint(Object... parameter) {
             String[] params = new String[parameter.length];
             int parameterCount = getParameterCount();
+            
+            if (parameter.length == 1 && parameterCount == 2) {
+                if (parameter[0] instanceof IDPair) {
+                    IDPair pair = (IDPair) parameter[0];
+                    return toEndpoint(pair.getOne(), pair.getTwo());
+                }
+            }
             
             for (int i = 0; i < parameter.length; i++) {
                 Object x = parameter[i];
@@ -131,10 +139,9 @@ public class Endpoint {
                 }
             }
             if (parameterCount == params.length) {
-                boolean olderInstanceExists = olderInstances.entrySet().stream().anyMatch(entry ->
-                                                                                                  Arrays.compare(entry.getKey(),
-                                                                                                                 params) ==
-                                                                                                  0);
+                boolean olderInstanceExists = olderInstances.entrySet()
+                        .stream()
+                        .anyMatch(entry -> Arrays.compare(entry.getKey(), params) == 0);
                 if (olderInstanceExists) {
                     for (Map.Entry<String[], Endpoint> entry : olderInstances.entrySet()) {
                         if (Arrays.compare(entry.getKey(), params) == 0) {
@@ -153,8 +160,7 @@ public class Endpoint {
         }
     }
     
-// Static members
-    // Static membe
+    // Static members
     public static Endpoint of(Location location, Object... parameter) {
         return location.toEndpoint(parameter);
     }

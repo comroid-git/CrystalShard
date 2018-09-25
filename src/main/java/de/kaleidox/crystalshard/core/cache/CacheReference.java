@@ -31,10 +31,38 @@ class CacheReference<T extends CacheStorable, R> {
         this.cached = new AtomicBoolean(reference != null);
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String toString() {
         return "CacheReference{" + (refString == null ? "undefined reference" : refString) + "}";
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        return reference == null ? super.equals(obj) : reference.equals(obj);
+    }
+    
+    @Override
+    public int hashCode() {
+        return reference == null ? super.hashCode() : reference.hashCode();
+    }
+    
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException("Cannot clone CacheReferences!");
+    }
+    
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            this.reference = null;
+            this.recentRequestor = null;
+            this.recentParameters = null;
+            this.lastAccess = null;
+            this.cached = null;
+        } finally {
+            super.finalize();
+        }
     }
     
     public synchronized Object[] getRecentParameters() {

@@ -11,7 +11,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -19,11 +18,16 @@ public class MessageCache extends Cache<Message, Long, IDPair> {
     private final DiscordInternal discordInternal;
     
     public MessageCache(DiscordInternal discordInternal) {
-        super(MessageInternal.class, TimeUnit.HOURS.toMillis(12), Discord.class, JsonNode.class);
+        super(MessageInternal.class,
+              param -> ((JsonNode) param[1]).get("id")
+                      .asLong(),
+              TimeUnit.HOURS.toMillis(12),
+              Discord.class,
+              JsonNode.class);
         this.discordInternal = discordInternal;
     }
     
-// Override Methods
+    // Override Methods
     @NotNull
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(IDPair idPair) {
@@ -34,7 +38,7 @@ public class MessageCache extends Cache<Message, Long, IDPair> {
     
     @NotNull
     @Override
-    public Message construct(Object... parameters) {
-        return new MessageInternal((Discord) parameters[0], (JsonNode) parameters[1]);
+    public Message construct(Object... param) {
+        return new MessageInternal((Discord) param[0], (JsonNode) param[1]);
     }
 }

@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.util.helpers.UrlHelper;
-
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -39,11 +38,16 @@ public class SentEmbedInternal implements SentEmbed {
     
     public SentEmbedInternal(Message message, JsonNode data) {
         this.message = message;
-        this.title = data.path("title").asText(null);
-        this.description = data.path("description").asText(null);
-        this.url = UrlHelper.orNull(data.path("url").asText(null));
-        this.timestamp = (data.has("timestamp") ? Instant.parse(data.path("timestamp").asText()) : null);
-        this.color = (data.has("color") ? new Color(data.path("color").asInt()) : null);
+        this.title = data.path("title")
+                .asText(null);
+        this.description = data.path("description")
+                .asText(null);
+        this.url = UrlHelper.orNull(data.path("url")
+                                            .asText(null));
+        this.timestamp = (data.has("timestamp") ? Instant.parse(data.path("timestamp")
+                                                                        .asText()) : null);
+        this.color = (data.has("color") ? new Color(data.path("color")
+                                                            .asInt()) : null);
         this.footer = (data.has("footer") ? new Footer(data.path("footer")) : null);
         this.image = (data.has("image") ? new Image(data.path("image")) : null);
         this.thumbnail = (data.has("thumbnail") ? new Thumbnail(data.path("thumbnail")) : null);
@@ -56,7 +60,7 @@ public class SentEmbedInternal implements SentEmbed {
         }
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public EmbedDraft toEmbedDraft() {
         return toBuilder().build();
@@ -64,12 +68,16 @@ public class SentEmbedInternal implements SentEmbed {
     
     @Override
     public Builder toBuilder() {
-        Builder builder = Embed.BUILDER().setTitle(title).setDescription(description).setUrl(
-                Objects.nonNull(url) ? url.toExternalForm() : null).setTimestamp(timestamp).setColor(color).setFooter(
-                Objects.nonNull(footer) ? footer.toDraft() : null).setImage(
-                Objects.nonNull(image) ? image.toDraft() : null).setThumbnail(
-                Objects.nonNull(thumbnail) ? thumbnail.toDraft() : null).setAuthor(
-                Objects.nonNull(author) ? author.toDraft() : null);
+        Builder builder = Embed.BUILDER()
+                .setTitle(title)
+                .setDescription(description)
+                .setUrl(Objects.nonNull(url) ? url.toExternalForm() : null)
+                .setTimestamp(timestamp)
+                .setColor(color)
+                .setFooter(Objects.nonNull(footer) ? footer.toDraft() : null)
+                .setImage(Objects.nonNull(image) ? image.toDraft() : null)
+                .setThumbnail(Objects.nonNull(thumbnail) ? thumbnail.toDraft() : null)
+                .setAuthor(Objects.nonNull(author) ? author.toDraft() : null);
         fields.forEach(field -> builder.addField(field.toDraft()));
         return builder;
     }
@@ -141,49 +149,132 @@ public class SentEmbedInternal implements SentEmbed {
     
     @Override
     public Updater getUpdater() throws IllegalAccessException {
-        if (!message.getAuthor().isYourself()) throw new IllegalAccessException("You cannot edit someone elses embed!");
+        if (!message.getAuthor()
+                .isYourself()) throw new IllegalAccessException("You cannot edit someone elses embed!");
         return new Updater(this);
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> setTitle(String title) {
+        Builder builder = toBuilder();
+        builder.setTitle(title);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> setDescription(String description) {
+        Builder builder = toBuilder();
+        builder.setDescription(description);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> setUrl(String url) {
+        Builder builder = toBuilder();
+        builder.setUrl(url);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> setTimestamp(Instant timestamp) {
+        Builder builder = toBuilder();
+        builder.setTimestamp(timestamp);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> setColor(Color color) {
+        Builder builder = toBuilder();
+        builder.setColor(color);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier) {
+        List<EmbedDraft.EditableField> fields = getFields().stream()
+                .map(SentEmbed.Field::toDraft)
+                .map(EmbedDraftInternal.EditableField::new)
+                .collect(Collectors.toList());
+        fieldModifier.accept(fields);
+        Builder builder = toBuilder();
+        builder.removeAllFields();
+        fields.forEach(builder::addField);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
+    }
+    
+    @Override
+    public CompletableFuture<SentEmbed> modifyFields(Predicate<SentEmbed.Field> tester,
+                                                     Consumer<EmbedDraft.EditableField> fieldModifier) {
+        Builder builder = toBuilder();
+        builder.removeAllFields();
+        getFields().stream()
+                .map(field -> {
+                    EmbedDraft.Field draftField = field.toDraft();
+                    if (tester.test(field)) {
+                        EmbedDraftInternal.EditableField editableField =
+                                new EmbedDraftInternal.EditableField(draftField);
+                        fieldModifier.accept(editableField);
+                        return editableField;
+                    }
+                    return draftField;
+                })
+                .forEach(builder::addField);
+        return message.edit(builder.build())
+                .thenApply(msg -> msg.getEmbed()
+                        .orElseThrow(AssertionError::new));
     }
     
     public class Updater implements SentEmbed.Updater {
         private final Builder builder;
         private final Message message;
-    
+        
         public Updater(SentEmbed embed) {
             this.builder = embed.toBuilder();
             this.message = embed.getMessage();
         }
-    
+        
         @Override
         public SentEmbed.Updater setTitle(String title) {
             builder.setTitle(title);
             return this;
         }
-    
+        
         @Override
         public SentEmbed.Updater setDescription(String description) {
             builder.setDescription(description);
             return this;
         }
-    
+        
         @Override
         public SentEmbed.Updater setUrl(String url) {
             builder.setUrl(url);
             return this;
         }
-    
+        
         @Override
         public SentEmbed.Updater setTimestamp(Instant timestamp) {
             builder.setTimestamp(timestamp);
             return this;
         }
-    
+        
         @Override
         public SentEmbed.Updater setColor(Color color) {
             builder.setColor(color);
             return this;
         }
-    
+        
         @Override
         public SentEmbed.Updater modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier) {
             Collection<EmbedDraft.EditableField> fields = builder.getFields()
@@ -195,7 +286,7 @@ public class SentEmbedInternal implements SentEmbed {
             fields.forEach(builder::addField);
             return this;
         }
-    
+        
         @Override
         public SentEmbed.Updater modifyFields(Predicate<EmbedDraft.Field> tester,
                                               Consumer<EmbedDraft.EditableField> fieldModifier) {
@@ -217,86 +308,20 @@ public class SentEmbedInternal implements SentEmbed {
                     .forEach(builder::addField);
             return this;
         }
-    
+        
         @Override
         public CompletableFuture<SentEmbed> update() {
             return message.edit(builder.build())
-                    .thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
+                    .thenApply(msg -> msg.getEmbed()
+                            .orElseThrow(AssertionError::new));
         }
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> setTitle(String title) {
-        Builder builder = toBuilder();
-        builder.setTitle(title);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> setDescription(String description) {
-        Builder builder = toBuilder();
-        builder.setDescription(description);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> setUrl(String url) {
-        Builder builder = toBuilder();
-        builder.setUrl(url);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> setTimestamp(Instant timestamp) {
-        Builder builder = toBuilder();
-        builder.setTimestamp(timestamp);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> setColor(Color color) {
-        Builder builder = toBuilder();
-        builder.setColor(color);
-        return message.edit(builder.build()).thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier) {
-        List<EmbedDraft.EditableField> fields = getFields().stream().map(SentEmbed.Field::toDraft).map(
-                EmbedDraftInternal.EditableField::new).collect(Collectors.toList());
-        fieldModifier.accept(fields);
-        Builder builder = toBuilder();
-        builder.removeAllFields();
-        fields.forEach(builder::addField);
-        return message.edit(builder.build())
-                .thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
-    }
-    
-    @Override
-    public CompletableFuture<SentEmbed> modifyFields(Predicate<SentEmbed.Field> tester,
-                                                     Consumer<EmbedDraft.EditableField> fieldModifier) {
-        Builder builder = toBuilder();
-        builder.removeAllFields();
-        getFields().stream()
-                .map(field -> {
-                    EmbedDraft.Field draftField = field.toDraft();
-                    if (tester.test(field)) {
-                        EmbedDraftInternal.EditableField editableField = new EmbedDraftInternal.EditableField(draftField);
-                        fieldModifier.accept(editableField);
-                        return editableField;
-                    }
-                    return draftField;
-                })
-                .forEach(builder::addField);
-        return message.edit(builder.build())
-                .thenApply(msg -> msg.getEmbed().orElseThrow(AssertionError::new));
     }
     
     public class Footer implements SentEmbed.Footer {
         public Footer(JsonNode data) {
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public String getText() {
             return null;
@@ -312,7 +337,7 @@ public class SentEmbedInternal implements SentEmbed {
         public Image(JsonNode data) {
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public Optional<URL> getUrl() {
             return Optional.empty();
@@ -323,7 +348,7 @@ public class SentEmbedInternal implements SentEmbed {
         public Author(JsonNode data) {
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public Optional<URL> getUrl() {
             return Optional.empty();
@@ -344,7 +369,7 @@ public class SentEmbedInternal implements SentEmbed {
         public Thumbnail(JsonNode data) {
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public Optional<URL> getUrl() {
             return Optional.empty();
@@ -357,12 +382,15 @@ public class SentEmbedInternal implements SentEmbed {
         private final boolean inline;
         
         public Field(JsonNode data) {
-            this.title = data.path("title").asText();
-            this.text = data.path("text").asText();
-            this.inline = data.path("inline").asBoolean(false);
+            this.title = data.path("title")
+                    .asText();
+            this.text = data.path("text")
+                    .asText();
+            this.inline = data.path("inline")
+                    .asBoolean(false);
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public String getTitle() {
             return title;
@@ -383,7 +411,7 @@ public class SentEmbedInternal implements SentEmbed {
         public Video(JsonNode data) {
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public Optional<URL> getUrl() {
             return Optional.empty();
@@ -394,7 +422,7 @@ public class SentEmbedInternal implements SentEmbed {
         public Provider(JsonNode data) {
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public String getName() {
             return null;

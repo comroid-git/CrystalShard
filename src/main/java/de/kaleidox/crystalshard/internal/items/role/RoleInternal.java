@@ -1,9 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
@@ -14,11 +12,10 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
-
+import de.kaleidox.util.objects.markers.IDPair;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,18 +36,26 @@ public class RoleInternal implements Role {
     private              boolean                       managed;
     private              boolean                       mentionable;
     
-    private RoleInternal(Discord discord, Server server, JsonNode data) {
+    public RoleInternal(Discord discord, Server server, JsonNode data) {
         logger.deeptrace("Creating role object for data: " + data.toString());
         this.discordInternal = discord;
         this.server = server;
-        this.id = data.get("id").asLong();
-        this.name = data.get("name").asText();
-        this.color = new Color(data.get("color").asInt());
-        this.grouping = data.get("hoist").asBoolean();
-        this.position = data.get("position").asInt();
-        this.permissions = new PermissionListInternal(data.get("permissions").asInt());
-        this.managed = data.get("managed").asBoolean();
-        this.mentionable = data.get("mentionable").asBoolean();
+        this.id = data.get("id")
+                .asLong();
+        this.name = data.get("name")
+                .asText();
+        this.color = new Color(data.get("color")
+                                       .asInt());
+        this.grouping = data.get("hoist")
+                .asBoolean();
+        this.position = data.get("position")
+                .asInt();
+        this.permissions = new PermissionListInternal(data.get("permissions")
+                                                              .asInt());
+        this.managed = data.get("managed")
+                .asBoolean();
+        this.mentionable = data.get("mentionable")
+                .asBoolean();
         
         instances.putIfAbsent(id, this);
     }
@@ -136,59 +141,57 @@ public class RoleInternal implements Role {
         return null;
     }
     
+    @Override
+    public Cache<Role, Long, IDPair> getCache() {
+        return discordInternal.getRoleCache();
+    }
+    
     public Set<EditTrait<Role>> updateData(JsonNode data) {
         HashSet<EditTrait<Role>> traits = new HashSet<>();
         
-        if (permissions.toPermissionInt() != data.path("permissions").asInt(permissions.toPermissionInt())) {
-            permissions = new PermissionListInternal(data.get("permissions").asInt());
+        if (permissions.toPermissionInt() != data.path("permissions")
+                .asInt(permissions.toPermissionInt())) {
+            permissions = new PermissionListInternal(data.get("permissions")
+                                                             .asInt());
             traits.add(PERMISSION_OVERWRITES);
         }
-        if (!name.equals(data.path("name").asText(name))) {
-            name = data.get("name").asText();
+        if (!name.equals(data.path("name")
+                                 .asText(name))) {
+            name = data.get("name")
+                    .asText();
             traits.add(NAME);
         }
-        if (!color.equals(new Color(data.path("color").asInt(color.getRGB())))) {
-            color = new Color(data.get("color").asInt());
+        if (!color.equals(new Color(data.path("color")
+                                            .asInt(color.getRGB())))) {
+            color = new Color(data.get("color")
+                                      .asInt());
             traits.add(COLOR);
         }
-        if (grouping != data.path("hoist").asBoolean(grouping)) {
-            grouping = data.get("hoist").asBoolean();
+        if (grouping != data.path("hoist")
+                .asBoolean(grouping)) {
+            grouping = data.get("hoist")
+                    .asBoolean();
             traits.add(GROUPING);
         }
-        if (position != data.path("position").asInt(position)) {
-            position = data.get("position").asInt();
+        if (position != data.path("position")
+                .asInt(position)) {
+            position = data.get("position")
+                    .asInt();
             traits.add(POSITION);
         }
-        if (managed != data.path("managed").asBoolean(managed)) {
-            managed = data.get("managed").asBoolean();
+        if (managed != data.path("managed")
+                .asBoolean(managed)) {
+            managed = data.get("managed")
+                    .asBoolean();
             traits.add(MANAGED);
         }
-        if (mentionable != data.path("mentionable").asBoolean(mentionable)) {
-            mentionable = data.get("mentionable").asBoolean();
+        if (mentionable != data.path("mentionable")
+                .asBoolean(mentionable)) {
+            mentionable = data.get("mentionable")
+                    .asBoolean();
             traits.add(MENTIONABILITY);
         }
         
         return traits;
-    }
-    
-// Static members
-    // Static membe
-    public static Role getInstance(Server server, JsonNode data) {
-        long id = data.path("id").asLong(-1);
-        assert id != -1 : "No valid ID found.";
-        return instances.containsKey(id) ? instances.get(id) : new RoleInternal(server.getDiscord(), server, data);
-    }
-    
-    public static Role getInstance(Server server, long id) {
-        assert id != -1 : "No valid ID found.";
-        return instances.getOrDefault(id,
-                                      new WebRequest<Role>(server.getDiscord()).endpoint(Endpoint.Location.ROLE.toEndpoint(
-                                              server)).method(Method.GET).execute(node -> {
-                                          for (JsonNode role : node) {
-                                              if (role.get("id").asLong() == id)
-                                                  return new RoleInternal(server.getDiscord(), server, role);
-                                          }
-                                          throw new NoSuchElementException("No Role with ID [" + id + "] found.");
-                                      }).join());
     }
 }

@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ public class PagedMessage {
     }
     
     private void onPageClick(ReactionEvent event) {
-        if (!event.getUser().isYourself()) {
+        if (!event.getUser()
+                .isYourself()) {
             Emoji emoji = event.getEmoji();
             switch (emoji.getMentionTag()) {
                 case PREV_PAGE_EMOJI:
@@ -77,13 +77,14 @@ public class PagedMessage {
             lastMessage.delete("Outdated");
         }
         
-        parent.sendMessage(getPageContent()).thenAcceptAsync(msg -> {
-            lastMessage = msg;
-            msg.attachListener((ReactionAddListener) this::onPageClick);
-            msg.attachListener((ReactionRemoveListener) this::onPageClick);
-            msg.addReaction(PREV_PAGE_EMOJI);
-            msg.addReaction(NEXT_PAGE_EMOJI);
-        });
+        parent.sendMessage(getPageContent())
+                .thenAcceptAsync(msg -> {
+                    lastMessage = msg;
+                    msg.attachListener((ReactionAddListener) this::onPageClick);
+                    msg.attachListener((ReactionRemoveListener) this::onPageClick);
+                    msg.addReaction(PREV_PAGE_EMOJI);
+                    msg.addReaction(NEXT_PAGE_EMOJI);
+                });
     }
     
     private String getPageContent() {
@@ -109,8 +110,8 @@ public class PagedMessage {
                 pageBuilder.append(bodyLines.get(i));
                 pageBuilder.append("\n");
                 
-                if (i == bodyLines.size() - 1 || pageBuilder.length() + bodyLines.get(i + 1).length() >=
-                                                 SUITABLE_MAX_LENGTH) {
+                if (i == bodyLines.size() - 1 || pageBuilder.length() + bodyLines.get(i + 1)
+                        .length() >= SUITABLE_MAX_LENGTH) {
                     pages.add(pageBuilder.toString());
                     pageBuilder = new StringBuilder(completeHead);
                 }
@@ -118,7 +119,7 @@ public class PagedMessage {
         }
     }
     
-// Static members
+    // Static members
     // Static membe
     public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead,
                                          Supplier<String> defaultBody) {

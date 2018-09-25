@@ -6,14 +6,15 @@ import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -48,11 +49,17 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     
     int getUserCount();
     
-    Cache<Message, Long, IDPair> getMessageCache();
+    Cache<Server, Long, Long> getServerCache();
+    
+    Cache<User, Long, Long> getUserCache();
+    
+    Cache<Role, Long, IDPair> getRoleCache();
     
     Cache<Channel, Long, Long> getChannelCache();
     
-    Cache<User, Long, Long> getUserCache();
+    Cache<Message, Long, IDPair> getMessageCache();
+    
+    Cache<CustomEmoji, Long, IDPair> getEmojiCache();
     
     default ScheduledExecutorService getScheduler() {
         return getThreadPool().getScheduler();

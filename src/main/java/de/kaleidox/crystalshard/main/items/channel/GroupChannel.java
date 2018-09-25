@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.channel;
 
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.concurrent.CompletableFuture;
 
 public interface GroupChannel extends TextChannel {

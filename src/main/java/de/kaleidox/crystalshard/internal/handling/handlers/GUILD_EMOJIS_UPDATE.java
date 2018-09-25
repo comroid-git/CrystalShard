@@ -10,27 +10,27 @@ import de.kaleidox.crystalshard.main.handling.listener.server.ServerEmojiEditLis
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.objects.Difference;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class GUILD_EMOJIS_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id").asLong());
+        long serverId = data.get("guild_id")
+                .asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache()
+                .getOrRequest(serverId, serverId);
         List<CustomEmoji> newEmojis = new ArrayList<>();
         Set<EditTrait<CustomEmoji>> traits = new HashSet<>();
         List<CustomEmoji> edited = new ArrayList<>();
         Difference<CustomEmoji> diff;
         
         for (JsonNode node : data.get("emojis")) {
-            CustomEmojiInternal emoji = (CustomEmojiInternal) CustomEmojiInternal.getInstance(discord,
-                                                                                              server,
-                                                                                              data,
-                                                                                              true);
+            CustomEmojiInternal emoji = (CustomEmojiInternal) discord.getEmojiCache()
+                    .getOrCreate(discord, server, data, true);
             Set<EditTrait<CustomEmoji>> editTraits = emoji.updateData(node);
             if (!editTraits.isEmpty()) edited.add(emoji);
             traits.addAll(editTraits);

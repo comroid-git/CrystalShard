@@ -6,13 +6,20 @@ import de.kaleidox.crystalshard.internal.handling.event.server.role.RoleDeleteEv
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleDeleteListener;
+import de.kaleidox.util.objects.markers.IDPair;
 
 public class GUILD_ROLE_DELETE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        ServerInternal server = (ServerInternal) ServerInternal.getInstance(discord, data.get("guild_id").asLong());
-        RoleInternal role = (RoleInternal) RoleInternal.getInstance(server, data.get("role_id").asLong());
+        long serverId = data.get("guild_id")
+                .asLong();
+        long roleId = data.get("role_id")
+                .asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        RoleInternal role = (RoleInternal) discord.getRoleCache()
+                .getOrRequest(roleId, IDPair.of(serverId, roleId));
         
         server.removeRole(role);
         RoleDeleteEventInternal event = new RoleDeleteEventInternal(discord, role, server);
@@ -20,6 +27,7 @@ public class GUILD_ROLE_DELETE extends HandlerBase {
         collectListeners(ServerRoleDeleteListener.class,
                          discord,
                          server,
-                         role).forEach(listener -> discord.getThreadPool().execute(() -> listener.onRoleDelete(event)));
+                         role).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onRoleDelete(event)));
     }
 }

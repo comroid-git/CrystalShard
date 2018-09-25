@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.Webhook;
 import de.kaleidox.logging.Logger;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
@@ -19,11 +18,14 @@ public class WebhookInternal implements Webhook {
     
     public WebhookInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.id = data.get("id").asLong();
-        this.name = data.get("username").asText();
+        this.id = data.get("id")
+                .asLong();
+        this.name = data.get("username")
+                .asText();
         URL tempAvatarUrl;
         try {
-            tempAvatarUrl = data.has("avatar") ? new URL(data.get("avatar").asText()) : null;
+            tempAvatarUrl = data.has("avatar") ? new URL(data.get("avatar")
+                                                                 .asText()) : null;
         } catch (MalformedURLException e) {
             logger.exception(e);
             tempAvatarUrl = null;

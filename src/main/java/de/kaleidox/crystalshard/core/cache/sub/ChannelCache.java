@@ -11,8 +11,6 @@ import de.kaleidox.crystalshard.internal.items.channel.GroupChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
-import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
-import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
@@ -28,37 +26,46 @@ public class ChannelCache extends Cache<Channel, Long, Long> {
     private final DiscordInternal discordInternal;
     
     public ChannelCache(DiscordInternal discordInternal) {
-        super(ChannelInternal.class, TimeUnit.HOURS.toMillis(12), Discord.class, JsonNode.class);
+        super(ChannelInternal.class,
+              param -> ((JsonNode) param[1]).get("id")
+                      .asLong(),
+              TimeUnit.HOURS.toMillis(12),
+              Discord.class,
+              JsonNode.class);
         this.discordInternal = discordInternal;
     }
     
+    // Override Methods
     @NotNull
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(Long requestIdent) {
-        return new WebRequest<Object[]>(discordInternal)
-                .method(GET)
+        return new WebRequest<Object[]>(discordInternal).method(GET)
                 .endpoint(Endpoint.Location.CHANNEL.toEndpoint(requestIdent))
                 .execute(node -> new Object[]{discordInternal, node});
     }
     
     @NotNull
     @Override
-    public Channel construct(Object... parameters) {
-        Discord discord = (Discord) parameters[0];
-        JsonNode data = (JsonNode) parameters[1];
-        Server server = data.has("guild_id") ? ServerInternal.getInstance(discord, data.get("guild_id").asLong()) :
-                        null;
-        switch (ChannelType.getFromId(data.get("type").asInt())) {
+    public Channel construct(Object... param) {
+        Discord discord = (Discord) param[0];
+        JsonNode data = (JsonNode) param[1];
+        Server server = data.has("guild_id") ? discord.getServerCache()
+                .getOrRequest(data.get("guild_id")
+                                      .asLong(),
+                              data.get("guild_id")
+                                      .asLong()) : null;
+        switch (ChannelType.getFromId(data.get("type")
+                                              .asInt())) {
             case GUILD_TEXT:
-                return ServerTextChannelInternal.getInstance(discord, server, data);
+                return new ServerTextChannelInternal(discord, server, data);
             case DM:
-                return PrivateTextChannelInternal.getInstance(discord, data);
+                return new PrivateTextChannelInternal(discord, data);
             case GUILD_VOICE:
-                return ServerVoiceChannelInternal.getInstance(discord, server, data);
+                return new ServerVoiceChannelInternal(discord, server, data);
             case GROUP_DM:
-                return GroupChannelInternal.getInstance(discord, data);
+                return new GroupChannelInternal(discord, data);
             case GUILD_CATEGORY:
-                return ChannelCategoryInternal.getInstance(discord, server, data);
+                return new ChannelCategoryInternal(discord, server, data);
             default:
                 throw new NoSuchElementException("Unknown or no channel Type.");
         }

@@ -1,12 +1,10 @@
 package de.kaleidox.crystalshard.core.cache;
 
-import java.util.concurrent.CompletableFuture;
-
 /**
  * This interface marks an object as cacheable, which can then be stored within a {@link Cache}.
  *
- * @param <T>         The return type for the getter method.
- * @param <I>        The type that the unique identifier is in.
+ * @param <T> The return type for the getter method.
+ * @param <I> The type that the unique identifier is in.
  * @param <R> The type of the object required to request a new instance of the object.
  */
 public interface Cacheable<T extends CacheStorable, I, R> {
@@ -18,7 +16,6 @@ public interface Cacheable<T extends CacheStorable, I, R> {
     Cache<T, I, R> getCache();
     
     /**
-     *
      * @param typeClass
      * @param ident
      * @param <T>
@@ -32,7 +29,6 @@ public interface Cacheable<T extends CacheStorable, I, R> {
     }
     
     /**
-     *
      * @param typeClass
      * @param ident
      * @param constructorParameters
@@ -41,7 +37,8 @@ public interface Cacheable<T extends CacheStorable, I, R> {
      * @return
      * @see Cache#getOrCreate(I, Object...)
      */
-    static <T extends CacheStorable, I> T getOrCreateInstance(Class<T> typeClass, I ident, Object... constructorParameters) {
+    static <T extends CacheStorable, I> T getOrCreateInstance(Class<T> typeClass, I ident,
+                                                              Object... constructorParameters) {
         return Cache.getCacheInstance(typeClass, ident)
                 .getOrCreate(ident, constructorParameters);
     }

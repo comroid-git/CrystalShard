@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
-
 import java.util.Optional;
 
 public class ServerPresenceUpdateEventInternal extends EventBase implements ServerPresenceUpdateEvent {
@@ -18,7 +17,7 @@ public class ServerPresenceUpdateEventInternal extends EventBase implements Serv
         this.presence = presence;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public Presence getPresence() {
         return presence;

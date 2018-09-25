@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main.items.permission;
 
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,7 +20,7 @@ public interface PermissionList extends Set<Permission> {
     @Override
     boolean remove(Object o);
     
-// Static members
+    // Static members
     // Static membe
     static PermissionList emptyListOf(PermissionOverwritable parent) {
         return new PermissionListInternal(parent, 0);

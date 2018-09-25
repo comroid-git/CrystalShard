@@ -12,7 +12,6 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -94,7 +93,7 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     public int getUserCount() {
         return 0;
     }
-
+    
     @Override
     public Cache<Message, Long, IDPair> getMessageCache() {
         return null;

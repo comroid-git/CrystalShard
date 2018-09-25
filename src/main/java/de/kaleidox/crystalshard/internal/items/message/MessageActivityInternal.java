@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.items.message;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.items.message.MessageActivity;
 import de.kaleidox.crystalshard.main.items.message.MessageActivityType;
-
 import java.util.Optional;
 
 public class MessageActivityInternal implements MessageActivity {
@@ -11,8 +10,10 @@ public class MessageActivityInternal implements MessageActivity {
     private final String              partyId;
     
     public MessageActivityInternal(JsonNode data) {
-        this.type = MessageActivityType.getById(data.get("type").asInt());
-        this.partyId = data.get("party_id").asText(null);
+        this.type = MessageActivityType.getById(data.get("type")
+                                                        .asInt());
+        this.partyId = data.get("party_id")
+                .asText(null);
     }
     
     // Override Methods

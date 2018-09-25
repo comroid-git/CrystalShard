@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
@@ -16,7 +15,6 @@ import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
-
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +41,8 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(((SendableInternal) content).toJsonNode(objectNode()))
                 .execute(node -> {
-                    Message message = MessageInternal.getInstance(discord, node);
+                    Message message = discord.getMessageCache()
+                            .getOrCreate(discord, node);
                     messages.put(message.getId(), message);
                     return message;
                 });
@@ -54,7 +53,9 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Sending Message to Text Channel [" + id + "])",
                 Permission.SEND_MESSAGES));
-        Embed.Builder builder = discord.getUtilities().getDefaultEmbed().getBuilder();
+        Embed.Builder builder = discord.getUtilities()
+                .getDefaultEmbed()
+                .getBuilder();
         defaultEmbedModifier.accept(builder);
         return sendMessage(builder.build());
     }
@@ -73,7 +74,8 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                                  "file",
                                  "content"))
                 .execute(node -> {
-                    Message message = MessageInternal.getInstance(discord, node);
+                    Message message = discord.getMessageCache()
+                            .getOrCreate(discord, node);
                     messages.put(message.getId(), message);
                     return message;
                 });
@@ -88,7 +90,8 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(objectNode("content", content, "file", "content"))
                 .execute(node -> {
-                    Message message = MessageInternal.getInstance(discord, node);
+                    Message message = discord.getMessageCache()
+                            .getOrCreate(discord, node);
                     messages.put(message.getId(), message);
                     return message;
                 });
@@ -96,8 +99,9 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Void> typing() {
-        return new WebRequest<Void>(discord).method(Method.POST).endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(
-                this)).execute(node -> null);
+        return new WebRequest<Void>(discord).method(Method.POST)
+                .endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this))
+                .execute(node -> null);
     }
     
     @Override
@@ -106,7 +110,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     }
     
     private boolean checkPermissions() {
-        return (!toServerChannel().map(ServerChannel::getServer).isEmpty() && !hasPermission(discord.getSelf(),
-                                                                                             Permission.SEND_MESSAGES));
+        return (!toServerChannel().map(ServerChannel::getServer)
+                .isEmpty() && !hasPermission(discord.getSelf(), Permission.SEND_MESSAGES));
     }
 }

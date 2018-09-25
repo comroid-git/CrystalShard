@@ -9,12 +9,11 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-
 import java.util.Collection;
 import java.util.Collections;
 
 public class PRESENCE_UPDATE extends HandlerBase {
-// Override Methods
+    // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         Presence presence = PresenceInternal.getInstance(discord, data);
@@ -25,6 +24,7 @@ public class PRESENCE_UPDATE extends HandlerBase {
         ServerPresenceUpdateEventInternal event = new ServerPresenceUpdateEventInternal(discord, presence);
         
         collectListeners(ServerPresenceUpdateListener.class, discord, server, user, roles.toArray(new Role[0])).forEach(
-                listener -> discord.getThreadPool().execute(() -> listener.onPresenceUpdate(event)));
+                listener -> discord.getThreadPool()
+                        .execute(() -> listener.onPresenceUpdate(event)));
     }
 }

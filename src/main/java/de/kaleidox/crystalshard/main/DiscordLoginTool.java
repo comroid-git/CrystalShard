@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -72,7 +71,8 @@ public class DiscordLoginTool {
         Discord login = new DiscordInternal(token);
         return new WebRequest<DiscordLoginTool>(login).method(Method.GET)
                 .endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint())
-                .execute(node -> setShardCount(node.path("shards").asInt(1)))
+                .execute(node -> setShardCount(node.path("shards")
+                                                       .asInt(1)))
                 .join();
     }
     
@@ -90,7 +90,8 @@ public class DiscordLoginTool {
     
     // Static membe
     
-// Static members
+    // Static members
+    
     /**
      * Creates a new instance.
      *

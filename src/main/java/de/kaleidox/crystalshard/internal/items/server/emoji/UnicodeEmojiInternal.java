@@ -16,7 +16,8 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     public UnicodeEmojiInternal(Discord discord, JsonNode data, boolean partialData) {
         logger.deeptrace("Creating UnicodeEmoji object for data: " + data);
         this.discord = (DiscordInternal) discord;
-        this.emojiExact = data.get("name").asText();
+        this.emojiExact = data.get("name")
+                .asText();
         this.aliases = EmojiParser.parseToAliases(emojiExact);
     }
     
@@ -27,13 +28,12 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
         this.aliases = aliases;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof UnicodeEmoji)
-            return ((UnicodeEmoji) obj).toDiscordPrintable().equalsIgnoreCase(this.toDiscordPrintable());
-        if (obj instanceof String)
-            return ((String) obj).equalsIgnoreCase(toDiscordPrintable());
+        if (obj instanceof UnicodeEmoji) return ((UnicodeEmoji) obj).toDiscordPrintable()
+                .equalsIgnoreCase(this.toDiscordPrintable());
+        if (obj instanceof String) return ((String) obj).equalsIgnoreCase(toDiscordPrintable());
         return false;
     }
     
