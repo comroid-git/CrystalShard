@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.main.items.user;
 
+import de.kaleidox.crystalshard.core.cache.CacheStorable;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -27,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import static de.kaleidox.crystalshard.core.net.request.Method.*;
 
 public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>,
-        ListenerAttachable<UserAttachableListener> {
+        ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long>, CacheStorable {
     String getDiscriminatedName();
     
     String getDiscriminator();

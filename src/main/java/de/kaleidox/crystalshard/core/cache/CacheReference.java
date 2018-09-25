@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <T> The type variable for the reference.
  * @param <R> The requestor type variable.
  */
-class CacheReference<T, R> {
+class CacheReference<T extends CacheStorable, R> {
     private final long          keepAlive;
     private       String        refString;
     private       R             recentRequestor;

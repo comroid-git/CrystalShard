@@ -99,7 +99,17 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     public Cache<Message, Long, IDPair> getMessageCache() {
         return null;
     }
-
+    
+    @Override
+    public Cache<Channel, Long, Long> getChannelCache() {
+        return null;
+    }
+    
+    @Override
+    public Cache<User, Long, Long> getUserCache() {
+        return null;
+    }
+    
     @Override
     public long getId() {
         return 0;

@@ -1,10 +1,12 @@
 package de.kaleidox.crystalshard.core.cache;
 
+import de.kaleidox.crystalshard.core.cache.sub.MessageCache;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.annotations.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -24,9 +26,9 @@ import static de.kaleidox.util.helpers.MapHelper.*;
  * @param <I> The type of the object that is used to uniquely identify the objects.
  * @param <R> The type of the object that is used to request a new instance of this object.
  */
-public abstract class Cache<T, I, R> {
+public abstract class Cache<T extends CacheStorable, I, R> {
     private final static Logger                                                     logger = new Logger(Cache.class);
-    private final static ConcurrentHashMap<Class<?>, Cache<Object, Object, Object>> cacheInstances;
+    private final static ConcurrentHashMap<Class<?>, Cache<? extends CacheStorable, Object, Object>> cacheInstances;
     private final static ScheduledExecutorService                                   scheduledExecutorService;
     private final        ConcurrentHashMap<I, CacheReference<T, R>>                 instances;
     private final        Class<? extends T>                                         typeClass;
@@ -72,7 +74,7 @@ public abstract class Cache<T, I, R> {
         }
         
         //noinspection unchecked
-        cacheInstances.put(typeClass, (Cache<Object, Object, Object>) this);
+        cacheInstances.put(typeClass, (Cache<? extends CacheStorable, Object, Object>) this);
     }
     
     /**
@@ -238,5 +240,34 @@ public abstract class Cache<T, I, R> {
         }
         
         return match;
+    }
+    
+    /**
+     * Tries to get an instance of a cache for the provided parameters.
+     *
+     * @param typeClass The type class of the cache.
+     * @param ident The identifier for the cache.
+     * @param <T> Type variable for the Cache type.
+     * @param <I> Type variable for the Cache identifier.
+     * @return The Cache.
+     * @throws NoSuchElementException If no cache fitting the parameters was found.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends CacheStorable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
+        return cacheInstances.entrySet()
+                .stream()
+                .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .filter(cache -> {
+                    try {
+                        Cache<T, I, ?> o = (Cache<T, I, ?>) cache;
+                    } catch (Throwable e) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(cache -> (Cache<T, I, ?>) cache)
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
     }
 }

@@ -1,7 +1,9 @@
 package de.kaleidox.crystalshard.internal;
 
 import de.kaleidox.crystalshard.core.cache.Cache;
+import de.kaleidox.crystalshard.core.cache.sub.ChannelCache;
 import de.kaleidox.crystalshard.core.cache.sub.MessageCache;
+import de.kaleidox.crystalshard.core.cache.sub.UserCache;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
@@ -22,6 +24,7 @@ import de.kaleidox.util.objects.markers.IDPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,13 +41,15 @@ public class DiscordInternal implements Discord {
     private final        Ratelimiting                                                     ratelimiter;
     private final        List<Server>                                                     servers;
     private final        DiscordUtils                                                     utils;
-    private final        Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers =
+    private final Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers =
             new ArrayList<>();
-    private final        int                                                              thisShard;
-    private final        int                                                              shardCount;
-    private final        Self                                                             self;
-    private final MessageCache messageCache;
-    private              CompletableFuture<Self>                                          selfFuture;
+    private final int                                                              thisShard;
+    private final int                                                              shardCount;
+    private final Self                                                             self;
+    private final MessageCache                                                     messageCache;
+    private final ChannelCache                                                     channelCache;
+    private final UserCache                                                        userCache;
+    private       CompletableFuture<Self>                                          selfFuture;
     
     public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
         selfFuture = new CompletableFuture<>();
@@ -59,6 +64,8 @@ public class DiscordInternal implements Discord {
         this.utils = new DiscordUtils(this);
         
         this.messageCache = new MessageCache(this);
+        this.channelCache = new ChannelCache(this);
+        this.userCache = new UserCache(this);
         
         servers = new ArrayList<>();
         
@@ -79,6 +86,8 @@ public class DiscordInternal implements Discord {
         this.shardCount = 1;
         this.self = null;
         this.messageCache = null;
+        this.channelCache = null;
+        this.userCache = null;
     }
     
     // Override Methods
@@ -109,6 +118,16 @@ public class DiscordInternal implements Discord {
     @Override
     public Cache<Message, Long, IDPair> getMessageCache() {
         return messageCache;
+    }
+    
+    @Override
+    public Cache<Channel, Long, Long> getChannelCache() {
+        return channelCache;
+    }
+    
+    @Override
+    public Cache<User, Long, Long> getUserCache() {
+        return userCache;
     }
     
     public Collection<DiscordAttachableListener> getAttachedListeners() {

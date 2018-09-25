@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -275,7 +276,12 @@ public class UserInternal implements User {
         return traits;
     }
     
-// Static members
+    @Override
+    public Cache<User, Long, Long> getCache() {
+        return discord.getUserCache();
+    }
+    
+    // Static members
     // Static membe
     public static User getInstance(Discord discord, long id) {
         assert id != -1 : "No valid ID found.";

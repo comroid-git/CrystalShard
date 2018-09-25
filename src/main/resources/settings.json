@@ -1,7 +1,0 @@
-{
-  "commands": {
-    "prefix": "!",
-    "enable_default_help": true
-  },
-  "default_embed": null
-}

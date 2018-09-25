@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
+import de.kaleidox.crystalshard.core.cache.CacheStorable;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
@@ -16,7 +18,8 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public interface Channel
-        extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener> {
+        extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener>,
+        Cacheable<Channel, Long, Long>, CacheStorable {
     ChannelType getType();
     
     String getName();

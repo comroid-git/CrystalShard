@@ -50,6 +50,10 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     
     Cache<Message, Long, IDPair> getMessageCache();
     
+    Cache<Channel, Long, Long> getChannelCache();
+    
+    Cache<User, Long, Long> getUserCache();
+    
     default ScheduledExecutorService getScheduler() {
         return getThreadPool().getScheduler();
     }
