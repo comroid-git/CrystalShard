@@ -8,6 +8,7 @@ import de.kaleidox.crystalshard.main.items.user.AccountType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This class is used to create a connection with Discord.
@@ -78,6 +79,18 @@ public class DiscordLoginTool {
     
     public Discord login() {
         return new DiscordInternal(token, type, shard, shardCount);
+    }
+    
+    public CompletableFuture<Discord> loginWaitForServers() {
+        return CompletableFuture.supplyAsync(() -> {
+            DiscordInternal discordInternal = new DiscordInternal(token, type, shard, shardCount);
+            while (!discordInternal.initFinished()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ignored) {}
+            }
+            return discordInternal;
+        });
     }
     
     public MultiShard loginMultiShard() {

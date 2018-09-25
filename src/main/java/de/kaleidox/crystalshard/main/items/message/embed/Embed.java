@@ -129,7 +129,6 @@ public interface Embed extends Castable<Embed> {
         int TOTAL_CHAR_COUNT   = 6000;
     }
     
-    // Static membe
     static Builder BUILDER() {
         return new EmbedBuilderInternal();
     }

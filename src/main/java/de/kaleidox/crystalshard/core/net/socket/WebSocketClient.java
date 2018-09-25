@@ -33,7 +33,8 @@ public class WebSocketClient {
                         .asText())
                 .exceptionally(throwable -> {
                     logger.exception(throwable);
-                    return "wss://gateway.discord.gg"; // default gateway if gateway couldn't be retrieved
+                    return "wss://gateway.discord.gg"; // default
+                    // gateway if gateway couldn't be retrieved
                 })
                 .thenApply(URI::create)
                 .join();

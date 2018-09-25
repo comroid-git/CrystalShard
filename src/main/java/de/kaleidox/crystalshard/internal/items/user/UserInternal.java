@@ -164,7 +164,7 @@ public class UserInternal implements User {
     @Override
     public ServerMember toServerMember(Server server) {
         if (this instanceof ServerMember) return (ServerMember) this;
-        return new ServerMemberInternal(this, server);
+        return ServerMemberInternal.getInstance(this, server);
     }
     
     @Override

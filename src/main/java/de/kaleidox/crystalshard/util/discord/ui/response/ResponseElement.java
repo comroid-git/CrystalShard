@@ -95,7 +95,6 @@ public abstract class ResponseElement<ResultType> {
         return name;
     }
     
-    // Static membe
     public static Predicate<User> sameUserPredicate(User user) {
         return usr -> usr.equals(user);
     }

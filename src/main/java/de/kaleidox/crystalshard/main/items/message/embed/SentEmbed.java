@@ -83,8 +83,8 @@ public interface SentEmbed extends Embed {
     Optional<Thumbnail> getThumbail();
     
     /**
-     * Gets the video of the embed.
-     * Currently, videos may only be embedded by Discord themselves, e.g. when sending a YouTube link.
+     * Gets the video of the embed. Currently, videos may only be embedded by Discord themselves, e.g. when sending a
+     * YouTube link.
      *
      * @return The optional video of the embed.
      */
@@ -98,8 +98,7 @@ public interface SentEmbed extends Embed {
     Optional<Provider> getProvider();
     
     /**
-     * Gets a list of all embed fields.
-     * This list may be Empty.
+     * Gets a list of all embed fields. This list may be Empty.
      *
      * @return A list of all field.
      */
@@ -183,10 +182,10 @@ public interface SentEmbed extends Embed {
      */
     CompletableFuture<SentEmbed> setColor(Color color);
     
-    /**
-     * Modifies the fields within the embed after the given modifying consumer.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+    /**7
+     * Modifies the fields within the embed after the given modifying consumer. If this embed was not sent by the bot,
+     * the returned future will complete exceptionally with a {@link IllegalAccessException}, as you may never edit
+     * someone else's messages.7
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -197,11 +196,11 @@ public interface SentEmbed extends Embed {
      */
     CompletableFuture<SentEmbed> modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier);
     
-    /**
+    /**7
      * Modifies all fields that match the given predicate.
      * The modifier will only be applied to the fields that test TRUE.
      * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * {@link IllegalAccessException}, as you may never edit someone else's messages.7
      * <p>
      * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
      * acquire with {@link #getUpdater()}.
@@ -331,8 +330,8 @@ public interface SentEmbed extends Embed {
         Optional<URL> getUrl();
         
         /**
-         * This method converts this SentEmbed's author object to its EmbedDraft counterpart, which can be then
-         * attached to an {@link Embed.Builder}.
+         * This method converts this SentEmbed's author object to its EmbedDraft counterpart, which can be then attached
+         * to an {@link Embed.Builder}.
          *
          * @return The converted image object.
          */
@@ -424,8 +423,8 @@ public interface SentEmbed extends Embed {
         boolean isInline();
         
         /**
-         * Converts this SentEmbed's field into a {@link EmbedDraft.Field} that then
-         * can be attached to an {@link Embed.Builder}.
+         * Converts this SentEmbed's field into a {@link EmbedDraft.Field} that then can be attached to an {@link
+         * Embed.Builder}.
          *
          * @return The converted field.
          */
@@ -435,8 +434,8 @@ public interface SentEmbed extends Embed {
     }
     
     /**
-     * This interface represents a video that was embedded in the embed.
-     * Currently videos can only be embedded by discord themselves; e.g. when sending a YouTube video link.
+     * This interface represents a video that was embedded in the embed. Currently videos can only be embedded by
+     * discord themselves; e.g. when sending a YouTube video link.
      */
     interface Video {
         /**

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.command.CommandFramework;
 import de.kaleidox.logging.Logger;
+import de.kaleidox.util.helpers.JsonHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -12,8 +13,9 @@ import java.util.Scanner;
 import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public class DiscordUtils {
-    private final static Logger           logger = new Logger(DiscordUtils.class);
+    private final static Logger           logger     = new Logger(DiscordUtils.class);
     private final static JsonNode         configuration;
+    private final static String           configFile = "/discordutils_settings.json";
     private final        DefaultEmbed     defaultEmbed;
     private final        Discord          discord;
     private final        CommandFramework commandFramework;
@@ -21,23 +23,10 @@ public class DiscordUtils {
     // Init Blocks
     static {
         // Get or Create configuration node
-        InputStream configStream = DiscordUtils.class.getResourceAsStream("/settings.json");
+        InputStream configStream = ClassLoader.getSystemResourceAsStream(configFile);
         if (configStream != null) {
-            JsonNode node;
             Scanner s = new Scanner(configStream).useDelimiter("\\A");
-            if (s.hasNext()) {
-                try {
-                    String content = s.next();
-                    ObjectMapper mapper = new ObjectMapper();
-                    node = mapper.readTree(content);
-                } catch (IOException ignored) {
-                    node = createDefaultConfig();
-                }
-            } else {
-                // file does not exist, go for defaults
-                node = createDefaultConfig();
-            }
-            configuration = node;
+            configuration = (s.hasNext() ? JsonHelper.parse(s.next()) : createDefaultConfig());
             try {
                 configStream.close();
             } catch (IOException e) {
@@ -76,6 +65,8 @@ public class DiscordUtils {
     
     // Static members
     private static JsonNode createDefaultConfig() {
+        logger.info(
+                "No configuration file " + configFile + " found at resources root. Using default configuration.");
         return objectNode("commands",
                           objectNode("prefix", "!", "enable_default_help", true),
                           "default_embed",

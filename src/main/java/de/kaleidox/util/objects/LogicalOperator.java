@@ -31,7 +31,8 @@ public enum LogicalOperator {
             case OR:
                 return booleans.anyMatch(b -> b);
             case XOR:
-                return booleans.filter(b -> b).count() > 1;
+                return booleans.filter(b -> b)
+                               .count() > 1;
             case NOT:
                 return booleans.noneMatch(b -> b);
             default:
@@ -40,16 +41,19 @@ public enum LogicalOperator {
     }
     
     public <T> boolean test(Predicate<T> predicate, Collection<T> collection) {
-        return test(collection.stream().map(predicate::test));
+        return test(collection.stream()
+                            .map(predicate::test));
     }
     
     public String getName() {
         return name;
     }
     
-// Static members
+    // Static members
     // Static membe
     public static Optional<LogicalOperator> find(String tag) {
-        return Stream.of(values()).filter(lo -> lo.name.equalsIgnoreCase(tag)).findAny();
+        return Stream.of(values())
+                .filter(lo -> lo.name.equalsIgnoreCase(tag))
+                .findAny();
     }
 }

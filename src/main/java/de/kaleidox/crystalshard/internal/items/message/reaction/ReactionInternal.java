@@ -89,7 +89,6 @@ public class ReactionInternal implements Reaction {
         return this;
     }
     
-    // Static membe
     public static Reaction getInstance(
             @Nullable Server server, @NotNull Message message, @Nullable User user, @NotNull JsonNode data, int delta) {
         Emoji emoji = Emoji.of(message.getDiscord(), server, data.get("emoji"));

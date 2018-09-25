@@ -85,6 +85,4 @@ public interface Server
     Optional<User> getUserById(long id);
     
     CompletableFuture<Void> leave();
-    
-    // Static members
 }

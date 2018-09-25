@@ -150,7 +150,6 @@ public class MessageInternal implements Message {
         instances.put(id, this);
     }
     
-    // Override Methods
     @Override
     public TextChannel getChannel() {
         return channel;

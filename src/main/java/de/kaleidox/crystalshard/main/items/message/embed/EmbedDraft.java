@@ -37,7 +37,6 @@ public interface EmbedDraft extends Embed {
         
         Optional<URL> getIconUrl();
         
-        // Static membe
         static Footer BUILD(String text, String iconUrl) {
             return new EmbedDraftInternal.Footer(text, iconUrl);
         }
@@ -46,7 +45,6 @@ public interface EmbedDraft extends Embed {
     interface Image extends Container.Interface {
         Optional<URL> getUrl();
         
-        // Static membe
         static Image BUILD(String url) {
             return new EmbedDraftInternal.Image(url);
         }
@@ -57,7 +55,6 @@ public interface EmbedDraft extends Embed {
         
         Optional<URL> getIconUrl();
         
-        // Static membe
         static Author BUILD(String name, String url, String iconUrl) {
             return new EmbedDraftInternal.Author(name, url, iconUrl);
         }
@@ -66,7 +63,6 @@ public interface EmbedDraft extends Embed {
     interface Thumbnail extends Container.Interface {
         Optional<URL> getUrl();
         
-        // Static membe
         static Thumbnail BUILD(String url) {
             return new EmbedDraftInternal.Thumbnail(url);
         }
@@ -85,14 +81,12 @@ public interface EmbedDraft extends Embed {
             return Optional.of(new EmbedDraftInternal.EditableField(this));
         }
         
-        // Static membe
         static Field BUILD(String title, String text, boolean inline) {
             return new EmbedDraftInternal.Field(title, text, (Objects.nonNull(inline) && inline));
         }
     }
     
     interface EditableField extends Field {
-        // Static membe
         static EditableField BUILD(Field fromField) {
             return new EmbedDraftInternal.EditableField(fromField);
         }

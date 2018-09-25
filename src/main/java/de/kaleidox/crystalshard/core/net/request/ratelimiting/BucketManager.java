@@ -6,6 +6,9 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.MapHelper;
 import de.kaleidox.util.helpers.QueueHelper;
+import de.kaleidox.util.objects.functional.LivingInt;
+
+import javax.naming.LimitExceededException;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,6 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.naming.LimitExceededException;
+import java.util.stream.Collectors;
 
 class BucketManager {
     private final static Logger                        logger = new Logger(BucketManager.class);
@@ -21,12 +25,14 @@ class BucketManager {
     private final        Ratelimiting                  ratelimiting;
     private final        ConcurrentLinkedQueue<Bucket> bucketQueue;
     private final        ThreadPool                    atomicPool;
+    private final        LivingInt                     globalRatelimit;
     
     BucketManager(DiscordInternal discord, Ratelimiting ratelimiting) {
         this.discord = discord;
         this.ratelimiting = ratelimiting;
         this.bucketQueue = new ConcurrentLinkedQueue<>();
         this.atomicPool = new ThreadPool(discord, 1, "BucketManager");
+        this.globalRatelimit = new LivingInt(0, 0, -1, 20, TimeUnit.MILLISECONDS);
         
         cycle();
     }
@@ -116,6 +122,7 @@ class BucketManager {
         }
         
         void runAll() {
+            globalRatelimit.change(requests.size());
             requests.forEach((endpoint, runnables) -> {
                 for (Runnable task : runnables) {
                     try {
@@ -133,7 +140,36 @@ class BucketManager {
         }
         
         boolean canRun() {
-            return true; // todo
+            if (globalRatelimit.get() + requests.size() >= 50)
+                return false; // false if global ratelimit counter would be over 50
+            int trueC = 0;
+            
+            for (Endpoint end : requests.entrySet()
+                    .stream()
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList())) {
+                final int remaining = ratelimiting.getRemaining(end)
+                        .get();
+                final int limit = ratelimiting.getLimit(end)
+                        .get();
+                final Instant reset = ratelimiting.getReset(end)
+                        .get();
+    
+                if (remaining == 0) {
+                    if (reset.isBefore(Instant.now())) {
+                        trueC++;
+                    }
+                } else if ((remaining + requests.entrySet()
+                        .stream()
+                        .map(Map.Entry::getKey)
+                        .map(Endpoint::getLocation)
+                        .mapToInt(a -> 1)
+                        .sum()) < limit) {
+                    trueC++;
+                }
+            }
+            
+            return trueC == requests.size();
         }
         
         long waitDuration() {
@@ -152,7 +188,7 @@ class BucketManager {
             return requests.entrySet()
                     .stream()
                     .filter(entry -> entry.getKey()
-                            .equals(endpoint))
+                            .sameRatelimit(endpoint))
                     .mapToInt(entry -> entry.getValue().length)
                     .sum();
         }

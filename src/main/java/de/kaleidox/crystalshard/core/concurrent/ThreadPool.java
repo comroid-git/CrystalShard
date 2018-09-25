@@ -156,7 +156,8 @@ public class ThreadPool {
         factoriedThreads.stream()
                 .filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
                 .peek(Worker::interrupt) // interrupt the thread
-                .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one each thread
+                .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one
+                // each thread
                 .forEach(factoriedThreads::remove); // remove the thread from the list
     }
     

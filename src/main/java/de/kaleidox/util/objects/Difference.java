@@ -30,7 +30,7 @@ public class Difference<T> {
         return Evaluation.of(!removed.isEmpty());
     }
     
-// Static members
+    // Static members
     // Static membe
     public static <T> Difference<T> of(List<T> added, List<T> removed) {
         return new Difference<>(added, removed);

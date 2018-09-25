@@ -47,7 +47,6 @@ public interface UserActivity extends Nameable {
             return value;
         }
         
-        // Static membe
         public static Flag getFromValue(int value) {
             return Stream.of(values())
                     .filter(flag -> flag.value == value)
@@ -81,7 +80,6 @@ public interface UserActivity extends Nameable {
             return String.format(pattern, (Object[]) param);
         }
         
-        // Static membe
         public static Type getFromId(int id) {
             return Stream.of(Type.values())
                     .filter(type -> type.id == id)

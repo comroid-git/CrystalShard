@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public final class JsonHelper extends NullHelper {
     private final static Logger logger = new Logger(JsonHelper.class);
     
-// Static members
+    // Static members
     public final static JsonNode nodeOf(Object of) {
         if (of == null) {
             return JsonNodeFactory.instance.nullNode();
@@ -47,20 +47,26 @@ public final class JsonHelper extends NullHelper {
     
     public final static <T, N> ArrayNode arrayNode(List<T> items, Function<T, N> mapper) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
-        items.stream().map(mapper).map(JsonHelper::nodeOf).forEach(node::add);
+        items.stream()
+                .map(mapper)
+                .map(JsonHelper::nodeOf)
+                .forEach(node::add);
         return node;
     }
     
     public final static <T> ArrayNode arrayNode(List<T> items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
-        items.stream().map(JsonHelper::nodeOf).forEach(node::add);
+        items.stream()
+                .map(JsonHelper::nodeOf)
+                .forEach(node::add);
         return node;
     }
     
     public final static ArrayNode arrayNode(Object... items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.length);
         
-        List.of(items).forEach(item -> node.add(nodeOf(item)));
+        List.of(items)
+                .forEach(item -> node.add(nodeOf(item)));
         
         return node;
     }
@@ -70,8 +76,9 @@ public final class JsonHelper extends NullHelper {
         if (data.length % 2 != 0) throw new IllegalArgumentException(
                 "You must provide an even amount of objects to be placed in the node.");
         ObjectNode objectNode = objectNode();
-        for (List<Object> pair : ListHelper.everyOfList(2, List.of(data))) {
-            if (Objects.nonNull(pair.get(0)) && Objects.nonNull(pair.get(1))) objectNode.set(pair.get(0).toString(),
+        for (List<Object> pair : ListHelper.everyOfList(2, ListHelper.ofWithNulls(data))) {
+            if (Objects.nonNull(pair.get(0)) && Objects.nonNull(pair.get(1))) objectNode.set(pair.get(0)
+                                                                                                     .toString(),
                                                                                              nodeOf(pair.get(1)));
             // ignore all pairs of which both sides are NULL
         }

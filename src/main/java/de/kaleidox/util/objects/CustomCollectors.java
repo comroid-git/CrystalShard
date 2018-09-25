@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class CustomCollectors {
-// Static Fields
+    // Static Fields
     public static final Set<Collector.Characteristics> CH_ID              = Collections.unmodifiableSet(EnumSet.of(
             Collector.Characteristics.IDENTITY_FINISH));
     public static final Set<Collector.Characteristics> CH_NOID            = Collections.emptySet();
@@ -29,7 +29,7 @@ public class CustomCollectors {
             Collector.Characteristics.UNORDERED,
             Collector.Characteristics.IDENTITY_FINISH));
     
-// Static members
+    // Static members
     public static <T> Collector<Collection<T>, Collection<T>, ArrayList<T>> collectionMerge() {
         return new CustomCollectorImpl<>(ArrayList::new, Collection::addAll, (left, right) -> {
             left.addAll(right);
@@ -37,14 +37,6 @@ public class CustomCollectors {
         }, CH_ID);
     }
     
-    /**
-     * Merges a stream of Collections into one larger Collection.
-     *
-     * @param collectionSupplier
-     * @param <T>
-     * @param <L>
-     * @return A CustomCollector to collect items into a Collection.
-     */
     public static <T, L extends Collection<T>> Collector<Collection<T>, L, L> collectionMerge(Supplier<L> collectionSupplier) {
         return new CustomCollectorImpl<>(collectionSupplier, Collection::addAll, (left, right) -> {
             left.addAll(right);
@@ -88,7 +80,7 @@ public class CustomCollectors {
             this(supplier, accumulator, combiner, castingIdentity(), characteristics);
         }
         
-// Override Methods
+        // Override Methods
         @Override
         public BiConsumer<A, T> accumulator() {
             return accumulator;
@@ -114,7 +106,7 @@ public class CustomCollectors {
             return characteristics;
         }
         
-// Static members
+        // Static members
         private static <I, R> Function<I, R> castingIdentity() {
             return i -> (R) i;
         }

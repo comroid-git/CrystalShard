@@ -59,7 +59,6 @@ public class PresenceInternal implements Presence {
         return this;
     }
     
-    // Static membe
     public static Presence getInstance(Discord discord, JsonNode data) {
         long id = data.get("user")
                 .get("id")

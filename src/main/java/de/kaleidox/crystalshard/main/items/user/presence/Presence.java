@@ -32,7 +32,6 @@ public interface Presence {
             return key;
         }
         
-        // Static membe
         public static Status getFromKey(String key) {
             return Stream.of(values())
                     .filter(status -> Objects.nonNull(status.key))

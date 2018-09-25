@@ -47,7 +47,7 @@ public class VoiceStateInternal implements VoiceState {
                 .getOrRequest(serverId, serverId);
         long userId = data.get("user_id")
                 .asLong();
-        User user = discord.getUserCache()
+        user = discord.getUserCache()
                 .getOrRequest(userId, userId);
         this.sessionId = data.get("session_id")
                 .asText();
