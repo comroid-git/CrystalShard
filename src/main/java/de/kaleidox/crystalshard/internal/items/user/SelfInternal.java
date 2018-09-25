@@ -113,10 +113,7 @@ public class SelfInternal extends UserInternal implements Self {
                                                        (status == Presence.Status.IDLE ? System.currentTimeMillis() :
                                                         null),
                                                        "game",
-                                                       objectNode("type",
-                                                                  type.getId(),
-                                                                  "name",
-                                                                  title,
+                                                       objectNode("type", type.getId(), "name", title,
                                                                   // only include an URL if there is a URL actually
                                                                   // set, else include nothing
                                                                   (url != null ? new Object[]{"url", url} :

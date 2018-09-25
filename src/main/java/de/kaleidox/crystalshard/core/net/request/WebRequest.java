@@ -53,7 +53,7 @@ public class WebRequest<T> {
         this.node = node;
     }
     
-// Override Methods
+    // Override Methods
     @Override
     public String toString() {
         return method + " @ " + endpoint;
@@ -156,11 +156,11 @@ public class WebRequest<T> {
                         logger.traceElseInfo("{" + statusCode + ":" + responseNode.get("code")
                                                      .asText() + ":\"" + responseNode.get("message")
                                                      .asText() + "\"} " + (unknown ?
-                                                                        "Recieved unknown status code from Discord " +
-                                                                        "with responseBody: " +
-                                                                        responseBody :
-                                                                        "Untreated code recieved with body: " +
-                                                                        responseBody),
+                                                                           "Recieved unknown status code from Discord" +
+                                                                           " " +
+                                                                           "with responseBody: " + responseBody :
+                                                                           "Untreated code recieved with body: " +
+                                                                           responseBody),
                                              "Recieved unknown status code: " + statusCode);
                         future.completeExceptionally(new DiscordResponseException(
                                 "Discord Responded with unknown status code " + statusCode + " and message: " +

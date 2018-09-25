@@ -269,8 +269,7 @@ public class CommandFramework {
                 .contains(Server.class)) logger.exception(new InvalidParameterException(
                                                                   "Command " + method.toGenericString() + " is " +
                                                                   "annotated to not run on " +
-                                                                  "Servers, yet expects a Server-Parameter. It will " +
-                                                                  "only recieve " + "null."),
+                                                                  "Servers, yet expects a Server-Parameter. It will " + "only recieve " + "null."),
                                                           "Error in Command method body for: " +
                                                           method.toGenericString());
         if (hasAliasesRegistered(commandAnnot.aliases())) logger.exception(new IllegalArgumentException(

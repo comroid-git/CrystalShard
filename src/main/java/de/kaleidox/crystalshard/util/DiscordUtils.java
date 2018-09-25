@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.command.CommandFramework;
 import de.kaleidox.logging.Logger;
@@ -65,8 +64,7 @@ public class DiscordUtils {
     
     // Static members
     private static JsonNode createDefaultConfig() {
-        logger.info(
-                "No configuration file " + configFile + " found at resources root. Using default configuration.");
+        logger.info("No configuration file " + configFile + " found at resources root. Using default configuration.");
         return objectNode("commands",
                           objectNode("prefix", "!", "enable_default_help", true),
                           "default_embed",

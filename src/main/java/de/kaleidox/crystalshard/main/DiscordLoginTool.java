@@ -87,7 +87,8 @@ public class DiscordLoginTool {
             while (!discordInternal.initFinished()) {
                 try {
                     Thread.sleep(500);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
             return discordInternal;
         });

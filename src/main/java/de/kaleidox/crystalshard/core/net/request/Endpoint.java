@@ -97,31 +97,31 @@ public class Endpoint {
         WEBHOOK("/webhooks/%s");
         private final String location;
         private final int    hardcodedRatelimit;
-    
+        
         Location(String location) {
             this(location, -1);
         }
-    
+        
         Location(String location, int hardcodedRatelimit) {
             this.location = location;
             this.hardcodedRatelimit = hardcodedRatelimit;
         }
-    
+        
         public String getLocation() {
             return location;
         }
-    
+        
         public Optional<Integer> getHardcodedRatelimit() {
             return Optional.ofNullable(hardcodedRatelimit == -1 ? null : hardcodedRatelimit);
         }
-    
+        
         public int getParameterCount() {
             int splitted = location.split("%s").length - 1;
             int end = (location.substring(location.length() - 2)
                                .equalsIgnoreCase("%s") ? 1 : 0);
             return splitted + end;
         }
-    
+        
         public Endpoint toEndpoint(Object... parameter) {
             String[] params = new String[parameter.length];
             int parameterCount = getParameterCount();
@@ -133,7 +133,7 @@ public class Endpoint {
             }
             for (int i = 0; i < parameter.length; i++) {
                 Object x = parameter[i];
-            
+                
                 if (x instanceof DiscordItem) {
                     params[i] = Long.toUnsignedString(((DiscordItem) x).getId());
                 } else if (x instanceof Long) {

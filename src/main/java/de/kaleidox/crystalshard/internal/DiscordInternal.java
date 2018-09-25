@@ -25,8 +25,8 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
-import de.kaleidox.util.objects.markers.IDPair;
 import de.kaleidox.util.objects.functional.LivingInt;
+import de.kaleidox.util.objects.markers.IDPair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,8 +58,8 @@ public class DiscordInternal implements Discord {
     private final        MessageCache                                                     messageCache;
     private final        EmojiCache                                                       emojiCache;
     private              CompletableFuture<Self>                                          selfFuture;
-    private boolean init = false;
-    private LivingInt serversInit;
+    private              boolean                                                          init              = false;
+    private              LivingInt                                                        serversInit;
     
     public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
         selfFuture = new CompletableFuture<>();
@@ -106,10 +106,6 @@ public class DiscordInternal implements Discord {
         this.channelCache = null;
         this.messageCache = null;
         this.emojiCache = null;
-    }
-    
-    public boolean initFinished() {
-        return init;
     }
     
     // Override Methods
@@ -252,6 +248,10 @@ public class DiscordInternal implements Discord {
     @Override
     public String toString() {
         return "Discord Connection to " + self;
+    }
+    
+    public boolean initFinished() {
+        return init;
     }
     
     public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers() {

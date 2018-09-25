@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.main.items.user;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

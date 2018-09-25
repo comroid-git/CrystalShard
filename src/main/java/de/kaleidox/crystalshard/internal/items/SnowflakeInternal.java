@@ -1,13 +1,11 @@
 package de.kaleidox.crystalshard.internal.items;
 
 import de.kaleidox.crystalshard.main.items.Snowflake;
-
-import java.sql.Timestamp;
 import java.time.Instant;
 
 public class SnowflakeInternal implements Snowflake {
     private final Instant createdInstant;
-    private final long id;
+    private final long    id;
     
     private SnowflakeInternal(long id) {
         this.id = id;

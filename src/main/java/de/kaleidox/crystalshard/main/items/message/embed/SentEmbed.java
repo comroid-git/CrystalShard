@@ -182,7 +182,8 @@ public interface SentEmbed extends Embed {
      */
     CompletableFuture<SentEmbed> setColor(Color color);
     
-    /**7
+    /**
+     * 7
      * Modifies the fields within the embed after the given modifying consumer. If this embed was not sent by the bot,
      * the returned future will complete exceptionally with a {@link IllegalAccessException}, as you may never edit
      * someone else's messages.7
@@ -196,7 +197,8 @@ public interface SentEmbed extends Embed {
      */
     CompletableFuture<SentEmbed> modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier);
     
-    /**7
+    /**
+     * 7
      * Modifies all fields that match the given predicate.
      * The modifier will only be applied to the fields that test TRUE.
      * If this embed was not sent by the bot, the returned future will complete exceptionally with a

@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main.items;
 
 import de.kaleidox.crystalshard.internal.items.SnowflakeInternal;
-
 import java.time.Instant;
 
 public interface Snowflake {
