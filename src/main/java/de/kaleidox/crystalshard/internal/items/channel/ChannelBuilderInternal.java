@@ -1,28 +1,29 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.main.items.role.Role;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
-import de.kaleidox.crystalshard.main.items.user.User;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static de.kaleidox.util.helpers.JsonHelper.*;
 
-public class ChannelBuilderInternal implements Channel.Builder {
+public class ChannelBuilderInternal {
     public static class ChannelInviteBuilder implements ServerChannel.InviteBuilder {
         private final ServerChannel channel;
         private       int           maxAge    = 0;
@@ -67,158 +68,189 @@ public class ChannelBuilderInternal implements Channel.Builder {
         }
     }
     
-    public static class ServerTextChannelBuilder implements ServerTextChannel.Builder {
-        private Server          server;
-        private String          name;
-        private String          topic;
-        private boolean         nsfw;
-        private ChannelCategory category;
+    public static abstract class ChannelBuilder<T, R> implements Channel.Builder<T, R> {
+        protected final Discord discord;
+        protected       T       superType;
         
-        public ServerTextChannelBuilder(Server server) {
-            this.server = server;
-        }
-        
-        // Override Methods
-        @Override
-        public ServerTextChannel.Builder setServer(Server server) {
-            this.server = server;
-            return this;
+        protected ChannelBuilder(Discord discord) {
+            this.discord = discord;
         }
         
         @Override
-        public ServerTextChannel.Builder setName(String name) {
+        public Discord getDiscord() {
+            return discord;
+        }
+        
+        protected void setSuperType(T superType) {
+            this.superType = superType;
+        }
+    }
+    
+    public static abstract class ServerChannelBuilder<T, R> extends ChannelBuilder<T, R> implements ServerChannel.Builder<T, R> {
+        protected final ChannelType              type;
+        protected       Server                   server;
+        protected       String                   name;
+        protected       ChannelCategory          category;
+        protected       List<PermissionOverride> overrides;
+        
+        protected ServerChannelBuilder(Discord discord, ChannelType type) {
+            super(discord);
+            this.type = type;
+            this.overrides = new ArrayList<>();
+        }
+        
+        @Override
+        public T setServer(Server server) {
+            this.server = server;
+            return superType;
+        }
+        
+        @Override
+        public T setName(String name) {
             this.name = name;
-            return this;
+            return superType;
+        }
+        
+        @Override
+        public T setCategory(ChannelCategory category) {
+            this.category = category;
+            return superType;
+        }
+        
+        @Override
+        public T addPermissionOverride(PermissionOverride override) {
+            this.overrides.add(override);
+            return superType;
+        }
+        
+        public JsonNode toPartialJsonNode() {
+            if (name == null) throw new IllegalArgumentException("No channel name set!");
+            return objectNode("name", name, "type", type.getId());
+        }
+    }
+    
+    public static class ServerCategoryBuilder extends ServerChannelBuilder<ChannelCategory.Builder, ChannelCategory> implements ChannelCategory.Builder {
+        public ServerCategoryBuilder(Discord discord) {
+            super(discord, ChannelType.GUILD_CATEGORY);
+            setSuperType(this);
+        }
+        
+        @Override
+        public ChannelCategory.Builder setCategory(ChannelCategory category) {
+            throw new UnsupportedOperationException("Cannot set a category to a category!");
+        }
+        
+        @Override
+        public CompletableFuture<ChannelCategory> build() {
+            if (name == null) throw new IllegalArgumentException("No channel name set!");
+            return new WebRequest<ChannelCategory>(discord).method(Method.POST)
+                    .endpoint(Endpoint.Location.GUILD_CHANNEL.toEndpoint(server))
+                    .node("type",
+                          type,
+                          "name",
+                          name,
+                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                          "permission_overwrites",
+                          overrides.stream()
+                                  .map(PermissionOverrideInternal.class::cast)
+                                  .map(PermissionOverrideInternal::toJsonNode)
+                                  .collect(Collectors.toList()))
+                    .execute(node -> discord.getChannelCache()
+                            .getOrCreate(discord, node)
+                            .toChannelCategory()
+                            .orElseThrow(AssertionError::new));
+        }
+    }
+    
+    public static class ServerTextChannelBuilder extends ServerChannelBuilder<ServerTextChannel.Builder, ServerTextChannel>
+            implements ServerTextChannel.Builder {
+        protected String  topic;
+        protected Boolean nsfw;
+        
+        public ServerTextChannelBuilder(Discord discord) {
+            super(discord, ChannelType.GUILD_TEXT);
+            setSuperType(this);
         }
         
         @Override
         public ServerTextChannel.Builder setTopic(String topic) {
             this.topic = topic;
-            return this;
+            return superType;
         }
         
         @Override
         public ServerTextChannel.Builder setNSFW(boolean nsfw) {
             this.nsfw = nsfw;
-            return this;
+            return superType;
         }
         
         @Override
-        public ServerTextChannel.Builder setCategory(ChannelCategory category) {
-            this.category = category;
-            return this;
-        }
-        
-        @Override
-        public ServerTextChannel.Builder addPermissionOverwrite(User forUser, PermissionList permissions) {
-            return this; // todo
-        }
-        
-        @Override
-        public ServerTextChannel.Builder addPermissionOverwrite(Role forRole, PermissionList permissions) {
-            return this; // todo
-        }
-        
-        @Override
-        public CompletableFuture<ServerTextChannel> build() throws DiscordPermissionException {
-            throw new DiscordPermissionException(""); // todo
+        public CompletableFuture<ServerTextChannel> build() {
+            if (name == null) throw new IllegalArgumentException("No channel name set!");
+            return new WebRequest<ServerTextChannel>(discord).method(Method.POST)
+                    .endpoint(Endpoint.Location.GUILD_CHANNEL.toEndpoint(server))
+                    .node("type",
+                          type,
+                          "name",
+                          name,
+                          (topic != null ? new Object[]{"topic", topic} : new Object[0]),
+                          (nsfw != null ? new Object[]{"nsfw", nsfw} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                          "permission_overwrites",
+                          overrides.stream()
+                                  .map(PermissionOverrideInternal.class::cast)
+                                  .map(PermissionOverrideInternal::toJsonNode)
+                                  .collect(Collectors.toList()))
+                    .execute(node -> discord.getChannelCache()
+                            .getOrCreate(discord, node)
+                            .toServerTextChannel()
+                            .orElseThrow(AssertionError::new));
         }
     }
     
-    public static class ServerVoiceChannelBuilder implements ServerVoiceChannel.Builder {
-        private Server server;
-        private String name;
-        private int    bitrate;
-        private int    limit;
+    public static class ServerVoiceChannelBuilder extends ServerChannelBuilder<ServerVoiceChannel.Builder, ServerVoiceChannel>
+            implements ServerVoiceChannel.Builder {
+        protected Integer bitrate;
+        protected Integer limit;
         
-        public ServerVoiceChannelBuilder(Server server) {
-            this.server = server;
-        }
-        
-        // Override Methods
-        @Override
-        public ServerVoiceChannel.Builder setServer(Server server) {
-            this.server = server;
-            return this;
-        }
-        
-        @Override
-        public ServerVoiceChannel.Builder setName(String name) {
-            this.name = name;
-            return this;
+        public ServerVoiceChannelBuilder(Discord discord) {
+            super(discord, ChannelType.GUILD_VOICE);
+            setSuperType(this);
         }
         
         @Override
         public ServerVoiceChannel.Builder setBitrate(int bitrate) {
             this.bitrate = bitrate;
-            return this;
+            return superType;
         }
         
         @Override
-        public ServerVoiceChannel.Builder setUserlimit(int limit) {
+        public ServerVoiceChannel.Builder setUserLimit(int limit) {
             this.limit = limit;
-            return this;
+            return null;
         }
         
         @Override
-        public CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException {
-            throw new DiscordPermissionException(""); // todo
-        }
-    }
-    
-    public static class ChannelCategoryBuilder implements ChannelCategory.Builder {
-        private final Server server;
-        
-        public ChannelCategoryBuilder(Server server) {
-            this.server = server;
-        }
-        
-        // Override Methods
-        @Override
-        public ChannelCategory.Builder setServer(Server server) {
-            return this;
-        }
-        
-        @Override
-        public ChannelCategory.Builder setName(String name) {
-            return this;
-        }
-        
-        @Override
-        public ChannelCategory.Builder addPermissionOverwrite(User forUser, PermissionList permissions) {
-            return this;
-        }
-        
-        @Override
-        public ChannelCategory.Builder addPermissionOverwrite(Role forRole, PermissionList permissions) {
-            return this;
-        }
-        
-        @Override
-        public CompletableFuture<ChannelCategory> build() throws DiscordPermissionException {
-            throw new DiscordPermissionException(""); // todo
-        }
-    }
-    
-    public static class GroupChannelBuilder implements GroupChannel.Builder {
-        private List<User> recipients;
-        
-        public GroupChannelBuilder(User[] recipients) {
-            if (Objects.nonNull(recipients)) {
-                this.recipients = List.of(recipients);
-            }
-        }
-        
-        // Override Methods
-        @Override
-        public GroupChannel.Builder addRecipient(User user) {
-            recipients.add(user);
-            return this;
-        }
-        
-        @Override
-        public CompletableFuture<GroupChannel> build() {
-            return null; // todo
+        public CompletableFuture<ServerVoiceChannel> build() {
+            if (name == null) throw new IllegalArgumentException("No channel name set!");
+            return new WebRequest<ServerVoiceChannel>(discord).method(Method.POST)
+                    .endpoint(Endpoint.Location.GUILD_CHANNEL.toEndpoint(server))
+                    .node("type",
+                          type,
+                          "name",
+                          name,
+                          (bitrate != null ? new Object[]{"bitrate", bitrate} : new Object[0]),
+                          (limit != null ? new Object[]{"user_limit", limit} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                          "permission_overwrites",
+                          overrides.stream()
+                                  .map(PermissionOverrideInternal.class::cast)
+                                  .map(PermissionOverrideInternal::toJsonNode)
+                                  .collect(Collectors.toList()))
+                    .execute(node -> discord.getChannelCache()
+                            .getOrCreate(discord, node)
+                            .toServerVoiceChannel()
+                            .orElseThrow(AssertionError::new));
         }
     }
 }

@@ -2,18 +2,16 @@ package de.kaleidox.crystalshard.main.items.channel;
 
 import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public interface Channel
@@ -24,8 +22,6 @@ public interface Channel
     String getName();
     
     int getPosition();
-    
-    Updater getUpdater();
     
     CompletableFuture<Void> delete();
     
@@ -73,66 +69,28 @@ public interface Channel
         return toServerChannel().map(ServerChannel::getServer);
     }
     
-    default Builder BUILDER() {
-        return new ChannelBuilderInternal();
-    }
-    
-    interface Updater extends Castable<Updater> {
-        Updater setName(String name);
+    interface Updater<T, R> {
+        Discord getDiscord();
         
-        Updater setPosition(int position);
-        
-        Updater modifyOverrides(Consumer<List<PermissionOverride>> overrideModifier);
-        
-        CompletableFuture<Void> update();
+        CompletableFuture<R> update();
     }
     
     /**
      * This interface represents a basic channel builder.
      *
-     * @see ServerTextChannel#BUILDER(Server)
-     * @see ServerVoiceChannel#BUILDER(Server)
-     * @see ChannelCategory#BUILDER(Server)
-     * @see GroupChannel#BUILDER()
+     * @param <T> The supertype of the Builder.
+     * @param <R> The type of what the builder builds.
      */
-    interface Builder {
-        /**
-         * Gets a new instance of a ServerVoiceChannelBuilder. When using this method, you <b>MUST</b> later specify a
-         * server using {@link ServerVoiceChannel.Builder#setServer(Server)}.
-         *
-         * @return A new ServerVoiceChannelBuilder.
-         */
-        default ServerVoiceChannel.Builder makeVoiceChannel() {
-            return new ChannelBuilderInternal.ServerVoiceChannelBuilder(null);
-        }
+    interface Builder<T, R> {
+        Discord getDiscord();
         
         /**
-         * Gets a new instance of a ServerTextChannelBuilder. When using this method, you <b>MUST</b> later specify a
-         * server using {@link ServerTextChannel.Builder#setServer(Server)}.
+         * Builds an instance of {@code R}.
+         * The returned future completes exceptionally with a {@link DiscordPermissionException} if the bot does not have the required permission to build
+         * the channel.
          *
-         * @return A new ServerTextChannelBuilder.
+         * @return A future that completes with the built channel.
          */
-        default ServerTextChannel.Builder makeServerChannel() {
-            return new ChannelBuilderInternal.ServerTextChannelBuilder(null);
-        }
-        
-        /**
-         * Gets a new instance of a ChannelCategoryBuilder. When using this method, you <b>MUST</b> later specify a
-         * server using {@link ServerVoiceChannel.Builder#setServer(Server)}.
-         *
-         * @return A new ChannelCategoryBuilder.
-         */
-        default ChannelCategory.Builder makeChannelCategory() {
-            return new ChannelBuilderInternal.ChannelCategoryBuilder(null);
-        }
-        
-        /**
-         * Gets a new instance of a GroupChannelBuilder.
-         *
-         * @return A new GroupChannelBuilder.
-         */
-        default GroupChannel.Builder makeGroupChannel() {
-            return new ChannelBuilderInternal.GroupChannelBuilder(null);
-        }
+        CompletableFuture<R> build();
     }
 }

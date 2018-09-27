@@ -121,11 +121,6 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     }
     
     @Override
-    public Channel.Updater getUpdater() {
-        return new ChannelUpdaterInternal.VoiceChannelUpdater(this);
-    }
-    
-    @Override
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
@@ -167,5 +162,10 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     @Override
     public InviteBuilder getInviteBuilder() {
         return new ChannelBuilderInternal.ChannelInviteBuilder(this);
+    }
+    
+    @Override
+    public ServerVoiceChannel.Updater getUpdater() {
+        return new ChannelUpdaterInternal.ServerVoiceChannelUpdater(discord, this);
     }
 }

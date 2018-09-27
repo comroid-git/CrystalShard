@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.objects.markers.IDPair;
 import java.util.Objects;
@@ -49,6 +50,18 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
                                            .asInt(0)).forEach(permission -> put(permission, ALLOWED));
         new PermissionListInternal(data.get("deny")
                                            .asInt(0)).forEach(permission -> put(permission, DENIED));
+    }
+    
+    public PermissionOverrideInternal(Discord discord, Server server, PermissionOverwritable parent, PermissionList permissions) {
+        super();
+        this.discord = discord;
+        this.server = server;
+        this.parent = parent;
+        this.type = (parent instanceof User ? Type.USER : Type.ROLE);
+        for (Permission perm : Permission.values()) {
+            if (permissions.contains(perm)) put(perm, ALLOWED);
+            else put(perm, DENIED);
+        }
     }
     
     // Override Methods
@@ -110,6 +123,15 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
                 .filter(entry -> entry.getValue() == DENIED)
                 .map(Entry::getKey)
                 .collect(Collectors.toCollection(() -> PermissionList.create(parent)));
+    }
+    
+    @Override
+    public int toPermissionInt() {
+        int perm = Permission.EMBED_LINKS.getValue();
+        for (Permission permission : getAllowed()) {
+            permission.apply(perm, true);
+        }
+        return perm;
     }
     
     public JsonNode toJsonNode() {

@@ -18,6 +18,11 @@ public abstract class FileType {
         return isType(file.getName());
     }
     
+    @Override
+    public String toString() {
+        return regexPiece;
+    }
+    
     public static class IMAGE extends FileType {
         // Static Fields
         public final static IMAGE   PNG    = new IMAGE(".png");

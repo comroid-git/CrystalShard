@@ -18,6 +18,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
+import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
@@ -85,4 +86,26 @@ public interface Server
     Optional<User> getUserById(long id);
     
     CompletableFuture<Void> leave();
+    
+    interface Builder {
+        Builder setName(String name);
+        
+        Builder setRegion(VoiceRegion region);
+        
+        Builder setIcon(File icon);
+        
+        Builder setVerificationLevel(VerificationLevel level);
+        
+        Builder setDefaultNotificationLevel(DefaultMessageNotificationLevel level);
+        
+        Builder setExplicitContentFilter(ExplicitContentFilterLevel level);
+        
+        Builder addRole(Role.Builder roleBuilder);
+        
+        Builder addChannel(ServerChannel.Builder channelBuilder);
+        
+        Builder add(ServerComponent component);
+        
+        CompletableFuture<Server> build();
+    }
 }

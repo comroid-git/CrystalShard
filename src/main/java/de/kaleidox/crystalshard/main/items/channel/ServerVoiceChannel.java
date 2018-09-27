@@ -1,34 +1,29 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import de.kaleidox.crystalshard.main.Discord;
 
 public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
-    default Builder BUILDER(Server server) {
-        Objects.requireNonNull(server);
-        return new ChannelBuilderInternal.ServerVoiceChannelBuilder(server);
+    Updater getUpdater();
+    
+    interface Updater extends ServerChannel.Updater<Updater, ServerVoiceChannel> {
+        Updater setBitrate(int bitrate);
+        
+        Updater setUserLimit(int limit);
     }
     
-    @SuppressWarnings("JavaDoc")
-    interface Builder {
-        Builder setServer(Server server);
-        
-        Builder setName(String name);
-        
+    interface Builder extends ServerChannel.Builder<Builder, ServerVoiceChannel> {
         Builder setBitrate(int bitrate);
         
-        Builder setUserlimit(int limit);
-        
-        /**
-         * Builds and creates the ServerVoiceChannel, if possible.
-         *
-         * @return A future to contain the created ServerVoiceChannel.
-         * @throws DiscordPermissionException If the bot account does not have the permission to create a voice channel
-         *                                    in that guild.
-         */
-        CompletableFuture<ServerVoiceChannel> build() throws DiscordPermissionException;
+        Builder setUserLimit(int limit);
+    }
+    
+    static Builder builder() throws IllegalCallerException {
+        return builder(ThreadPool.getThreadDiscord());
+    }
+    
+    static Builder builder(Discord discord) {
+        return new ChannelBuilderInternal.ServerVoiceChannelBuilder(discord);
     }
 }

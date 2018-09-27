@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.internal.items.permission;
 
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import java.util.HashSet;
 import java.util.Optional;
@@ -36,6 +37,12 @@ public class PermissionListInternal extends HashSet<Permission> implements Permi
         forEach(permission -> permission.apply(value, true));
         
         return value;
+    }
+    
+    @Override
+    public PermissionOverride toOverride() {
+        if (parent == null) throw new NullPointerException("No parent is defined!");
+        return new PermissionOverrideInternal(parent.getDiscord(), parent.getServer(), parent, this);
     }
     
     @Override

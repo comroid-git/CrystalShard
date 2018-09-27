@@ -37,21 +37,6 @@ public class PrivateTextChannelInternal extends TextChannelInternal implements P
     }
     
     @Override
-    public Channel.Updater getUpdater() {
-        return null;
-    }
-    
-    @Override
-    public String getTopic() {
-        return null;
-    }
-    
-    @Override
-    public boolean isNsfw() {
-        return false;
-    }
-    
-    @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
         

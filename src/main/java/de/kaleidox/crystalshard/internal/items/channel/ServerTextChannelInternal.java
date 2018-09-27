@@ -153,8 +153,8 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     }
     
     @Override
-    public Channel.Updater getUpdater() {
-        return new ChannelUpdaterInternal.TextChannelUpdater(this);
+    public ServerTextChannel.Updater getUpdater() {
+        return new ChannelUpdaterInternal.ServerTextChannelUpdater(discord, this);
     }
     
     @Override

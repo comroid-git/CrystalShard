@@ -22,6 +22,8 @@ public interface PermissionOverride extends Map<Permission, OverrideState> {
     
     PermissionList getDenied();
     
+    int toPermissionInt();
+    
     // Override Methods
     boolean equals(Object other);
     

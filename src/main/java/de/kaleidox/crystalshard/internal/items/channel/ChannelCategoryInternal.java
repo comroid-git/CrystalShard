@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -91,11 +92,6 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     }
     
     @Override
-    public Updater getUpdater() {
-        return null;
-    }
-    
-    @Override
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
@@ -108,5 +104,10 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
                                               .getPermissions()
                                               .contains(permission)))
                 .orElse(true); // If no information could be acquired, assert TRUE
+    }
+    
+    @Override
+    public ServerChannel.Updater getUpdater() {
+        return new ChannelUpdaterInternal.ServerCategoryUpdater(discord, this);
     }
 }

@@ -55,7 +55,6 @@ public class ServerInternal implements Server {
     private final static Logger                                                    logger         = new Logger(ServerInternal.class);
     private final        DiscordInternal                                           discord;
     private final        long                                                      id;
-    private final        Role                                                      everyoneRole;
     private final        ArrayList<Role>                                           roles          = new ArrayList<>();
     private final        ArrayList<CustomEmoji>                                    emojis         = new ArrayList<>();
     private final        ArrayList<String>                                         features       = new ArrayList<>();
@@ -64,6 +63,7 @@ public class ServerInternal implements Server {
     private final        ArrayList<ServerChannel>                                  channels       = new ArrayList<>();
     private final        ArrayList<Presence>                                       presenceStates = new ArrayList<>();
     private final        List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
+    private              Role                                                      everyoneRole;
     private              String                                                    name;
     private              URL                                                       iconUrl;
     private              URL                                                       splashUrl;
@@ -91,35 +91,39 @@ public class ServerInternal implements Server {
         this.discord = (DiscordInternal) discord;
         this.id = data.get("id")
                 .asLong();
-        
-        data.path("roles")
-                .forEach(role -> roles.add(discord.getRoleCache()
-                                                   .getOrCreate(discord, this, role)));
-        data.path("emojis")
-                .forEach(emoji -> emojis.add(discord.getEmojiCache()
-                                                     .getOrCreate(getDiscord(), this, emoji, true)));
-        data.path("features")
-                .forEach(feature -> features.add(feature.asText()));
-        data.path("voice_states")
-                .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
-        data.path("members")
-                .forEach(member -> members.add(discord.getUserCache()
-                                                       .getOrCreate(discord, member.get("user"))
-                                                       .toServerMember(this, member)));
-        data.path("channels")
-                .forEach(channel -> channels.add(discord.getChannelCache()
-                                                         .getOrCreate(discord, this, channel)
-                                                         .toServerChannel()
-                                                         .orElseThrow(AssertionError::new)));
-        data.path("presenceStates")
-                .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
-        structure = new ChannelStructureInternal(channels);
-        updateData(data);
-        this.everyoneRole = roles.stream()
-                .filter(role -> role.getName()
-                        .equalsIgnoreCase("@everyone"))
-                .findAny()
-                .orElseThrow(() -> new NoSuchElementException("No @everyone Role found!"));
+        if (data.has("unavailable") && data.get("unavailable")
+                .asBoolean()) {
+            this.unavailable = true;
+        } else {
+            data.path("roles")
+                    .forEach(role -> roles.add(discord.getRoleCache()
+                                                       .getOrCreate(discord, this, role)));
+            data.path("emojis")
+                    .forEach(emoji -> emojis.add(discord.getEmojiCache()
+                                                         .getOrCreate(getDiscord(), this, emoji, true)));
+            data.path("features")
+                    .forEach(feature -> features.add(feature.asText()));
+            data.path("voice_states")
+                    .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
+            data.path("members")
+                    .forEach(member -> members.add(discord.getUserCache()
+                                                           .getOrCreate(discord, member.get("user"))
+                                                           .toServerMember(this, member)));
+            data.path("channels")
+                    .forEach(channel -> channels.add(discord.getChannelCache()
+                                                             .getOrCreate(discord, this, channel)
+                                                             .toServerChannel()
+                                                             .orElseThrow(AssertionError::new)));
+            data.path("presenceStates")
+                    .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
+            structure = new ChannelStructureInternal(channels);
+            updateData(data);
+            this.everyoneRole = roles.stream()
+                    .filter(role -> role.getName()
+                            .equalsIgnoreCase("@everyone"))
+                    .findAny()
+                    .orElseThrow(() -> new NoSuchElementException("No @everyone Role found!"));
+        }
         listenerManangers = new ArrayList<>();
         
         instances.put(id, this);

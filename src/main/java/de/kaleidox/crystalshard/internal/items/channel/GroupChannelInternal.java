@@ -37,6 +37,13 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
     }
     
     @Override
+    public Set<EditTrait<Channel>> updateData(JsonNode data) {
+        Set<EditTrait<Channel>> traits = new HashSet<>();
+        
+        return traits;
+    }
+    
+    @Override
     public Channel.Updater getUpdater() {
         return null;
     }
@@ -49,12 +56,5 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
     @Override
     public boolean isNsfw() {
         return false;
-    }
-    
-    @Override
-    public Set<EditTrait<Channel>> updateData(JsonNode data) {
-        Set<EditTrait<Channel>> traits = new HashSet<>();
-        
-        return traits;
     }
 }

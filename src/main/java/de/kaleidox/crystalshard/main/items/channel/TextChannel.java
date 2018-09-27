@@ -6,10 +6,6 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import java.util.Collection;
 
 public interface TextChannel extends Channel, MessageReciever {
-    String getTopic();
-    
-    boolean isNsfw();
-    
     Collection<Message> getPinnedMessages();
     
     default void attachMessageCreateListener(MessageCreateListener listener) {
@@ -17,10 +13,6 @@ public interface TextChannel extends Channel, MessageReciever {
     }
     
     interface Updater extends Channel.Updater {
-        Updater setTopic(String topic);
-        
-        Updater setNsfw(boolean nsfw);
-        
         Updater setParent(ChannelCategory category);
     }
 }

@@ -46,11 +46,11 @@ public enum Permission {
         return (of & getValue()) != 0;
     }
     
-    public int apply(int applyTo, boolean doChange) {
-        if (doChange && !partOf(applyTo)) {
+    public int apply(int applyTo, boolean changeToState) {
+        if (changeToState && !partOf(applyTo)) {
             return applyTo + getValue();
         }
-        if (!doChange && partOf(applyTo)) {
+        if (!changeToState && partOf(applyTo)) {
             return applyTo - getValue();
         }
         return applyTo;
