@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 
 @FunctionalInterface
-public interface ChannelDeleteListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener {
+public interface ChannelDeleteListener extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener {
     void onChannelDelete(ChannelDeleteEvent event);
 }

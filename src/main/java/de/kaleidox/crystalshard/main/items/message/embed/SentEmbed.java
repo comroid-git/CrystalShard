@@ -212,8 +212,7 @@ public interface SentEmbed extends Embed {
      * @return A future that completes with the new embed when the embed was edited.
      * @see Message#edit(EmbedDraft)
      */
-    CompletableFuture<SentEmbed> modifyFields(Predicate<Field> tester,
-                                              Consumer<EmbedDraft.EditableField> fieldModifier);
+    CompletableFuture<SentEmbed> modifyFields(Predicate<Field> tester, Consumer<EmbedDraft.EditableField> fieldModifier);
     
     // Override Methods
     @Override

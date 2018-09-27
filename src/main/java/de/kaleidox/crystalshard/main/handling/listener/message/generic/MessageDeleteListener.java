@@ -10,7 +10,7 @@ import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListen
 
 @FunctionalInterface
 public interface MessageDeleteListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener,
-        RoleAttachableListener, MessageAttachableListener {
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener, RoleAttachableListener,
+        MessageAttachableListener {
     void onMessageDelete(MessageDeleteEvent event);
 }

@@ -29,8 +29,7 @@ public class TextInput extends ResponseElement<String> {
      * @param embedBaseSupplier A @Nullable Supplier to provide a basic embed structure.
      * @param userCanRespond    A @Nullable Predicate to check whether a user may Respond to the question.
      */
-    public TextInput(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier,
-                     Predicate<User> userCanRespond) {
+    public TextInput(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier, Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
     }
     
@@ -54,9 +53,7 @@ public class TextInput extends ResponseElement<String> {
                                         .get();
                                 
                                 if (!user.isYourself() && userCanRespond.test(user)) {
-                                    future.complete(new NamedItem<>(name,
-                                                                    (style == Style.READABLE ?
-                                                                     msg.getReadableContent() : msg.getContent())));
+                                    future.complete(new NamedItem<>(name, (style == Style.READABLE ? msg.getReadableContent() : msg.getContent())));
                                 }
                             });
                     future.thenAcceptAsync(result -> {

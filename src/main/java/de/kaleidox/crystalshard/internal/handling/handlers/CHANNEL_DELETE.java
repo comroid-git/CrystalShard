@@ -25,10 +25,7 @@ public class CHANNEL_DELETE extends HandlerBase {
         
         // todo Mark old Channel as deletable
         
-        collectListeners(ChannelDeleteListener.class,
-                         discord,
-                         server,
-                         channel).forEach(listener -> discord.getThreadPool()
+        collectListeners(ChannelDeleteListener.class, discord, server, channel).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onChannelDelete(event)));
         
         channel.detachAllListeners();

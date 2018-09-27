@@ -16,9 +16,8 @@ public class ServerEmojiEditEventInternal extends EventBase implements ServerEmo
     private final List<CustomEmoji>           deleted;
     private final Set<EditTrait<CustomEmoji>> traits;
     
-    public ServerEmojiEditEventInternal(DiscordInternal discordInternal, Server server, List<CustomEmoji> added,
-                                        List<CustomEmoji> edited, List<CustomEmoji> deleted,
-                                        Set<EditTrait<CustomEmoji>> traits) {
+    public ServerEmojiEditEventInternal(DiscordInternal discordInternal, Server server, List<CustomEmoji> added, List<CustomEmoji> edited,
+                                        List<CustomEmoji> deleted, Set<EditTrait<CustomEmoji>> traits) {
         super(discordInternal);
         this.server = server;
         this.added = added;

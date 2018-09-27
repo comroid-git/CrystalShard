@@ -93,8 +93,8 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
             return builder.build();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
-                                         "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
+                                         "thread, such as in listeners or scheduler tasks. You may not use it from " + "contexts like " +
+                                         "CompletableFuture#thenAcceptAsync or such.");
     }
     
     /**
@@ -117,8 +117,8 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
                     .get();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
-                                         "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
+                                         "thread, such as in listeners or scheduler tasks. You may not use it from " + "contexts like " +
+                                         "CompletableFuture#thenAcceptAsync or such.");
     }
     
     /**
@@ -141,8 +141,8 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
                     .getBuilder();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
-                                         "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
+                                         "thread, such as in listeners or scheduler tasks. You may not use it from " + "contexts like " +
+                                         "CompletableFuture#thenAcceptAsync or such.");
     }
     
     /**
@@ -163,7 +163,7 @@ public class DefaultEmbed implements Supplier<EmbedDraft> {
                     .getDefaultEmbed();
         }
         throw new IllegalCallerException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
-                                         "thread, such as in listeners or scheduler tasks. You may not use it from " +
-                                         "contexts like " + "CompletableFuture#thenAcceptAsync or such.");
+                                         "thread, such as in listeners or scheduler tasks. You may not use it from " + "contexts like " +
+                                         "CompletableFuture#thenAcceptAsync or such.");
     }
 }

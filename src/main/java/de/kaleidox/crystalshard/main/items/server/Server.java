@@ -24,8 +24,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Server
-        extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>,
-        Cacheable<Server, Long, Long>, CacheStorable {
+        extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>, Cacheable<Server, Long, Long>,
+        CacheStorable {
     Optional<URL> getIconUrl();
     
     Optional<URL> getSplashUrl();

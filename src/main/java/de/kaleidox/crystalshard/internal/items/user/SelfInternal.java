@@ -110,14 +110,12 @@ public class SelfInternal extends UserInternal implements Self {
         return ((DiscordInternal) getDiscord()).getWebSocket()
                 .sendPayload(Payload.create(OpCode.STATUS_UPDATE,
                                             objectNode("since",
-                                                       (status == Presence.Status.IDLE ? System.currentTimeMillis() :
-                                                        null),
+                                                       (status == Presence.Status.IDLE ? System.currentTimeMillis() : null),
                                                        "game",
                                                        objectNode("type", type.getId(), "name", title,
                                                                   // only include an URL if there is a URL actually
                                                                   // set, else include nothing
-                                                                  (url != null ? new Object[]{"url", url} :
-                                                                   new Object[0])),
+                                                                  (url != null ? new Object[]{"url", url} : new Object[0])),
                                                        "status",
                                                        status.getKey(),
                                                        "afk",

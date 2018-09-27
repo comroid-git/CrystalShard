@@ -148,9 +148,8 @@ public class CommandFramework {
         var ref = new Object() {
             int i;
         };
-        @SuppressWarnings("unchecked") Switch<Class> classSwitch = new Switch<Class>(Class::isAssignableFrom).addCase(
-                MessageCreateEvent.class,
-                type -> finalParam[ref.i] = event)
+        @SuppressWarnings("unchecked") Switch<Class> classSwitch = new Switch<Class>(Class::isAssignableFrom).addCase(MessageCreateEvent.class,
+                                                                                                                      type -> finalParam[ref.i] = event)
                 .addCase(Discord.class, type -> finalParam[ref.i] = discord)
                 .addCase(Server.class, type -> finalParam[ref.i] = server)
                 .addCase(TextChannel.class, type -> finalParam[ref.i] = channel)
@@ -263,18 +262,14 @@ public class CommandFramework {
         if (!method.isAnnotationPresent(Command.class)) throw new IllegalArgumentException(
                 "Method " + method.toGenericString() + " does not have annotation " + Command.class + ".");
         Command commandAnnot = method.getAnnotationsByType(Command.class)[0];
-        if (!Modifier.isStatic(method.getModifiers())) throw new IllegalStateException(
-                "The command methods must be static.");
+        if (!Modifier.isStatic(method.getModifiers())) throw new IllegalStateException("The command methods must be static.");
         if (!commandAnnot.enableServerChat() && Set.of(method.getParameterTypes())
                 .contains(Server.class)) logger.exception(new InvalidParameterException(
-                                                                  "Command " + method.toGenericString() + " is " +
-                                                                  "annotated to not run on " +
-                                                                  "Servers, yet expects a Server-Parameter. It will " + "only recieve " + "null."),
-                                                          "Error in Command method body for: " +
-                                                          method.toGenericString());
+                "Command " + method.toGenericString() + " is " + "annotated to not run on " + "Servers, yet expects a Server-Parameter. It will " +
+                "only recieve " + "null."), "Error in Command method body for: " + method.toGenericString());
         if (hasAliasesRegistered(commandAnnot.aliases())) logger.exception(new IllegalArgumentException(
-                "A command with one of the aliases " + Arrays.toString(commandAnnot.aliases()) +
-                " is registered already!"), "Error in Command aliases for: " + method.toGenericString());
+                                                                                   "A command with one of the aliases " + Arrays.toString(commandAnnot.aliases()) + " is registered already!"),
+                                                                           "Error in Command aliases for: " + method.toGenericString());
         Instance instance = new Instance(method, commandAnnot);
         commands.add(instance);
     }
@@ -322,8 +317,7 @@ public class CommandFramework {
             author.toAuthorUser()
                     .ifPresent(user -> user.getAvatarUrl()
                             .map(URL::toExternalForm)
-                            .ifPresentOrElse(ava -> builder.setFooter("Requested by " + user.getDisplayName(server),
-                                                                      ava),
+                            .ifPresentOrElse(ava -> builder.setFooter("Requested by " + user.getDisplayName(server), ava),
                                              () -> builder.setFooter("Requested by " + user.getDisplayName(server))));
             
             return builder;
@@ -346,14 +340,11 @@ public class CommandFramework {
                                 .append(annotation.requiredDiscordPermission()
                                                 .name())
                                 .append("\n")
-                                .append(annotation.requireChannelMentions() == 0 ? "" :
-                                        "Required Channel mentions: " + annotation.requireChannelMentions())
+                                .append(annotation.requireChannelMentions() == 0 ? "" : "Required Channel mentions: " + annotation.requireChannelMentions())
                                 .append("\n")
-                                .append(annotation.requireUserMentions() == 0 ? "" :
-                                        "Required User mentions: " + annotation.requireUserMentions())
+                                .append(annotation.requireUserMentions() == 0 ? "" : "Required User mentions: " + annotation.requireUserMentions())
                                 .append("\n")
-                                .append(annotation.requireRoleMentions() == 0 ? "" :
-                                        "Required Role mentions: " + annotation.requireRoleMentions());
+                                .append(annotation.requireRoleMentions() == 0 ? "" : "Required Role mentions: " + annotation.requireRoleMentions());
                         
                         StringBuilder aliases = new StringBuilder(framework.prefix);
                         Iterator<String> iterator = List.of(annotation.aliases())

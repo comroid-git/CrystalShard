@@ -21,7 +21,7 @@ public class EmojiCache extends Cache<CustomEmoji, Long, IDPair> {
     
     public EmojiCache(DiscordInternal discord) {
         super(CustomEmojiInternal.class,
-              param -> ((JsonNode) param[1]).get("id")
+              param -> ((JsonNode) param[2]).get("id")
                       .asLong(),
               TimeUnit.HOURS.toMillis(6),
               Discord.class,

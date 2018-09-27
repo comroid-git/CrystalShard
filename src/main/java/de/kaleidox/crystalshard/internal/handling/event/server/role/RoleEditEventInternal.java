@@ -13,8 +13,7 @@ public class RoleEditEventInternal extends EventBase implements RoleEditEvent {
     private final Role                 role;
     private final Set<EditTrait<Role>> traits;
     
-    public RoleEditEventInternal(DiscordInternal discordInternal, Server server, Role role,
-                                 Set<EditTrait<Role>> traits) {
+    public RoleEditEventInternal(DiscordInternal discordInternal, Server server, Role role, Set<EditTrait<Role>> traits) {
         super(discordInternal);
         this.server = server;
         this.role = role;

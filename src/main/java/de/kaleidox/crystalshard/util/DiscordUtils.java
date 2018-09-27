@@ -45,9 +45,7 @@ public class DiscordUtils {
                                                         .path("enable_default_help")
                                                         .asBoolean(true));
         
-        defaultEmbed = new DefaultEmbed(discord,
-                                        configuration.has("default_embd") ? configuration.path("default_embed") :
-                                        nodeOf(null));
+        defaultEmbed = new DefaultEmbed(discord, configuration.has("default_embd") ? configuration.path("default_embed") : nodeOf(null));
     }
     
     public DefaultEmbed getDefaultEmbed() {
@@ -65,9 +63,6 @@ public class DiscordUtils {
     // Static members
     private static JsonNode createDefaultConfig() {
         logger.info("No configuration file " + configFile + " found at resources root. Using default configuration.");
-        return objectNode("commands",
-                          objectNode("prefix", "!", "enable_default_help", true),
-                          "default_embed",
-                          nodeOf(null));
+        return objectNode("commands", objectNode("prefix", "!", "enable_default_help", true), "default_embed", nodeOf(null));
     }
 }

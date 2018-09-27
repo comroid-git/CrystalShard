@@ -19,7 +19,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
@@ -35,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
@@ -162,9 +162,9 @@ public class UserInternal implements User {
     }
     
     @Override
-    public ServerMember toServerMember(Server server) {
+    public ServerMember toServerMember(Server server, JsonNode data) {
         if (this instanceof ServerMember) return (ServerMember) this;
-        return ServerMemberInternal.getInstance(this, server);
+        return ServerMemberInternal.getInstance(this, server, data);
     }
     
     @Override
@@ -176,7 +176,7 @@ public class UserInternal implements User {
     public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
         return new WebRequest<PrivateTextChannel>(discord).method(Method.POST)
                 .endpoint(Endpoint.of(Endpoint.Location.SELF_CHANNELS))
-                .node(JsonHelper.objectNode("recipient_id", id))
+                .node(objectNode("recipient_id", id))
                 .execute(node -> discord.getChannelCache()
                         .getOrCreate(discord, node)
                         .toPrivateTextChannel()
@@ -229,8 +229,17 @@ public class UserInternal implements User {
     }
     
     @Override
-    public Collection<Message> getMessages() {
-        return null;
+    public CompletableFuture<Collection<Message>> getMessages(int limit) {
+        if (limit < 1 || limit > 100) throw new IllegalArgumentException("Parameter 'limit' is not within its bounds! [1, 100]");
+        return openPrivateChannel().thenCompose(ptc -> new WebRequest<Collection<Message>>(discord).method(Method.GET)
+                .endpoint(Endpoint.Location.MESSAGE.toEndpoint(ptc))
+                .node(objectNode("limit", limit))
+                .execute(data -> {
+                    List<Message> list = new ArrayList<>();
+                    data.forEach(msg -> list.add(discord.getMessageCache()
+                                                         .getOrCreate(discord, msg)));
+                    return list;
+                }));
     }
     
     @Override

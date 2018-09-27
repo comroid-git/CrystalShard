@@ -23,7 +23,6 @@ public class CHANNEL_CREATE extends HandlerBase {
         
         ChannelCreateEventInternal fireEvent = new ChannelCreateEventInternal(discord, channel);
         
-        collectListeners(ChannelCreateListener.class, discord, server).forEach(listener -> listener.onChannelCreate(
-                fireEvent));
+        collectListeners(ChannelCreateListener.class, discord, server).forEach(listener -> listener.onChannelCreate(fireEvent));
     }
 }

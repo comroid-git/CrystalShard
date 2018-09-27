@@ -11,14 +11,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ListenerManagerInternal<T extends Listener> implements ListenerManager<T> {
-    private final static ConcurrentHashMap<Integer, ListenerManagerInternal<? extends Listener>> instances       =
-            new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<Integer, ListenerManagerInternal<? extends Listener>> instances       = new ConcurrentHashMap<>();
     private final        DiscordInternal                                                         discord;
     private final        T                                                                       listener;
-    private final        List<ListenerAttachable<T>>                                             attachedTo      =
-            new ArrayList<>();
-    private final        List<Runnable>                                                          detachRunnables =
-            new ArrayList<>();
+    private final        List<ListenerAttachable<T>>                                             attachedTo      = new ArrayList<>();
+    private final        List<Runnable>                                                          detachRunnables = new ArrayList<>();
     
     ListenerManagerInternal(DiscordInternal discord, T listener) {
         this.discord = discord;
@@ -72,10 +69,8 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
     // Static members
     // Static membe
     @SuppressWarnings("unchecked")
-    public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal,
-                                                                              T listener) {
-        if (instances.containsKey(listener.hashCode()))
-            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
+    public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal, T listener) {
+        if (instances.containsKey(listener.hashCode())) return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
         else return new ListenerManagerInternal<>(discordInternal, listener);
     }
 }

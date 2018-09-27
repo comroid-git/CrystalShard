@@ -34,8 +34,7 @@ public class ReactionInternal implements Reaction {
                 .asBoolean(false);
         this.emoji = data.get("emoji")
                              .get("id")
-                             .isNull() ? new UnicodeEmojiInternal(discord, data.get("emoji"), true) :
-                     discord.getEmojiCache()
+                             .isNull() ? new UnicodeEmojiInternal(discord, data.get("emoji"), true) : discord.getEmojiCache()
                              .getOrCreate(discord,
                                           message.getChannel()
                                                   .toServerChannel()
@@ -89,16 +88,12 @@ public class ReactionInternal implements Reaction {
         return this;
     }
     
-    public static Reaction getInstance(
-            @Nullable Server server, @NotNull Message message, @Nullable User user, @NotNull JsonNode data, int delta) {
+    public static Reaction getInstance(@Nullable Server server, @NotNull Message message, @Nullable User user, @NotNull JsonNode data, int delta) {
         Emoji emoji = Emoji.of(message.getDiscord(), server, data.get("emoji"));
         ReactionCriteria criteria = new ReactionCriteria(message, emoji);
         return ((ReactionInternal) MapHelper.getEquals(instances,
                                                        criteria,
-                                                       new ReactionInternal(message.getDiscord(),
-                                                                            message,
-                                                                            user,
-                                                                            data))).changeCount(delta);
+                                                       new ReactionInternal(message.getDiscord(), message, user, data))).changeCount(delta);
     }
     
     private static class ReactionCriteria {
@@ -113,8 +108,7 @@ public class ReactionInternal implements Reaction {
         // Override Methods
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof ReactionCriteria) return (((ReactionCriteria) obj).message.equals(message)) &&
-                                                        ((ReactionCriteria) obj).emoji.equals(emoji);
+            if (obj instanceof ReactionCriteria) return (((ReactionCriteria) obj).message.equals(message)) && ((ReactionCriteria) obj).emoji.equals(emoji);
             return false;
         }
     }

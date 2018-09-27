@@ -1,20 +1,72 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import static de.kaleidox.util.helpers.JsonHelper.*;
+
 public class ChannelBuilderInternal implements Channel.Builder {
+    public static class ChannelInviteBuilder implements ServerChannel.InviteBuilder {
+        private final ServerChannel channel;
+        private       int           maxAge    = 0;
+        private       int           maxUses   = 0;
+        private       boolean       temporary = false;
+        private       boolean       unique    = false;
+        
+        public ChannelInviteBuilder(ServerChannel channel) {
+            this.channel = channel;
+        }
+        
+        @Override
+        public ServerChannel.InviteBuilder setMaxAge(int maxAge) {
+            this.maxAge = maxAge;
+            return this;
+        }
+        
+        @Override
+        public ServerChannel.InviteBuilder setMaxUses(int maxUses) {
+            this.maxUses = maxUses;
+            return this;
+        }
+        
+        @Override
+        public ServerChannel.InviteBuilder setTemporaryMembership(boolean temporary) {
+            this.temporary = temporary;
+            return this;
+        }
+        
+        @Override
+        public ServerChannel.InviteBuilder setUnique(boolean unique) {
+            this.unique = unique;
+            return this;
+        }
+        
+        @Override
+        public CompletableFuture<Invite> build() {
+            return new WebRequest<Invite>(channel.getDiscord()).method(Method.POST)
+                    .endpoint(Endpoint.Location.CHANNEL_INVITE.toEndpoint(channel))
+                    .node(objectNode("max_age", maxAge, "max_uses", maxUses, "temporary", temporary, "unique", unique))
+                    .execute(node -> new InviteInternal(channel.getDiscord(), node));
+        }
+    }
+    
     public static class ServerTextChannelBuilder implements ServerTextChannel.Builder {
         private Server          server;
         private String          name;

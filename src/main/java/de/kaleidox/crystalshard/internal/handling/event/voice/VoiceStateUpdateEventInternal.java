@@ -11,8 +11,7 @@ public class VoiceStateUpdateEventInternal extends EventBase implements VoiceSta
     private final VoiceState                 voiceState;
     private final Set<EditTrait<VoiceState>> traits;
     
-    public VoiceStateUpdateEventInternal(DiscordInternal discordInternal, VoiceState voiceState,
-                                         Set<EditTrait<VoiceState>> traits) {
+    public VoiceStateUpdateEventInternal(DiscordInternal discordInternal, VoiceState voiceState, Set<EditTrait<VoiceState>> traits) {
         super(discordInternal);
         this.voiceState = voiceState;
         this.traits = traits;

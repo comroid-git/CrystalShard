@@ -25,10 +25,7 @@ public class GUILD_ROLE_UPDATE extends HandlerBase {
         Set<EditTrait<Role>> traits = new HashSet<>(role.updateData(data.get("role")));
         RoleEditEventInternal event = new RoleEditEventInternal(discord, server, role, traits);
         
-        collectListeners(ServerRoleEditListener.class,
-                         discord,
-                         server,
-                         role).forEach(listener -> discord.getThreadPool()
+        collectListeners(ServerRoleEditListener.class, discord, server, role).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onRoleEdit(event)));
     }
 }

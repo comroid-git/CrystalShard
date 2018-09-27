@@ -25,8 +25,7 @@ public abstract class ResponseElement<ResultType> {
     protected       boolean                 deleteLater = false;
     private         DialogueBranch          parentBranch;
     
-    public ResponseElement(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier,
-                           Predicate<User> userCanRespond) {
+    public ResponseElement(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier, Predicate<User> userCanRespond) {
         this.name = name;
         this.parent = parent;
         this.embedBaseSupplier = (embedBaseSupplier == null ? () -> parent.getDiscord()

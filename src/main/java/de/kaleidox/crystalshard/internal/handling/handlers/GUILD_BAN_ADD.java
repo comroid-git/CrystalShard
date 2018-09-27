@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.ban.ServerBanEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.BanInternal;
+import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.ban.ServerBanListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
@@ -17,9 +18,8 @@ public class GUILD_BAN_ADD extends HandlerBase {
                 .asLong();
         Server server = discord.getServerCache()
                 .getOrRequest(serverId, serverId);
-        ServerMember user = discord.getUserCache()
-                .getOrCreate(discord, data.get("user"))
-                .toServerMember(server);
+        ServerMember user = ServerMemberInternal.getInstance(discord.getUserCache()
+                                                                     .getOrCreate(discord, data.get("user")), server);
         Ban ban = new BanInternal(server, user);
         
         ServerBanEventInternal event = new ServerBanEventInternal(discord, ban);

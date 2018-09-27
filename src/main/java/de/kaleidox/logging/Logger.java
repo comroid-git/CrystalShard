@@ -191,7 +191,9 @@ public class Logger {
                                     .getName())
                     .append("\" ")
                     .append(throwable.getClass()
-                                    .getName());
+                                    .getName())
+                    .append(": ")
+                    .append(throwable.getMessage());
             
             if (throwable instanceof LowStackTraceable) {
                 if (((LowStackTraceable) throwable).lowStackTrace()) {

@@ -37,8 +37,7 @@ public interface Cacheable<T extends CacheStorable, I, R> {
      * @return
      * @see Cache#getOrCreate(I, Object...)
      */
-    static <T extends CacheStorable, I> T getOrCreateInstance(Class<T> typeClass, I ident,
-                                                              Object... constructorParameters) {
+    static <T extends CacheStorable, I> T getOrCreateInstance(Class<T> typeClass, I ident, Object... constructorParameters) {
         return Cache.getCacheInstance(typeClass, ident)
                 .getOrCreate(ident, constructorParameters);
     }

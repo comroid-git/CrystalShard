@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.permission;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.permission.OverrideState;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
@@ -16,8 +17,7 @@ import java.util.stream.Collectors;
 
 import static de.kaleidox.crystalshard.main.items.permission.OverrideState.*;
 
-public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, OverrideState>
-        implements PermissionOverride {
+public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, OverrideState> implements PermissionOverride {
     private final Discord                discord;
     private final Server                 server;
     private final Type                   type;
@@ -41,9 +41,8 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
             case USER:
                 long userId = data.get("user_id")
                         .asLong();
-                this.parent = discord.getUserCache()
-                        .getOrRequest(userId, userId)
-                        .toServerMember(server);
+                this.parent = ServerMemberInternal.getInstance(discord.getUserCache()
+                                                                       .getOrRequest(userId, userId), server);
                 break;
         }
         new PermissionListInternal(data.get("allow")

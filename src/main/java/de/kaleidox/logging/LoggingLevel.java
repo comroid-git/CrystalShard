@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  */
 public enum LoggingLevel {
     /**
-     * A silent logger level. Only used by {@link Logger#setLevel(LoggingLevel)}.
+     * A silent logger level. Can only be set by {@link Logger#setLevel(LoggingLevel)}.
      */
     SILENT("", 0),
     

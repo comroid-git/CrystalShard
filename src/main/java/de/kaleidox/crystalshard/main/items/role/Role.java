@@ -15,8 +15,8 @@ import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 
 public interface Role
-        extends DiscordItem, Nameable, Mentionable, PermissionOverwritable, ListenerAttachable<RoleAttachableListener>,
-        Cacheable<Role, Long, IDPair>, CacheStorable {
+        extends DiscordItem, Nameable, Mentionable, PermissionOverwritable, ListenerAttachable<RoleAttachableListener>, Cacheable<Role, Long, IDPair>,
+        CacheStorable {
     CompletableFuture<Server> getServer();
     
     Color getColor();

@@ -16,8 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class PagedMessage {
-    private final static ConcurrentHashMap<MessageReciever, PagedMessage> selfMap             =
-            new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<MessageReciever, PagedMessage> selfMap             = new ConcurrentHashMap<>();
     private final static String                                           PREV_PAGE_EMOJI     = "⬅";
     private final static String                                           NEXT_PAGE_EMOJI     = "➡";
     private final static int                                              SUITABLE_MAX_LENGTH = 1700;
@@ -121,8 +120,7 @@ public class PagedMessage {
     
     // Static members
     // Static membe
-    public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead,
-                                         Supplier<String> defaultBody) {
+    public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
         if (selfMap.containsKey(forParent)) {
             PagedMessage val = selfMap.get(forParent);
             val.resend();

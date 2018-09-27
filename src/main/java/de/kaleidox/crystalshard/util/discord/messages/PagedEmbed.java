@@ -26,17 +26,13 @@ public class PagedEmbed {
     public final static String                                                     PREV_PAGE_EMOJI           = "⬅";
     public final static String                                                     NEXT_PAGE_EMOJI           = "➡";
     public final static String                                                     DELETE_EMOJI              = "🗑";
-    public final static ConcurrentHashMap<Long, ConcurrentLinkedQueue<PagedEmbed>> instances                 =
-            new ConcurrentHashMap<>();
+    public final static ConcurrentHashMap<Long, ConcurrentLinkedQueue<PagedEmbed>> instances                 = new ConcurrentHashMap<>();
     private final       MessageReciever                                            messageable;
     private final       Supplier<Embed.Builder>                                    embedsupplier;
-    private             ConcurrentHashMap<Integer, List<EmbedDraft.Field>>         pages                     =
-            new ConcurrentHashMap<>();
-    private             List<EmbedDraft.Field>                                     fields                    =
-            new ArrayList<>();
+    private             ConcurrentHashMap<Integer, List<EmbedDraft.Field>>         pages                     = new ConcurrentHashMap<>();
+    private             List<EmbedDraft.Field>                                     fields                    = new ArrayList<>();
     private             int                                                        page;
-    private             AtomicReference<Message>                                   sentMessage               =
-            new AtomicReference<>();
+    private             AtomicReference<Message>                                   sentMessage               = new AtomicReference<>();
     
     /**
      * Creates a new PagedEmbed object.
@@ -141,8 +137,7 @@ public class PagedEmbed {
         for (EmbedDraft.Field field : fields) {
             pages.putIfAbsent(thisPage, new ArrayList<>());
             
-            if (fieldCount <= MAX_FIELDS_PER_PAGE && pageChars <= Embed.Boundaries.FIELD_TEXT_LENGTH * fieldCount &&
-                totalChars < MAX_CHARS_PER_PAGE) {
+            if (fieldCount <= MAX_FIELDS_PER_PAGE && pageChars <= Embed.Boundaries.FIELD_TEXT_LENGTH * fieldCount && totalChars < MAX_CHARS_PER_PAGE) {
                 pages.get(thisPage)
                         .add(field);
                 

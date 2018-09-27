@@ -20,8 +20,7 @@ public class MessageEditEventInternal extends EventBase implements MessageEditEv
     private final SentEmbed               prevEmbed;
     private final Set<EditTrait<Message>> traits;
     
-    public MessageEditEventInternal(DiscordInternal discordInternal, Message message, Set<EditTrait<Message>> traits,
-                                    String prevContent, SentEmbed prevEmbed) {
+    public MessageEditEventInternal(DiscordInternal discordInternal, Message message, Set<EditTrait<Message>> traits, String prevContent, SentEmbed prevEmbed) {
         super(discordInternal);
         this.message = message;
         this.traits = traits;

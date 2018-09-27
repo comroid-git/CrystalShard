@@ -46,6 +46,7 @@ class BucketManager {
                         }
                         Bucket poll = bucketQueue.poll();
                         while (!poll.canRun()) { // wait until the bucket can be run
+                            logger.deeptrace("Ratelimited bucket " + poll + " for " + poll.waitDuration() + " MS");
                             Thread.sleep(poll.waitDuration());
                         }
                         poll.runAll();
@@ -95,8 +96,7 @@ class BucketManager {
                     .map(Map.Entry::getValue)
                     .mapToInt(arr -> arr.length)
                     .sum();
-            return "Bucket [" + numEndpoints + " Endpoint" + (numEndpoints == 1 ? "" : "s") + ", " + numRequests +
-                   " Requests]";
+            return "Bucket [" + numEndpoints + " Endpoint" + (numEndpoints == 1 ? "" : "s") + ", " + numRequests + " Requests]";
         }
         
         boolean canAccept(Endpoint endpoint) {
@@ -107,9 +107,7 @@ class BucketManager {
         void addRequest(Endpoint endpoint, Runnable requestExecution) throws LimitExceededException {
             synchronized (bucketQueue) {
                 if (!MapHelper.containsKey(requests, endpoint)) requests.put(endpoint, new Runnable[0]);
-                Runnable[] getOrDefault = MapHelper.getEquals(requests,
-                                                              endpoint,
-                                                              null); // null because value will never be absent
+                Runnable[] getOrDefault = MapHelper.getEquals(requests, endpoint, null); // null because value will never be absent
                 AtomicInteger limit = ratelimiting.getLimit(endpoint);
                 AtomicInteger remaining = ratelimiting.getRemaining(endpoint);
                 if (limit.get() < getOrDefault.length) throw new LimitExceededException("Bucket Limit exceeded!");
@@ -138,8 +136,7 @@ class BucketManager {
         }
         
         boolean canRun() {
-            if (globalRatelimit.get() + requests.size() >= 50)
-                return false; // false if global ratelimit counter would be over 50
+            if (globalRatelimit.get() + requests.size() >= 50) return false; // false if global ratelimit counter would be over 50
             int trueC = 0;
             
             for (Endpoint end : requests.entrySet()
@@ -175,8 +172,7 @@ class BucketManager {
             for (Map.Entry<Endpoint, Runnable[]> endpointEntry : requests.entrySet()) {
                 Instant reset = ratelimiting.getReset(endpointEntry.getKey())
                         .get();
-                long calc = TimeUnit.SECONDS.toMillis(reset.getEpochSecond()) +
-                            TimeUnit.NANOSECONDS.toMillis(reset.getNano());
+                long calc = TimeUnit.SECONDS.toMillis(reset.getEpochSecond()) + TimeUnit.NANOSECONDS.toMillis(reset.getNano());
                 if (calc > val) val = calc;
             }
             return val;

@@ -9,6 +9,8 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
+import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
+import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -49,10 +51,8 @@ import java.util.stream.Collectors;
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.*;
 
 public class ServerInternal implements Server {
-    private final static ConcurrentHashMap<Long, ServerInternal>                   instances      =
-            new ConcurrentHashMap<>();
-    private final static Logger                                                    logger         = new Logger(
-            ServerInternal.class);
+    private final static ConcurrentHashMap<Long, ServerInternal>                   instances      = new ConcurrentHashMap<>();
+    private final static Logger                                                    logger         = new Logger(ServerInternal.class);
     private final        DiscordInternal                                           discord;
     private final        long                                                      id;
     private final        Role                                                      everyoneRole;
@@ -91,6 +91,29 @@ public class ServerInternal implements Server {
         this.discord = (DiscordInternal) discord;
         this.id = data.get("id")
                 .asLong();
+        
+        data.path("roles")
+                .forEach(role -> roles.add(discord.getRoleCache()
+                                                   .getOrCreate(discord, this, role)));
+        data.path("emojis")
+                .forEach(emoji -> emojis.add(discord.getEmojiCache()
+                                                     .getOrCreate(getDiscord(), this, emoji, true)));
+        data.path("features")
+                .forEach(feature -> features.add(feature.asText()));
+        data.path("voice_states")
+                .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
+        data.path("members")
+                .forEach(member -> members.add(discord.getUserCache()
+                                                       .getOrCreate(discord, member.get("user"))
+                                                       .toServerMember(this, member)));
+        data.path("channels")
+                .forEach(channel -> channels.add(discord.getChannelCache()
+                                                         .getOrCreate(discord, this, channel)
+                                                         .toServerChannel()
+                                                         .orElseThrow(AssertionError::new)));
+        data.path("presenceStates")
+                .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
+        structure = new ChannelStructureInternal(channels);
         updateData(data);
         this.everyoneRole = roles.stream()
                 .filter(role -> role.getName()
@@ -115,7 +138,7 @@ public class ServerInternal implements Server {
     
     @Override
     public ServerMember getOwner() {
-        return owner.toServerMember(this);
+        return ServerMemberInternal.getInstance(owner, this);
     }
     
     @Override
@@ -226,9 +249,7 @@ public class ServerInternal implements Server {
     @Override
     public List<ServerMember> getMembers() {
         return members.stream()
-                .map(user -> {
-                    return user.toServerMember(this);
-                })
+                .map(user -> ServerMemberInternal.getInstance(user, this))
                 .collect(Collectors.toList());
     }
     
@@ -288,8 +309,7 @@ public class ServerInternal implements Server {
     
     @Override
     public Evaluation<Boolean> detachListener(ServerAttachableListener listener) {
-        ListenerManagerInternal<ServerAttachableListener> manager = ListenerManagerInternal.getInstance(discord,
-                                                                                                        listener);
+        ListenerManagerInternal<ServerAttachableListener> manager = ListenerManagerInternal.getInstance(discord, listener);
         return Evaluation.of(listenerManangers.remove(manager));
     }
     
@@ -305,7 +325,7 @@ public class ServerInternal implements Server {
         return discord.getServerCache();
     }
     
-    private User getOwnerPrivate(JsonNode data) {
+    private User getOwner(JsonNode data) {
         if (data.has("owner_id")) {
             //return new UserInternal(discord, data.get("application_id").asLong());
             long userId = data.get("owner_id")
@@ -326,8 +346,8 @@ public class ServerInternal implements Server {
     public Set<EditTrait<Server>> updateData(JsonNode data) {
         HashSet<EditTrait<Server>> traits = new HashSet<>();
         
-        if (!name.equals(data.path("name")
-                                 .asText(""))) {
+        if (name == null || !name.equals(data.path("name")
+                                                 .asText(""))) {
             name = data.get("name")
                     .asText();
             traits.add(NAME);
@@ -346,18 +366,13 @@ public class ServerInternal implements Server {
                                                        .asText(null));
             traits.add(SPLASH);
         }
-        if ((owner != null ? owner.getId() : -1) != data.path((data.has("owner_id") ? "owner_id" : "application_id"))
-                .asLong(-1)) {
-            owner = getOwnerPrivate(data);
-            traits.add(OWNER);
-        }
         if ((ownPermissions != null ? ownPermissions.toPermissionInt() : 0) != data.path("permissions")
                 .asInt(0)) {
             ownPermissions = new PermissionListInternal(data.get("permissions")
                                                                 .asInt(0));
             traits.add(OWN_PERMISSIONS);
         }
-        if (!voiceRegion.getRegionKey()
+        if (voiceRegion == null || !voiceRegion.getRegionKey()
                 .equalsIgnoreCase(data.path("region")
                                           .asText(voiceRegion.getRegionKey()))) {
             voiceRegion = VoiceRegion.getFromRegionKey(data.path("region")
@@ -376,26 +391,25 @@ public class ServerInternal implements Server {
                     .asBoolean(false);
             traits.add(EMBED_ENABLED);
         }
-        if (verificationLevel.getId() != data.path("verification_level")
+        if (verificationLevel == null || verificationLevel.getId() != data.path("verification_level")
                 .asInt(-1)) {
             verificationLevel = VerificationLevel.getFromId(data.get("verification_level")
                                                                     .asInt(-1));
             traits.add(VERIFICATION_LEVEL);
         }
-        if (defaultMessageNotificationLevel.getId() != data.path("default_message_notification")
+        if (defaultMessageNotificationLevel == null || defaultMessageNotificationLevel.getId() != data.path("default_message_notification")
                 .asInt(defaultMessageNotificationLevel.getId())) {
-            defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get(
-                    "default_message_notifications")
+            defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get("default_message_notifications")
                                                                                                 .asInt(-1));
             traits.add(DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
         }
-        if (explicitContentFilterLevel.getId() != data.path("explicit_content_filter")
+        if (explicitContentFilterLevel == null || explicitContentFilterLevel.getId() != data.path("explicit_content_filter")
                 .asInt(-1)) {
             explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter")
                                                                                       .asInt(-1));
             traits.add(EXPLICIT_CONTENT_FILTER_LEVEL);
         }
-        if (mfaLevel.getId() != data.path("mfa_level")
+        if (mfaLevel == null || mfaLevel.getId() != data.path("mfa_level")
                 .asInt(-1)) {
             mfaLevel = MFALevel.getFromId(data.get("mfa_level")
                                                   .asInt(-1));
@@ -426,45 +440,57 @@ public class ServerInternal implements Server {
             traits.add(MEMBER_COUNT);
         }
         
-        if ((afkChannel != null ? afkChannel.getId() : -1) != data.path("afk_channel_id")
-                .asLong(-1)) {
-            long afkChannelId = data.path("afk_channel_id")
-                    .asLong(-1);
-            afkChannel = discord.getChannelCache()
+        long afkChannelId = data.path("afk_channel_id")
+                .asLong(-1);
+        if (afkChannel == null || afkChannel.getId() != afkChannelId) {
+            afkChannel = afkChannelId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(afkChannelId, afkChannelId)
                     .toServerVoiceChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(AFK_CHANNEL);
         }
-        if ((embedChannel != null ? embedChannel.getId() : -1) != data.path("embed_channel_id")
+        if (embedChannel == null || embedChannel.getId() != data.path("embed_channel_id")
                 .asLong(-1)) {
             long embedChannelId = data.path("embed_channel_id")
                     .asLong(-1);
-            embedChannel = discord.getChannelCache()
+            embedChannel = embedChannelId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(embedChannelId, embedChannelId)
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(EMBED_CHANNEL);
         }
-        if ((widgetChannel != null ? widgetChannel.getId() : -1) != data.path("widget_channel_id")
+        if (widgetChannel == null || widgetChannel.getId() != data.path("widget_channel_id")
                 .asLong(-1)) {
             long widgetChannelId = data.path("widget_channel_id")
                     .asLong(-1);
-            widgetChannel = discord.getChannelCache()
+            widgetChannel = widgetChannelId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(widgetChannelId, widgetChannelId)
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(WIDGET_CHANNEL);
         }
-        if ((systemChannel != null ? systemChannel.getId() : -1) != data.get("system_channel_id")
+        if (systemChannel == null || systemChannel.getId() != data.get("system_channel_id")
                 .asLong(-1)) {
             long systemChannelId = data.path("system_channel_id")
                     .asLong(-1);
-            systemChannel = discord.getChannelCache()
+            systemChannel = systemChannelId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(systemChannelId, systemChannelId)
                     .toServerTextChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(SYSTEM_CHANNEL);
+        }
+        if ((owner != null ? owner.getId() : -1) != data.path((data.has("owner_id") ? "owner_id" : "application_id"))
+                .asLong(-1)) {
+            if (data.has("owner_id")) {
+                //return new UserInternal(discord, data.get("application_id").asLong());
+                long userId = data.get("owner_id")
+                        .asLong();
+                owner = discord.getUserCache()
+                        .getOrRequest(userId, userId);
+            } else {
+                return null;
+            }
+            traits.add(OWNER);
         }
         return traits;
     }

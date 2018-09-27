@@ -215,16 +215,14 @@ public class SentEmbedInternal implements SentEmbed {
     }
     
     @Override
-    public CompletableFuture<SentEmbed> modifyFields(Predicate<SentEmbed.Field> tester,
-                                                     Consumer<EmbedDraft.EditableField> fieldModifier) {
+    public CompletableFuture<SentEmbed> modifyFields(Predicate<SentEmbed.Field> tester, Consumer<EmbedDraft.EditableField> fieldModifier) {
         Builder builder = toBuilder();
         builder.removeAllFields();
         getFields().stream()
                 .map(field -> {
                     EmbedDraft.Field draftField = field.toDraft();
                     if (tester.test(field)) {
-                        EmbedDraftInternal.EditableField editableField =
-                                new EmbedDraftInternal.EditableField(draftField);
+                        EmbedDraftInternal.EditableField editableField = new EmbedDraftInternal.EditableField(draftField);
                         fieldModifier.accept(editableField);
                         return editableField;
                     }
@@ -288,8 +286,7 @@ public class SentEmbedInternal implements SentEmbed {
         }
         
         @Override
-        public SentEmbed.Updater modifyFields(Predicate<EmbedDraft.Field> tester,
-                                              Consumer<EmbedDraft.EditableField> fieldModifier) {
+        public SentEmbed.Updater modifyFields(Predicate<EmbedDraft.Field> tester, Consumer<EmbedDraft.EditableField> fieldModifier) {
             Collection<EmbedDraft.EditableField> fields = builder.getFields()
                     .stream()
                     .map(EmbedDraftInternal.EditableField::new)
@@ -298,8 +295,7 @@ public class SentEmbedInternal implements SentEmbed {
             fields.stream()
                     .map(field -> {
                         if (tester.test(field)) {
-                            EmbedDraftInternal.EditableField editableField =
-                                    new EmbedDraftInternal.EditableField(field);
+                            EmbedDraftInternal.EditableField editableField = new EmbedDraftInternal.EditableField(field);
                             fieldModifier.accept(editableField);
                             return editableField;
                         }

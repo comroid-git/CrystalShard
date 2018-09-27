@@ -13,8 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class RefreshableMessage {
-    private final static ConcurrentHashMap<MessageReciever, RefreshableMessage> selfMap       =
-            new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<MessageReciever, RefreshableMessage> selfMap       = new ConcurrentHashMap<>();
     private final static String                                                 REFRESH_EMOJI = "\uD83D\uDD04";
     private              MessageReciever                                        parent;
     private              Supplier<Object>                                       refresher;

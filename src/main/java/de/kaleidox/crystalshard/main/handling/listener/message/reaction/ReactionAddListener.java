@@ -7,8 +7,6 @@ import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachable
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 
 @FunctionalInterface
-public interface ReactionAddListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener,
-        MessageAttachableListener {
+public interface ReactionAddListener extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, MessageAttachableListener {
     void onEvent(ReactionAddEvent event);
 }

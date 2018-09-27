@@ -1,10 +1,9 @@
 package de.kaleidox.crystalshard.core.cache;
 
 import de.kaleidox.logging.Logger;
-import de.kaleidox.util.annotations.MayNotContainNull;
+import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.annotations.Nullable;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,18 +27,14 @@ import static de.kaleidox.util.helpers.MapHelper.*;
  * @param <R> The type of the object that is used to request a new instance of this object.
  */
 public abstract class Cache<T extends CacheStorable, I, R> {
-    private final static Logger                                                                      logger =
-            new Logger(Cache.class);
+    private final static Logger                                                                      logger = new Logger(Cache.class);
     private final static ConcurrentHashMap<Class<?>, Cache<? extends CacheStorable, Object, Object>> cacheInstances;
-    private final static ScheduledExecutorService
-                                                                                                     scheduledExecutorService;
+    private final static ScheduledExecutorService                                                    scheduledExecutorService;
     private final        ConcurrentHashMap<I, CacheReference<T, R>>                                  instances;
     private final        Class<? extends T>                                                          typeClass;
     private final        Function<Object[], I>                                                       mapperToIdentifier;
     private final        long                                                                        keepaliveMilis;
-    private final        Class<?>[]
-                                                                                                     constructorParameter;
-    private final        Constructor<? extends T>                                                    constructor;
+    private final        Class<?>[]                                                                  constructorParameter;
     
     static {
         // Initialize variables
@@ -61,25 +56,19 @@ public abstract class Cache<T extends CacheStorable, I, R> {
     /**
      * Creates a new Cache instance.
      *
+     * @param <Con>                       Type variable for the constructor.
      * @param typeClass                   The constructing class for the Cache object.
      * @param mapperToIdentifier          A mapper to extract an identifier from constructor parameters.
      * @param keepaliveMillis             The amount of milliseconds to keep each object isCached.
      * @param defaultConstructorParameter The parameter types for the constructor.
-     * @param <Con>                       Type variable for the constructor.
      */
-    public <Con extends T> Cache(Class<Con> typeClass, Function<Object[], I> mapperToIdentifier, long keepaliveMillis
-            , Class<?>... defaultConstructorParameter) {
+    public <Con extends T> Cache(Class<Con> typeClass, Function<Object[], I> mapperToIdentifier, long keepaliveMillis,
+                                 Class<?>... defaultConstructorParameter) {
         this.typeClass = typeClass;
         this.mapperToIdentifier = mapperToIdentifier;
         this.keepaliveMilis = keepaliveMillis;
         this.constructorParameter = defaultConstructorParameter;
         instances = new ConcurrentHashMap<>();
-        
-        try {
-            this.constructor = typeClass.getConstructor(defaultConstructorParameter);
-        } catch (Throwable e) {
-            throw new NullPointerException(e.getMessage() + ": No constructor could be set.");
-        }
         
         //noinspection unchecked
         cacheInstances.put(typeClass, (Cache<? extends CacheStorable, Object, Object>) this);
@@ -94,7 +83,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      * {@link #matchingParams(Object...)}.
      */
     @NotNull
-    public abstract CompletableFuture<Object[]> requestConstructorParameters(R requestIdent);
+    protected abstract CompletableFuture<Object[]> requestConstructorParameters(R requestIdent);
     
     /**
      * Constructs a new instance of T with the providing parameters.
@@ -105,7 +94,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      * @return A new instance of T.
      */
     @NotNull
-    public abstract T construct(Object... param);
+    protected abstract T construct(Object... param);
     
     /**
      * Tries to {@linkplain #get(Object) get} an instance from the cache.
@@ -133,13 +122,10 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      */
     public CompletableFuture<T> request(I ident, R requestIdent) throws NoSuchElementException {
         if (!containsKey(instances, ident)) throw new NoSuchElementException(
-                "Element with identifyer " + ident + " has never been isCached before! " +
-                "Try using method #getOrRequest instead.");
+                "Element with identifyer " + ident + " has never been isCached before! " + "Try using method #getOrRequest instead.");
         CacheReference<T, R> ref = getEquals(instances, ident, null);
         if (ref.isCached()) return CompletableFuture.completedFuture(ref.getReference());
-        return CompletableFuture.supplyAsync(() -> getOrRequest(ident,
-                                                                requestIdent == null ? ref.getRecentRequestor() :
-                                                                requestIdent));
+        return CompletableFuture.supplyAsync(() -> getOrRequest(ident, requestIdent == null ? ref.getRecentRequestor() : requestIdent));
     }
     
     /**
@@ -152,25 +138,20 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      */
     public T getOrCreate(Object... params) throws IllegalArgumentException {
         if (!matchingParams(params)) throw new IllegalArgumentException(
-                "Cannot use parameters " + Arrays.toString(params) + " for creating new instance with " +
-                constructor.toGenericString());
+                "Cannot use parameters " + Arrays.toString(params) + " for creating new instance of " + typeClass.toGenericString());
         I ident = mapperToIdentifier.apply(params);
         if (containsKey(instances, ident)) {
             CacheReference<T, R> ref = getEquals(instances, ident, null);
             if (ref.isCached()) return ref.getReference();
             else {
                 T val = Objects.requireNonNull(construct(params), "Method \"construct\" must not " + "return null!");
-                logger.deeptrace(
-                        "Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " +
-                        typeClass.toGenericString());
+                logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
                 ref.setReference(val);
                 return val;
             }
         } else {
             T val = Objects.requireNonNull(construct(params), "Method \"construct\" must not " + "return null!");
-            logger.deeptrace(
-                    "Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " +
-                    typeClass.toGenericString());
+            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
             CacheReference<T, R> ref = new CacheReference<>(val, keepaliveMilis, null, params);
             instances.put(ident, ref);
             return val;
@@ -192,25 +173,18 @@ public abstract class Cache<T extends CacheStorable, I, R> {
             if (ref.isCached()) return ref.getReference();
             else {
                 if (!matchingParams(parameters)) throw new IllegalArgumentException(
-                        "Cannot use parameters " + Arrays.toString(parameters) + " for creating new instance with " +
-                        constructor.toGenericString());
-                ref.setReference(Objects.requireNonNull(construct(parameters),
-                                                        "Method \"construct\" must not return null!"));
+                        "Cannot use parameters " + Arrays.toString(parameters) + " for creating new instance of " + typeClass.toGenericString());
+                ref.setReference(Objects.requireNonNull(construct(parameters), "Method \"construct\" must not return null!"));
                 ref.setRecentParameters(parameters);
                 ref.accessed();
-                logger.deeptrace(
-                        "Constructed new instance with recent parameters " + Arrays.toString(parameters) + " of type " +
-                        typeClass.toGenericString());
+                logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(parameters) + " of type " + typeClass.toGenericString());
                 return ref.getReference();
             }
         } else {
             if (!matchingParams(parameters)) throw new IllegalArgumentException(
-                    "Cannot use parameters " + Arrays.toString(parameters) + " for creating new instance with " +
-                    constructor.toGenericString());
+                    "Cannot use parameters " + Arrays.toString(parameters) + " for creating new instance of " + typeClass.toGenericString());
             T val = Objects.requireNonNull(construct(parameters), "Method \"construct\" must not " + "return null!");
-            logger.deeptrace(
-                    "Constructed new instance with recent parameters " + Arrays.toString(parameters) + " of type " +
-                    typeClass.toGenericString());
+            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(parameters) + " of type " + typeClass.toGenericString());
             CacheReference<T, R> ref = new CacheReference<>(val, keepaliveMilis, null, parameters);
             instances.put(ident, ref);
             return val;
@@ -234,28 +208,21 @@ public abstract class Cache<T extends CacheStorable, I, R> {
             if (ref.isCached()) return ref.getReference();
             else {
                 Object[] recentParameters = ref.getRecentParameters();
-                if (recentParameters == null) throw new NoSuchElementException(
-                        "Reference is not isCached and cant be created; " + "no recent parameters set.");
+                if (recentParameters == null) throw new NoSuchElementException("Reference is not cached and cant be created; " + "no recent parameters set.");
                 if (!matchingParams(recentParameters)) throw new IllegalArgumentException(
-                        "Cannot use parameters " + Arrays.toString(recentParameters) +
-                        " for creating new instance with " + constructor.toGenericString());
-                val = Objects.requireNonNull(construct(recentParameters),
-                                             "Method \"construct\" must not " + "return null!");
+                        "Cannot use parameters " + Arrays.toString(recentParameters) + " for creating new instance of " + typeClass.toGenericString());
+                val = Objects.requireNonNull(construct(recentParameters), "Method \"construct\" must not " + "return null!");
                 logger.deeptrace(
-                        "Constructed new instance with recent parameters " + Arrays.toString(recentParameters) +
-                        " of type " + typeClass.toGenericString());
+                        "Constructed new instance with recent parameters " + Arrays.toString(recentParameters) + " of type " + typeClass.toGenericString());
                 ref.setReference(val);
             }
         } else {
             Object[] params = Objects.requireNonNull(requestConstructorParameters(requestIdent))
                     .join();
             if (!matchingParams(params)) throw new IllegalArgumentException(
-                    "Cannot use parameters " + Arrays.toString(params) + " for creating new instance with " +
-                    constructor.toGenericString());
+                    "Cannot use parameters " + Arrays.toString(params) + " for creating new instance of " + typeClass.toGenericString());
             val = Objects.requireNonNull(construct(params), "Method \"construct\" must not " + "return null!");
-            logger.deeptrace(
-                    "Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " +
-                    typeClass.toGenericString());
+            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
             CacheReference<T, R> ref = new CacheReference<>(val, keepaliveMilis, requestIdent, params);
             instances.put(ident, ref);
         }
@@ -273,28 +240,24 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      */
     public T get(I ident) throws NoSuchElementException, IllegalArgumentException {
         T val;
-        if (!containsKey(instances, ident)) throw new NoSuchElementException(
-                "Instance with ident " + ident + " not found.");
+        if (!containsKey(instances, ident)) throw new NoSuchElementException("Instance with ident " + ident + " not found.");
         CacheReference<T, R> ref = getEquals(instances, ident, null);
         if (ref.isCached()) val = ref.getReference();
         else {
             Object[] recentParameters = ref.getRecentParameters();
-            if (recentParameters == null) throw new NoSuchElementException(
-                    "Reference is not isCached and cant be created; " + "no recent parameters set.");
+            if (recentParameters == null) throw new NoSuchElementException("Reference is not isCached and cant be created; " + "no recent parameters set.");
             if (!matchingParams(recentParameters)) throw new IllegalArgumentException(
-                    "Cannot use parameters " + Arrays.toString(recentParameters) + " for creating new instance with " +
-                    constructor.toGenericString());
-            val = Objects.requireNonNull(construct(recentParameters),
-                                         "Method \"construct\" must not " + "return null!");
-            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(recentParameters) +
-                             " of type " + typeClass.toGenericString());
+                    "Cannot use parameters " + Arrays.toString(recentParameters) + " for creating new instance of " + typeClass.toGenericString());
+            val = Objects.requireNonNull(construct(recentParameters), "Method \"construct\" must not " + "return null!");
+            logger.deeptrace(
+                    "Constructed new instance with recent parameters " + Arrays.toString(recentParameters) + " of type " + typeClass.toGenericString());
             ref.setReference(val);
         }
         return val;
     }
     
     @SafeVarargs
-    public final List<I> requestToCache(@MayNotContainNull I... idents) {
+    public final List<I> requestToCache(@NotContainNull I... idents) {
         List<I> list = new ArrayList<>();
         
         for (I ident : idents) {
@@ -310,12 +273,10 @@ public abstract class Cache<T extends CacheStorable, I, R> {
                             if (recentParameters == null) throw new NoSuchElementException(
                                     "Reference is not isCached and cant be created; " + "no recent parameters set.");
                             if (!matchingParams(recentParameters)) throw new IllegalArgumentException(
-                                    "Cannot use parameters " + Arrays.toString(recentParameters) +
-                                    " for creating new instance with " + constructor.toGenericString());
-                            ref.setReference(Objects.requireNonNull(construct(recentParameters),
-                                                                    "Method \"construct\" must not " + "return null!"));
-                            logger.deeptrace("Constructed new instance with recent parameters " +
-                                             Arrays.toString(recentParameters) + " of type " +
+                                    "Cannot use parameters " + Arrays.toString(recentParameters) + " for creating new instance of " +
+                                    typeClass.toGenericString());
+                            ref.setReference(Objects.requireNonNull(construct(recentParameters), "Method \"construct\" must not " + "return null!"));
+                            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(recentParameters) + " of type " +
                                              typeClass.toGenericString());
                         } finally {
                             list.add(ident);
@@ -333,7 +294,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      * @return A list of idents that could be removed.
      */
     @SafeVarargs
-    public final List<I> destroyFromCache(@MayNotContainNull I... idents) {
+    public final List<I> destroyFromCache(@NotContainNull I... idents) {
         List<I> list = new ArrayList<>();
         
         for (I ident : idents) {
@@ -386,8 +347,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      * @throws NoSuchElementException If no cache fitting the parameters was found.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends CacheStorable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident)
-            throws NoSuchElementException {
+    public static <T extends CacheStorable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
         return cacheInstances.entrySet()
                 .stream()
                 .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))

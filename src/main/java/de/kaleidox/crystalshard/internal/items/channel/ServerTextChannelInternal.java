@@ -1,8 +1,13 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
+import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
@@ -11,13 +16,16 @@ import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.ListHelper;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.*;
@@ -34,9 +42,9 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     public ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
+        this.overrides = new ArrayList<>();
         updateData(data);
         
-        this.overrides = new ArrayList<>();
         data.path("permission_overwrites")
                 .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         
@@ -54,28 +62,30 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
                     .asBoolean();
             traits.add(NSFW_FLAG);
         }
-        if (!topic.equals(data.path("topic")
-                                  .asText(topic))) {
+        if (topic == null || !topic.equals(data.path("topic")
+                                                   .asText(topic))) {
             topic = data.get("topic")
                     .asText();
             traits.add(TOPIC);
         }
-        if (!name.equals(data.path("name")
-                                 .asText(name))) {
+        if (name == null || !name.equals(data.path("name")
+                                                 .asText(name))) {
             name = data.get("name")
                     .asText();
             traits.add(NAME);
         }
-        if (this.category == null && data.has("parent_id")) {
+        //noinspection ConstantConditions
+        if (category == null || (this.category == null && data.has("parent_id"))) {
             long parentId = data.path("parent_id")
-                    .asLong();
+                    .asLong(-1);
             this.category = parentId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(parentId, parentId)
                     .toChannelCategory()
                     .orElse(null);
-        } else if (this.category != null && !data.has("parent_id")) {
-            this.category = null;
-        }
+        } else //noinspection ConstantConditions
+            if (this.category != null && !data.has("parent_id")) {
+                this.category = null;
+            }
         List<PermissionOverride> overrides = new ArrayList<>();
         data.path("permission_overwrites")
                 .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
@@ -116,6 +126,25 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     @Override
     public String getTopic() {
         return topic;
+    }
+    
+    @Override
+    public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
+        if (!hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Cannot get channel invite!",
+                Permission.MANAGE_CHANNELS));
+        return new WebRequest<Collection<MetaInvite>>(discord).method(Method.GET)
+                .endpoint(Endpoint.Location.CHANNEL_INVITE.toEndpoint(id))
+                .execute(data -> {
+                    List<MetaInvite> list = new ArrayList<>();
+                    data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
+                    return list;
+                });
+    }
+    
+    @Override
+    public InviteBuilder getInviteBuilder() {
+        return new ChannelBuilderInternal.ChannelInviteBuilder(this);
     }
     
     @Override

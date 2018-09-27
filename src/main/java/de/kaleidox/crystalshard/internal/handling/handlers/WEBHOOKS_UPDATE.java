@@ -25,10 +25,7 @@ public class WEBHOOKS_UPDATE extends HandlerBase {
         
         ServerWebhookUpdateEventInternal event = new ServerWebhookUpdateEventInternal(discord, server, channel);
         
-        collectListeners(ServerWebhookUpdateListener.class,
-                         discord,
-                         server,
-                         channel).forEach(listener -> discord.getThreadPool()
+        collectListeners(ServerWebhookUpdateListener.class, discord, server, channel).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onWebhookUpdate(event)));
     }
 }

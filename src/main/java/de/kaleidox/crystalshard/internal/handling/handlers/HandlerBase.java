@@ -36,14 +36,14 @@ public abstract class HandlerBase {
     
     public abstract void handle(DiscordInternal discord, JsonNode data);
     
+    @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;
         String type = data.path("t")
                 .asText("");
         
         if (instances.containsKey(type)) {
-            handler = (T) instances.get(type);
-            handler.handle(discord, data.get("d"));
+            ((T) instances.get(type)).handle(discord, data.get("d"));
         } else if (!type.isBlank() && !type.isEmpty()) {
             try {
                 Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
@@ -67,8 +67,7 @@ public abstract class HandlerBase {
     }
     
     @SuppressWarnings("ConstantConditions")
-    static <L extends Listener> List<L> collectListeners(
-            @NotNull Class<L> listenerClass, @MayContainNull Object... collectIn) {
+    static <L extends Listener> List<L> collectListeners(@NotNull Class<L> listenerClass, @MayContainNull Object... collectIn) {
         Objects.requireNonNull(listenerClass);
         List<L> list = new ArrayList<>();
         

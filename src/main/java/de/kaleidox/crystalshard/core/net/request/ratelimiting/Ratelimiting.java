@@ -65,8 +65,7 @@ public class Ratelimiting {
      * @param requestTask   A runnable to execute the actual request.
      * @param <T>           Type variable for the request.
      */
-    public <T> void schedule(WebRequest<T> request, CompletableFuture<HttpHeaders> headersFuture,
-                             Runnable requestTask) {
+    public <T> void schedule(WebRequest<T> request, CompletableFuture<HttpHeaders> headersFuture, Runnable requestTask) {
         Endpoint endpoint = request.getEndpoint();
         
         headersFuture.thenAcceptAsync(headers -> {

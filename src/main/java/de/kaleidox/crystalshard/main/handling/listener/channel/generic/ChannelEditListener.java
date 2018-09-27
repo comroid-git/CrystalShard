@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 
 @FunctionalInterface
-public interface ChannelEditListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener {
+public interface ChannelEditListener extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener {
     void onChannelEdit(ChannelEditEvent event);
 }

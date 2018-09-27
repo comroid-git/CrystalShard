@@ -37,8 +37,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         charCounter = charCounter + title.length();
         testCharCounter();
         if (title.length() > Embed.Boundaries.TITLE_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Title length must not exceed " + Embed.Boundaries.TITLE_LENGTH + " Characters!");
+            throw new IllegalArgumentException("Title length must not exceed " + Embed.Boundaries.TITLE_LENGTH + " Characters!");
         }
         this.title = title;
         return this;
@@ -49,8 +48,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         charCounter = charCounter + description.length();
         testCharCounter();
         if (description.length() > Embed.Boundaries.DESCRIPTION_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Description length must not exceed " + Embed.Boundaries.DESCRIPTION_LENGTH + "Characters!");
+            throw new IllegalArgumentException("Description length must not exceed " + Embed.Boundaries.DESCRIPTION_LENGTH + "Characters!");
         }
         this.description = description;
         return this;
@@ -86,8 +84,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         testCharCounter();
         if (footer.getText()
                     .length() > Embed.Boundaries.FOOTER_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Footer text must not exceed " + Embed.Boundaries.FOOTER_LENGTH + " characters!");
+            throw new IllegalArgumentException("Footer text must not exceed " + Embed.Boundaries.FOOTER_LENGTH + " characters!");
         }
         this.footer = footer;
         return this;
@@ -112,8 +109,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         testCharCounter();
         if (author.getName()
                     .length() > Embed.Boundaries.AUTHOR_NAME_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Author name must not exceed " + Embed.Boundaries.AUTHOR_NAME_LENGTH + " characters!");
+            throw new IllegalArgumentException("Author name must not exceed " + Embed.Boundaries.AUTHOR_NAME_LENGTH + " characters!");
         }
         this.author = author;
         return this;
@@ -142,8 +138,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         }
         if (field.getTitle()
                     .length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
+            throw new IllegalArgumentException("Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
         }
         if (field.getText()
                 .isBlank()) {
@@ -151,8 +146,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         }
         if (field.getText()
                     .length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
-            throw new IllegalArgumentException(
-                    "Field text must not exceed " + Embed.Boundaries.FIELD_TEXT_LENGTH + " characters!");
+            throw new IllegalArgumentException("Field text must not exceed " + Embed.Boundaries.FIELD_TEXT_LENGTH + " characters!");
         }
         this.fields.add(field);
         return this;
@@ -160,8 +154,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
-    public Embed.Builder updateFields(Predicate<EmbedDraft.Field> predicate, Function<EmbedDraft.EditableField,
-            EmbedDraft.Field> updater) {
+    public Embed.Builder updateFields(Predicate<EmbedDraft.Field> predicate, Function<EmbedDraft.EditableField, EmbedDraft.Field> updater) {
         for (int i = 0; i < fields.size(); i++) {
             EmbedDraft.Field field = fields.get(i);
             if (predicate.test(field)) {
@@ -186,16 +179,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     @Override
     public EmbedDraft build() {
-        return new EmbedDraftInternal(title,
-                                      description,
-                                      url,
-                                      timestamp,
-                                      color,
-                                      footer,
-                                      image,
-                                      thumbnail,
-                                      author,
-                                      fields);
+        return new EmbedDraftInternal(title, description, url, timestamp, color, footer, image, thumbnail, author, fields);
     }
     
     @Override
@@ -205,8 +189,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     private void testCharCounter() {
         if (charCounter > Embed.Boundaries.TOTAL_CHAR_COUNT) {
-            throw new IllegalArgumentException(
-                    "Total embed characters must not exceed " + Embed.Boundaries.TOTAL_CHAR_COUNT + " characters!");
+            throw new IllegalArgumentException("Total embed characters must not exceed " + Embed.Boundaries.TOTAL_CHAR_COUNT + " characters!");
         }
     }
 }

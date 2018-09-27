@@ -32,9 +32,8 @@ public class EmbedDraftInternal implements EmbedDraft {
     private final        EmbedDraft.Author           author;
     private final        ArrayList<EmbedDraft.Field> fields;
     
-    public EmbedDraftInternal(String title, String description, URL url, Instant timestamp, Color color,
-                              EmbedDraft.Footer footer, EmbedDraft.Image image, EmbedDraft.Thumbnail thumbnail,
-                              EmbedDraft.Author author, ArrayList<EmbedDraft.Field> fields) {
+    public EmbedDraftInternal(String title, String description, URL url, Instant timestamp, Color color, EmbedDraft.Footer footer, EmbedDraft.Image image,
+                              EmbedDraft.Thumbnail thumbnail, EmbedDraft.Author author, ArrayList<EmbedDraft.Field> fields) {
         this.title = title;
         this.description = description;
         this.url = url;

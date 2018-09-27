@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.logging.Logger;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;

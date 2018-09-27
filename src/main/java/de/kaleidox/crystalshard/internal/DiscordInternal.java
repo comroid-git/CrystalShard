@@ -37,8 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DiscordInternal implements Discord {
-    private final static Logger                                                           logger            =
-            new Logger(DiscordInternal.class);
+    private final static Logger                                                           logger            = new Logger(DiscordInternal.class);
     private final        ThreadPool                                                       pool;
     private final        String                                                           token;
     private final        AccountType                                                      type;
@@ -46,8 +45,7 @@ public class DiscordInternal implements Discord {
     private final        Ratelimiting                                                     ratelimiter;
     private final        List<Server>                                                     servers;
     private final        DiscordUtils                                                     utils;
-    private final        Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers =
-            new ArrayList<>();
+    private final        Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers = new ArrayList<>();
     private final        int                                                              thisShard;
     private final        int                                                              shardCount;
     private final        Self                                                             self;
@@ -62,6 +60,12 @@ public class DiscordInternal implements Discord {
     private              LivingInt                                                        serversInit;
     
     public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
+        this.serverCache = new ServerCache(this);
+        this.userCache = new UserCache(this);
+        this.roleCache = new RoleCache(this);
+        this.channelCache = new ChannelCache(this);
+        this.messageCache = new MessageCache(this);
+        this.emojiCache = new EmojiCache(this);
         selfFuture = new CompletableFuture<>();
         serversInit = new LivingInt(5, 0, -1, 1, TimeUnit.SECONDS);
         serversInit.onStopHit(() -> init = true);
@@ -74,13 +78,6 @@ public class DiscordInternal implements Discord {
         this.ratelimiter = new Ratelimiting(this);
         this.webSocket = new WebSocketClient(this);
         this.utils = new DiscordUtils(this);
-        
-        this.serverCache = new ServerCache(this);
-        this.userCache = new UserCache(this);
-        this.roleCache = new RoleCache(this);
-        this.channelCache = new ChannelCache(this);
-        this.messageCache = new MessageCache(this);
-        this.emojiCache = new EmojiCache(this);
         
         servers = new ArrayList<>();
         

@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import static de.kaleidox.util.helpers.JsonHelper.*;
+
 /**
  * This class is used for creating requests to discord.
  *
@@ -40,8 +42,7 @@ public class WebRequest<T> {
         this(null, (DiscordInternal) discord, method, endpoint, node);
     }
     
-    public WebRequest(CompletableFutureExtended<T> future, DiscordInternal discord, Method method, Endpoint endpoint,
-                      JsonNode node) {
+    public WebRequest(CompletableFutureExtended<T> future, DiscordInternal discord, Method method, Endpoint endpoint, JsonNode node) {
         if (Objects.nonNull(future)) {
             this.future = future;
         } else {
@@ -72,6 +73,10 @@ public class WebRequest<T> {
     public WebRequest<T> node(JsonNode node) {
         this.node = node;
         return this;
+    }
+    
+    public WebRequest<T> node(Object... data) {
+        return this.node(objectNode(data));
     }
     
     public WebRequest<T> method(Method method) {
@@ -106,8 +111,8 @@ public class WebRequest<T> {
     private CompletableFutureExtended<JsonNode> request(Method method, Endpoint endpoint, JsonNode data) {
         Objects.requireNonNull(method, "Method must not be null.");
         Objects.requireNonNull(endpoint, "Endpoint must not be null.");
-        if (data == null) data = JsonHelper.objectNode();
-        if (data.isNull()) data = JsonHelper.objectNode();
+        if (data == null) data = objectNode();
+        if (data.isNull()) data = objectNode();
         CompletableFutureExtended<JsonNode> future = new CompletableFutureExtended<>(discord.getExecutor());
         CompletableFutureExtended<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getExecutor());
         Ratelimiting ratelimiter = discord.getRatelimiter();
@@ -140,30 +145,26 @@ public class WebRequest<T> {
                         future.complete(responseNode);
                         break;
                     case 429: // 429 Ratelimited
-                        logger.warn("{429} Warning: Ratelimit was hit with request: " + toString() + ". Response was:" +
-                                    responseNode + "\n\t\tPlease contact the developer!");
+                        logger.warn("{429} Warning: Ratelimit was hit with request: " + toString() + ". Response was:" + responseNode +
+                                    "\n\t\tPlease contact the developer!");
                         // wait for ratelimiter retry
                         return;
                     case 400: // 400 Bad Request
-                        logger.error("{400} Bad Request issued: " + method.getDescriptor() + " " + urlExternal +
-                                     " with response responseBody: " + responseBody + " and request responseBody: " +
-                                     requestBody);
+                        logger.error(
+                                "{400} Bad Request issued: " + method.getDescriptor() + " " + urlExternal + " with response responseBody: " + responseBody +
+                                " and request responseBody: " + requestBody);
                         break;
                     // Non-Unknown codes, yet dont need special treatment:
                     case 404: // Not Found
                         unknown = false;
                     default: // Anything else
                         logger.traceElseInfo("{" + statusCode + ":" + responseNode.get("code")
-                                                     .asText() + ":\"" + responseNode.get("message")
-                                                     .asText() + "\"} " + (unknown ?
-                                                                           "Recieved unknown status code from Discord" +
-                                                                           " " + "with responseBody: " + responseBody :
-                                                                           "Untreated code recieved with body: " +
-                                                                           responseBody),
-                                             "Recieved unknown status code: " + statusCode);
+                                .asText() + ":\"" + responseNode.get("message")
+                                                     .asText() + "\"} " +
+                                             (unknown ? "Recieved unknown status code from Discord" + " " + "with responseBody: " + responseBody :
+                                              "Untreated code recieved with body: " + responseBody), "Recieved unknown status code: " + statusCode);
                         future.completeExceptionally(new DiscordResponseException(
-                                "Discord Responded with unknown status code " + statusCode + " and message: " +
-                                responseBody));
+                                "Discord Responded with unknown status code " + statusCode + " and message: " + responseBody));
                         break;
                 }
             } catch (Throwable e) {

@@ -82,11 +82,14 @@ public class Endpoint {
         GUILD_WEBHOOK("/guilds/%s/webhooks"),
         INVITE("/invites/%s"),
         MESSAGE("/channels/%s/messages"),
-        MESSAGES_BULK_DELETE("/channels/%s/messages/bulk-close"),
+        MESSAGES_BULK_DELETE("/channels/%s/messages/bulk-delete"),
         MESSAGE_DELETE("/channels/%s/messages"),
         MESSAGE_SPECIFIC("/channels/%s/messages/%s"),
         PINS("/channels/%s/pins"),
-        REACTION("/channels/%s/messages/%s/reactions", 250),
+        PIN_MESSAGE("/channels/%s/pins/%s"),
+        REACTIONS("/channels/%s/messages/%s/reactions", 250),
+        REACTION_OWN("/channels/%s/messages/%s/reactions/%s/@me", 250),
+        REACTION_USER("/channels/%s/messages/%s/reactions/%s/%s", 250),
         GUILD_ROLES("/guilds/%s/roles"),
         SELF_CHANNELS("/users/@me/channels"),
         SELF_GUILD("/users/@me/guilds/%s"),
@@ -159,8 +162,7 @@ public class Endpoint {
                 Endpoint endpoint = new Endpoint(this, url, params);
                 olderInstances.putIfAbsent(params, endpoint);
                 return endpoint;
-            } else throw new IllegalArgumentException(
-                    "Too " + (parameterCount > params.length ? "few" : "many") + " parameters!");
+            } else throw new IllegalArgumentException("Too " + (parameterCount > params.length ? "few" : "many") + " parameters!");
         }
     }
     

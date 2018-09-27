@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.generic.MessageEditEventInternal;
+import de.kaleidox.crystalshard.internal.items.channel.TextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageEditListener;
@@ -36,6 +37,10 @@ public class MESSAGE_UPDATE extends HandlerBase {
         SentEmbed prevEmbed = (embeds.isEmpty() ? null : embeds.get(0));
         String prevContent = message.getContent();
         Set<EditTrait<Message>> traits = message.updateData(data);
+        if (message.isPinned()) {
+            ((TextChannelInternal) channel).updatePinned(message);
+        }
+        
         MessageEditEventInternal event = new MessageEditEventInternal(discord, message, traits, prevContent, prevEmbed);
         
         collectListeners(MessageEditListener.class,

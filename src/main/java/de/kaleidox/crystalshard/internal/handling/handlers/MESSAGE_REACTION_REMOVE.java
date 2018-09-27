@@ -39,11 +39,7 @@ public class MESSAGE_REACTION_REMOVE extends HandlerBase {
         Reaction reaction = ReactionInternal.getInstance(server, message, user, data, -1);
         ReactionRemoveEvent event = new ReactionRemoveEventInternal(discord, reaction, message);
         
-        collectListeners(ReactionRemoveListener.class,
-                         discord,
-                         server,
-                         channel,
-                         message).forEach(listener -> discord.getThreadPool()
+        collectListeners(ReactionRemoveListener.class, discord, server, channel, message).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onReactionRemove(event)));
     }
 }

@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerEditEvent;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.annotations.MayNotContainNull;
+import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.NotNull;
 import java.util.Set;
 
@@ -13,8 +13,7 @@ public class ServerEditEventInternal extends EventBase implements ServerEditEven
     private final Server                 server;
     private final Set<EditTrait<Server>> editTraits;
     
-    public ServerEditEventInternal(DiscordInternal discordInternal,
-                                   @NotNull Server server, @MayNotContainNull Set<EditTrait<Server>> editTraits) {
+    public ServerEditEventInternal(DiscordInternal discordInternal, @NotNull Server server, @NotContainNull Set<EditTrait<Server>> editTraits) {
         super(discordInternal);
         this.server = server;
         this.editTraits = editTraits;

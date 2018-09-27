@@ -32,8 +32,7 @@ public class YesNo extends ResponseElement<Boolean> {
      * @param embedBaseSupplier A @Nullable Supplier to provide a basic embed structure.
      * @param userCanRespond    A @Nullable Predicate to check whether a user may Respond to the question.
      */
-    public YesNo(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier,
-                 Predicate<User> userCanRespond) {
+    public YesNo(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier, Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
     }
     
@@ -71,12 +70,12 @@ public class YesNo extends ResponseElement<Boolean> {
                                         break;
                                     default:
                                         event.getMessage()
-                                                .removeReactionsByEmoji(user, emoji);
+                                                .removeReactionsByEmoji(emoji);
                                         break;
                                 }
                             } else {
                                 event.getMessage()
-                                        .removeReactionsByEmoji(user, emoji);
+                                        .removeReactionsByEmoji(emoji);
                             }
                         }
                     });

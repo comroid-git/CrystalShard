@@ -36,8 +36,7 @@ public class DiscordEventDispatch {
                             }
                             break;
                         default:
-                            logger.warn("Unexpected OpCode recieved: " + opCode + " with body: " + data + "\n" +
-                                        "Please inform the developer!");
+                            logger.warn("Unexpected OpCode recieved: " + opCode + " with body: " + data + "\n" + "Please inform the developer!");
                             break;
                     }
                 });

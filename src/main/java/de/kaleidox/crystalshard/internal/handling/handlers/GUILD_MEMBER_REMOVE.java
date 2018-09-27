@@ -21,10 +21,7 @@ public class GUILD_MEMBER_REMOVE extends HandlerBase {
         server.removeUser(user);
         ServerMemberLeaveEventInternal event = new ServerMemberLeaveEventInternal(discord, server, user);
         
-        collectListeners(ServerMemberLeaveListener.class,
-                         discord,
-                         server,
-                         user).forEach(listener -> discord.getThreadPool()
+        collectListeners(ServerMemberLeaveListener.class, discord, server, user).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onMemberLeave(event)));
     }
 }

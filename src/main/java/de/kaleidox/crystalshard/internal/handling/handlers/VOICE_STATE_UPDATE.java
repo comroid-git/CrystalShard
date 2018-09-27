@@ -23,10 +23,7 @@ public class VOICE_STATE_UPDATE extends HandlerBase {
         Set<EditTrait<VoiceState>> traits = state.updateData(data);
         VoiceStateUpdateEventInternal event = new VoiceStateUpdateEventInternal(discord, state, traits);
         
-        collectListeners(VoiceStateUpdateListener.class,
-                         discord,
-                         server,
-                         user).forEach(listener -> discord.getThreadPool()
+        collectListeners(VoiceStateUpdateListener.class, discord, server, user).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onVoiceStateUpdate(event)));
     }
 }

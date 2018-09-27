@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListen
 
 @FunctionalInterface
 public interface MessageEditListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener,
-        MessageAttachableListener {
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener, MessageAttachableListener {
     void onMessageEdit(MessageEditEvent event);
 }

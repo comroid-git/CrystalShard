@@ -23,25 +23,16 @@ public class GUILD_MEMBER_UPDATE extends HandlerBase {
         List<Role> userRoles = new ArrayList<>();
         data.get("roles")
                 .forEach(roleId -> userRoles.add(discord.getRoleCache()
-                                                         .getOrRequest(roleId.asLong(),
-                                                                       IDPair.of(serverId, roleId.asLong()))));
+                                                         .getOrRequest(roleId.asLong(), IDPair.of(serverId, roleId.asLong()))));
         ServerMember user = discord.getUserCache()
                 .getOrCreate(discord, data.get("user"))
-                .toServerMember(server);
+                .toServerMember(server, data);
         String nickname = data.get("nick")
                 .asText();
         
-        ServerMemberUpdateEventInternal event = new ServerMemberUpdateEventInternal(discord,
-                                                                                    userRoles,
-                                                                                    nickname,
-                                                                                    Collections.emptySet(),
-                                                                                    user,
-                                                                                    server);
+        ServerMemberUpdateEventInternal event = new ServerMemberUpdateEventInternal(discord, userRoles, nickname, Collections.emptySet(), user, server);
         
-        collectListeners(ServerMemberUpdateListener.class,
-                         discord,
-                         server,
-                         user).forEach(listener -> discord.getThreadPool()
+        collectListeners(ServerMemberUpdateListener.class, discord, server, user).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onMemberUpdate(event)));
     }
 }

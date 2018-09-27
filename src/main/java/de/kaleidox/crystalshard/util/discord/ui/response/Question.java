@@ -35,8 +35,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
      * @param userCanRespond    A @Nullable Predicate to check if a user is allowed to respond; if null; all are
      *                          accepted.
      */
-    public Question(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier,
-                    Predicate<User> userCanRespond) {
+    public Question(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier, Predicate<User> userCanRespond) {
         super(name, parent, embedBaseSupplier, userCanRespond);
         
         this.optionsOrdered = new ArrayList<>();
@@ -53,8 +52,7 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
             embed.setDescription("Voting will continue for " + duration + " " + timeUnit.name()
                     .toLowerCase() + ", beginning from the timestamp.")
                     .setTimestampNow();
-            optionsOrdered.forEach(option -> embed.addField(option.getEmoji() + " -> " + option.getName(),
-                                                            option.getDescription()));
+            optionsOrdered.forEach(option -> embed.addField(option.getEmoji() + " -> " + option.getName(), option.getDescription()));
             
             // send the message, but separately save the future for async listener registration
             CompletableFuture<NamedItem<ResultType>> future = new CompletableFuture<>();
@@ -117,8 +115,8 @@ public class Question<ResultType> extends ResponseElement<ResultType> {
                 return addOption(emoji, representation.toString(), description, representation);
             } else {
                 throw new RuntimeException("The Representation [" + representation + "] has to manually override " +
-                                           "the method \"toString()\"; or you have to use the implementation of " +
-                                           "\"addOption(String, " + "String, String, ResultType)\".");
+                                           "the method \"toString()\"; or you have to use the implementation of " + "\"addOption(String, " +
+                                           "String, String, ResultType)\".");
             }
         } catch (NoSuchMethodException ignored) { // this will never occur because everything has "toString"
             throw new AssertionError("Fatal internal error.");

@@ -18,8 +18,8 @@ public class ServerMemberUpdateEventInternal extends EventBase implements Server
     private final ServerMember                 member;
     private final Server                       server;
     
-    public ServerMemberUpdateEventInternal(DiscordInternal discordInternal, List<Role> roles, String nickname,
-                                           Set<EditTrait<ServerMember>> traits, ServerMember member, Server server) {
+    public ServerMemberUpdateEventInternal(DiscordInternal discordInternal, List<Role> roles, String nickname, Set<EditTrait<ServerMember>> traits,
+                                           ServerMember member, Server server) {
         super(discordInternal);
         this.roles = roles;
         this.nickname = nickname;

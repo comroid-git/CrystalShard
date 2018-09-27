@@ -18,8 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerMemberInternal extends UserInternal implements ServerMember {
-    private final static ConcurrentHashMap<Long, ConcurrentHashMap<Long, ServerMember>> instances =
-            new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<Long, ConcurrentHashMap<Long, ServerMember>> instances = new ConcurrentHashMap<>();
     private final        Server                                                         server;
     private final        List<Role>                                                     roles;
     private final        String                                                         nickname;
@@ -54,9 +53,7 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
         this.roles = new ArrayList<>();
         data.path("roles")
                 .forEach(roleIdNode -> roles.add(discord.getRoleCache()
-                                                         .getOrRequest(roleIdNode.asLong(),
-                                                                       IDPair.of(server.getId(),
-                                                                                 roleIdNode.asLong()))));
+                                                         .getOrRequest(roleIdNode.asLong(), IDPair.of(server.getId(), roleIdNode.asLong()))));
         
         instances.get(super.getId())
                 .put(server.getId(), this);

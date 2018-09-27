@@ -17,7 +17,7 @@ public class GUILD_MEMBER_ADD extends HandlerBase {
                 .getOrRequest(guildId, guildId);
         ServerMember member = discord.getUserCache()
                 .getOrCreate(discord, data)
-                .toServerMember(server);
+                .toServerMember(server, data);
         
         server.addUser(member);
         ServerMemberJoinEventInternal event = new ServerMemberJoinEventInternal(discord, server, member);

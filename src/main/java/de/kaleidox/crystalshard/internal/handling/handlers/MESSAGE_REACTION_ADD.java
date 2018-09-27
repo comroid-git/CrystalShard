@@ -38,11 +38,7 @@ public class MESSAGE_REACTION_ADD extends HandlerBase {
         Reaction reaction = ReactionInternal.getInstance(server, message, user, data, 1);
         ReactionAddEventInternal event = new ReactionAddEventInternal(discord, reaction, message);
         
-        collectListeners(ReactionAddListener.class,
-                         discord,
-                         server,
-                         channel,
-                         message).forEach(listener -> discord.getThreadPool()
+        collectListeners(ReactionAddListener.class, discord, server, channel, message).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onEvent(event)));
     }
 }

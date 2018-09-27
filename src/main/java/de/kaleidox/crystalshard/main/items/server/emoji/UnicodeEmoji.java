@@ -10,8 +10,8 @@ public interface UnicodeEmoji extends Emoji {
     static UnicodeEmoji of(Discord discord, String emojiOrAlias) {
         String aliases = EmojiParser.parseToAliases(emojiOrAlias);
         String unicode = EmojiParser.parseToUnicode(emojiOrAlias);
-        if (aliases.equalsIgnoreCase(emojiOrAlias) && unicode.equalsIgnoreCase(emojiOrAlias))
-            throw new IllegalArgumentException("The provided Emoji String is not a valid unicode emoji.");
+        if (aliases.equalsIgnoreCase(emojiOrAlias) && unicode.equalsIgnoreCase(emojiOrAlias)) throw new IllegalArgumentException(
+                "The provided Emoji String is not a valid unicode emoji.");
         else return new UnicodeEmojiInternal(discord, aliases, unicode);
     }
 }

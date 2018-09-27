@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user.presence;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
@@ -34,7 +35,7 @@ public class PresenceInternal implements Presence {
     // Override Methods
     @Override
     public ServerMember getUser() {
-        return user.toServerMember(server);
+        return ServerMemberInternal.getInstance(user, server);
     }
     
     @Override

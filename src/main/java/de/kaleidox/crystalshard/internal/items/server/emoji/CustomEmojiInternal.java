@@ -140,8 +140,7 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public boolean requireColons() throws NoSuchElementException {
         if (Objects.nonNull(requireColons)) return requireColons;
-        throw new NoSuchElementException(
-                "Require colon state not specified yet. " + "Try using method #requestAllData first.");
+        throw new NoSuchElementException("Require colon state not specified yet. " + "Try using method #requestAllData first.");
     }
     
     @Override

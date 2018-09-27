@@ -21,7 +21,7 @@ public class InfoReaction {
                 .exceptionally(Logger::get);
         
         MessageDeleteListener deleteListener = event -> {
-            message.removeOwnReactionsByEmoji(emoji);
+            message.removeReactionsByUser(emoji);
             message.delete();
         };
         
@@ -68,8 +68,7 @@ public class InfoReaction {
         message.attachListener((ReactionRemoveListener) removeListener);
     }
     
-    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend,
-                           Embed.Builder infoEmbed) {
+    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
         add(msgFut.join(), emoji, deleteAfterSend, infoEmbed);
     }
     

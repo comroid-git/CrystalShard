@@ -24,10 +24,7 @@ public class GUILD_ROLE_DELETE extends HandlerBase {
         server.removeRole(role);
         RoleDeleteEventInternal event = new RoleDeleteEventInternal(discord, role, server);
         
-        collectListeners(ServerRoleDeleteListener.class,
-                         discord,
-                         server,
-                         role).forEach(listener -> discord.getThreadPool()
+        collectListeners(ServerRoleDeleteListener.class, discord, server, role).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onRoleDelete(event)));
     }
 }

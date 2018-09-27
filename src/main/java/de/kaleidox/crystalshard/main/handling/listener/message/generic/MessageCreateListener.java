@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListen
 
 @FunctionalInterface
 public interface MessageCreateListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, RoleAttachableListener,
-        UserAttachableListener {
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, RoleAttachableListener, UserAttachableListener {
     void onMessageCreate(MessageCreateEvent event);
 }

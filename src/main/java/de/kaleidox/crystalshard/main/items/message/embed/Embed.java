@@ -46,8 +46,7 @@ public interface Embed extends Castable<Embed> {
         
         Builder addField(EmbedDraft.Field field);
         
-        Builder updateFields(Predicate<EmbedDraft.Field> predicate, Function<EmbedDraft.EditableField,
-                EmbedDraft.Field> updater);
+        Builder updateFields(Predicate<EmbedDraft.Field> predicate, Function<EmbedDraft.EditableField, EmbedDraft.Field> updater);
         
         Builder removeAllFields();
         

@@ -27,10 +27,7 @@ public class CHANNEL_UPDATE extends HandlerBase {
         
         ChannelEditEventInternal event = new ChannelEditEventInternal(discord, channel, traits);
         
-        collectListeners(ChannelEditListener.class,
-                         discord,
-                         server,
-                         channel).forEach(listener -> discord.getThreadPool()
+        collectListeners(ChannelEditListener.class, discord, server, channel).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onChannelEdit(event)));
     }
 }

@@ -27,10 +27,11 @@ public class ChannelCache extends Cache<Channel, Long, Long> {
     
     public ChannelCache(DiscordInternal discordInternal) {
         super(ChannelInternal.class,
-              param -> ((JsonNode) param[1]).get("id")
+              param -> ((JsonNode) param[2]).get("id")
                       .asLong(),
               TimeUnit.HOURS.toMillis(12),
               Discord.class,
+              Server.class,
               JsonNode.class);
         this.discordInternal = discordInternal;
     }
@@ -41,19 +42,21 @@ public class ChannelCache extends Cache<Channel, Long, Long> {
     public CompletableFuture<Object[]> requestConstructorParameters(Long requestIdent) {
         return new WebRequest<Object[]>(discordInternal).method(GET)
                 .endpoint(Endpoint.Location.CHANNEL.toEndpoint(requestIdent))
-                .execute(node -> new Object[]{discordInternal, node});
+                .execute(data -> {
+                    long guildId = data.path("guild_id")
+                            .asLong(-1);
+                    Server server = guildId == -1 ? null : discordInternal.getServerCache()
+                            .getOrRequest(guildId, guildId);
+                    return new Object[]{discordInternal, server, data};
+                });
     }
     
     @NotNull
     @Override
     public Channel construct(Object... param) {
         Discord discord = (Discord) param[0];
-        JsonNode data = (JsonNode) param[1];
-        Server server = data.has("guild_id") ? discord.getServerCache()
-                .getOrRequest(data.get("guild_id")
-                                      .asLong(),
-                              data.get("guild_id")
-                                      .asLong()) : null;
+        Server server = param[1] == null ? null : (Server) param[1];
+        JsonNode data = (JsonNode) param[2];
         switch (ChannelType.getFromId(data.get("type")
                                               .asInt())) {
             case GUILD_TEXT:

@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.main.items.user;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
@@ -28,8 +29,9 @@ import java.util.concurrent.CompletableFuture;
 
 import static de.kaleidox.crystalshard.core.net.request.Method.*;
 
-public interface User extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>,
-        ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long>, CacheStorable {
+public interface User
+        extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>, ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long>,
+        CacheStorable {
     String getDiscriminatedName();
     
     String getDiscriminator();
@@ -54,7 +56,7 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
     
     Optional<String> getEmail();
     
-    ServerMember toServerMember(Server server);
+    ServerMember toServerMember(Server server, JsonNode memberData);
     
     Collection<Role> getRoles(Server server);
     
@@ -64,8 +66,6 @@ public interface User extends DiscordItem, Nameable, Mentionable, MessageRecieve
         return castTo(ServerMember.class);
     }
     
-    // Static members
-    // Static membe
     static CompletableFuture<User> of(UserContainer in, long id) {
         CompletableFuture<User> userFuture;
         

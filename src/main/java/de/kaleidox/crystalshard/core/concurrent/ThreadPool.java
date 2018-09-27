@@ -31,13 +31,9 @@ import java.util.function.Supplier;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ThreadPool {
     // Static Fields
-    public final static  Supplier<IllegalCallerException>         BOT_THREAD_EXCEPTION =
-            () -> new IllegalCallerException("That method may only be called from a bot-own " +
-                                             "thread, such as in listeners or scheduler tasks. You may not use it " +
-                                             "from contexts like " +
-                                             "CompletableFuture#thenAcceptAsync or such. User " +
-                                             "ThreadPool#isBotOwnThread to check if the current " +
-                                             "Thread belongs to the Bot.");
+    public final static  Supplier<IllegalCallerException>         BOT_THREAD_EXCEPTION = () -> new IllegalCallerException(
+            "That method may only be called from a bot-own " + "thread, such as in listeners or scheduler tasks. You may not use it " + "from contexts like " +
+            "CompletableFuture#thenAcceptAsync or such. User " + "ThreadPool#isBotOwnThread to check if the current " + "Thread belongs to the Bot.");
     private final static Logger                                   logger               = new Logger(ThreadPool.class);
     private final        ConcurrentHashMap<Worker, AtomicBoolean> threads;
     private final        DiscordInternal                          discord;
@@ -131,8 +127,7 @@ public class ThreadPool {
     public void execute(Runnable task, String... description) {
         synchronized (queue) {
             if (threads.size() < maxSize || maxSize == -1) {
-                if (busyThreads.get() <= queue.size())
-                    factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
+                if (busyThreads.get() <= queue.size()) factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
             }
             queue.add(new Task(task, description));
             queue.notify();
@@ -243,8 +238,7 @@ public class ThreadPool {
         }
         
         Worker(Runnable initTask, DiscordInternal discord, int id) {
-            super(initTask,
-                  name == null ? ("Worker Thread #" + id) : name + " Thread" + (maxSize == 1 ? "" : " #" + id));
+            super(initTask, name == null ? ("Worker Thread #" + id) : name + " Thread" + (maxSize == 1 ? "" : " #" + id));
             this.discord = discord;
             this.isBusy = new AtomicBoolean(true);
             this.runnableAttachedThread = true;

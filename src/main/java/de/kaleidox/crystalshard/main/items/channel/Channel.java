@@ -17,8 +17,8 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public interface Channel
-        extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener>,
-        Cacheable<Channel, Long, Long>, CacheStorable {
+        extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener>, Cacheable<Channel, Long, Long>,
+        CacheStorable {
     ChannelType getType();
     
     String getName();
@@ -26,6 +26,8 @@ public interface Channel
     int getPosition();
     
     Updater getUpdater();
+    
+    CompletableFuture<Void> delete();
     
     default boolean isPrivate() {
         return toServerChannel().isEmpty();

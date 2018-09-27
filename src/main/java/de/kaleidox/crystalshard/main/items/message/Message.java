@@ -2,6 +2,9 @@ package de.kaleidox.crystalshard.main.items.message;
 
 import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
@@ -23,7 +26,8 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.annotations.MayNotContainNull;
+import de.kaleidox.util.annotations.NotContainNull;
+import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.objects.markers.IDPair;
 import java.time.Instant;
 import java.util.List;
@@ -33,9 +37,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * This interface represents a normal Discord message.
  */
-public interface Message
-        extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair>,
-        CacheStorable {
+public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair>, CacheStorable {
     /**
      * Gets the TextChannel that the message has been sent in.
      *
@@ -276,16 +278,6 @@ public interface Message
     CompletableFuture<Void> addReaction(String emojiPrintable);
     
     /**
-     * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link
-     * Permission#ADD_REACTIONS} within the current context. The returned future will complete exceptionally with a
-     * {@link DiscordPermissionException} if the bot does not have the permission required to add reactions.
-     *
-     * @param emoji The emoji to add as a reaction.
-     * @return A future that completes when the reaction has been added.
-     */
-    CompletableFuture<Void> addReaction(Emoji emoji);
-    
-    /**
      * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES}
      * within the current context. The returned future will complete exceptionally with a {@link
      * DiscordPermissionException} if the bot does not have the permission required to remove all reactions. This will
@@ -303,20 +295,42 @@ public interface Message
      * the bot does not have the permission required to remove other users reactions. This will also occur on Private
      * chats, as you can not have the theoretical permission to remove reactions in a private chat.
      *
-     * @param user   The user whose reactions to remove.
      * @param emojis The emojis whose reactions should be removed.
      * @return A future that completes when all reactions have been removed.
      */
-    CompletableFuture<Void> removeReactionsByEmoji(User user, @MayNotContainNull Emoji... emojis);
+    CompletableFuture<Void> removeReactionsByEmoji(@NotContainNull Emoji... emojis);
     
     /**
      * Removes all reactions of the bot from the message, filtered by the given emojis. Don't include any emoji to
      * remove all known reactions by yourself.
      *
-     * @param emojis The emoji varargs to filter what reactions to remove.
+     * @param users The users whose reaction should be removed.
      * @return A future that completes when the reactions are removed.
      */
-    CompletableFuture<Void> removeOwnReactionsByEmoji(@MayNotContainNull Emoji... emojis);
+    CompletableFuture<Void> removeReactionsByUser(@NotContainNull User... users);
+    
+    CompletableFuture<Message> pin();
+    
+    CompletableFuture<Message> unpin();
+    
+    BulkDelete getBulkDelete();
+    
+    default CompletableFuture<Message> togglePinned() {
+        if (isPinned()) return unpin();
+        else return pin();
+    }
+    
+    /**
+     * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link
+     * Permission#ADD_REACTIONS} within the current context. The returned future will complete exceptionally with a
+     * {@link DiscordPermissionException} if the bot does not have the permission required to add reactions.
+     *
+     * @param emoji The emoji to add as a reaction.
+     * @return A future that completes when the reaction has been added.
+     */
+    default CompletableFuture<Void> addReaction(Emoji emoji) {
+        return addReaction(emoji.toDiscordPrintable());
+    }
     
     /**
      * Gets the TextChannel as a ServerTextChannel.
@@ -366,5 +380,33 @@ public interface Message
      */
     default CompletableFuture<Void> delete() {
         return delete(null);
+    }
+    
+    interface BulkDelete {
+        BulkDelete setChannel(long channelId);
+        
+        BulkDelete addMessage(Message message);
+        
+        BulkDelete addMessages(@Range(min = 2, max = 100) Message... messages);
+        
+        BulkDelete addId(long id);
+        
+        BulkDelete addIds(@Range(min = 2, max = 100) long... ids);
+        
+        CompletableFuture<Void> deleteAll();
+    }
+    
+    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalCallerException {
+        Discord discord = ThreadPool.getThreadDiscord();
+        return new MessageInternal.BulkDeleteInternal(discord).setChannel(channelId)
+                .addIds(messageIds)
+                .deleteAll();
+    }
+    
+    static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
+        return new MessageInternal.BulkDeleteInternal(messages[0].getDiscord()).setChannel(messages[0].getChannel()
+                                                                                                   .getId())
+                .addMessages(messages)
+                .deleteAll();
     }
 }

@@ -10,12 +10,15 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ChannelInternal implements ChannelCategory {
@@ -65,6 +68,16 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     @Override
     public List<PermissionOverride> getPermissionOverrides() {
         return overrides;
+    }
+    
+    @Override
+    public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
+        return null;
+    }
+    
+    @Override
+    public InviteBuilder getInviteBuilder() {
+        return new ChannelBuilderInternal.ChannelInviteBuilder(this);
     }
     
     @Override
