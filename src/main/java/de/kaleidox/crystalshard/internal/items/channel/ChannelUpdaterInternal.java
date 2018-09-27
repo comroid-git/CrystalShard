@@ -5,12 +5,14 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +93,10 @@ public class ChannelUpdaterInternal {
         
         @Override
         public CompletableFuture<ChannelCategory> update() {
+            if (!channel.getServerOfChannel()
+                    .orElseThrow(AssertionError::new)
+                    .hasPermission(discord, Permission.MANAGE_CHANNELS))
+                return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return new WebRequest<ChannelCategory>(discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
                     .node((name != null ? new Object[]{"name", name} : new Object[0]),
@@ -131,6 +137,10 @@ public class ChannelUpdaterInternal {
         
         @Override
         public CompletableFuture<ServerTextChannel> update() {
+            if (!channel.getServerOfChannel()
+                    .orElseThrow(AssertionError::new)
+                    .hasPermission(discord, Permission.MANAGE_CHANNELS))
+                return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return new WebRequest<ServerTextChannel>(discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
                     .node((name != null ? new Object[]{"name", name} : new Object[0]),
@@ -174,6 +184,10 @@ public class ChannelUpdaterInternal {
         
         @Override
         public CompletableFuture<ServerVoiceChannel> update() {
+            if (!channel.getServerOfChannel()
+                    .orElseThrow(AssertionError::new)
+                    .hasPermission(discord, Permission.MANAGE_CHANNELS))
+                return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return new WebRequest<ServerVoiceChannel>(discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
                     .node((name != null ? new Object[]{"name", name} : new Object[0]),

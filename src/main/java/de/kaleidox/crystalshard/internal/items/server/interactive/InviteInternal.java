@@ -100,7 +100,7 @@ public class InviteInternal implements Invite {
     
     @Override
     public String toString() {
-        return "https://discord.gg/" + code;
+        return BASE_INVITE + code;
     }
     
     public static class Meta extends InviteInternal implements MetaInvite {

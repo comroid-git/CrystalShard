@@ -2,11 +2,16 @@ package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.cache.Cache;
+import de.kaleidox.crystalshard.core.net.request.Endpoint;
+import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -27,7 +32,7 @@ public class RoleInternal implements Role {
     private final static ConcurrentHashMap<Long, Role> instances = new ConcurrentHashMap<>();
     private final        Server                        server;
     private final        long                          id;
-    private final        Discord                       discordInternal;
+    private final        Discord                       discord;
     private              PermissionList                permissions;
     private              String                        name;
     private              Color                         color;
@@ -38,7 +43,7 @@ public class RoleInternal implements Role {
     
     public RoleInternal(Discord discord, Server server, JsonNode data) {
         logger.deeptrace("Creating role object for data: " + data.toString());
-        this.discordInternal = discord;
+        this.discord = discord;
         this.server = server;
         this.id = data.get("id")
                 .asLong();
@@ -62,12 +67,8 @@ public class RoleInternal implements Role {
     
     // Override Methods
     @Override
-    public CompletableFuture<Server> getServer() {
-        if (server != null) {
-            return CompletableFuture.completedFuture(server);
-        } else {
-            return null; // todo
-        }
+    public Server getServer() {
+        return server;
     }
     
     @Override
@@ -101,13 +102,23 @@ public class RoleInternal implements Role {
     }
     
     @Override
+    public CompletableFuture<Void> delete() {
+        if (!server.hasPermission(discord, Permission.MANAGE_ROLES))
+            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot delete roles!", Permission.MANAGE_ROLES));
+        return new WebRequest<Void>(discord)
+                .method(Method.DELETE)
+                .endpoint(Endpoint.Location.GUILD_ROLE_SPECIFIC.toEndpoint(server, id))
+                .executeNull();
+    }
+    
+    @Override
     public long getId() {
         return id;
     }
     
     @Override
     public Discord getDiscord() {
-        return discordInternal;
+        return discord;
     }
     
     /**
@@ -143,7 +154,7 @@ public class RoleInternal implements Role {
     
     @Override
     public Cache<Role, Long, IDPair> getCache() {
-        return discordInternal.getRoleCache();
+        return discord.getRoleCache();
     }
     
     public Set<EditTrait<Role>> updateData(JsonNode data) {
@@ -193,5 +204,10 @@ public class RoleInternal implements Role {
         }
         
         return traits;
+    }
+    
+    @Override
+    public int compareTo(Role o) {
+        return getPosition() - o.getPosition();
     }
 }

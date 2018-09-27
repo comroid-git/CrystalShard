@@ -7,12 +7,14 @@ import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
@@ -142,6 +144,9 @@ public class ChannelBuilderInternal {
         
         @Override
         public CompletableFuture<ChannelCategory> build() {
+            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                    "Cannot create channel!",
+                    Permission.MANAGE_CHANNELS));
             if (name == null) throw new IllegalArgumentException("No channel name set!");
             return new WebRequest<ChannelCategory>(discord).method(Method.POST)
                     .endpoint(Endpoint.Location.GUILD_CHANNEL.toEndpoint(server))
@@ -186,6 +191,9 @@ public class ChannelBuilderInternal {
         
         @Override
         public CompletableFuture<ServerTextChannel> build() {
+            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                    "Cannot create channel!",
+                    Permission.MANAGE_CHANNELS));
             if (name == null) throw new IllegalArgumentException("No channel name set!");
             return new WebRequest<ServerTextChannel>(discord).method(Method.POST)
                     .endpoint(Endpoint.Location.GUILD_CHANNEL.toEndpoint(server))
@@ -232,6 +240,9 @@ public class ChannelBuilderInternal {
         
         @Override
         public CompletableFuture<ServerVoiceChannel> build() {
+            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                    "Cannot create channel!",
+                    Permission.MANAGE_CHANNELS));
             if (name == null) throw new IllegalArgumentException("No channel name set!");
             return new WebRequest<ServerVoiceChannel>(discord).method(Method.POST)
                     .endpoint(Endpoint.Location.GUILD_CHANNEL.toEndpoint(server))

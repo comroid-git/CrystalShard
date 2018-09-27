@@ -25,7 +25,7 @@ public class IntegrationInternal implements Integration {
     private final Account account;
     private final Instant syncedAt;
     
-    IntegrationInternal(Discord discord, Server server, JsonNode data) {
+    public IntegrationInternal(Discord discord, Server server, JsonNode data) {
         this.discord = discord;
         this.server = server;
         this.id = data.get("id")

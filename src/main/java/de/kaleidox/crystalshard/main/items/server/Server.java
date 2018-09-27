@@ -10,14 +10,17 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
+import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
+import de.kaleidox.util.annotations.Range;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
@@ -26,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface Server
         extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>, Cacheable<Server, Long, Long>,
-        CacheStorable {
+        CacheStorable, PermissionApplyable {
     Optional<URL> getIconUrl();
     
     Optional<URL> getSplashUrl();
@@ -85,7 +88,25 @@ public interface Server
     
     Optional<User> getUserById(long id);
     
-    CompletableFuture<Void> leave();
+    Optional<ServerMember> getServerMember(User ofUser);
+    
+    CompletableFuture<Void> delete();
+    
+    CompletableFuture<Void> prune(@Range(min = 1,max = 365) int days);
+    
+    CompletableFuture<Collection<Integration>> requestIntegrations();
+    
+    CompletableFuture<URL> getVanityUrl();
+    
+    default Optional<ServerMember.Updater> getMemberUpdater(User user) {
+        if (user instanceof ServerMember)
+            return Optional.of(getMemberUpdater((ServerMember) user));
+        else if (getServerMember(user).isPresent())
+            return Optional.of(getMemberUpdater(getServerMember(user).get()));
+        return Optional.empty();
+    }
+    
+    ServerMember.Updater getMemberUpdater(ServerMember member);
     
     interface Builder {
         Builder setName(String name);

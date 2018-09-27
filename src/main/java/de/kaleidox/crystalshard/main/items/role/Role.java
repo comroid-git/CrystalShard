@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface Role
         extends DiscordItem, Nameable, Mentionable, PermissionOverwritable, ListenerAttachable<RoleAttachableListener>, Cacheable<Role, Long, IDPair>,
-        CacheStorable {
+        CacheStorable, Comparable<Role> {
     Color getColor();
     
     boolean isGrouping();
@@ -30,7 +30,7 @@ public interface Role
     
     PermissionList getPermissions();
     
-    CompletableFuture<Server> getServer();
+    CompletableFuture<Void> delete();
     
     interface Builder {
         Builder setName(String name);

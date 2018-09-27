@@ -9,9 +9,12 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelStructureInternal;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
+import de.kaleidox.crystalshard.internal.items.server.interactive.IntegrationInternal;
+import de.kaleidox.crystalshard.internal.items.server.interactive.ServerMemberUpdater;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
@@ -19,6 +22,7 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
@@ -29,12 +33,15 @@ import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
 import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
 import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
+import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
+import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.logging.Logger;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +66,7 @@ public class ServerInternal implements Server {
     private final        ArrayList<CustomEmoji>                                    emojis         = new ArrayList<>();
     private final        ArrayList<String>                                         features       = new ArrayList<>();
     private final        ArrayList<VoiceState>                                     voiceStates    = new ArrayList<>();
-    private final        ArrayList<User>                                           members        = new ArrayList<>();
+    private final        ArrayList<ServerMember>                                   members        = new ArrayList<>();
     private final        ArrayList<ServerChannel>                                  channels       = new ArrayList<>();
     private final        ArrayList<Presence>                                       presenceStates = new ArrayList<>();
     private final        List<ListenerManager<? extends ServerAttachableListener>> listenerManangers;
@@ -278,10 +285,68 @@ public class ServerInternal implements Server {
     }
     
     @Override
-    public CompletableFuture<Void> leave() {
+    public Optional<ServerMember> getServerMember(User ofUser) {
+        return members.stream()
+                .filter(ofUser::equals)
+                .map(ServerMember.class::cast)
+                .findAny();
+    }
+    
+    @Override
+    public CompletableFuture<Void> delete() {
+        if (!getOwner().equals(discord.getSelf())) return CompletableFuture.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
         return new WebRequest<Void>(discord).method(Method.DELETE)
                 .endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD, this))
                 .execute(node -> null);
+    }
+    
+    @Override
+    public CompletableFuture<Void> prune(int days) {
+        if (days < 1 || days > 365) throw new IllegalArgumentException("Parameter 'days' is not within its bounds! [1,365]");
+        if (!hasPermission(discord, Permission.KICK_MEMBERS)) return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot prune!",
+                                                                                                                                   Permission.KICK_MEMBERS));
+        return new WebRequest<Void>(discord).method(Method.POST)
+                .endpoint(Endpoint.Location.GUILD_PRUNE.toEndpoint(id))
+                .node("days", days)
+                .executeNull();
+    }
+    
+    @Override
+    public CompletableFuture<Collection<Integration>> requestIntegrations() {
+        if (!hasPermission(discord, Permission.MANAGE_GUILD)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Cannot get guild integrations!",
+                Permission.MANAGE_GUILD));
+        return new WebRequest<Collection<Integration>>(discord).method(Method.GET)
+                .endpoint(Endpoint.Location.GUILD_INTEGRATIONS.toEndpoint(id))
+                .execute(node -> {
+                    List<Integration> list = new ArrayList<>();
+                    for (JsonNode data : node) {
+                        list.add(new IntegrationInternal(discord, this, data));
+                    }
+                    return list;
+                });
+    }
+    
+    @Override
+    public CompletableFuture<URL> getVanityUrl() {
+        if (!hasPermission(discord, Permission.MANAGE_GUILD))
+            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!", Permission.MANAGE_GUILD));
+        return new WebRequest<URL>(discord).method(Method.GET)
+                .endpoint(Endpoint.Location.GUILD_VANITY_INVITE.toEndpoint(id))
+                .execute(node -> {
+                    if (!node.has("code")) throw new NullPointerException("Guild does not have a vanity URL!");
+                    try {
+                        return new URL(Invite.BASE_INVITE + node.get("code")
+                                .asText());
+                    } catch (MalformedURLException e) {
+                        throw new NullPointerException("Could not create URL: " + e);
+                    }
+                });
+    }
+    
+    @Override
+    public ServerMember.Updater getMemberUpdater(ServerMember member) {
+        return new ServerMemberUpdater(member);
     }
     
     @Override
@@ -327,6 +392,19 @@ public class ServerInternal implements Server {
     @Override
     public Cache<Server, Long, Long> getCache() {
         return discord.getServerCache();
+    }
+    
+    @Override
+    public boolean hasPermission(User user, Permission permission) {
+        return members.stream()
+                .filter(user::equals)
+                .map(usr -> usr.toServerMember()
+                        .orElseThrow(AssertionError::new))
+                .flatMap(member -> member.getRoles()
+                        .stream())
+                .sorted()
+                .map(Role::getPermissions)
+                .anyMatch(perm -> perm.contains(permission));
     }
     
     private User getOwner(JsonNode data) {
@@ -504,7 +582,7 @@ public class ServerInternal implements Server {
         emojis.addAll(newEmojis);
     }
     
-    public void addUser(User user) {
+    public void addUser(ServerMember user) {
         members.add(user);
     }
     

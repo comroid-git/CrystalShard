@@ -14,6 +14,8 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Invite extends Castable<Invite> {
+    String BASE_INVITE = "https://discord.gg/";
+    
     Discord getDiscord();
     
     String getInviteCode();
