@@ -1,4 +1,4 @@
-<code_scheme name="Project" version="173">
+<code_scheme name="Default" version="173">
   <JavaCodeStyleSettings>
     <option name="SUBCLASS_NAME_SUFFIX" value="Internal" />
     <option name="ANNOTATION_PARAMETER_WRAP" value="5" />
@@ -9,12 +9,20 @@
     <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">
       <value />
     </option>
+    <option name="IMPORT_LAYOUT_TABLE">
+      <value>
+        <package name="" withSubpackages="true" static="false" />
+        <emptyLine />
+        <package name="" withSubpackages="true" static="true" />
+      </value>
+    </option>
     <REPEAT_ANNOTATIONS>
       <ANNO name="de.kaleidox.util.annotations.NotNull" />
       <ANNO name="de.kaleidox.util.annotations.Nullable" />
     </REPEAT_ANNOTATIONS>
   </JavaCodeStyleSettings>
   <codeStyleSettings language="JAVA">
+    <option name="RIGHT_MARGIN" value="160" />
     <option name="KEEP_LINE_BREAKS" value="false" />
     <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
     <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="0" />
@@ -40,13 +48,11 @@
     <option name="METHOD_CALL_CHAIN_WRAP" value="2" />
     <option name="BINARY_OPERATION_WRAP" value="1" />
     <option name="TERNARY_OPERATION_WRAP" value="1" />
-    <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
     <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
     <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
     <option name="FOR_STATEMENT_WRAP" value="5" />
     <option name="ARRAY_INITIALIZER_WRAP" value="5" />
     <option name="ASSIGNMENT_WRAP" value="1" />
-    <option name="WRAP_COMMENTS" value="true" />
     <option name="ASSERT_STATEMENT_WRAP" value="1" />
     <option name="DOWHILE_BRACE_FORCE" value="3" />
     <option name="WHILE_BRACE_FORCE" value="1" />
@@ -60,7 +66,7 @@
     </indentOptions>
     <arrangement>
       <rules>
-        <section start_comment="// Static Fields">
+        <section>
           <rule>
             <match>
               <AND>
@@ -152,7 +158,7 @@
             </match>
           </rule>
         </section>
-        <section start_comment="// Fields">
+        <section>
           <rule>
             <match>
               <AND>
@@ -243,7 +249,7 @@
             </match>
           </rule>
         </section>
-        <section start_comment="// Init Blocks">
+        <section>
           <rule>
             <match>
               <AND>
@@ -290,7 +296,7 @@
             </match>
           </rule>
         </section>
-        <section start_comment="// Override Methods">
+        <section>
           <rule>
             <match>
               <OVERRIDDEN />
@@ -325,7 +331,7 @@
             </match>
           </rule>
         </section>
-        <section start_comment="// Static members">
+        <section>
           <rule>
             <match>
               <AND>
