@@ -156,6 +156,7 @@ public class WebRequest<T> {
                         break;
                     // Non-Unknown codes, yet dont need special treatment:
                     case 404: // Not Found
+                    case 403: // Missing Access
                         unknown = false;
                     default: // Anything else
                         logger.traceElseInfo("{" + statusCode + ":" + responseNode.get("code")

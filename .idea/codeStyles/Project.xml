@@ -16,6 +16,7 @@
       </REPEAT_ANNOTATIONS>
     </JavaCodeStyleSettings>
     <codeStyleSettings language="JAVA">
+      <option name="RIGHT_MARGIN" value="160" />
       <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
       <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="0" />
@@ -55,6 +56,7 @@
       <option name="PARAMETER_ANNOTATION_WRAP" value="1" />
       <option name="VARIABLE_ANNOTATION_WRAP" value="1" />
       <option name="ENUM_CONSTANTS_WRAP" value="2" />
+      <option name="WRAP_ON_TYPING" value="0" />
       <indentOptions>
         <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
       </indentOptions>

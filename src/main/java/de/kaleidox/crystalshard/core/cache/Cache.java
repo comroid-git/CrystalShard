@@ -133,8 +133,7 @@ public abstract class Cache<T extends Cacheable, I, R> {
      *
      * @param params The parameters to pass to the {@linkplain #construct(Object...) construct} method.
      * @return The new instance.
-     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested}
-     *                                  parameters do not match the predefined default constructor parameters.
+     * @throws IllegalArgumentException If the provided parameters do not match the predefined default constructor parameters.
      */
     public T getOrCreate(Object... params) throws IllegalArgumentException {
         if (!matchingParams(params)) throw new IllegalArgumentException(
@@ -145,13 +144,13 @@ public abstract class Cache<T extends Cacheable, I, R> {
             if (ref.isCached()) return ref.getReference();
             else {
                 T val = Objects.requireNonNull(construct(params), "Method \"construct\" must not " + "return null!");
-                logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
+                logger.deeptrace("Constructed new instance with passed parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
                 ref.setReference(val);
                 return val;
             }
         } else {
             T val = Objects.requireNonNull(construct(params), "Method \"construct\" must not " + "return null!");
-            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
+            logger.deeptrace("Constructed new instance with passed parameters " + Arrays.toString(params) + " of type " + typeClass.toGenericString());
             CacheReference<T, R> ref = new CacheReference<>(val, keepaliveMilis, null, params);
             instances.put(ident, ref);
             return val;

@@ -26,8 +26,8 @@ public class UserActivityInternal implements UserActivity {
                 .asText();
         this.type = Type.getFromId(data.get("type")
                                            .asInt(-1));
-        this.streamUrl = UrlHelper.orNull(data.get("url")
-                                                  .asText());
+        this.streamUrl = UrlHelper.orNull(data.path("url")
+                                                  .asText(null));
         this.timestamps = data.has("timestamps") ? new BiTimestamp(data.get("timestamps")) : null;
         this.applicationId = data.path("application_id")
                 .asLong(-1);
