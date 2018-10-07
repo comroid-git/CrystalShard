@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.main.items.server;
 
-import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
@@ -29,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface Server
         extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>, Cacheable<Server, Long, Long>,
-        CacheStorable, PermissionApplyable {
+        PermissionApplyable {
     Optional<URL> getIconUrl();
     
     Optional<URL> getSplashUrl();

@@ -7,7 +7,7 @@ package de.kaleidox.crystalshard.core.cache;
  * @param <I> The type that the unique identifier is in.
  * @param <R> The type of the object required to request a new instance of the object.
  */
-public interface Cacheable<T extends CacheStorable, I, R> {
+public interface Cacheable<T extends Cacheable, I, R> {
     /**
      * Returns the cache that holds instances of this object.
      *
@@ -23,7 +23,7 @@ public interface Cacheable<T extends CacheStorable, I, R> {
      * @return
      * @see Cache#get(I)
      */
-    static <T extends CacheStorable, I> T getInstance(Class<T> typeClass, I ident) {
+    static <T extends Cacheable, I> T getInstance(Class<T> typeClass, I ident) {
         return Cache.getCacheInstance(typeClass, ident)
                 .get(ident);
     }
@@ -37,7 +37,7 @@ public interface Cacheable<T extends CacheStorable, I, R> {
      * @return
      * @see Cache#getOrCreate(I, Object...)
      */
-    static <T extends CacheStorable, I> T getOrCreateInstance(Class<T> typeClass, I ident, Object... constructorParameters) {
+    static <T extends Cacheable, I> T getOrCreateInstance(Class<T> typeClass, I ident, Object... constructorParameters) {
         return Cache.getCacheInstance(typeClass, ident)
                 .getOrCreate(ident, constructorParameters);
     }

@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.main.items.message;
 
-import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
@@ -37,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * This interface represents a normal Discord message.
  */
-public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair>, CacheStorable {
+public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair> {
     /**
      * Gets the TextChannel that the message has been sent in.
      *

@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
-import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
@@ -15,8 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public interface Channel
-        extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener>, Cacheable<Channel, Long, Long>,
-        CacheStorable {
+        extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener>, Cacheable<Channel, Long, Long> {
     ChannelType getType();
     
     String getName();

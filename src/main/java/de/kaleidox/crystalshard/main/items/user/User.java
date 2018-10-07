@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.cache.CacheStorable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
@@ -30,8 +29,7 @@ import java.util.concurrent.CompletableFuture;
 import static de.kaleidox.crystalshard.core.net.request.Method.*;
 
 public interface User
-        extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>, ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long>,
-        CacheStorable {
+        extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>, ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long> {
     String getDiscriminatedName();
     
     String getDiscriminator();

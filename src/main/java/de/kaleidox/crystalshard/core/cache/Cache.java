@@ -26,9 +26,9 @@ import static de.kaleidox.util.helpers.MapHelper.*;
  * @param <I> The type of the object that is used to uniquely identify the objects.
  * @param <R> The type of the object that is used to request a new instance of this object.
  */
-public abstract class Cache<T extends CacheStorable, I, R> {
+public abstract class Cache<T extends Cacheable, I, R> {
     private final static Logger                                                                      logger = new Logger(Cache.class);
-    private final static ConcurrentHashMap<Class<?>, Cache<? extends CacheStorable, Object, Object>> cacheInstances;
+    private final static ConcurrentHashMap<Class<?>, Cache<? extends Cacheable, Object, Object>> cacheInstances;
     private final static ScheduledExecutorService                                                    scheduledExecutorService;
     private final        ConcurrentHashMap<I, CacheReference<T, R>>                                  instances;
     private final        Class<? extends T>                                                          typeClass;
@@ -71,7 +71,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
         instances = new ConcurrentHashMap<>();
         
         //noinspection unchecked
-        cacheInstances.put(typeClass, (Cache<? extends CacheStorable, Object, Object>) this);
+        cacheInstances.put(typeClass, (Cache<? extends Cacheable, Object, Object>) this);
     }
     
     /**
@@ -347,7 +347,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      * @throws NoSuchElementException If no cache fitting the parameters was found.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends CacheStorable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
+    public static <T extends Cacheable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
         return cacheInstances.entrySet()
                 .stream()
                 .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
