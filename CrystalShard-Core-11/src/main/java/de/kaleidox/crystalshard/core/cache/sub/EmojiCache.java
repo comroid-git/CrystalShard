@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +22,7 @@ public class EmojiCache extends Cache<CustomEmoji, Long, IDPair> {
     
     public EmojiCache(DiscordInternal discord) {
         super(CustomEmojiInternal.class,
-              param -> ((JsonNode) param[2]).get("id")
-                      .asLong(),
+              param -> ((JsonNode) param[2]).get("id").asLong(),
               TimeUnit.HOURS.toMillis(6),
               Discord.class,
               Server.class,

@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -8,8 +9,8 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.objects.markers.NamedItem;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -26,8 +27,8 @@ public class YesNo extends ResponseElement<Boolean> {
     /**
      * Creates a new Yes-No Question.
      *
-     * @param name              The name of the current response value. Will be stored with the value for {@link
-     *                          de.kaleidox.crystalshard.util.discord.ui.DialogueEndpoint}
+     * @param name              The name of the current response value. Will be stored with the value for
+     * {@link de.kaleidox.crystalshard.util.discord.ui.DialogueEndpoint}
      * @param parent            The messageable the YesNo Question should be sent to.
      * @param embedBaseSupplier A @Nullable Supplier to provide a basic embed structure.
      * @param userCanRespond    A @Nullable Predicate to check whether a user may Respond to the question.
@@ -40,61 +41,47 @@ public class YesNo extends ResponseElement<Boolean> {
     @Override
     public CompletableFuture<NamedItem<Boolean>> build() {
         Embed.Builder embed = embedBaseSupplier.get();
-        embed.setDescription("Yes/No question:")
-                .setTimestampNow();
+        embed.setDescription("Yes/No question:").setTimestampNow();
         if (field != null) embed.addField(field);
         
         CompletableFuture<NamedItem<Boolean>> future = new CompletableFuture<>();
-        parent.sendMessage(embed.build())
-                .thenAcceptAsync(message -> {
-                    affiliateMessages.add(message);
-                    message.addReaction(EMOJI_YES);
-                    message.addReaction(EMOJI_NO);
-                    message.attachListener((ReactionAddListener) event -> {
-                        affiliateMessages.add(event.getMessage());
-                        Emoji emoji = event.getEmoji();
-                        User user = event.getUser();
-                        
-                        if (!user.isYourself()) {
-                            if (userCanRespond.test(user) && emoji.toUnicodeEmoji()
-                                    .isPresent()) {
-                                //noinspection OptionalGetWithoutIsPresent
-                                switch (emoji.toUnicodeEmoji()
-                                        .map(Mentionable::getMentionTag)
-                                        .get()) {
-                                    case EMOJI_YES:
-                                        future.complete(new NamedItem<>(super.name, true));
-                                        break;
-                                    case EMOJI_NO:
-                                        future.complete(new NamedItem<>(super.name, false));
-                                        break;
-                                    default:
-                                        event.getMessage()
-                                                .removeReactionsByEmoji(emoji);
-                                        break;
-                                }
-                            } else {
-                                event.getMessage()
-                                        .removeReactionsByEmoji(emoji);
-                            }
+        parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
+            affiliateMessages.add(message);
+            message.addReaction(EMOJI_YES);
+            message.addReaction(EMOJI_NO);
+            message.attachListener((ReactionAddListener) event -> {
+                affiliateMessages.add(event.getMessage());
+                Emoji emoji = event.getEmoji();
+                User user = event.getUser();
+                
+                if (!user.isYourself()) {
+                    if (userCanRespond.test(user) && emoji.toUnicodeEmoji().isPresent()) {
+                        //noinspection OptionalGetWithoutIsPresent
+                        switch (emoji.toUnicodeEmoji().map(Mentionable::getMentionTag).get()) {
+                            case EMOJI_YES:
+                                future.complete(new NamedItem<>(super.name, true));
+                                break;
+                            case EMOJI_NO:
+                                future.complete(new NamedItem<>(super.name, false));
+                                break;
+                            default:
+                                event.getMessage().removeReactionsByEmoji(emoji);
+                                break;
                         }
-                    });
-                    parent.getDiscord()
-                            .getThreadPool()
-                            .getScheduler()
-                            .schedule(() -> future.complete(new NamedItem<>(super.name, false)), duration, timeUnit);
-                    future.thenAcceptAsync(result -> {
-                        message.removeAllReactions();
-                        message.edit((field != null ? embedBaseSupplier.get()
-                                .addField(field)
-                                .addField("Answer:", (result.getItem() ? "Yes" : "No")) : embedBaseSupplier.get()
-                                              .addField("Answer:", (result.getItem() ? "Yes" : "No"))).build());
-                        message.detachAllListeners();
-                    })
-                            .exceptionally(Logger::get);
-                    if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
-                            .exceptionally(Logger::get);
-                });
+                    } else {
+                        event.getMessage().removeReactionsByEmoji(emoji);
+                    }
+                }
+            });
+            parent.getDiscord().getThreadPool().getScheduler().schedule(() -> future.complete(new NamedItem<>(super.name, false)), duration, timeUnit);
+            future.thenAcceptAsync(result -> {
+                message.removeAllReactions();
+                message.edit((field != null ? embedBaseSupplier.get().addField(field).addField("Answer:", (result.getItem() ? "Yes" : "No")) :
+                              embedBaseSupplier.get().addField("Answer:", (result.getItem() ? "Yes" : "No"))).build());
+                message.detachAllListeners();
+            }).exceptionally(Logger::get);
+            if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(Logger::get);
+        });
         
         return future;
     }

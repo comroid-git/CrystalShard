@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.Listener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+
 import java.util.concurrent.TimeUnit;
 
 public class MultiListenerManagerInternal<T extends Listener> implements ListenerManager<T> {

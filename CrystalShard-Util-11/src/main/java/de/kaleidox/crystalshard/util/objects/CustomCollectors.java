@@ -15,20 +15,17 @@ import java.util.stream.Collector;
 
 public class CustomCollectors {
     // Static Fields
-    public static final Set<Collector.Characteristics> CH_ID              = Collections.unmodifiableSet(EnumSet.of(
-            Collector.Characteristics.IDENTITY_FINISH));
+    public static final Set<Collector.Characteristics> CH_ID              = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
     public static final Set<Collector.Characteristics> CH_NOID            = Collections.emptySet();
-    static final        Set<Collector.Characteristics> CH_CONCURRENT_ID   = Collections.unmodifiableSet(EnumSet.of(
-            Collector.Characteristics.CONCURRENT,
-            Collector.Characteristics.UNORDERED,
-            Collector.Characteristics.IDENTITY_FINISH));
-    static final        Set<Collector.Characteristics> CH_CONCURRENT_NOID = Collections.unmodifiableSet(EnumSet.of(
-            Collector.Characteristics.CONCURRENT,
-            Collector.Characteristics.UNORDERED));
-    static final        Set<Collector.Characteristics> CH_UNORDERED_ID    = Collections.unmodifiableSet(EnumSet.of(
-            Collector.Characteristics.UNORDERED,
-            Collector.Characteristics.IDENTITY_FINISH));
+    static final        Set<Collector.Characteristics> CH_CONCURRENT_ID   = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT,
+                                                                                                                   Collector.Characteristics.UNORDERED,
+                                                                                                                   Collector.Characteristics.IDENTITY_FINISH));
+    static final        Set<Collector.Characteristics> CH_CONCURRENT_NOID = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.CONCURRENT,
+                                                                                                                   Collector.Characteristics.UNORDERED));
+    static final        Set<Collector.Characteristics> CH_UNORDERED_ID    = Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.UNORDERED,
+                                                                                                                   Collector.Characteristics.IDENTITY_FINISH));
     
+// Static membe
     // Static members
     public static <T> Collector<Collection<T>, Collection<T>, ArrayList<T>> collectionMerge() {
         return new CustomCollectorImpl<>(ArrayList::new, Collection::addAll, (left, right) -> {
@@ -66,8 +63,8 @@ public class CustomCollectors {
         private final Function<A, R>       finisher;
         private final Set<Characteristics> characteristics;
         
-        public CustomCollectorImpl(Supplier<A> supplier, BiConsumer<A, T> accumulator, BinaryOperator<A> combiner,
-                                   Function<A, R> finisher, Set<Characteristics> characteristics) {
+        public CustomCollectorImpl(Supplier<A> supplier, BiConsumer<A, T> accumulator, BinaryOperator<A> combiner, Function<A, R> finisher,
+                                   Set<Characteristics> characteristics) {
             this.supplier = supplier;
             this.accumulator = accumulator;
             this.combiner = combiner;
@@ -75,8 +72,7 @@ public class CustomCollectors {
             this.characteristics = characteristics;
         }
         
-        public CustomCollectorImpl(Supplier<A> supplier, BiConsumer<A, T> accumulator, BinaryOperator<A> combiner,
-                                   Set<Characteristics> characteristics) {
+        public CustomCollectorImpl(Supplier<A> supplier, BiConsumer<A, T> accumulator, BinaryOperator<A> combiner, Set<Characteristics> characteristics) {
             this(supplier, accumulator, combiner, castingIdentity(), characteristics);
         }
         
@@ -106,6 +102,7 @@ public class CustomCollectors {
             return characteristics;
         }
         
+// Static membe
         // Static members
         private static <I, R> Function<I, R> castingIdentity() {
             return i -> (R) i;

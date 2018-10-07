@@ -15,6 +15,7 @@ public interface Castable<C> {
         return castTo(castTo).orElse(null);
     }
     
+// Static membe
     // Static members
     @SuppressWarnings("unchecked")
     private static <T> Optional<T> cast(Class<T> castTo, Object instance) {

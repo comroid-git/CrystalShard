@@ -14,6 +14,7 @@ import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,8 +47,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
                 .node(((SendableInternal) content).toJsonNode(objectNode()))
                 .execute(node -> {
-                    Message message = discord.getMessageCache()
-                            .getOrCreate(discord, node);
+                    Message message = discord.getMessageCache().getOrCreate(discord, node);
                     messages.put(message.getId(), message);
                     return message;
                 });
@@ -57,9 +57,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
         if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
-        Embed.Builder builder = discord.getUtilities()
-                .getDefaultEmbed()
-                .getBuilder();
+        Embed.Builder builder = discord.getUtilities().getDefaultEmbed().getBuilder();
         defaultEmbedModifier.accept(builder);
         return sendMessage(builder.build());
     }
@@ -68,12 +66,16 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
         if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
-        return new WebRequest<Message>(discord).method(Method.POST)
-                .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
-                .node(objectNode("content", "", "embed", ((EmbedDraftInternal) embedDraft).toJsonNode(objectNode()), "file", "content"))
-                .execute(node -> {
-                    Message message = discord.getMessageCache()
-                            .getOrCreate(discord, node);
+        return new WebRequest<Message>(discord).method(Method.POST).endpoint(Endpoint.Location.MESSAGE.toEndpoint(this)).node(objectNode("content",
+                                                                                                                                         "",
+                                                                                                                                         "embed",
+                                                                                                                                         ((EmbedDraftInternal) embedDraft)
+                                                                                                                                                 .toJsonNode(
+                                                                                                                                                         objectNode()),
+                                                                                                                                         "file",
+                                                                                                                                         "content")).execute(
+                node -> {
+                    Message message = discord.getMessageCache().getOrCreate(discord, node);
                     messages.put(message.getId(), message);
                     return message;
                 });
@@ -83,12 +85,12 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     public CompletableFuture<Message> sendMessage(String content) {
         if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
-        return new WebRequest<Message>(discord).method(Method.POST)
-                .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
-                .node(objectNode("content", content, "file", "content"))
-                .execute(node -> {
-                    Message message = discord.getMessageCache()
-                            .getOrCreate(discord, node);
+        return new WebRequest<Message>(discord).method(Method.POST).endpoint(Endpoint.Location.MESSAGE.toEndpoint(this)).node(objectNode("content",
+                                                                                                                                         content,
+                                                                                                                                         "file",
+                                                                                                                                         "content")).execute(
+                node -> {
+                    Message message = discord.getMessageCache().getOrCreate(discord, node);
                     messages.put(message.getId(), message);
                     return message;
                 });
@@ -96,9 +98,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Void> typing() {
-        return new WebRequest<Void>(discord).method(Method.POST)
-                .endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this))
-                .execute(node -> null);
+        return new WebRequest<Void>(discord).method(Method.POST).endpoint(Endpoint.Location.CHANNEL_TYPING.toEndpoint(this)).execute(node -> null);
     }
     
     @Override
@@ -109,21 +109,18 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
         if (!hasPermission(discord, Permission.READ_MESSAGE_HISTORY)) return CompletableFuture.completedFuture(Collections.emptyList());
         return new WebRequest<Collection<Message>>(discord).method(Method.GET)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(id))
-                .node(objectNode("limit", limit))
+                .node(objectNode("limit",
+                                 limit))
                 .execute(data -> {
                     List<Message> list = new ArrayList<>();
-                    data.forEach(msg -> list.add(discord.getMessageCache()
-                                                         .getOrCreate(discord, msg)));
+                    data.forEach(msg -> list.add(discord.getMessageCache().getOrCreate(discord, msg)));
                     return list;
                 });
     }
     
     @Override
     public Collection<Message> getPinnedMessages() {
-        return pinned.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+        return pinned.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
     }
     
     private boolean checkPermissions() {

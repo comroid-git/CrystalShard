@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.time.Instant;
 
 public interface Integration extends DiscordItem, Nameable {

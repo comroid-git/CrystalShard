@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -20,22 +21,13 @@ public class MESSAGE_DELETE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.path("guild_id")
-                .asLong(-1);
-        long channelId = data.get("channel_id")
-                .asLong();
-        long messageId = data.get("id")
-                .asLong();
-        TextChannel channel = discord.getChannelCache()
-                .getOrRequest(channelId, channelId)
-                .toTextChannel()
-                .orElseThrow(AssertionError::new);
-        Message message = discord.getMessageCache()
-                .getOrRequest(messageId, IDPair.of(channelId, messageId));
-        Server server = serverId != -1 ? discord.getServerCache()
-                .getOrRequest(serverId, serverId) : null;
-        User user = message.getAuthorAsUser()
-                .orElse(null);
+        long serverId = data.path("guild_id").asLong(-1);
+        long channelId = data.get("channel_id").asLong();
+        long messageId = data.get("id").asLong();
+        TextChannel channel = discord.getChannelCache().getOrRequest(channelId, channelId).toTextChannel().orElseThrow(AssertionError::new);
+        Message message = discord.getMessageCache().getOrRequest(messageId, IDPair.of(channelId, messageId));
+        Server server = serverId != -1 ? discord.getServerCache().getOrRequest(serverId, serverId) : null;
+        User user = message.getAuthorAsUser().orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
         
         MessageDeleteEventInternal event = new MessageDeleteEventInternal(discord, message);
@@ -46,8 +38,7 @@ public class MESSAGE_DELETE extends HandlerBase {
                          channel,
                          roles.toArray(new Role[0]),
                          user,
-                         message).forEach(listener -> discord.getThreadPool()
-                .execute(() -> listener.onMessageDelete(event)));
+                         message).forEach(listener -> discord.getThreadPool().execute(() -> listener.onMessageDelete(event)));
         
         message.detachAllListeners(); // take this, basti
     }

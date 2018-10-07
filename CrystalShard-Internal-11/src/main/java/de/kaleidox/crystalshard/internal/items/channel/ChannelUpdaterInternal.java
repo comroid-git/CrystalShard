@@ -14,6 +14,7 @@ import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,6 +32,7 @@ public class ChannelUpdaterInternal {
             this.channel = channel;
         }
         
+// Override Methods
         @Override
         public Discord getDiscord() {
             return null;
@@ -54,6 +56,7 @@ public class ChannelUpdaterInternal {
             this.overrides = new ArrayList<>();
         }
         
+// Override Methods
         @Override
         public T setName(String name) {
             this.name = name;
@@ -86,6 +89,7 @@ public class ChannelUpdaterInternal {
             this.category = null;
         }
         
+// Override Methods
         @Override
         public ChannelCategory.Updater setCategory(ChannelCategory category) {
             throw new UnsupportedOperationException("Cannot change the category of a category!");
@@ -93,23 +97,20 @@ public class ChannelUpdaterInternal {
         
         @Override
         public CompletableFuture<ChannelCategory> update() {
-            if (!channel.getServerOfChannel()
-                    .orElseThrow(AssertionError::new)
-                    .hasPermission(discord, Permission.MANAGE_CHANNELS))
+            if (!channel.getServerOfChannel().orElseThrow(AssertionError::new).hasPermission(discord, Permission.MANAGE_CHANNELS))
                 return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return new WebRequest<ChannelCategory>(discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
-                    .node((name != null ? new Object[]{"name", name} : new Object[0]),
-                          (position != null ? new Object[]{"position", position} : new Object[0]),
+                    .node((name != null ? new Object[]{"name",
+                                                       name} : new Object[0]),
+                          (position != null ? new Object[]{"position",
+                                                           position} : new Object[0]),
                           "permission_overwrites",
                           overrides.stream()
                                   .map(PermissionOverrideInternal.class::cast)
                                   .map(PermissionOverrideInternal::toJsonNode)
                                   .collect(Collectors.toList()))
-                    .execute(node -> discord.getChannelCache()
-                            .getOrCreate(discord, node)
-                            .toChannelCategory()
-                            .orElseThrow(AssertionError::new));
+                    .execute(node -> discord.getChannelCache().getOrCreate(discord, node).toChannelCategory().orElseThrow(AssertionError::new));
         }
     }
     
@@ -123,6 +124,7 @@ public class ChannelUpdaterInternal {
             setSuperType(this);
         }
         
+// Override Methods
         @Override
         public ServerTextChannel.Updater setTopic(String topic) {
             this.topic = topic;
@@ -137,26 +139,26 @@ public class ChannelUpdaterInternal {
         
         @Override
         public CompletableFuture<ServerTextChannel> update() {
-            if (!channel.getServerOfChannel()
-                    .orElseThrow(AssertionError::new)
-                    .hasPermission(discord, Permission.MANAGE_CHANNELS))
+            if (!channel.getServerOfChannel().orElseThrow(AssertionError::new).hasPermission(discord, Permission.MANAGE_CHANNELS))
                 return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return new WebRequest<ServerTextChannel>(discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
-                    .node((name != null ? new Object[]{"name", name} : new Object[0]),
-                          (topic != null ? new Object[]{"topic", topic} : new Object[0]),
-                          (position != null ? new Object[]{"position", position} : new Object[0]),
-                          (nsfw != null ? new Object[]{"nsfw", nsfw} : new Object[0]),
-                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                    .node((name != null ? new Object[]{"name",
+                                                       name} : new Object[0]),
+                          (topic != null ? new Object[]{"topic",
+                                                        topic} : new Object[0]),
+                          (position != null ? new Object[]{"position",
+                                                           position} : new Object[0]),
+                          (nsfw != null ? new Object[]{"nsfw",
+                                                       nsfw} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id",
+                                                           category.getId()} : new Object[0]),
                           "permission_overwrites",
                           overrides.stream()
                                   .map(PermissionOverrideInternal.class::cast)
                                   .map(PermissionOverrideInternal::toJsonNode)
                                   .collect(Collectors.toList()))
-                    .execute(node -> discord.getChannelCache()
-                            .getOrCreate(discord, node)
-                            .toServerTextChannel()
-                            .orElseThrow(AssertionError::new));
+                    .execute(node -> discord.getChannelCache().getOrCreate(discord, node).toServerTextChannel().orElseThrow(AssertionError::new));
         }
     }
     
@@ -170,6 +172,7 @@ public class ChannelUpdaterInternal {
             setSuperType(this);
         }
         
+// Override Methods
         @Override
         public ServerVoiceChannel.Updater setBitrate(int bitrate) {
             this.bitrate = bitrate;
@@ -184,26 +187,26 @@ public class ChannelUpdaterInternal {
         
         @Override
         public CompletableFuture<ServerVoiceChannel> update() {
-            if (!channel.getServerOfChannel()
-                    .orElseThrow(AssertionError::new)
-                    .hasPermission(discord, Permission.MANAGE_CHANNELS))
+            if (!channel.getServerOfChannel().orElseThrow(AssertionError::new).hasPermission(discord, Permission.MANAGE_CHANNELS))
                 return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return new WebRequest<ServerVoiceChannel>(discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
-                    .node((name != null ? new Object[]{"name", name} : new Object[0]),
-                          (position != null ? new Object[]{"position", position} : new Object[0]),
-                          (bitrate != null ? new Object[]{"bitrate", bitrate} : new Object[0]),
-                          (limit != null ? new Object[]{"user_limit", limit} : new Object[0]),
-                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                    .node((name != null ? new Object[]{"name",
+                                                       name} : new Object[0]),
+                          (position != null ? new Object[]{"position",
+                                                           position} : new Object[0]),
+                          (bitrate != null ? new Object[]{"bitrate",
+                                                          bitrate} : new Object[0]),
+                          (limit != null ? new Object[]{"user_limit",
+                                                        limit} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id",
+                                                           category.getId()} : new Object[0]),
                           "permission_overwrites",
                           overrides.stream()
                                   .map(PermissionOverrideInternal.class::cast)
                                   .map(PermissionOverrideInternal::toJsonNode)
                                   .collect(Collectors.toList()))
-                    .execute(node -> discord.getChannelCache()
-                            .getOrCreate(discord, node)
-                            .toServerVoiceChannel()
-                            .orElseThrow(AssertionError::new));
+                    .execute(node -> discord.getChannelCache().getOrCreate(discord, node).toServerVoiceChannel().orElseThrow(AssertionError::new));
         }
     }
 }

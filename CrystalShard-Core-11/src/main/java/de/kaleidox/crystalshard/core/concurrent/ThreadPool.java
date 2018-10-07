@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.core.concurrent;
 
-import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.CompletableFutureExtended;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class ThreadPool {
             "CompletableFuture#thenAcceptAsync or such. User " + "ThreadPool#isBotOwnThread to check if the current " + "Thread belongs to the Bot.");
     private final static Logger                                   logger               = new Logger(ThreadPool.class);
     private final        ConcurrentHashMap<Worker, AtomicBoolean> threads;
-    private final        DiscordInternal                          discord;
+    private final        Discord                                  discord;
     private final        int                                      maxSize;
     private final        LinkedBlockingQueue<Task>                queue;
     private final        AtomicInteger                            busyThreads          = new AtomicInteger(0);
@@ -67,7 +67,7 @@ public class ThreadPool {
      * @param name          The name for this ThreadPool. New Workers will get this name attached.
      */
     public ThreadPool(Discord discordObject, int maxSize, String name) {
-        this.discord = (DiscordInternal) discordObject;
+        this.discord = discordObject;
         this.maxSize = maxSize;
         this.threads = new ConcurrentHashMap<>();
         this.queue = new LinkedBlockingQueue<>();
@@ -78,8 +78,7 @@ public class ThreadPool {
     }
     
     /**
-     * Gets the executor for this ThreadPool. This will be useful for CompletableFuture async methods that use an
-     * executor.
+     * Gets the executor for this ThreadPool. This will be useful for CompletableFuture async methods that use an executor.
      *
      * @return The executor.
      * @see CompletableFutureExtended
@@ -103,7 +102,7 @@ public class ThreadPool {
         return executor;
     }
     
-    public DiscordInternal getDiscord() {
+    public Discord getDiscord() {
         return discord;
     }
     
@@ -113,13 +112,11 @@ public class ThreadPool {
      * @param heartbeat The heartbeat interval.
      */
     public void startHeartbeat(long heartbeat) {
-        scheduler.scheduleAtFixedRate(() -> discord.getWebSocket()
-                .heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> discord.getWebSocket().heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
     }
     
     /**
-     * Schedules a new task. If there is no limit on the ThreadPool or the limit is not hit, ensures that there is a
-     * Worker available.
+     * Schedules a new task. If there is no limit on the ThreadPool or the limit is not hit, ensures that there is a Worker available.
      *
      * @param task        The task to execute.
      * @param description A short description on what this task does.
@@ -144,12 +141,10 @@ public class ThreadPool {
     }
     
     /**
-     * Removes terminated Threads from the {@code factoriedThreads} list, and decrements the name counter for each
-     * thread.
+     * Removes terminated Threads from the {@code factoriedThreads} list, and decrements the name counter for each thread.
      */
     void cleanupThreads() {
-        factoriedThreads.stream()
-                .filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
+        factoriedThreads.stream().filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
                 .peek(Worker::interrupt) // interrupt the thread
                 .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one
                 // each thread
@@ -168,28 +163,21 @@ public class ThreadPool {
         }
         
         /**
-         * Checks if an older {@link Worker} threads is available, otherwise creates a new Worker thread and returns
-         * it.
+         * Checks if an older {@link Worker} threads is available, otherwise creates a new Worker thread and returns it.
          *
          * @return A {@link Worker} thread.
          */
         public Worker getOrCreateWorker() {
-            return threads.entrySet()
-                    .stream()
-                    .filter(entry -> !entry.getValue()
-                            .get())
-                    .findFirst()
-                    .map(Map.Entry::getKey)
-                    .orElseGet(() -> {
-                        Worker worker = new Worker(discord, nameCounter.getAndIncrement());
-                        threads.put(worker, worker.isBusy);
-                        //logger.deeptrace("New worker created: " + worker.getName());
-                        if (!worker.isAlive()) {
-                            worker.start();
-                            //logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
-                        }
-                        return worker;
-                    });
+            return threads.entrySet().stream().filter(entry -> !entry.getValue().get()).findFirst().map(Map.Entry::getKey).orElseGet(() -> {
+                Worker worker = new Worker(discord, nameCounter.getAndIncrement());
+                threads.put(worker, worker.isBusy);
+                //logger.deeptrace("New worker created: " + worker.getName());
+                if (!worker.isAlive()) {
+                    worker.start();
+                    //logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
+                }
+                return worker;
+            });
         }
     }
     
@@ -288,9 +276,8 @@ public class ThreadPool {
         }
         
         /**
-         * Attaches a new Runnable to this worker. This method should not be used for chaining tasks, but for attaching
-         * runnables to worker threads in the {@code java.lang.Thread.State.RUNNABLE} state. For chaining tasks, use
-         * {@link #execute(Runnable, String...)} instead.
+         * Attaches a new Runnable to this worker. This method should not be used for chaining tasks, but for attaching runnables to worker threads in the
+         * {@code java.lang.Thread.State.RUNNABLE} state. For chaining tasks, use {@link #execute(Runnable, String...)} instead.
          *
          * @param task The task to attach.
          */
@@ -360,8 +347,8 @@ public class ThreadPool {
     // Static members
     
     /**
-     * Returns whether the current thread is a BotOwn thread; meaning the current thread is a {@link Worker} Thread.
-     * This method is required if you statically want to get a Discord instance using {@link #getThreadDiscord()}.
+     * Returns whether the current thread is a BotOwn thread; meaning the current thread is a {@link Worker} Thread. This method is required if you statically
+     * want to get a Discord instance using {@link #getThreadDiscord()}.
      *
      * @return Whether the current thread is a bot own thread.
      */
@@ -370,8 +357,7 @@ public class ThreadPool {
     }
     
     /**
-     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the {@link
-     * Worker} Thread.
+     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the {@link Worker} Thread.
      *
      * @return The worker thread.
      * @throws IllegalCallerException If the thread is not a Bot-Own thread.
@@ -384,8 +370,7 @@ public class ThreadPool {
     }
     
     /**
-     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the {@link
-     * Worker} Thread.
+     * Checks if the current thread is a BotOwn thread (see {@link #isBotOwnThread()}, and if so, returns the {@link Worker} Thread.
      *
      * @param customMessage A custom message to show in the possible exception.
      * @return The worker thread.
@@ -399,8 +384,8 @@ public class ThreadPool {
     }
     
     /**
-     * Gets the Discord object attached to the current Thread, if the current thread is a {@link Worker} thread.
-     * Otherwise throws a {@link IllegalCallerException}.
+     * Gets the Discord object attached to the current Thread, if the current thread is a {@link Worker} thread. Otherwise throws a {@link
+     * IllegalCallerException}.
      *
      * @return The discord object.
      * @throws IllegalCallerException If the thread is not a Bot-Own thread.
@@ -417,8 +402,6 @@ public class ThreadPool {
      * @return Whether the task is most likely from an async stage.
      */
     private static boolean nonFutureTask(Runnable task) {
-        return !task.toString()
-                .toLowerCase()
-                .contains("future");
+        return !task.toString().toLowerCase().contains("future");
     }
 }

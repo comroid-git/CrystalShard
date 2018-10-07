@@ -20,9 +20,6 @@ public enum ExplicitContentFilterLevel {
     // Static members
     // Static membe
     public static ExplicitContentFilterLevel getFromId(int id) {
-        return Stream.of(values())
-                .filter(level -> level.id == id)
-                .findAny()
-                .orElse(UNKNOWN);
+        return Stream.of(values()).filter(level -> level.id == id).findAny().orElse(UNKNOWN);
     }
 }

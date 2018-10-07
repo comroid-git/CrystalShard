@@ -29,7 +29,7 @@ public class Logger {
     private final static String                       DEFAULT_PREFIX          = "[%l]\t%t\t%c:";
     private final static String                       DEFAULT_SUFFIX          = "{%r}";
     private final static List<String>                 DEFAULT_BLANKED         = new ArrayList<>();
-    private final static String configFile = "/logging_config.json";
+    private final static String                       configFile              = "/logging_config.json";
     private final static JsonNode                     configuration;
     private static       LoggingLevel                 level;
     private static       List<Class>                  ignored;
@@ -39,6 +39,7 @@ public class Logger {
     private static       List<CustomExceptionHandler> customExceptionHandlers = new ArrayList<>();
     private final        Class                        loggingClass;
     
+// Init Blocks
     // Init Blocks
     static {
         InputStream configStream = ClassLoader.getSystemResourceAsStream(configFile);
@@ -56,14 +57,10 @@ public class Logger {
             configuration = createDefaultConfig();
         }
         
-        level = LoggingLevel.ofName(configuration.get("level")
-                                            .asText())
-                .orElse(DEFAULT_LEVEL);
+        level = LoggingLevel.ofName(configuration.get("level").asText()).orElse(DEFAULT_LEVEL);
         ignored = configuration.has("ignored") ? createIgnoredList(configuration.get("ignored")) : DEFAULT_IGNORED;
-        String prefix = configuration.get("prefix")
-                .asText(DEFAULT_PREFIX);
-        String suffix = configuration.get("suffix")
-                .asText(DEFAULT_SUFFIX);
+        String prefix = configuration.get("prefix").asText(DEFAULT_PREFIX);
+        String suffix = configuration.get("suffix").asText(DEFAULT_SUFFIX);
     }
     
     /**
@@ -157,8 +154,8 @@ public class Logger {
     }
     
     /**
-     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for usage in {@link
-     * java.util.concurrent.CompletableFuture#exceptionally(Function)}.
+     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for usage in
+     * {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
      *
      * @param throwable The throwable to post.
      * @param <T>       A type variable for the return-type.
@@ -170,8 +167,7 @@ public class Logger {
     }
     
     /**
-     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for logging caught exceptions with a
-     * custom message.
+     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for logging caught exceptions with a custom message.
      *
      * @param throwable     The throwable to post.
      * @param customMessage A custom message to post instead of {@link Throwable#getMessage()}. May be null.
@@ -182,27 +178,21 @@ public class Logger {
         if (!ignored.contains(loggingClass)) {
             StringBuilder sb = new StringBuilder().append("An exception has occurred: ")
                     .append(customMessage == null ? throwable.getMessage() : customMessage)
-                    .append((throwable instanceof DiscordPermissionException ? "\nInsufficent Discord Permissions: " +
-                                                                               makePermList((DiscordPermissionException) throwable) +
-                                                                               " Thread \"" :
+                    .append((throwable instanceof DiscordPermissionException ?
+                             "\nInsufficent Discord Permissions: " + makePermList((DiscordPermissionException) throwable) + " Thread \"" :
                              "\nException in thread \""))
-                    .append(Thread.currentThread()
-                                    .getName())
+                    .append(Thread.currentThread().getName())
                     .append("\" ")
-                    .append(throwable.getClass()
-                                    .getName())
+                    .append(throwable.getClass().getName())
                     .append(": ")
                     .append(throwable.getMessage());
             
             if (throwable instanceof LowStackTraceable) {
                 if (((LowStackTraceable) throwable).lowStackTrace()) {
-                    sb.append("\n\t")
-                            .append(throwable.getStackTrace()[0]);
+                    sb.append("\n\t").append(throwable.getStackTrace()[0]);
                 }
             } else {
-                List.of(throwable.getStackTrace())
-                        .forEach(line -> sb.append("\n\t")
-                                .append(line));
+                List.of(throwable.getStackTrace()).forEach(line -> sb.append("\n\t").append(line));
             }
             
             customExceptionHandlers.forEach(handler -> handler.apply(throwable));
@@ -247,20 +237,18 @@ public class Logger {
     }
     
     private String newFix(LoggingLevel level, int x) {
-        String fix = configuration.get(x < 0 ? "prefix" : "suffix")
-                .asText();
+        String fix = configuration.get(x < 0 ? "prefix" : "suffix").asText();
         
         fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
         fix = fix.replace("%c", loggingClass.getName());
         fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
         fix = fix.replace("%l", level.getName());
-        fix = fix.replace("%r",
-                          Thread.currentThread()
-                                  .getName());
+        fix = fix.replace("%r", Thread.currentThread().getName());
         
         return fix.equals("null") ? "" : fix;
     }
     
+// Static membe
     /**
      * Registers the given CustomHandler for handling any post message.
      *
@@ -334,8 +322,7 @@ public class Logger {
     }
     
     /**
-     * A static method to catch exceptions. This method posts the given exception from a static logger for {@link
-     * StaticException}. This method can be used for
+     * A static method to catch exceptions. This method posts the given exception from a static logger for {@link StaticException}. This method can be used for
      * {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
      *
      * @param throwable The exception to log.
@@ -349,14 +336,12 @@ public class Logger {
     }
     
     private static ObjectNode createDefaultConfig() {
-        System.out.println("[INFO] No logger configuration file \""+configFile+"\" found at resources root. " +
+        System.out.println("[INFO] No logger configuration file \"" + configFile + "\" found at resources root. " +
                            "Using default configuration or code set preferences...");
         return JsonHelper.objectNode("level",
                                      DEFAULT_LEVEL.getName(),
                                      "ignored",
-                                     DEFAULT_IGNORED.stream()
-                                             .map(Class::getName)
-                                             .toArray(),
+                                     DEFAULT_IGNORED.stream().map(Class::getName).toArray(),
                                      "prefix",
                                      DEFAULT_PREFIX,
                                      "suffix",

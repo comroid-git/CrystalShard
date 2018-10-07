@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -83,9 +84,8 @@ public interface Channel
         Discord getDiscord();
         
         /**
-         * Builds an instance of {@code R}.
-         * The returned future completes exceptionally with a {@link DiscordPermissionException} if the bot does not have the required permission to build
-         * the channel.
+         * Builds an instance of {@code R}. The returned future completes exceptionally with a {@link DiscordPermissionException} if the bot does not have the
+         * required permission to build the channel.
          *
          * @return A future that completes with the built channel.
          */

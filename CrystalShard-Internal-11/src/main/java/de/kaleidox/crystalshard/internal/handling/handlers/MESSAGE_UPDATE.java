@@ -14,6 +14,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,14 +24,10 @@ public class MESSAGE_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        MessageInternal message = (MessageInternal) discord.getMessageCache()
-                .getOrCreate(discord, data);
+        MessageInternal message = (MessageInternal) discord.getMessageCache().getOrCreate(discord, data);
         TextChannel channel = message.getChannel();
-        Server server = channel.toServerChannel()
-                .map(ServerChannel::getServer)
-                .orElse(null);
-        User user = message.getAuthorAsUser()
-                .orElse(null);
+        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
+        User user = message.getAuthorAsUser().orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
         
         List<SentEmbed> embeds = message.getEmbeds();
@@ -49,7 +46,6 @@ public class MESSAGE_UPDATE extends HandlerBase {
                          channel,
                          user,
                          roles.toArray(new Role[0]),
-                         message).forEach(listener -> discord.getThreadPool()
-                .execute(() -> listener.onMessageEdit(event)));
+                         message).forEach(listener -> discord.getThreadPool().execute(() -> listener.onMessageEdit(event)));
     }
 }

@@ -11,13 +11,9 @@ public class GUILD_MEMBER_ADD extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long guildId = data.get("guild_id")
-                .asLong();
-        ServerInternal server = (ServerInternal) discord.getServerCache()
-                .getOrRequest(guildId, guildId);
-        ServerMember member = discord.getUserCache()
-                .getOrCreate(discord, data)
-                .toServerMember(server, data);
+        long guildId = data.get("guild_id").asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache().getOrRequest(guildId, guildId);
+        ServerMember member = discord.getUserCache().getOrCreate(discord, data).toServerMember(server, data);
         
         server.addUser(member);
         ServerMemberJoinEventInternal event = new ServerMemberJoinEventInternal(discord, server, member);

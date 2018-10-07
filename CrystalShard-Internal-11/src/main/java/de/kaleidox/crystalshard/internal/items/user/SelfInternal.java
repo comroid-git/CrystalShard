@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.crystalshard.core.net.socket.Payload;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
@@ -16,8 +17,8 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -65,11 +66,10 @@ public class SelfInternal extends UserInternal implements Self {
     public CompletableFuture<Void> setName(String name) {
         return new WebRequest<Void>(this.getDiscord()).method(Method.PATCH)
                 .endpoint(Endpoint.of(Endpoint.Location.SELF_INFO))
-                .node(objectNode().set("username", JsonHelper.nodeOf(name)))
+                .node(objectNode().set("username",
+                                       JsonHelper.nodeOf(name)))
                 .execute(data -> {
-                    if (!discriminator.equals(data.path("discriminator")
-                                                      .asText(discriminator))) discriminator = data.get("discriminator")
-                            .asText();
+                    if (!discriminator.equals(data.path("discriminator").asText(discriminator))) discriminator = data.get("discriminator").asText();
                     return null;
                 });
     }
@@ -78,7 +78,8 @@ public class SelfInternal extends UserInternal implements Self {
     public CompletableFuture<Void> setNickname(String nickname, Server inServer) {
         return new WebRequest<Void>(getDiscord()).method(Method.PATCH)
                 .endpoint(Endpoint.Location.SELF_NICKNAME.toEndpoint(inServer))
-                .node(objectNode("nick", nickname))
+                .node(objectNode("nick",
+                                 nickname))
                 .executeNull();
     }
     
@@ -107,19 +108,20 @@ public class SelfInternal extends UserInternal implements Self {
     }
     
     private CompletableFuture<Void> sendStatus() {
-        return ((DiscordInternal) getDiscord()).getWebSocket()
-                .sendPayload(Payload.create(OpCode.STATUS_UPDATE,
-                                            objectNode("since",
-                                                       (status == Presence.Status.IDLE ? System.currentTimeMillis() : null),
-                                                       "game",
-                                                       objectNode("type", type.getId(), "name", title,
-                                                                  // only include an URL if there is a URL actually
-                                                                  // set, else include nothing
-                                                                  (url != null ? new Object[]{"url", url} : new Object[0])),
-                                                       "status",
-                                                       status.getKey(),
-                                                       "afk",
-                                                       false)))
-                .thenApply(e -> null);
+        return ((DiscordInternal) getDiscord()).getWebSocket().sendPayload(Payload.create(OpCode.STATUS_UPDATE,
+                                                                                          objectNode("since",
+                                                                                                     (status == Presence.Status.IDLE ?
+                                                                                                      System.currentTimeMillis() : null),
+                                                                                                     "game",
+                                                                                                     objectNode("type", type.getId(), "name", title,
+                                                                                                                // only include an URL if there is a URL
+                                                                                                                // actually
+                                                                                                                // set, else include nothing
+                                                                                                                (url != null ? new Object[]{"url", url} :
+                                                                                                                 new Object[0])),
+                                                                                                     "status",
+                                                                                                     status.getKey(),
+                                                                                                     "afk",
+                                                                                                     false))).thenApply(e -> null);
     }
 }

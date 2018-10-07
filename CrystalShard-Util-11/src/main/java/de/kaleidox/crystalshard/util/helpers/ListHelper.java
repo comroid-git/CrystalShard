@@ -19,9 +19,8 @@ public class ListHelper extends CollectionHelper {
     // Static members
     
     /**
-     * Moves all items within a list after the given {@code distance}. If an object is null or not available, it gets
-     * replaced with {@code defaultValue}. All items that get moved below index {@code 0} get dropped. The given list
-     * pointer is being overwritten by the new, modified list.
+     * Moves all items within a list after the given {@code distance}. If an object is null or not available, it gets replaced with {@code defaultValue}. All
+     * items that get moved below index {@code 0} get dropped. The given list pointer is being overwritten by the new, modified list.
      *
      * @param list         The list to move within.
      * @param distance     The distance to move. Can be negative for downwards moving.
@@ -51,8 +50,8 @@ public class ListHelper extends CollectionHelper {
     }
     
     /**
-     * Search for an item within a list without having to modify the list. This way, you provide a Function to convert
-     * the list type of item into the criteria type of item.
+     * Search for an item within a list without having to modify the list. This way, you provide a Function to convert the list type of item into the criteria
+     * type of item.
      *
      * @param list              The list to search in.
      * @param criteria          An item to search for. Uses {@link Object#equals(Object)}.
@@ -63,8 +62,7 @@ public class ListHelper extends CollectionHelper {
      */
     public static <A, B> Optional<A> findComplex(List<A> list, B criteria, Function<A, B> criteriaExtractor) {
         for (A item : list) {
-            if (criteriaExtractor.apply(item)
-                    .equals(criteria)) {
+            if (criteriaExtractor.apply(item).equals(criteria)) {
                 return Optional.of(item);
             }
         }
@@ -78,12 +76,10 @@ public class ListHelper extends CollectionHelper {
             int falses = 0;
         };
         
-        list.stream()
-                .map(booleanFunction)
-                .forEach(bool -> {
-                    if (bool) ref.trues++;
-                    else ref.falses++;
-                });
+        list.stream().map(booleanFunction).forEach(bool -> {
+            if (bool) ref.trues++;
+            else ref.falses++;
+        });
         
         return (ref.trues == list.size());
     }
@@ -124,8 +120,7 @@ public class ListHelper extends CollectionHelper {
         int matches = 0;
         
         for (int i = 0; i < a.size(); i++) {
-            if (a.get(i)
-                    .equals(b.get(i))) matches++;
+            if (a.get(i).equals(b.get(i))) matches++;
         }
         
         return matches == a.size();

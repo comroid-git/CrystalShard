@@ -95,8 +95,6 @@ public enum OpCode {
     // Static members
     // Static membe
     public static Optional<OpCode> getByCode(int code) {
-        return Stream.of(values())
-                .filter(opCode -> opCode.code == code)
-                .findAny();
+        return Stream.of(values()).filter(opCode -> opCode.code == code).findAny();
     }
 }

@@ -1,10 +1,11 @@
 package de.kaleidox.crystalshard.internal.items.message.embed;
 
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.logging.Logger;
+
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -79,11 +80,9 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     @Override
     public Embed.Builder setFooter(EmbedDraft.Footer footer) {
-        charCounter = charCounter + footer.getText()
-                .length();
+        charCounter = charCounter + footer.getText().length();
         testCharCounter();
-        if (footer.getText()
-                    .length() > Embed.Boundaries.FOOTER_LENGTH) {
+        if (footer.getText().length() > Embed.Boundaries.FOOTER_LENGTH) {
             throw new IllegalArgumentException("Footer text must not exceed " + Embed.Boundaries.FOOTER_LENGTH + " characters!");
         }
         this.footer = footer;
@@ -104,11 +103,9 @@ public class EmbedBuilderInternal implements Embed.Builder {
     
     @Override
     public Embed.Builder setAuthor(EmbedDraft.Author author) {
-        charCounter = charCounter + author.getName()
-                .length();
+        charCounter = charCounter + author.getName().length();
         testCharCounter();
-        if (author.getName()
-                    .length() > Embed.Boundaries.AUTHOR_NAME_LENGTH) {
+        if (author.getName().length() > Embed.Boundaries.AUTHOR_NAME_LENGTH) {
             throw new IllegalArgumentException("Author name must not exceed " + Embed.Boundaries.AUTHOR_NAME_LENGTH + " characters!");
         }
         this.author = author;
@@ -125,27 +122,21 @@ public class EmbedBuilderInternal implements Embed.Builder {
     @Override
     public Embed.Builder addField(EmbedDraft.Field field) {
         Objects.requireNonNull(field);
-        charCounter = charCounter + field.getText()
-                .length() + field.getTitle()
-                              .length();
+        charCounter = charCounter + field.getText().length() + field.getTitle().length();
         testCharCounter();
         if (fields.size() >= Embed.Boundaries.FIELD_COUNT) {
             throw new IllegalArgumentException("Field amount must not exceed " + Embed.Boundaries.FIELD_COUNT + "!");
         }
-        if (field.getTitle()
-                .isBlank()) {
+        if (field.getTitle().isBlank()) {
             throw new IllegalArgumentException("Field title must not be blank!");
         }
-        if (field.getTitle()
-                    .length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
+        if (field.getTitle().length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
             throw new IllegalArgumentException("Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
         }
-        if (field.getText()
-                .isBlank()) {
+        if (field.getText().isBlank()) {
             throw new IllegalArgumentException("Field text must not be blank!");
         }
-        if (field.getText()
-                    .length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
+        if (field.getText().length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
             throw new IllegalArgumentException("Field text must not exceed " + Embed.Boundaries.FIELD_TEXT_LENGTH + " characters!");
         }
         this.fields.add(field);
@@ -158,9 +149,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
         for (int i = 0; i < fields.size(); i++) {
             EmbedDraft.Field field = fields.get(i);
             if (predicate.test(field)) {
-                fields.set(i,
-                           updater.apply(field.toEditableField()
-                                                 .get()));
+                fields.set(i, updater.apply(field.toEditableField().get()));
             }
         }
         return this;

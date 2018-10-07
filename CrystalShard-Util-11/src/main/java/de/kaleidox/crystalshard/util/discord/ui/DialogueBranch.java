@@ -1,20 +1,20 @@
 package de.kaleidox.crystalshard.util.discord.ui;
 
-import de.kaleidox.crystalshard.util.discord.ui.response.ResponseElement;
 import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.discord.ui.response.ResponseElement;
 import de.kaleidox.crystalshard.util.objects.markers.NamedItem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 /**
- * This class represents a possible branch in a Discord Dialogue. Each branch except the root branch results from a
- * previous branch; and is the product of a specified Option.
+ * This class represents a possible branch in a Discord Dialogue. Each branch except the root branch results from a previous branch; and is the product of a
+ * specified Option.
  * <p>
- * A Branch consists of a {@link ResponseElement} and a List of Options. Those Options require a {@link Predicate} to
- * test the result of the Branches {@link ResponseElement}, and a sub-branch that will start if the {@link Predicate} is
- * turning out true.
+ * A Branch consists of a {@link ResponseElement} and a List of Options. Those Options require a {@link Predicate} to test the result of the Branches {@link
+ * ResponseElement}, and a sub-branch that will start if the {@link Predicate} is turning out true.
  *
  * @param <A> The type of the object that is requested.
  */
@@ -73,23 +73,20 @@ public class DialogueBranch<A> extends Dialogue {
     
     @SuppressWarnings("unchecked")
     protected void start(List<NamedItem> collectedItems) throws NullPointerException {
-        questionElement.setParentBranch(this)
-                .build()
-                .thenAcceptAsync(response -> options.stream()
-                        .filter(option -> ((Predicate<A>) option.tester).test(response.getItem()))
-                        .map(Option::getGoToBranch)
-                        .forEachOrdered(branch -> {
-                            collectedItems.add(response);
-                            if (branch.getClass() == DialogueEndpoint.class) {
-                                branch.runEndpoint(collectedItems);
-                            } else if (branch.getClass() == DialoguePassthrough.class) {
-                                branch.runPassthrough(collectedItems);
-                                branch.start(new ArrayList<>());
-                            } else {
-                                branch.start(collectedItems);
-                            }
-                        }))
-                .exceptionally(Logger::get);
+        questionElement.setParentBranch(this).build().thenAcceptAsync(response -> options.stream()
+                .filter(option -> ((Predicate<A>) option.tester).test(response.getItem()))
+                .map(Option::getGoToBranch)
+                .forEachOrdered(branch -> {
+                    collectedItems.add(response);
+                    if (branch.getClass() == DialogueEndpoint.class) {
+                        branch.runEndpoint(collectedItems);
+                    } else if (branch.getClass() == DialoguePassthrough.class) {
+                        branch.runPassthrough(collectedItems);
+                        branch.start(new ArrayList<>());
+                    } else {
+                        branch.start(collectedItems);
+                    }
+                })).exceptionally(Logger::get);
     }
     
     protected CompletableFuture<Void> runEndpoint(List<NamedItem> collectedItems) {

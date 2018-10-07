@@ -8,6 +8,7 @@ import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.Listener;
@@ -21,9 +22,9 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.annotations.MayContainNull;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,24 +37,21 @@ public abstract class HandlerBase {
     
     public abstract void handle(DiscordInternal discord, JsonNode data);
     
+// Static membe
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;
-        String type = data.path("t")
-                .asText("");
+        String type = data.path("t").asText("");
         
         if (instances.containsKey(type)) {
             ((T) instances.get(type)).handle(discord, data.get("d"));
         } else if (!type.isBlank() && !type.isEmpty()) {
             try {
                 Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
-                handler = tClass.getConstructor()
-                        .newInstance();
+                handler = tClass.getConstructor().newInstance();
                 instances.put(type, handler);
                 try {
-                    baseLogger.trace("Dispatching event '" + data.get("t")
-                            .asText() + "' with body: " + data.get("d")
-                                             .toString());
+                    baseLogger.trace("Dispatching event '" + data.get("t").asText() + "' with body: " + data.get("d").toString());
                     handler.handle(discord, data.get("d"));
                 } catch (Exception e) {
                     baseLogger.exception(e, "Exception in Handler: " + type);

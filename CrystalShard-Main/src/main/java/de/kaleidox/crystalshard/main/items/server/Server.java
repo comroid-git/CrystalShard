@@ -20,6 +20,7 @@ import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.crystalshard.util.annotations.Range;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
@@ -91,21 +92,19 @@ public interface Server
     
     CompletableFuture<Void> delete();
     
-    CompletableFuture<Void> prune(@Range(min = 1,max = 365) int days);
+    CompletableFuture<Void> prune(@Range(min = 1, max = 365) int days);
     
     CompletableFuture<Collection<Integration>> requestIntegrations();
     
     CompletableFuture<URL> getVanityUrl();
     
+    ServerMember.Updater getMemberUpdater(ServerMember member);
+    
     default Optional<ServerMember.Updater> getMemberUpdater(User user) {
-        if (user instanceof ServerMember)
-            return Optional.of(getMemberUpdater((ServerMember) user));
-        else if (getServerMember(user).isPresent())
-            return Optional.of(getMemberUpdater(getServerMember(user).get()));
+        if (user instanceof ServerMember) return Optional.of(getMemberUpdater((ServerMember) user));
+        else if (getServerMember(user).isPresent()) return Optional.of(getMemberUpdater(getServerMember(user).get()));
         return Optional.empty();
     }
-    
-    ServerMember.Updater getMemberUpdater(ServerMember member);
     
     interface Builder {
         Builder setName(String name);

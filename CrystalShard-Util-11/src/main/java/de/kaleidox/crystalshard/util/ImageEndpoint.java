@@ -74,8 +74,7 @@ public class ImageEndpoint {
                 String of = String.format(IMAGE_BASE_URL + endpoint, (Object[]) params);
                 URL url = UrlHelper.require(of);
                 return new ImageEndpoint(this, url);
-            } else throw new IllegalArgumentException(
-                    "Too " + (parameterCount > params.length ? "few" : "many") + " parameters!");
+            } else throw new IllegalArgumentException("Too " + (parameterCount > params.length ? "few" : "many") + " parameters!");
         }
         
         public Container createForFile(File file) {

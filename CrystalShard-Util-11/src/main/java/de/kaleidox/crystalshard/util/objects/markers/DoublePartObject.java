@@ -17,6 +17,7 @@ public class DoublePartObject<A, B> {
         return partB;
     }
     
+// Static membe
     public static <A, B> DoublePartObject<A, B> of(A a, B b) {
         return new DoublePartObject<>(a, b);
     }

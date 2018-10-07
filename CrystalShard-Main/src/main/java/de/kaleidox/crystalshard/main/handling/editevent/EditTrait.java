@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceServerEditTra
 import de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait;
 import de.kaleidox.crystalshard.main.handling.editevent.enums.WebhookEditTrait;
 import de.kaleidox.crystalshard.main.util.Castable;
+
 import java.util.Optional;
 
 @SuppressWarnings("unused")

@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -21,13 +22,7 @@ public class RoleCache extends Cache<Role, Long, IDPair> {
     private final DiscordInternal discord;
     
     public RoleCache(DiscordInternal discordInternal) {
-        super(RoleInternal.class,
-              param -> ((JsonNode) param[2]).get("id")
-                      .asLong(),
-              TimeUnit.HOURS.toMillis(6),
-              Discord.class,
-              Server.class,
-              JsonNode.class);
+        super(RoleInternal.class, param -> ((JsonNode) param[2]).get("id").asLong(), TimeUnit.HOURS.toMillis(6), Discord.class, Server.class, JsonNode.class);
         this.discord = discordInternal;
     }
     
@@ -36,15 +31,12 @@ public class RoleCache extends Cache<Role, Long, IDPair> {
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(IDPair requestIdent) {
         Server server = Cacheable.getInstance(Server.class, requestIdent.getOne());
-        return new WebRequest<Object[]>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.GUILD_ROLES.toEndpoint(requestIdent))
-                .execute(node -> {
-                    for (JsonNode role : node) {
-                        if (role.get("id")
-                                    .asLong() == requestIdent.getTwo()) return new Object[]{discord, server, role};
-                    }
-                    throw new NoSuchElementException("Error fetching role information.");
-                });
+        return new WebRequest<Object[]>(discord).method(Method.GET).endpoint(Endpoint.Location.GUILD_ROLES.toEndpoint(requestIdent)).execute(node -> {
+            for (JsonNode role : node) {
+                if (role.get("id").asLong() == requestIdent.getTwo()) return new Object[]{discord, server, role};
+            }
+            throw new NoSuchElementException("Error fetching role information.");
+        });
     }
     
     @NotNull

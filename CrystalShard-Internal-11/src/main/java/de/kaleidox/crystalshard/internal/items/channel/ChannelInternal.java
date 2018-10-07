@@ -16,6 +16,7 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,10 +33,8 @@ public abstract class ChannelInternal implements Channel {
     
     ChannelInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.id = data.get("id")
-                .asLong();
-        this.type = ChannelType.getFromId(data.get("type")
-                                                  .asInt());
+        this.id = data.get("id").asLong();
+        this.type = ChannelType.getFromId(data.get("type").asInt());
         this.isPrivate = (type == ChannelType.DM || type == ChannelType.GROUP_DM);
         this.listenerManagers = new ArrayList<>();
     }
@@ -63,9 +62,7 @@ public abstract class ChannelInternal implements Channel {
     
     @Override
     public Collection<ChannelAttachableListener> getAttachedListeners() {
-        return listenerManagers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
+        return listenerManagers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
     }
     
     @Override
@@ -78,9 +75,7 @@ public abstract class ChannelInternal implements Channel {
         if (!hasPermission(discord.getSelf(), Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Cannot delete channel!",
                 Permission.MANAGE_CHANNELS));
-        return new WebRequest<Void>(discord).method(Method.DELETE)
-                .endpoint(Endpoint.Location.CHANNEL.toEndpoint(id))
-                .executeNull();
+        return new WebRequest<Void>(discord).method(Method.DELETE).endpoint(Endpoint.Location.CHANNEL.toEndpoint(id)).executeNull();
     }
     
     @Override

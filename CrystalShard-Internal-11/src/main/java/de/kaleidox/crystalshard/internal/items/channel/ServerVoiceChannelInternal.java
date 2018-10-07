@@ -19,6 +19,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.helpers.ListHelper;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,8 +45,7 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
         updateData(data);
         
         this.overrides = new ArrayList<>();
-        data.path("permission_overwrites")
-                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
+        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         
         instances.put(id, this);
     }
@@ -55,37 +55,26 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
         
-        if (bitrate != data.path("bitrate")
-                .asInt(bitrate)) {
-            bitrate = data.get("bitrate")
-                    .asInt();
+        if (bitrate != data.path("bitrate").asInt(bitrate)) {
+            bitrate = data.get("bitrate").asInt();
             traits.add(BITRATE);
         }
-        if (limit != data.path("limit")
-                .asInt(limit)) {
-            limit = data.get("limit")
-                    .asInt();
+        if (limit != data.path("limit").asInt(limit)) {
+            limit = data.get("limit").asInt();
             traits.add(USER_LIMIT);
         }
         if (this.category == null && data.has("parent_id")) {
-            long parentId = data.path("parent_id")
-                    .asLong();
-            this.category = parentId == -1 ? null : discord.getChannelCache()
-                    .getOrRequest(parentId, parentId)
-                    .toChannelCategory()
-                    .orElse(null);
+            long parentId = data.path("parent_id").asLong();
+            this.category = parentId == -1 ? null : discord.getChannelCache().getOrRequest(parentId, parentId).toChannelCategory().orElse(null);
         } else if (this.category != null && !data.has("parent_id")) {
             this.category = null;
         }
-        if (!name.equals(data.path("name")
-                                 .asText(name))) {
-            name = data.get("name")
-                    .asText();
+        if (!name.equals(data.path("name").asText(name))) {
+            name = data.get("name").asText();
             traits.add(NAME);
         }
         List<PermissionOverride> overrides = new ArrayList<>();
-        data.path("permission_overwrites")
-                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
+        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         if (!ListHelper.equalContents(overrides, this.overrides)) {
             this.overrides.clear();
             this.overrides.addAll(overrides);
@@ -124,20 +113,14 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent()
-                        .equals(user))
-                .map(override -> override.getAllowed()
-                        .contains(permission))
+                .filter(override -> override.getParent().equals(user))
+                .map(override -> override.getAllowed().contains(permission))
                 .findAny()
-                .or(() -> this.getCategory()
-                        .flatMap(channelCategory -> channelCategory.getPermissionOverrides()
-                                .stream()
-                                .filter(override -> override.getParent() != null)
-                                .filter(override -> override.getParent()
-                                        .equals(user))
-                                .findAny())
-                        .map(override -> override.getAllowed()
-                                .contains(permission)))
+                .or(() -> this.getCategory().flatMap(channelCategory -> channelCategory.getPermissionOverrides()
+                        .stream()
+                        .filter(override -> override.getParent() != null)
+                        .filter(override -> override.getParent().equals(user))
+                        .findAny()).map(override -> override.getAllowed().contains(permission)))
                 .orElseGet(() -> toServerChannel().map(ServerChannel::getServer)
                         .orElseThrow(AssertionError::new)
                         .getEveryoneRole()
@@ -150,13 +133,11 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
         if (!hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Cannot get channel invite!",
                 Permission.MANAGE_CHANNELS));
-        return new WebRequest<Collection<MetaInvite>>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.CHANNEL_INVITE.toEndpoint(id))
-                .execute(data -> {
-                    List<MetaInvite> list = new ArrayList<>();
-                    data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
-                    return list;
-                });
+        return new WebRequest<Collection<MetaInvite>>(discord).method(Method.GET).endpoint(Endpoint.Location.CHANNEL_INVITE.toEndpoint(id)).execute(data -> {
+            List<MetaInvite> list = new ArrayList<>();
+            data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
+            return list;
+        });
     }
     
     @Override

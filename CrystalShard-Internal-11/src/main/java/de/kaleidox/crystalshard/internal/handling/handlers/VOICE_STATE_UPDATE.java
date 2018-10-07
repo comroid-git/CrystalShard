@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.handling.listener.voice.VoiceStateUpdateLis
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.Set;
 
 public class VOICE_STATE_UPDATE extends HandlerBase {
@@ -16,8 +17,7 @@ public class VOICE_STATE_UPDATE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
         VoiceStateInternal state = (VoiceStateInternal) VoiceStateInternal.getInstance(discord, data);
-        Server server = state.getServer()
-                .orElse(null);
+        Server server = state.getServer().orElse(null);
         User user = state.getUser();
         
         Set<EditTrait<VoiceState>> traits = state.updateData(data);

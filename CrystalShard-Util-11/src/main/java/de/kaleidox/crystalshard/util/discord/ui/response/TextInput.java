@@ -1,12 +1,13 @@
 package de.kaleidox.crystalshard.util.discord.ui.response;
 
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.objects.markers.NamedItem;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -23,8 +24,8 @@ public class TextInput extends ResponseElement<String> {
     /**
      * Creates a new Text input object.
      *
-     * @param name              The name of the current response value. Will be stored with the value for {@link
-     *                          de.kaleidox.crystalshard.util.discord.ui.DialogueEndpoint}
+     * @param name              The name of the current response value. Will be stored with the value for
+     * {@link de.kaleidox.crystalshard.util.discord.ui.DialogueEndpoint}
      * @param parent            The Messageable the input should be sent to.
      * @param embedBaseSupplier A @Nullable Supplier to provide a basic embed structure.
      * @param userCanRespond    A @Nullable Predicate to check whether a user may Respond to the question.
@@ -38,45 +39,31 @@ public class TextInput extends ResponseElement<String> {
     public CompletableFuture<NamedItem<String>> build() {
         CompletableFuture<NamedItem<String>> future = new CompletableFuture<>();
         Embed.Builder embed = embedBaseSupplier.get();
-        embed.setDescription("Please type in your response:")
-                .setTimestampNow();
+        embed.setDescription("Please type in your response:").setTimestampNow();
         if (field != null) embed.addField(field);
         
-        parent.sendMessage(embed.build())
-                .thenAcceptAsync(message -> {
-                    affiliateMessages.add(message);
-                    message.getChannel()
-                            .attachMessageCreateListener(event -> {
-                                affiliateMessages.add(event.getMessage());
-                                Message msg = event.getMessage();
-                                User user = msg.getAuthorAsUser()
-                                        .get();
-                                
-                                if (!user.isYourself() && userCanRespond.test(user)) {
-                                    future.complete(new NamedItem<>(name, (style == Style.READABLE ? msg.getReadableContent() : msg.getContent())));
-                                }
-                            });
-                    future.thenAcceptAsync(result -> {
-                        if (result != null) {
-                            message.edit((field != null ? embedBaseSupplier.get()
-                                    .addField(field)
-                                    .addField("Answer:", result.getItem()) : embedBaseSupplier.get()
-                                                  .addField("Answer:", result.getItem())).build());
-                        } else {
-                            message.edit(embedBaseSupplier.get()
-                                                 .addField(field)
-                                                 .addField("Nobody typed anything.", "There was no valid answer.")
-                                                 .build());
-                        }
-                    })
-                            .exceptionally(Logger::get);
-                    parent.getDiscord()
-                            .getThreadPool()
-                            .getScheduler()
-                            .schedule(() -> future.complete(null), duration, timeUnit);
-                    if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete))
-                            .exceptionally(Logger::get);
-                });
+        parent.sendMessage(embed.build()).thenAcceptAsync(message -> {
+            affiliateMessages.add(message);
+            message.getChannel().attachMessageCreateListener(event -> {
+                affiliateMessages.add(event.getMessage());
+                Message msg = event.getMessage();
+                User user = msg.getAuthorAsUser().get();
+                
+                if (!user.isYourself() && userCanRespond.test(user)) {
+                    future.complete(new NamedItem<>(name, (style == Style.READABLE ? msg.getReadableContent() : msg.getContent())));
+                }
+            });
+            future.thenAcceptAsync(result -> {
+                if (result != null) {
+                    message.edit((field != null ? embedBaseSupplier.get().addField(field).addField("Answer:", result.getItem()) :
+                                  embedBaseSupplier.get().addField("Answer:", result.getItem())).build());
+                } else {
+                    message.edit(embedBaseSupplier.get().addField(field).addField("Nobody typed anything.", "There was no valid answer.").build());
+                }
+            }).exceptionally(Logger::get);
+            parent.getDiscord().getThreadPool().getScheduler().schedule(() -> future.complete(null), duration, timeUnit);
+            if (deleteLater) future.thenRunAsync(() -> affiliateMessages.forEach(Message::delete)).exceptionally(Logger::get);
+        });
         
         return future;
     }

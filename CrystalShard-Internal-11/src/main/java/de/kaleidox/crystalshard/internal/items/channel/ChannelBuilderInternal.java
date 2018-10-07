@@ -18,6 +18,7 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +38,7 @@ public class ChannelBuilderInternal {
             this.channel = channel;
         }
         
+// Override Methods
         @Override
         public ServerChannel.InviteBuilder setMaxAge(int maxAge) {
             this.maxAge = maxAge;
@@ -78,6 +80,7 @@ public class ChannelBuilderInternal {
             this.discord = discord;
         }
         
+// Override Methods
         @Override
         public Discord getDiscord() {
             return discord;
@@ -101,6 +104,7 @@ public class ChannelBuilderInternal {
             this.overrides = new ArrayList<>();
         }
         
+// Override Methods
         @Override
         public T setServer(Server server) {
             this.server = server;
@@ -137,6 +141,7 @@ public class ChannelBuilderInternal {
             setSuperType(this);
         }
         
+// Override Methods
         @Override
         public ChannelCategory.Builder setCategory(ChannelCategory category) {
             throw new UnsupportedOperationException("Cannot set a category to a category!");
@@ -154,16 +159,14 @@ public class ChannelBuilderInternal {
                           type,
                           "name",
                           name,
-                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id",
+                                                           category.getId()} : new Object[0]),
                           "permission_overwrites",
                           overrides.stream()
                                   .map(PermissionOverrideInternal.class::cast)
                                   .map(PermissionOverrideInternal::toJsonNode)
                                   .collect(Collectors.toList()))
-                    .execute(node -> discord.getChannelCache()
-                            .getOrCreate(discord, node)
-                            .toChannelCategory()
-                            .orElseThrow(AssertionError::new));
+                    .execute(node -> discord.getChannelCache().getOrCreate(discord, node).toChannelCategory().orElseThrow(AssertionError::new));
         }
     }
     
@@ -177,6 +180,7 @@ public class ChannelBuilderInternal {
             setSuperType(this);
         }
         
+// Override Methods
         @Override
         public ServerTextChannel.Builder setTopic(String topic) {
             this.topic = topic;
@@ -201,18 +205,18 @@ public class ChannelBuilderInternal {
                           type,
                           "name",
                           name,
-                          (topic != null ? new Object[]{"topic", topic} : new Object[0]),
-                          (nsfw != null ? new Object[]{"nsfw", nsfw} : new Object[0]),
-                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                          (topic != null ? new Object[]{"topic",
+                                                        topic} : new Object[0]),
+                          (nsfw != null ? new Object[]{"nsfw",
+                                                       nsfw} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id",
+                                                           category.getId()} : new Object[0]),
                           "permission_overwrites",
                           overrides.stream()
                                   .map(PermissionOverrideInternal.class::cast)
                                   .map(PermissionOverrideInternal::toJsonNode)
                                   .collect(Collectors.toList()))
-                    .execute(node -> discord.getChannelCache()
-                            .getOrCreate(discord, node)
-                            .toServerTextChannel()
-                            .orElseThrow(AssertionError::new));
+                    .execute(node -> discord.getChannelCache().getOrCreate(discord, node).toServerTextChannel().orElseThrow(AssertionError::new));
         }
     }
     
@@ -226,6 +230,7 @@ public class ChannelBuilderInternal {
             setSuperType(this);
         }
         
+// Override Methods
         @Override
         public ServerVoiceChannel.Builder setBitrate(int bitrate) {
             this.bitrate = bitrate;
@@ -250,18 +255,18 @@ public class ChannelBuilderInternal {
                           type,
                           "name",
                           name,
-                          (bitrate != null ? new Object[]{"bitrate", bitrate} : new Object[0]),
-                          (limit != null ? new Object[]{"user_limit", limit} : new Object[0]),
-                          (category != null ? new Object[]{"parent_id", category.getId()} : new Object[0]),
+                          (bitrate != null ? new Object[]{"bitrate",
+                                                          bitrate} : new Object[0]),
+                          (limit != null ? new Object[]{"user_limit",
+                                                        limit} : new Object[0]),
+                          (category != null ? new Object[]{"parent_id",
+                                                           category.getId()} : new Object[0]),
                           "permission_overwrites",
                           overrides.stream()
                                   .map(PermissionOverrideInternal.class::cast)
                                   .map(PermissionOverrideInternal::toJsonNode)
                                   .collect(Collectors.toList()))
-                    .execute(node -> discord.getChannelCache()
-                            .getOrCreate(discord, node)
-                            .toServerVoiceChannel()
-                            .orElseThrow(AssertionError::new));
+                    .execute(node -> discord.getChannelCache().getOrCreate(discord, node).toServerVoiceChannel().orElseThrow(AssertionError::new));
         }
     }
 }

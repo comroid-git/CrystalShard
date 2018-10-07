@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class ServerMemberUpdater implements ServerMember.Updater {
         this.roles = member.getRoles();
     }
     
+// Override Methods
     @Override
     public ServerMember.Updater setNickname(String nickname) throws DiscordPermissionException {
         if (!server.hasPermission(discord, Permission.MANAGE_NICKNAMES)) throw new DiscordPermissionException("Cannot change nickname!",
@@ -83,10 +85,14 @@ public class ServerMemberUpdater implements ServerMember.Updater {
     public CompletableFuture<Void> update() {
         return new WebRequest<Void>(discord).method(Method.PATCH)
                 .endpoint(Endpoint.Location.GUILD_MEMBER.toEndpoint(server, member))
-                .node((nickname != null ? new Object[]{"nick", nickname} : new Object[0]),
-                      (muted != null ? new Object[]{"mute", muted} : new Object[0]),
-                      (deafened != null ? new Object[]{"deaf", deafened} : new Object[0]),
-                      (channel != null ? new Object[]{"channel_id", channel.getId()} : new Object[0]),
+                .node((nickname != null ? new Object[]{"nick",
+                                                       nickname} : new Object[0]),
+                      (muted != null ? new Object[]{"mute",
+                                                    muted} : new Object[0]),
+                      (deafened != null ? new Object[]{"deaf",
+                                                       deafened} : new Object[0]),
+                      (channel != null ? new Object[]{"channel_id",
+                                                      channel.getId()} : new Object[0]),
                       (roles != null ? new Object[]{"roles",
                                                     roles.stream()
                                                             .map(DiscordItem::getId).collect(Collectors.toList())} : new Object[0]))

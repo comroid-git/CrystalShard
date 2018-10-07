@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items;
 
 import de.kaleidox.crystalshard.main.items.Snowflake;
+
 import java.time.Instant;
 
 public class SnowflakeInternal implements Snowflake {
@@ -12,6 +13,7 @@ public class SnowflakeInternal implements Snowflake {
         this.createdInstant = Instant.ofEpochMilli((id >> 22) + DISCORD_EPOCH);
     }
     
+// Override Methods
     @Override
     public Instant getCreatedTimestamp() {
         return createdInstant;
@@ -22,6 +24,7 @@ public class SnowflakeInternal implements Snowflake {
         return id;
     }
     
+// Static membe
     public static Snowflake of(long id) {
         return new SnowflakeInternal(id);
     }

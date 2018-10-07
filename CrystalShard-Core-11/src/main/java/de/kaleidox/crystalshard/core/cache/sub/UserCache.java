@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -17,12 +18,7 @@ public class UserCache extends Cache<User, Long, Long> {
     private final DiscordInternal discordInternal;
     
     public UserCache(DiscordInternal discordInternal) {
-        super(UserInternal.class,
-              param -> ((JsonNode) param[1]).get("id")
-                      .asLong(),
-              TimeUnit.HOURS.toMillis(12),
-              Discord.class,
-              JsonNode.class);
+        super(UserInternal.class, param -> ((JsonNode) param[1]).get("id").asLong(), TimeUnit.HOURS.toMillis(12), Discord.class, JsonNode.class);
         this.discordInternal = discordInternal;
     }
     

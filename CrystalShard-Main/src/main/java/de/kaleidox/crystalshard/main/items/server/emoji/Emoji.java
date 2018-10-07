@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
 import de.kaleidox.crystalshard.util.annotations.Nullable;
+
 import java.util.Optional;
 
 public interface Emoji extends Mentionable, Castable<Emoji> {
@@ -20,8 +21,8 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
     String toAlias();
     
     /**
-     * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji. This method
-     * is analogous to {@link Mentionable#getMentionTag()}.
+     * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji. This method is analogous to {@link
+     * Mentionable#getMentionTag()}.
      *
      * @return A discord-printable string of this emoji.
      */
@@ -57,13 +58,12 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
         return castTo(CustomEmoji.class);
     }
     
+// Static membe
     static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
-        if (data.get("id")
-                .isNull()) {
+        if (data.get("id").isNull()) {
             return new UnicodeEmojiInternal(discord, data, true);
         } else {
-            return discord.getEmojiCache()
-                    .getOrCreate(discord, server, data, true);
+            return discord.getEmojiCache().getOrCreate(discord, server, data, true);
         }
     }
 }

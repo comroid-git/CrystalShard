@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.time.Instant;
 
 public class IntegrationInternal implements Integration {
@@ -28,31 +29,21 @@ public class IntegrationInternal implements Integration {
     public IntegrationInternal(Discord discord, Server server, JsonNode data) {
         this.discord = discord;
         this.server = server;
-        this.id = data.get("id")
-                .asLong();
-        this.name = data.get("name")
-                .asText();
-        this.type = data.get("type")
-                .asText();
-        this.enabled = data.get("enabled")
-                .asBoolean();
-        this.syncing = data.get("syncing")
-                .asBoolean();
-        this.roleId = data.get("role_id")
-                .asLong();
-        this.role = discord.getRoleCache()
-                .getOrRequest(roleId, IDPair.of(server.getId(), roleId));
-        this.expireBehaviour = data.get("expire_behaviour")
-                .asInt();
-        this.expireGracePeriod = data.get("expire_grace_period")
-                .asInt();
-        this.user = discord.getUserCache()
-                .getOrCreate(discord, data.get("user"));
+        this.id = data.get("id").asLong();
+        this.name = data.get("name").asText();
+        this.type = data.get("type").asText();
+        this.enabled = data.get("enabled").asBoolean();
+        this.syncing = data.get("syncing").asBoolean();
+        this.roleId = data.get("role_id").asLong();
+        this.role = discord.getRoleCache().getOrRequest(roleId, IDPair.of(server.getId(), roleId));
+        this.expireBehaviour = data.get("expire_behaviour").asInt();
+        this.expireGracePeriod = data.get("expire_grace_period").asInt();
+        this.user = discord.getUserCache().getOrCreate(discord, data.get("user"));
         this.account = new Account(data.get("account"));
-        this.syncedAt = Instant.parse(data.get("synced_at")
-                                              .asText());
+        this.syncedAt = Instant.parse(data.get("synced_at").asText());
     }
     
+// Override Methods
     @Override
     public String getType() {
         return type;
@@ -123,12 +114,11 @@ public class IntegrationInternal implements Integration {
         private final String name;
         
         private Account(JsonNode data) {
-            this.id = data.get("id")
-                    .asText();
-            this.name = data.get("name")
-                    .asText();
+            this.id = data.get("id").asText();
+            this.name = data.get("name").asText();
         }
         
+// Override Methods
         @Override
         public String getId() {
             return id;

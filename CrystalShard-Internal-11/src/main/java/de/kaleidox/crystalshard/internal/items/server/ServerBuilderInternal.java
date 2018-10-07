@@ -16,6 +16,7 @@ import de.kaleidox.crystalshard.main.items.server.ServerComponent;
 import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
 import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
 import de.kaleidox.crystalshard.util.FileType;
+
 import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class ServerBuilderInternal implements Server.Builder {
         this.channelBuilders = new ArrayList<>();
     }
     
+// Override Methods
     @Override
     public Server.Builder setName(String name) {
         this.name = name;
@@ -104,7 +106,10 @@ public class ServerBuilderInternal implements Server.Builder {
                       "region",
                       region.getRegionKey(),
                       "icon",
-                      Container.encodeBase64(icon, FileType.IMAGE.JPEG, new Dimension(128, 128)),
+                      Container.encodeBase64(icon,
+                                             FileType.IMAGE.JPEG,
+                                             new Dimension(128,
+                                                           128)),
                       "verification_level",
                       verificationLevel.getId(),
                       "default_message_notifications",
@@ -119,7 +124,6 @@ public class ServerBuilderInternal implements Server.Builder {
                       channelBuilders.stream()
                               .map(builder -> ((ChannelBuilderInternal.ServerChannelBuilder) builder).toPartialJsonNode())
                               .collect(Collectors.toList()))
-                .execute(node -> discord.getServerCache()
-                        .getOrCreate(discord, node));
+                .execute(node -> discord.getServerCache().getOrCreate(discord, node));
     }
 }

@@ -4,8 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * This class can be used to run different actions after a predicate. Boolean evaulations can be simplified using {@link
- * #of(boolean)}.
+ * This class can be used to run different actions after a predicate. Boolean evaulations can be simplified using {@link #of(boolean)}.
  *
  * @param <T> The type variable value the result.
  */

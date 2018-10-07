@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.internal.items.server.interactive.IntegrationInt
 import de.kaleidox.crystalshard.internal.items.server.interactive.ServerMemberUpdater;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
@@ -38,9 +39,9 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -96,38 +97,24 @@ public class ServerInternal implements Server {
     public ServerInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating server object for data: " + data.toString());
         this.discord = (DiscordInternal) discord;
-        this.id = data.get("id")
-                .asLong();
-        if (data.has("unavailable") && data.get("unavailable")
-                .asBoolean()) {
+        this.id = data.get("id").asLong();
+        if (data.has("unavailable") && data.get("unavailable").asBoolean()) {
             this.unavailable = true;
         } else {
-            data.path("roles")
-                    .forEach(role -> roles.add(discord.getRoleCache()
-                                                       .getOrCreate(discord, this, role)));
-            data.path("emojis")
-                    .forEach(emoji -> emojis.add(discord.getEmojiCache()
-                                                         .getOrCreate(getDiscord(), this, emoji, true)));
-            data.path("features")
-                    .forEach(feature -> features.add(feature.asText()));
-            data.path("voice_states")
-                    .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
-            data.path("members")
-                    .forEach(member -> members.add(discord.getUserCache()
-                                                           .getOrCreate(discord, member.get("user"))
-                                                           .toServerMember(this, member)));
-            data.path("channels")
-                    .forEach(channel -> channels.add(discord.getChannelCache()
-                                                             .getOrCreate(discord, this, channel)
-                                                             .toServerChannel()
-                                                             .orElseThrow(AssertionError::new)));
-            data.path("presenceStates")
-                    .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
+            data.path("roles").forEach(role -> roles.add(discord.getRoleCache().getOrCreate(discord, this, role)));
+            data.path("emojis").forEach(emoji -> emojis.add(discord.getEmojiCache().getOrCreate(getDiscord(), this, emoji, true)));
+            data.path("features").forEach(feature -> features.add(feature.asText()));
+            data.path("voice_states").forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
+            data.path("members").forEach(member -> members.add(discord.getUserCache().getOrCreate(discord, member.get("user")).toServerMember(this, member)));
+            data.path("channels").forEach(channel -> channels.add(discord.getChannelCache()
+                                                                          .getOrCreate(discord, this, channel)
+                                                                          .toServerChannel()
+                                                                          .orElseThrow(AssertionError::new)));
+            data.path("presenceStates").forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
             structure = new ChannelStructureInternal(channels);
             updateData(data);
             this.everyoneRole = roles.stream()
-                    .filter(role -> role.getName()
-                            .equalsIgnoreCase("@everyone"))
+                    .filter(role -> role.getName().equalsIgnoreCase("@everyone"))
                     .findAny()
                     .orElseThrow(() -> new NoSuchElementException("No @everyone Role found!"));
         }
@@ -259,9 +246,7 @@ public class ServerInternal implements Server {
     
     @Override
     public List<ServerMember> getMembers() {
-        return members.stream()
-                .map(user -> ServerMemberInternal.getInstance(user, this))
-                .collect(Collectors.toList());
+        return members.stream().map(user -> ServerMemberInternal.getInstance(user, this)).collect(Collectors.toList());
     }
     
     @Override
@@ -286,18 +271,13 @@ public class ServerInternal implements Server {
     
     @Override
     public Optional<ServerMember> getServerMember(User ofUser) {
-        return members.stream()
-                .filter(ofUser::equals)
-                .map(ServerMember.class::cast)
-                .findAny();
+        return members.stream().filter(ofUser::equals).map(ServerMember.class::cast).findAny();
     }
     
     @Override
     public CompletableFuture<Void> delete() {
         if (!getOwner().equals(discord.getSelf())) return CompletableFuture.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
-        return new WebRequest<Void>(discord).method(Method.DELETE)
-                .endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD, this))
-                .execute(node -> null);
+        return new WebRequest<Void>(discord).method(Method.DELETE).endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD, this)).execute(node -> null);
     }
     
     @Override
@@ -305,10 +285,7 @@ public class ServerInternal implements Server {
         if (days < 1 || days > 365) throw new IllegalArgumentException("Parameter 'days' is not within its bounds! [1,365]");
         if (!hasPermission(discord, Permission.KICK_MEMBERS)) return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot prune!",
                                                                                                                                    Permission.KICK_MEMBERS));
-        return new WebRequest<Void>(discord).method(Method.POST)
-                .endpoint(Endpoint.Location.GUILD_PRUNE.toEndpoint(id))
-                .node("days", days)
-                .executeNull();
+        return new WebRequest<Void>(discord).method(Method.POST).endpoint(Endpoint.Location.GUILD_PRUNE.toEndpoint(id)).node("days", days).executeNull();
     }
     
     @Override
@@ -329,19 +306,16 @@ public class ServerInternal implements Server {
     
     @Override
     public CompletableFuture<URL> getVanityUrl() {
-        if (!hasPermission(discord, Permission.MANAGE_GUILD))
-            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!", Permission.MANAGE_GUILD));
-        return new WebRequest<URL>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.GUILD_VANITY_INVITE.toEndpoint(id))
-                .execute(node -> {
-                    if (!node.has("code")) throw new NullPointerException("Guild does not have a vanity URL!");
-                    try {
-                        return new URL(Invite.BASE_INVITE + node.get("code")
-                                .asText());
-                    } catch (MalformedURLException e) {
-                        throw new NullPointerException("Could not create URL: " + e);
-                    }
-                });
+        if (!hasPermission(discord, Permission.MANAGE_GUILD)) return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!",
+                                                                                                                                   Permission.MANAGE_GUILD));
+        return new WebRequest<URL>(discord).method(Method.GET).endpoint(Endpoint.Location.GUILD_VANITY_INVITE.toEndpoint(id)).execute(node -> {
+            if (!node.has("code")) throw new NullPointerException("Guild does not have a vanity URL!");
+            try {
+                return new URL(Invite.BASE_INVITE + node.get("code").asText());
+            } catch (MalformedURLException e) {
+                throw new NullPointerException("Could not create URL: " + e);
+            }
+        });
     }
     
     @Override
@@ -384,9 +358,13 @@ public class ServerInternal implements Server {
     
     @Override
     public Collection<ServerAttachableListener> getAttachedListeners() {
-        return listenerManangers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
+        return listenerManangers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
+    }
+    
+    @Override
+    public boolean hasPermission(User user, Permission permission) {
+        return members.stream().filter(user::equals).map(usr -> usr.toServerMember().orElseThrow(AssertionError::new)).flatMap(member -> member.getRoles()
+                .stream()).sorted().map(Role::getPermissions).anyMatch(perm -> perm.contains(permission));
     }
     
     @Override
@@ -394,181 +372,118 @@ public class ServerInternal implements Server {
         return discord.getServerCache();
     }
     
-    @Override
-    public boolean hasPermission(User user, Permission permission) {
-        return members.stream()
-                .filter(user::equals)
-                .map(usr -> usr.toServerMember()
-                        .orElseThrow(AssertionError::new))
-                .flatMap(member -> member.getRoles()
-                        .stream())
-                .sorted()
-                .map(Role::getPermissions)
-                .anyMatch(perm -> perm.contains(permission));
-    }
-    
     private User getOwner(JsonNode data) {
         if (data.has("owner_id")) {
             //return new UserInternal(discord, data.get("application_id").asLong());
-            long userId = data.get("owner_id")
-                    .asLong();
-            return discord.getUserCache()
-                    .getOrRequest(userId, userId);
+            long userId = data.get("owner_id").asLong();
+            return discord.getUserCache().getOrRequest(userId, userId);
         } else {
             return null;
         }
     }
     
     public List<ServerAttachableListener> getListeners() {
-        return listenerManangers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
+        return listenerManangers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
     }
     
     public Set<EditTrait<Server>> updateData(JsonNode data) {
         HashSet<EditTrait<Server>> traits = new HashSet<>();
         
-        if (name == null || !name.equals(data.path("name")
-                                                 .asText(""))) {
-            name = data.get("name")
-                    .asText();
+        if (name == null || !name.equals(data.path("name").asText(""))) {
+            name = data.get("name").asText();
             traits.add(NAME);
         }
-        if (iconUrl != null && !UrlHelper.equals(iconUrl,
-                                                 data.path("icon")
-                                                         .asText(null))) {
-            iconUrl = UrlHelper.orNull(data.path("icon")
-                                               .asText(null));
+        if (iconUrl != null && !UrlHelper.equals(iconUrl, data.path("icon").asText(null))) {
+            iconUrl = UrlHelper.orNull(data.path("icon").asText(null));
             traits.add(ICON);
         }
-        if (splashUrl != null && !UrlHelper.equals(splashUrl,
-                                                   data.path("splash_url")
-                                                           .asText(null))) {
-            splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl")
-                                                       .asText(null));
+        if (splashUrl != null && !UrlHelper.equals(splashUrl, data.path("splash_url").asText(null))) {
+            splashUrl = UrlHelper.ignoreIfNull(data.path("splashUrl").asText(null));
             traits.add(SPLASH);
         }
-        if ((ownPermissions != null ? ownPermissions.toPermissionInt() : 0) != data.path("permissions")
-                .asInt(0)) {
-            ownPermissions = new PermissionListInternal(data.get("permissions")
-                                                                .asInt(0));
+        if ((ownPermissions != null ? ownPermissions.toPermissionInt() : 0) != data.path("permissions").asInt(0)) {
+            ownPermissions = new PermissionListInternal(data.get("permissions").asInt(0));
             traits.add(OWN_PERMISSIONS);
         }
-        if (voiceRegion == null || !voiceRegion.getRegionKey()
-                .equalsIgnoreCase(data.path("region")
-                                          .asText(voiceRegion.getRegionKey()))) {
-            voiceRegion = VoiceRegion.getFromRegionKey(data.path("region")
-                                                               .asText(""));
+        if (voiceRegion == null || !voiceRegion.getRegionKey().equalsIgnoreCase(data.path("region").asText(voiceRegion.getRegionKey()))) {
+            voiceRegion = VoiceRegion.getFromRegionKey(data.path("region").asText(""));
             traits.add(REGION);
         }
-        if (afkTimeout != data.path("afk_timeout")
-                .asInt(-1)) {
-            afkTimeout = data.get("afk_timeout")
-                    .asInt(-1);
+        if (afkTimeout != data.path("afk_timeout").asInt(-1)) {
+            afkTimeout = data.get("afk_timeout").asInt(-1);
             traits.add(AFK_TIMEOUT);
         }
-        if (embedEnabled != data.path("embed_enabled")
-                .asBoolean(embedEnabled)) {
-            embedEnabled = data.path("embed_enabled")
-                    .asBoolean(false);
+        if (embedEnabled != data.path("embed_enabled").asBoolean(embedEnabled)) {
+            embedEnabled = data.path("embed_enabled").asBoolean(false);
             traits.add(EMBED_ENABLED);
         }
-        if (verificationLevel == null || verificationLevel.getId() != data.path("verification_level")
-                .asInt(-1)) {
-            verificationLevel = VerificationLevel.getFromId(data.get("verification_level")
-                                                                    .asInt(-1));
+        if (verificationLevel == null || verificationLevel.getId() != data.path("verification_level").asInt(-1)) {
+            verificationLevel = VerificationLevel.getFromId(data.get("verification_level").asInt(-1));
             traits.add(VERIFICATION_LEVEL);
         }
-        if (defaultMessageNotificationLevel == null || defaultMessageNotificationLevel.getId() != data.path("default_message_notification")
-                .asInt(defaultMessageNotificationLevel.getId())) {
-            defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get("default_message_notifications")
-                                                                                                .asInt(-1));
+        if (defaultMessageNotificationLevel == null || defaultMessageNotificationLevel.getId() != data.path("default_message_notification").asInt(
+                defaultMessageNotificationLevel.getId())) {
+            defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get("default_message_notifications").asInt(-1));
             traits.add(DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
         }
-        if (explicitContentFilterLevel == null || explicitContentFilterLevel.getId() != data.path("explicit_content_filter")
-                .asInt(-1)) {
-            explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter")
-                                                                                      .asInt(-1));
+        if (explicitContentFilterLevel == null || explicitContentFilterLevel.getId() != data.path("explicit_content_filter").asInt(-1)) {
+            explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter").asInt(-1));
             traits.add(EXPLICIT_CONTENT_FILTER_LEVEL);
         }
-        if (mfaLevel == null || mfaLevel.getId() != data.path("mfa_level")
-                .asInt(-1)) {
-            mfaLevel = MFALevel.getFromId(data.get("mfa_level")
-                                                  .asInt(-1));
+        if (mfaLevel == null || mfaLevel.getId() != data.path("mfa_level").asInt(-1)) {
+            mfaLevel = MFALevel.getFromId(data.get("mfa_level").asInt(-1));
             traits.add(MFA_LEVEL);
         }
-        if (widgetEnabled != data.path("widget_enabled")
-                .asBoolean(widgetEnabled)) {
-            widgetEnabled = data.path("widget_enabled")
-                    .asBoolean(false);
+        if (widgetEnabled != data.path("widget_enabled").asBoolean(widgetEnabled)) {
+            widgetEnabled = data.path("widget_enabled").asBoolean(false);
             traits.add(WIDGET_ENABLED);
         }
-        if (large != data.path("large")
-                .asBoolean(false)) {
-            large = data.path("large")
-                    .asBoolean(false);
+        if (large != data.path("large").asBoolean(false)) {
+            large = data.path("large").asBoolean(false);
             traits.add(LARGE);
         }
-        if (unavailable != data.path("unavailable")
-                .asBoolean(false)) {
-            unavailable = data.path("unavailable")
-                    .asBoolean(false);
+        if (unavailable != data.path("unavailable").asBoolean(false)) {
+            unavailable = data.path("unavailable").asBoolean(false);
             traits.add(AVAILABILITY);
         }
-        if (memberCount != data.path("member_count")
-                .asInt(memberCount)) {
-            memberCount = data.path("member_count")
-                    .asInt(-1);
+        if (memberCount != data.path("member_count").asInt(memberCount)) {
+            memberCount = data.path("member_count").asInt(-1);
             traits.add(MEMBER_COUNT);
         }
         
-        long afkChannelId = data.path("afk_channel_id")
-                .asLong(-1);
+        long afkChannelId = data.path("afk_channel_id").asLong(-1);
         if (afkChannel == null || afkChannel.getId() != afkChannelId) {
-            afkChannel = afkChannelId == -1 ? null : discord.getChannelCache()
-                    .getOrRequest(afkChannelId, afkChannelId)
-                    .toServerVoiceChannel()
-                    .orElseThrow(AssertionError::new);
+            afkChannel = afkChannelId == -1 ? null : discord.getChannelCache().getOrRequest(afkChannelId, afkChannelId).toServerVoiceChannel().orElseThrow(
+                    AssertionError::new);
             traits.add(AFK_CHANNEL);
         }
-        if (embedChannel == null || embedChannel.getId() != data.path("embed_channel_id")
-                .asLong(-1)) {
-            long embedChannelId = data.path("embed_channel_id")
-                    .asLong(-1);
-            embedChannel = embedChannelId == -1 ? null : discord.getChannelCache()
-                    .getOrRequest(embedChannelId, embedChannelId)
-                    .toServerChannel()
-                    .orElseThrow(AssertionError::new);
+        if (embedChannel == null || embedChannel.getId() != data.path("embed_channel_id").asLong(-1)) {
+            long embedChannelId = data.path("embed_channel_id").asLong(-1);
+            embedChannel = embedChannelId == -1 ? null : discord.getChannelCache().getOrRequest(embedChannelId, embedChannelId).toServerChannel().orElseThrow(
+                    AssertionError::new);
             traits.add(EMBED_CHANNEL);
         }
-        if (widgetChannel == null || widgetChannel.getId() != data.path("widget_channel_id")
-                .asLong(-1)) {
-            long widgetChannelId = data.path("widget_channel_id")
-                    .asLong(-1);
+        if (widgetChannel == null || widgetChannel.getId() != data.path("widget_channel_id").asLong(-1)) {
+            long widgetChannelId = data.path("widget_channel_id").asLong(-1);
             widgetChannel = widgetChannelId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(widgetChannelId, widgetChannelId)
                     .toServerChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(WIDGET_CHANNEL);
         }
-        if (systemChannel == null || systemChannel.getId() != data.get("system_channel_id")
-                .asLong(-1)) {
-            long systemChannelId = data.path("system_channel_id")
-                    .asLong(-1);
+        if (systemChannel == null || systemChannel.getId() != data.get("system_channel_id").asLong(-1)) {
+            long systemChannelId = data.path("system_channel_id").asLong(-1);
             systemChannel = systemChannelId == -1 ? null : discord.getChannelCache()
                     .getOrRequest(systemChannelId, systemChannelId)
                     .toServerTextChannel()
                     .orElseThrow(AssertionError::new);
             traits.add(SYSTEM_CHANNEL);
         }
-        if ((owner != null ? owner.getId() : -1) != data.path((data.has("owner_id") ? "owner_id" : "application_id"))
-                .asLong(-1)) {
+        if ((owner != null ? owner.getId() : -1) != data.path((data.has("owner_id") ? "owner_id" : "application_id")).asLong(-1)) {
             if (data.has("owner_id")) {
                 //return new UserInternal(discord, data.get("application_id").asLong());
-                long userId = data.get("owner_id")
-                        .asLong();
-                owner = discord.getUserCache()
-                        .getOrRequest(userId, userId);
+                long userId = data.get("owner_id").asLong();
+                owner = discord.getUserCache().getOrRequest(userId, userId);
             } else {
                 return null;
             }

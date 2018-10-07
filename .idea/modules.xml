@@ -9,6 +9,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11.iml" group="CrystalShard-Internal-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_main.iml" group="CrystalShard-Internal-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_test.iml" group="CrystalShard-Internal-11" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Java11.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Java11.iml" group="CrystalShard-Java11" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_main.iml" group="CrystalShard-Java11" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_test.iml" group="CrystalShard-Java11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Logging.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Logging.iml" group="CrystalShard-Logging" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_main.iml" group="CrystalShard-Logging" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_test.iml" group="CrystalShard-Logging" />

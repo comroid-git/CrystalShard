@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.crystalshard.util.BiTimestamp;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
+
 import java.net.URL;
 import java.util.Optional;
 
@@ -22,26 +23,18 @@ public class UserActivityInternal implements UserActivity {
     private final Flag                 flags;
     
     public UserActivityInternal(JsonNode data) {
-        this.name = data.get("name")
-                .asText();
-        this.type = Type.getFromId(data.get("type")
-                                           .asInt(-1));
-        this.streamUrl = UrlHelper.orNull(data.path("url")
-                                                  .asText(null));
+        this.name = data.get("name").asText();
+        this.type = Type.getFromId(data.get("type").asInt(-1));
+        this.streamUrl = UrlHelper.orNull(data.path("url").asText(null));
         this.timestamps = data.has("timestamps") ? new BiTimestamp(data.get("timestamps")) : null;
-        this.applicationId = data.path("application_id")
-                .asLong(-1);
-        this.details = data.path("details")
-                .asText(null);
-        this.state = data.path("state")
-                .asText(null);
+        this.applicationId = data.path("application_id").asLong(-1);
+        this.details = data.path("details").asText(null);
+        this.state = data.path("state").asText(null);
         this.party = data.has("party") ? new UserActivityInternal.Party(data.get("party")) : null;
         this.assets = data.has("assets") ? new UserActivityInternal.Assets(data.get("assets")) : null;
         this.secrets = data.has("secrets") ? new UserActivityInternal.Secrets(data.get("secrets")) : null;
-        this.instance = data.path("instance")
-                .asBoolean(false);
-        this.flags = Flag.getFromValue(data.path("flags")
-                                               .asInt(-1));
+        this.instance = data.path("instance").asBoolean(false);
+        this.flags = Flag.getFromValue(data.path("flags").asInt(-1));
     }
     
     // Override Methods
@@ -110,12 +103,9 @@ public class UserActivityInternal implements UserActivity {
         private final String match;
         
         public Secrets(JsonNode data) {
-            this.join = data.path("join")
-                    .asText(null);
-            this.spectate = data.path("spectate")
-                    .asText(null);
-            this.match = data.path("match")
-                    .asText(null);
+            this.join = data.path("join").asText(null);
+            this.spectate = data.path("spectate").asText(null);
+            this.match = data.path("match").asText(null);
         }
         
         // Override Methods
@@ -141,14 +131,9 @@ public class UserActivityInternal implements UserActivity {
         private final int  maxSize;
         
         public Party(JsonNode data) {
-            this.id = data.path("id")
-                    .asLong(-1);
-            this.currentSize = data.path("size")
-                    .path(0)
-                    .asInt(-1);
-            this.maxSize = data.path("size")
-                    .path(1)
-                    .asInt(-1);
+            this.id = data.path("id").asLong(-1);
+            this.currentSize = data.path("size").path(0).asInt(-1);
+            this.maxSize = data.path("size").path(1).asInt(-1);
         }
         
         // Override Methods
@@ -175,14 +160,10 @@ public class UserActivityInternal implements UserActivity {
         private final String smallHover;
         
         public Assets(JsonNode data) {
-            this.largeImage = data.path("large_image")
-                    .asText(null);
-            this.largeHover = data.path("large_text")
-                    .asText(null);
-            this.smallImage = data.path("small_image")
-                    .asText(null);
-            this.smallHover = data.path("small_text")
-                    .asText(null);
+            this.largeImage = data.path("large_image").asText(null);
+            this.largeHover = data.path("large_text").asText(null);
+            this.smallImage = data.path("small_image").asText(null);
+            this.smallHover = data.path("small_text").asText(null);
         }
         
         // Override Methods

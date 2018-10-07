@@ -15,6 +15,7 @@ public interface Cacheable<T extends Cacheable, I, R> {
      */
     Cache<T, I, R> getCache();
     
+// Static membe
     /**
      * @param typeClass
      * @param ident
@@ -24,8 +25,7 @@ public interface Cacheable<T extends Cacheable, I, R> {
      * @see Cache#get(I)
      */
     static <T extends Cacheable, I> T getInstance(Class<T> typeClass, I ident) {
-        return Cache.getCacheInstance(typeClass, ident)
-                .get(ident);
+        return Cache.getCacheInstance(typeClass, ident).get(ident);
     }
     
     /**
@@ -38,7 +38,6 @@ public interface Cacheable<T extends Cacheable, I, R> {
      * @see Cache#getOrCreate(I, Object...)
      */
     static <T extends Cacheable, I> T getOrCreateInstance(Class<T> typeClass, I ident, Object... constructorParameters) {
-        return Cache.getCacheInstance(typeClass, ident)
-                .getOrCreate(ident, constructorParameters);
+        return Cache.getCacheInstance(typeClass, ident).getOrCreate(ident, constructorParameters);
     }
 }

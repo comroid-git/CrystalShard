@@ -12,6 +12,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -28,28 +29,21 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
         super();
         this.discord = discord;
         this.server = server;
-        this.type = Type.getByKey(data.get("type")
-                                          .asText());
+        this.type = Type.getByKey(data.get("type").asText());
         switch (type) {
             default:
                 throw new AssertionError();
             case ROLE:
-                long roleId = data.get("id")
-                        .asLong();
-                this.parent = discord.getRoleCache()
-                        .getOrRequest(roleId, IDPair.of(server.getId(), roleId));
+                long roleId = data.get("id").asLong();
+                this.parent = discord.getRoleCache().getOrRequest(roleId, IDPair.of(server.getId(), roleId));
                 break;
             case USER:
-                long userId = data.get("user_id")
-                        .asLong();
-                this.parent = ServerMemberInternal.getInstance(discord.getUserCache()
-                                                                       .getOrRequest(userId, userId), server);
+                long userId = data.get("user_id").asLong();
+                this.parent = ServerMemberInternal.getInstance(discord.getUserCache().getOrRequest(userId, userId), server);
                 break;
         }
-        new PermissionListInternal(data.get("allow")
-                                           .asInt(0)).forEach(permission -> put(permission, ALLOWED));
-        new PermissionListInternal(data.get("deny")
-                                           .asInt(0)).forEach(permission -> put(permission, DENIED));
+        new PermissionListInternal(data.get("allow").asInt(0)).forEach(permission -> put(permission, ALLOWED));
+        new PermissionListInternal(data.get("deny").asInt(0)).forEach(permission -> put(permission, DENIED));
     }
     
     public PermissionOverrideInternal(Discord discord, Server server, PermissionOverwritable parent, PermissionList permissions) {
@@ -71,9 +65,8 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
         if (!(o instanceof PermissionOverride)) return false;
         PermissionOverride other = (PermissionOverride) o;
         
-        return (getAllowed().toPermissionInt() == other.getAllowed()
-                .toPermissionInt()) && (getDenied().toPermissionInt() == other.getDenied()
-                .toPermissionInt());
+        return (getAllowed().toPermissionInt() == other.getAllowed().toPermissionInt()) &&
+               (getDenied().toPermissionInt() == other.getDenied().toPermissionInt());
     }
     
     @Override
@@ -111,18 +104,14 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
     
     @Override
     public PermissionList getAllowed() {
-        return entrySet().stream()
-                .filter(entry -> entry.getValue() == ALLOWED)
-                .map(Entry::getKey)
-                .collect(Collectors.toCollection(() -> PermissionList.create(parent)));
+        return entrySet().stream().filter(entry -> entry.getValue() == ALLOWED).map(Entry::getKey).collect(Collectors.toCollection(() -> PermissionList.create(
+                parent)));
     }
     
     @Override
     public PermissionList getDenied() {
-        return entrySet().stream()
-                .filter(entry -> entry.getValue() == DENIED)
-                .map(Entry::getKey)
-                .collect(Collectors.toCollection(() -> PermissionList.create(parent)));
+        return entrySet().stream().filter(entry -> entry.getValue() == DENIED).map(Entry::getKey).collect(Collectors.toCollection(() -> PermissionList.create(
+                parent)));
     }
     
     @Override
@@ -136,8 +125,7 @@ public class PermissionOverrideInternal extends ConcurrentHashMap<Permission, Ov
     
     public JsonNode toJsonNode() {
         return JsonHelper.objectNode("id",
-                                     Long.toUnsignedString(Objects.requireNonNull(parent)
-                                                                   .getId()),
+                                     Long.toUnsignedString(Objects.requireNonNull(parent).getId()),
                                      "type",
                                      type.getKey(),
                                      "allow",

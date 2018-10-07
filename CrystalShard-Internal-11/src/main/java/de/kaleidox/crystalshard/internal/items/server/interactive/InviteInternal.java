@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
+
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
@@ -29,30 +30,18 @@ public class InviteInternal implements Invite {
     
     public InviteInternal(Discord discord, JsonNode data) {
         this.discord = discord;
-        this.code = data.get("code")
-                .asText();
-        this.guild = data.has("guild") ? discord.getServerCache()
-                .getOrRequest(data.get("guild")
-                                      .get("id")
-                                      .asLong(),
-                              data.get("guild")
-                                      .get("id")
-                                      .asLong()) : null;
+        this.code = data.get("code").asText();
+        this.guild = data.has("guild") ? discord.getServerCache().getOrRequest(data.get("guild").get("id").asLong(), data.get("guild").get("id").asLong()) :
+                     null;
         this.channel = discord.getChannelCache()
-                .getOrRequest(data.get("channel")
-                                      .get("id")
-                                      .asLong(),
-                              data.get("channel")
-                                      .get("id")
-                                      .asLong())
+                .getOrRequest(data.get("channel").get("id").asLong(), data.get("channel").get("id").asLong())
                 .toServerChannel()
                 .orElseThrow(AssertionError::new);
-        this.approxPresenceCount = data.path("approximate_presence_count")
-                .asInt(-1);
-        this.approxOnlineCount = data.path("approximate_online_count")
-                .asInt(-1);
+        this.approxPresenceCount = data.path("approximate_presence_count").asInt(-1);
+        this.approxOnlineCount = data.path("approximate_online_count").asInt(-1);
     }
     
+// Override Methods
     @Override
     public Discord getDiscord() {
         return discord;
@@ -93,9 +82,7 @@ public class InviteInternal implements Invite {
         if (!channel.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Cannot delete invite.",
                 Permission.MANAGE_CHANNELS));
-        return new WebRequest<Void>(discord).method(Method.DELETE)
-                .endpoint(Endpoint.Location.INVITE.toEndpoint(code))
-                .executeNull();
+        return new WebRequest<Void>(discord).method(Method.DELETE).endpoint(Endpoint.Location.INVITE.toEndpoint(code)).executeNull();
     }
     
     @Override
@@ -114,27 +101,16 @@ public class InviteInternal implements Invite {
         
         public Meta(Discord discord, JsonNode data) {
             super(discord, data);
-            this.inviter = discord.getUserCache()
-                    .getOrRequest(data.get("user")
-                                          .get("id")
-                                          .asLong(),
-                                  data.get("user")
-                                          .get("id")
-                                          .asLong());
-            this.uses = data.get("uses")
-                    .asInt();
-            this.maxUses = data.get("max_uses")
-                    .asInt();
-            this.maxAge = data.get("max_age")
-                    .asInt();
-            this.temporary = data.get("temporary")
-                    .asBoolean();
-            this.createdAt = Instant.parse(data.get("created_at")
-                                                   .asText());
-            this.revoked = data.get("revoked")
-                    .asBoolean();
+            this.inviter = discord.getUserCache().getOrRequest(data.get("user").get("id").asLong(), data.get("user").get("id").asLong());
+            this.uses = data.get("uses").asInt();
+            this.maxUses = data.get("max_uses").asInt();
+            this.maxAge = data.get("max_age").asInt();
+            this.temporary = data.get("temporary").asBoolean();
+            this.createdAt = Instant.parse(data.get("created_at").asText());
+            this.revoked = data.get("revoked").asBoolean();
         }
         
+// Override Methods
         @Override
         public User getInviter() {
             return inviter;

@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -70,11 +71,8 @@ public class DiscordLoginTool {
     public DiscordLoginTool setRecommendedShardCount() {
         Objects.requireNonNull(token, "Token must be set first!");
         Discord login = new DiscordInternal(token);
-        return new WebRequest<DiscordLoginTool>(login).method(Method.GET)
-                .endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint())
-                .execute(node -> setShardCount(node.path("shards")
-                                                       .asInt(1)))
-                .join();
+        return new WebRequest<DiscordLoginTool>(login).method(Method.GET).endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint()).execute(node -> setShardCount(
+                node.path("shards").asInt(1))).join();
     }
     
     public Discord login() {

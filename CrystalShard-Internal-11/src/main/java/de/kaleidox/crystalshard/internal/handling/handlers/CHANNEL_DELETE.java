@@ -15,11 +15,8 @@ public class CHANNEL_DELETE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Channel channel = discord.getChannelCache()
-                .getOrCreate(discord, data);
-        Server server = channel.toServerChannel()
-                .map(ServerChannel::getServer)
-                .orElse(null);
+        Channel channel = discord.getChannelCache().getOrCreate(discord, data);
+        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
         
         ChannelDeleteEventInternal event = new ChannelDeleteEventInternal(discord, channel);
         

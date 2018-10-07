@@ -3,11 +3,12 @@ package de.kaleidox.crystalshard.core.net.request;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.CompletableFutureExtended;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
@@ -119,8 +120,7 @@ public class WebRequest<T> {
         final JsonNode finalData = data;
         ratelimiter.schedule(this, headersFuture, () -> {
             try {
-                String urlExternal = endpoint.getUrl()
-                        .toExternalForm();
+                String urlExternal = endpoint.getUrl().toExternalForm();
                 String requestBody = (method == Method.GET ? "" : finalData.toString());
                 logger.trace("Creating request: " + toString() + " with request body: " + requestBody);
                 HttpRequest request = HttpRequest.newBuilder()
@@ -131,7 +131,8 @@ public class WebRequest<T> {
                                  "application/json",
                                  "Authorization",
                                  discord.getPrefixedToken())
-                        .method(method.getDescriptor(), HttpRequest.BodyPublishers.ofString(requestBody))
+                        .method(method.getDescriptor(),
+                                HttpRequest.BodyPublishers.ofString(requestBody))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
                 String responseBody = response.body();
@@ -159,11 +160,10 @@ public class WebRequest<T> {
                     case 403: // Missing Access
                         unknown = false;
                     default: // Anything else
-                        logger.traceElseInfo("{" + statusCode + ":" + responseNode.get("code")
-                                .asText() + ":\"" + responseNode.get("message")
-                                                     .asText() + "\"} " +
-                                             (unknown ? "Recieved unknown status code from Discord" + " " + "with responseBody: " + responseBody :
-                                              "Untreated code recieved with body: " + responseBody), "Recieved unknown status code: " + statusCode);
+                        logger.traceElseInfo(
+                                "{" + statusCode + ":" + responseNode.get("code").asText() + ":\"" + responseNode.get("message").asText() + "\"} " +
+                                (unknown ? "Recieved unknown status code from Discord" + " " + "with responseBody: " + responseBody :
+                                 "Untreated code recieved with body: " + responseBody), "Recieved unknown status code: " + statusCode);
                         future.completeExceptionally(new DiscordResponseException(
                                 "Discord Responded with unknown status code " + statusCode + " and message: " + responseBody));
                         break;

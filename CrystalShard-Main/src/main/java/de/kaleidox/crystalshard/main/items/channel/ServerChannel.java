@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.ServerComponent;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;

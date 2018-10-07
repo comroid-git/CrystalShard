@@ -5,14 +5,15 @@ import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -42,22 +43,14 @@ public class CustomEmojiInternal implements CustomEmoji {
         this.server = server;
         this.serverId = server.getId();
         this.partialData = partialData;
-        this.id = data.get("id")
-                .asLong();
-        this.name = data.get("name")
-                .asText();
+        this.id = data.get("id").asLong();
+        this.name = data.get("name").asText();
         if (!partialData) {
-            data.path("role")
-                    .forEach(node -> whitelistedRoles.add(discord.getRoleCache()
-                                                                  .getOrCreate(discord, server, node)));
-            this.creator = data.has("user") ? discord.getUserCache()
-                    .getOrCreate(discord, data.path("user")) : null;
-            this.animated = data.path("animated")
-                    .asBoolean();
-            this.managed = data.path("managed")
-                    .asBoolean();
-            this.requireColons = data.path("require_colons")
-                    .asBoolean();
+            data.path("role").forEach(node -> whitelistedRoles.add(discord.getRoleCache().getOrCreate(discord, server, node)));
+            this.creator = data.has("user") ? discord.getUserCache().getOrCreate(discord, data.path("user")) : null;
+            this.animated = data.path("animated").asBoolean();
+            this.managed = data.path("managed").asBoolean();
+            this.requireColons = data.path("require_colons").asBoolean();
         }
         instances.put(id, this);
     }
@@ -101,21 +94,13 @@ public class CustomEmojiInternal implements CustomEmoji {
     
     @Override
     public CompletableFuture<Void> requestAllData() {
-        return new WebRequest<Void>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id))
-                .execute()
-                .thenAccept(data -> {
-                    data.path("role")
-                            .forEach(node -> whitelistedRoles.add(discord.getRoleCache()
-                                                                          .getOrCreate(discord, server, node)));
-                    this.creator = data.has("user") ? discord.getUserCache()
-                            .getOrCreate(discord, data.path("user")) : null;
-                    this.animated = data.path("animated")
-                            .asBoolean(false);
-                    this.managed = data.path("managed")
-                            .asBoolean(false);
-                    this.requireColons = data.path("require_colons")
-                            .asBoolean(false);
+        return new WebRequest<Void>(discord).method(Method.GET).endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id)).execute().thenAccept(
+                data -> {
+                    data.path("role").forEach(node -> whitelistedRoles.add(discord.getRoleCache().getOrCreate(discord, server, node)));
+                    this.creator = data.has("user") ? discord.getUserCache().getOrCreate(discord, data.path("user")) : null;
+                    this.animated = data.path("animated").asBoolean(false);
+                    this.managed = data.path("managed").asBoolean(false);
+                    this.requireColons = data.path("require_colons").asBoolean(false);
                 });
     }
     
@@ -148,44 +133,34 @@ public class CustomEmojiInternal implements CustomEmoji {
         if (Objects.nonNull(creator)) return CompletableFuture.completedFuture(creator);
         return new WebRequest<User>(discord).method(Method.GET)
                 .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id))
-                .execute(node -> discord.getUserCache()
-                        .getOrCreate(discord, node.get("user")));
+                .execute(node -> discord.getUserCache().getOrCreate(discord, node.get("user")));
     }
     
     @Override
     public CompletableFuture<Boolean> requestIsAnimated() {
         if (Objects.nonNull(animated)) return CompletableFuture.completedFuture(animated);
-        return new WebRequest<Boolean>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id))
-                .execute(node -> {
-                    this.animated = node.get("animated")
-                            .asBoolean();
-                    return animated;
-                });
+        return new WebRequest<Boolean>(discord).method(Method.GET).endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id)).execute(node -> {
+            this.animated = node.get("animated").asBoolean();
+            return animated;
+        });
     }
     
     @Override
     public CompletableFuture<Boolean> requestIsManaged() {
         if (Objects.nonNull(managed)) return CompletableFuture.completedFuture(managed);
-        return new WebRequest<Boolean>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id))
-                .execute(node -> {
-                    this.managed = node.get("managed")
-                            .asBoolean();
-                    return managed;
-                });
+        return new WebRequest<Boolean>(discord).method(Method.GET).endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id)).execute(node -> {
+            this.managed = node.get("managed").asBoolean();
+            return managed;
+        });
     }
     
     @Override
     public CompletableFuture<Boolean> requestRequireColons() {
         if (Objects.nonNull(requireColons)) return CompletableFuture.completedFuture(requireColons);
-        return new WebRequest<Boolean>(discord).method(Method.GET)
-                .endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id))
-                .execute(node -> {
-                    this.requireColons = node.get("require_colons")
-                            .asBoolean();
-                    return requireColons;
-                });
+        return new WebRequest<Boolean>(discord).method(Method.GET).endpoint(Endpoint.Location.CUSTOM_EMOJI_SPECIFIC.toEndpoint(serverId, id)).execute(node -> {
+            this.requireColons = node.get("require_colons").asBoolean();
+            return requireColons;
+        });
     }
     
     @Override

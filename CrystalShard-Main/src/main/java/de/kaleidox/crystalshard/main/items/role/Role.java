@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 

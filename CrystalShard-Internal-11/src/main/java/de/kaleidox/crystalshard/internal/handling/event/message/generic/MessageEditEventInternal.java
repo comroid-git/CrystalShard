@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
+
 import java.util.Optional;
 import java.util.Set;
 
@@ -56,9 +57,7 @@ public class MessageEditEventInternal extends EventBase implements MessageEditEv
     
     @Override
     public Optional<Server> getServer() {
-        return message.getChannel()
-                .toServerChannel()
-                .map(ServerChannel::getServer);
+        return message.getChannel().toServerChannel().map(ServerChannel::getServer);
     }
     
     @Override

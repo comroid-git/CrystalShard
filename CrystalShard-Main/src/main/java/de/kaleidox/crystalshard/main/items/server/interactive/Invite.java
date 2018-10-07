@@ -9,11 +9,13 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Invite extends Castable<Invite> {
+// Static Fields
     String BASE_INVITE = "https://discord.gg/";
     
     Discord getDiscord();
@@ -32,6 +34,7 @@ public interface Invite extends Castable<Invite> {
     
     CompletableFuture<Void> delete();
     
+// Static membe
     static CompletableFuture<Invite> get(String code) throws IllegalCallerException {
         Discord discord = ThreadPool.getThreadDiscord();
         return new WebRequest<Invite>(discord).method(Method.GET)

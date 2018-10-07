@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,12 +32,10 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     public ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
-        this.name = data.path("name")
-                .asText("");
+        this.name = data.path("name").asText("");
         
         this.overrides = new ArrayList<>();
-        data.path("permission_overwrites")
-                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
+        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         
         instances.put(id, this);
     }
@@ -46,10 +45,8 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
         
-        if (!name.equals(data.path("name")
-                                 .asText(name))) {
-            name = data.get("name")
-                    .asText();
+        if (!name.equals(data.path("name").asText(name))) {
+            name = data.get("name").asText();
             traits.add(ChannelEditTrait.NAME);
         }
         
@@ -95,14 +92,10 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     public boolean hasPermission(User user, Permission permission) {
         return overrides.stream()
                 .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent()
-                        .equals(user))
-                .map(override -> override.getAllowed()
-                        .contains(permission))
+                .filter(override -> override.getParent().equals(user))
+                .map(override -> override.getAllowed().contains(permission))
                 .findAny()
-                .or(() -> Optional.of(server.getEveryoneRole()
-                                              .getPermissions()
-                                              .contains(permission)))
+                .or(() -> Optional.of(server.getEveryoneRole().getPermissions().contains(permission)))
                 .orElse(true); // If no information could be acquired, assert TRUE
     }
     

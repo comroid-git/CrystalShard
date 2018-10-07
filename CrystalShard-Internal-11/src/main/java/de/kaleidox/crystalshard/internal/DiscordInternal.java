@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -23,10 +24,10 @@ import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 import de.kaleidox.crystalshard.util.objects.functional.LivingInt;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -162,9 +163,7 @@ public class DiscordInternal implements Discord {
     }
     
     public Collection<DiscordAttachableListener> getAttachedListeners() {
-        return listenerManangers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
+        return listenerManangers.stream().map(ListenerManager::getListener).collect(Collectors.toList());
     }
     
     @Override
@@ -189,12 +188,7 @@ public class DiscordInternal implements Discord {
     
     @Override
     public Optional<Channel> getChannelById(long id) {
-        return servers.stream()
-                .flatMap(server -> server.getChannels()
-                        .stream())
-                .filter(channel -> channel.getId() == id)
-                .map(Channel.class::cast)
-                .findAny();
+        return servers.stream().flatMap(server -> server.getChannels().stream()).filter(channel -> channel.getId() == id).map(Channel.class::cast).findAny();
     }
     
     @Override
@@ -209,9 +203,7 @@ public class DiscordInternal implements Discord {
     
     @Override
     public Optional<Server> getServerById(long id) {
-        return servers.stream()
-                .filter(server -> server.getId() == id)
-                .findAny();
+        return servers.stream().filter(server -> server.getId() == id).findAny();
     }
     
     @Override
@@ -231,8 +223,7 @@ public class DiscordInternal implements Discord {
     
     @Override
     public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
-        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener()
-                .equals(listener)));
+        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener().equals(listener)));
     }
     
     @Override

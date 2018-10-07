@@ -10,6 +10,7 @@ public interface ChannelCategory extends ServerChannel {
     @SuppressWarnings("JavaDoc")
     interface Builder extends ServerChannel.Builder<Builder, ChannelCategory> { }
     
+// Static membe
     static Builder builder() throws IllegalCallerException {
         return builder(ThreadPool.getThreadDiscord());
     }

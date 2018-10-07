@@ -17,6 +17,7 @@ public class IDPair {
         return two;
     }
     
+// Static membe
     public static IDPair of(long one, long two) {
         return new IDPair(one, two);
     }

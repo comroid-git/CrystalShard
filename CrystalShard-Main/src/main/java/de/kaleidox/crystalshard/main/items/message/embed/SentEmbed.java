@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.message.Message;
+
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -83,8 +84,7 @@ public interface SentEmbed extends Embed {
     Optional<Thumbnail> getThumbail();
     
     /**
-     * Gets the video of the embed. Currently, videos may only be embedded by Discord themselves, e.g. when sending a
-     * YouTube link.
+     * Gets the video of the embed. Currently, videos may only be embedded by Discord themselves, e.g. when sending a YouTube link.
      *
      * @return The optional video of the embed.
      */
@@ -113,12 +113,10 @@ public interface SentEmbed extends Embed {
     Updater getUpdater() throws IllegalAccessException;
     
     /**
-     * Modifies the title of the sent embed.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the title of the sent embed. If this embed was not sent by the bot, the returned future will complete exceptionally with a {@link
+     * IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param title The new title to set.
      * @return A future that completes with the new embed when the embed was edited.
@@ -127,12 +125,10 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setTitle(String title);
     
     /**
-     * Modifies the description of the sent embed.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the description of the sent embed. If this embed was not sent by the bot, the returned future will complete exceptionally with a {@link
+     * IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param description The new description to set.
      * @return A future that completes with the new embed when the embed was edited.
@@ -141,12 +137,10 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setDescription(String description);
     
     /**
-     * Modifies the URL of the sent embed.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the URL of the sent embed. If this embed was not sent by the bot, the returned future will complete exceptionally with a {@link
+     * IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param url The new URL to set.
      * @return A future that completes with the new embed when the embed was edited.
@@ -155,12 +149,10 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setUrl(String url);
     
     /**
-     * Modifies the timestamp of the sent embed.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the timestamp of the sent embed. If this embed was not sent by the bot, the returned future will complete exceptionally with a {@link
+     * IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param timestamp The new timestamp to set.
      * @return A future that completes with the new embed when the embed was edited.
@@ -169,12 +161,10 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setTimestamp(Instant timestamp);
     
     /**
-     * Modifies the color of the sent embed.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.
+     * Modifies the color of the sent embed. If this embed was not sent by the bot, the returned future will complete exceptionally with a {@link
+     * IllegalAccessException}, as you may never edit someone else's messages.
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param color The new color to set.
      * @return A future that completes with the new embed when the embed was edited.
@@ -183,13 +173,10 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> setColor(Color color);
     
     /**
-     * 7
-     * Modifies the fields within the embed after the given modifying consumer. If this embed was not sent by the bot,
-     * the returned future will complete exceptionally with a {@link IllegalAccessException}, as you may never edit
-     * someone else's messages.7
+     * 7 Modifies the fields within the embed after the given modifying consumer. If this embed was not sent by the bot, the returned future will complete
+     * exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.7
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param fieldModifier The modifier for the collection of fields.
      * @return A future that completes with the new embed when the embed was edited.
@@ -198,14 +185,10 @@ public interface SentEmbed extends Embed {
     CompletableFuture<SentEmbed> modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier);
     
     /**
-     * 7
-     * Modifies all fields that match the given predicate.
-     * The modifier will only be applied to the fields that test TRUE.
-     * If this embed was not sent by the bot, the returned future will complete exceptionally with a
-     * {@link IllegalAccessException}, as you may never edit someone else's messages.7
+     * 7 Modifies all fields that match the given predicate. The modifier will only be applied to the fields that test TRUE. If this embed was not sent by the
+     * bot, the returned future will complete exceptionally with a {@link IllegalAccessException}, as you may never edit someone else's messages.7
      * <p>
-     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can
-     * acquire with {@link #getUpdater()}.
+     * If you are modifying several aspects of an embed, please consider using the {@link Updater}, which you can acquire with {@link #getUpdater()}.
      *
      * @param tester        The predicate to filter fields.
      * @param fieldModifier A consumer to modify the field.
@@ -270,8 +253,7 @@ public interface SentEmbed extends Embed {
         Updater modifyFields(Consumer<Collection<EmbedDraft.EditableField>> fieldModifier);
         
         /**
-         * Modifies all fields that match the given predicate.
-         * The modifier will only be applied to the fields that test TRUE.
+         * Modifies all fields that match the given predicate. The modifier will only be applied to the fields that test TRUE.
          *
          * @param tester        The predicate to filter fields.
          * @param fieldModifier A consumer to modify the field.
@@ -307,15 +289,12 @@ public interface SentEmbed extends Embed {
         Optional<URL> getIconUrl();
         
         /**
-         * This method converts this SentEmbed's footer into an EmbedDraft's footer, which then can be attached to an
-         * {@link Embed.Builder}.
+         * This method converts this SentEmbed's footer into an EmbedDraft's footer, which then can be attached to an {@link Embed.Builder}.
          *
          * @return The converted version of the footer.
          */
         default EmbedDraft.Footer toDraft() {
-            return EmbedDraft.Footer.BUILD(getText(),
-                                           getIconUrl().map(URL::toExternalForm)
-                                                   .orElse(null));
+            return EmbedDraft.Footer.BUILD(getText(), getIconUrl().map(URL::toExternalForm).orElse(null));
         }
     }
     
@@ -331,14 +310,12 @@ public interface SentEmbed extends Embed {
         Optional<URL> getUrl();
         
         /**
-         * This method converts this SentEmbed's author object to its EmbedDraft counterpart, which can be then attached
-         * to an {@link Embed.Builder}.
+         * This method converts this SentEmbed's author object to its EmbedDraft counterpart, which can be then attached to an {@link Embed.Builder}.
          *
          * @return The converted image object.
          */
         default EmbedDraft.Image toDraft() {
-            return EmbedDraft.Image.BUILD(getUrl().map(URL::toExternalForm)
-                                                  .orElse(null));
+            return EmbedDraft.Image.BUILD(getUrl().map(URL::toExternalForm).orElse(null));
         }
     }
     
@@ -361,17 +338,12 @@ public interface SentEmbed extends Embed {
         Optional<URL> getIconUrl();
         
         /**
-         * This method converts this SentEmbed's author object into the embedDraft counterpart, which can be then
-         * attached to an {@link Embed.Builder}.
+         * This method converts this SentEmbed's author object into the embedDraft counterpart, which can be then attached to an {@link Embed.Builder}.
          *
          * @return The converted author object.
          */
         default EmbedDraft.Author toDraft() {
-            return EmbedDraft.Author.BUILD(getName(),
-                                           getUrl().map(URL::toExternalForm)
-                                                   .orElse(null),
-                                           getIconUrl().map(URL::toExternalForm)
-                                                   .orElse(null));
+            return EmbedDraft.Author.BUILD(getName(), getUrl().map(URL::toExternalForm).orElse(null), getIconUrl().map(URL::toExternalForm).orElse(null));
         }
     }
     
@@ -387,14 +359,12 @@ public interface SentEmbed extends Embed {
         Optional<URL> getUrl();
         
         /**
-         * This method converts the SentEmbed's thumbnail object into it's EmbedDraft counterpart, which then can be
-         * added to an {@link Embed.Builder}.
+         * This method converts the SentEmbed's thumbnail object into it's EmbedDraft counterpart, which then can be added to an {@link Embed.Builder}.
          *
          * @return The converted thumbnail.
          */
         default EmbedDraft.Thumbnail toDraft() {
-            return EmbedDraft.Thumbnail.BUILD(getUrl().map(URL::toExternalForm)
-                                                      .orElse(null));
+            return EmbedDraft.Thumbnail.BUILD(getUrl().map(URL::toExternalForm).orElse(null));
         }
     }
     
@@ -424,8 +394,7 @@ public interface SentEmbed extends Embed {
         boolean isInline();
         
         /**
-         * Converts this SentEmbed's field into a {@link EmbedDraft.Field} that then can be attached to an {@link
-         * Embed.Builder}.
+         * Converts this SentEmbed's field into a {@link EmbedDraft.Field} that then can be attached to an {@link Embed.Builder}.
          *
          * @return The converted field.
          */
@@ -435,8 +404,8 @@ public interface SentEmbed extends Embed {
     }
     
     /**
-     * This interface represents a video that was embedded in the embed. Currently videos can only be embedded by
-     * discord themselves; e.g. when sending a YouTube video link.
+     * This interface represents a video that was embedded in the embed. Currently videos can only be embedded by discord themselves; e.g. when sending a
+     * YouTube video link.
      */
     interface Video {
         /**

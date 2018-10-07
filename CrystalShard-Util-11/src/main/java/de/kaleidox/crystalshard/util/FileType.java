@@ -12,6 +12,12 @@ public abstract class FileType {
         this.regexPiece = regexPiece;
     }
     
+// Override Methods
+    @Override
+    public String toString() {
+        return regexPiece;
+    }
+    
     public boolean isType(String test) {
         return test.matches(".+" + regexPiece);
     }
@@ -22,11 +28,6 @@ public abstract class FileType {
     
     public String vanityName() {
         return vanityName;
-    }
-    
-    @Override
-    public String toString() {
-        return regexPiece;
     }
     
     public static class IMAGE extends FileType {

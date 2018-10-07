@@ -57,9 +57,6 @@ public enum VoiceRegion {
     // Static membe
     public static VoiceRegion getFromRegionKey(String regionKey) {
         if (regionKey == null) return UNKNOWN;
-        return Stream.of(values())
-                .filter(region -> region.regionKey.equals(regionKey))
-                .findAny()
-                .orElse(UNKNOWN);
+        return Stream.of(values()).filter(region -> region.regionKey.equals(regionKey)).findAny().orElse(UNKNOWN);
     }
 }

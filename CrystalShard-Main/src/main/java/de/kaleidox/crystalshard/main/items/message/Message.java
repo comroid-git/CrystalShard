@@ -28,6 +28,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.annotations.NotContainNull;
 import de.kaleidox.crystalshard.util.annotations.Range;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -75,8 +76,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     String getContent();
     
     /**
-     * Gets the readable content of the message. All mentions get replaced by their respective names. Markdown tags will
-     * not get removed. See {@link #getTextContent()}.
+     * Gets the readable content of the message. All mentions get replaced by their respective names. Markdown tags will not get removed. See {@link
+     * #getTextContent()}.
      *
      * @return The readable content of the message.
      * @see de.kaleidox.crystalshard.main.util.DiscordMentiontagPatterns
@@ -84,8 +85,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     String getReadableContent();
     
     /**
-     * Gets the plain text content. All Markdown tags will get removed, as well as mentions are being replaced as in
-     * {@link #getReadableContent()}.
+     * Gets the plain text content. All Markdown tags will get removed, as well as mentions are being replaced as in {@link #getReadableContent()}.
      *
      * @return The plain text content of the message.
      */
@@ -134,8 +134,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     boolean isPrivate();
     
     /**
-     * Gets the type of the message. The type of the message can tell whether the message was e.g. sent by a Webhook, or
-     * if the message was a "Welcome User XYZ" message.
+     * Gets the type of the message. The type of the message can tell whether the message was e.g. sent by a Webhook, or if the message was a "Welcome User XYZ"
+     * message.
      *
      * @return The type of the message.
      */
@@ -185,9 +185,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     List<Attachment> getAttachments();
     
     /**
-     * Gets a list of the embeds within this message. Usually, there is only one embed per message. There may be more
-     * than one embed per message if there are e.g. embedded YouTube Videos. See {@link #getEmbed()} to only get the
-     * "main" embed of the message.
+     * Gets a list of the embeds within this message. Usually, there is only one embed per message. There may be more than one embed per message if there are
+     * e.g. embedded YouTube Videos. See {@link #getEmbed()} to only get the "main" embed of the message.
      *
      * @return A list of embeds.
      */
@@ -223,9 +222,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     List<UnicodeEmoji> getUnicodeEmojis();
     
     /**
-     * Updates the content of the current message. The returned future will complete exceptionally with a {@link
-     * IllegalAccessException} if the bot is not the author of this message, as you may never edit other people's
-     * messages.
+     * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
+     * author of this message, as you may never edit other people's messages.
      *
      * @param newContent The new content to set.
      * @return A future that completes with this message when it has been modified.
@@ -233,9 +231,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Message> edit(String newContent);
     
     /**
-     * Updates the content of the current message. The returned future will complete exceptionally with a {@link
-     * IllegalAccessException} if the bot is not the author of this message, as you may never edit other people's
-     * messages.
+     * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
+     * author of this message, as you may never edit other people's messages.
      *
      * @param newContent The new content to set.
      * @return A future that completes with this message when it has been modified.
@@ -243,9 +240,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Message> edit(Sendable newContent);
     
     /**
-     * Updates the content of the current message. The returned future will complete exceptionally with a {@link
-     * IllegalAccessException} if the bot is not the author of this message, as you may never edit other people's
-     * messages.
+     * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
+     * author of this message, as you may never edit other people's messages.
      *
      * @param embedDraft The new Embed to set.
      * @return A future that completes with this message when it has been modified.
@@ -253,11 +249,10 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Message> edit(EmbedDraft embedDraft);
     
     /**
-     * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method
-     * requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The returned future
-     * will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission
-     * required to close this message. This will always occur in a private chat, as the bot can never have the
-     * theoretical permissions to close other peoples messages within a private chat.
+     * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method requires the bot to have the {@link
+     * Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the
+     * bot does not have the permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical
+     * permissions to close other peoples messages within a private chat.
      *
      * @param reason The reason to close the message for.
      * @return A future that completes when the message has been deleted.
@@ -265,11 +260,10 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Void> delete(String reason);
     
     /**
-     * Adds a reaction with the given emoji-printable to the message. Emoji printables of UnicodeEmojis are the actual
-     * UnicodeEmoji, the printable of a CustomEmojis is its mention tag. See {@link Emoji#toDiscordPrintable()}. This
-     * method requires the bot to have the {@link Permission#ADD_REACTIONS} within the current context. The returned
-     * future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the
-     * permission required to add reactions.
+     * Adds a reaction with the given emoji-printable to the message. Emoji printables of UnicodeEmojis are the actual UnicodeEmoji, the printable of a
+     * CustomEmojis is its mention tag. See {@link Emoji#toDiscordPrintable()}. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within
+     * the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission
+     * required to add reactions.
      *
      * @param emojiPrintable The emojis to add as a reaction.
      * @return A future that completes when the reaction has been added.
@@ -277,22 +271,19 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Void> addReaction(String emojiPrintable);
     
     /**
-     * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES}
-     * within the current context. The returned future will complete exceptionally with a {@link
-     * DiscordPermissionException} if the bot does not have the permission required to remove all reactions. This will
-     * also occur on Private chats, as you can not have the theoretical permission to remove reactions in a private
-     * chat.
+     * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The
+     * returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission required to remove all
+     * reactions. This will also occur on Private chats, as you can not have the theoretical permission to remove reactions in a private chat.
      *
      * @return A future that completes when all reactions have been removed.
      */
     CompletableFuture<Void> removeAllReactions();
     
     /**
-     * Removes all reactions from a specific user filtered by the given emojis. Don't include any emoji to remove all
-     * known reactions of the user. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES} within
-     * the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if
-     * the bot does not have the permission required to remove other users reactions. This will also occur on Private
-     * chats, as you can not have the theoretical permission to remove reactions in a private chat.
+     * Removes all reactions from a specific user filtered by the given emojis. Don't include any emoji to remove all known reactions of the user. This method
+     * requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a {@link
+     * DiscordPermissionException} if the bot does not have the permission required to remove other users reactions. This will also occur on Private chats, as
+     * you can not have the theoretical permission to remove reactions in a private chat.
      *
      * @param emojis The emojis whose reactions should be removed.
      * @return A future that completes when all reactions have been removed.
@@ -300,8 +291,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Void> removeReactionsByEmoji(@NotContainNull Emoji... emojis);
     
     /**
-     * Removes all reactions of the bot from the message, filtered by the given emojis. Don't include any emoji to
-     * remove all known reactions by yourself.
+     * Removes all reactions of the bot from the message, filtered by the given emojis. Don't include any emoji to remove all known reactions by yourself.
      *
      * @param users The users whose reaction should be removed.
      * @return A future that completes when the reactions are removed.
@@ -320,9 +310,9 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     }
     
     /**
-     * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link
-     * Permission#ADD_REACTIONS} within the current context. The returned future will complete exceptionally with a
-     * {@link DiscordPermissionException} if the bot does not have the permission required to add reactions.
+     * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within the current
+     * context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission required to
+     * add reactions.
      *
      * @param emoji The emoji to add as a reaction.
      * @return A future that completes when the reaction has been added.
@@ -369,11 +359,10 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     }
     
     /**
-     * Deletes the current message. If the bot is not the owner of the message, this method requires the bot to have the
-     * {@link Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally
-     * with a {@link DiscordPermissionException} if the bot does not have the permission required to close this
-     * message. This will always occur in a private chat, as the bot can never have the theoretical permissions to
-     * close other peoples messages within a private chat.
+     * Deletes the current message. If the bot is not the owner of the message, this method requires the bot to have the {@link Permission#MANAGE_MESSAGES}
+     * within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the
+     * permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical permissions to close other
+     * peoples messages within a private chat.
      *
      * @return A future that completes when the message has been deleted.
      */
@@ -395,17 +384,13 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
         CompletableFuture<Void> deleteAll();
     }
     
+// Static membe
     static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalCallerException {
         Discord discord = ThreadPool.getThreadDiscord();
-        return new MessageInternal.BulkDeleteInternal(discord).setChannel(channelId)
-                .addIds(messageIds)
-                .deleteAll();
+        return new MessageInternal.BulkDeleteInternal(discord).setChannel(channelId).addIds(messageIds).deleteAll();
     }
     
     static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
-        return new MessageInternal.BulkDeleteInternal(messages[0].getDiscord()).setChannel(messages[0].getChannel()
-                                                                                                   .getId())
-                .addMessages(messages)
-                .deleteAll();
+        return new MessageInternal.BulkDeleteInternal(messages[0].getDiscord()).setChannel(messages[0].getChannel().getId()).addMessages(messages).deleteAll();
     }
 }

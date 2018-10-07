@@ -21,8 +21,7 @@ public class LivingInt {
         if (TimeUnit.MILLISECONDS.convert(stepTime, stepUnit) < MILLIS_MINIMUM) throw new IllegalArgumentException(
                 "stepTime must be greater than 50 milliseconds!");
         
-        Executors.newSingleThreadScheduledExecutor()
-                .scheduleAtFixedRate(this::step, stepTime, stepTime, stepUnit);
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::step, stepTime, stepTime, stepUnit);
     }
     
     public synchronized int change(int delta) {

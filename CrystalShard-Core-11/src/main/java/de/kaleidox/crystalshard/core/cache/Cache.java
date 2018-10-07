@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.annotations.NotContainNull;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
 import de.kaleidox.crystalshard.util.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,15 +28,16 @@ import static de.kaleidox.crystalshard.util.helpers.MapHelper.*;
  * @param <R> The type of the object that is used to request a new instance of this object.
  */
 public abstract class Cache<T extends Cacheable, I, R> {
-    private final static Logger                                                                      logger = new Logger(Cache.class);
+    private final static Logger                                                                  logger = new Logger(Cache.class);
     private final static ConcurrentHashMap<Class<?>, Cache<? extends Cacheable, Object, Object>> cacheInstances;
-    private final static ScheduledExecutorService                                                    scheduledExecutorService;
-    private final        ConcurrentHashMap<I, CacheReference<T, R>>                                  instances;
-    private final        Class<? extends T>                                                          typeClass;
-    private final        Function<Object[], I>                                                       mapperToIdentifier;
-    private final        long                                                                        keepaliveMilis;
-    private final        Class<?>[]                                                                  constructorParameter;
+    private final static ScheduledExecutorService                                                scheduledExecutorService;
+    private final        ConcurrentHashMap<I, CacheReference<T, R>>                              instances;
+    private final        Class<? extends T>                                                      typeClass;
+    private final        Function<Object[], I>                                                   mapperToIdentifier;
+    private final        long                                                                    keepaliveMilis;
+    private final        Class<?>[]                                                              constructorParameter;
     
+// Init Blocks
     static {
         // Initialize variables
         cacheInstances = new ConcurrentHashMap<>();
@@ -45,8 +47,7 @@ public abstract class Cache<T extends Cacheable, I, R> {
             // Check for deletable cache references
             cacheInstances.entrySet()
                     .stream()
-                    .flatMap(entry -> entry.getValue().instances.entrySet()
-                            .stream())
+                    .flatMap(entry -> entry.getValue().instances.entrySet().stream())
                     .map(Map.Entry::getValue)
                     .filter(CacheReference::canBeUncached)
                     .forEachOrdered(CacheReference::uncache);
@@ -75,20 +76,17 @@ public abstract class Cache<T extends Cacheable, I, R> {
     }
     
     /**
-     * Request the parameters required to create a new instance after the given {@code requestIdent} object.
-     * This method must never return {@code null}.
+     * Request the parameters required to create a new instance after the given {@code requestIdent} object. This method must never return {@code null}.
      *
      * @param requestIdent The ident object to request parameters for.
-     * @return A future that completes with an array of objects. This array is required to test {@code TRUE} on
-     * {@link #matchingParams(Object...)}.
+     * @return A future that completes with an array of objects. This array is required to test {@code TRUE} on {@link #matchingParams(Object...)}.
      */
     @NotNull // FIXME: 30.09.2018 Seems to not complete properly; thus blocking all #getOrRequest calls.
     protected abstract CompletableFuture<Object[]> requestConstructorParameters(R requestIdent);
     
     /**
-     * Constructs a new instance of T with the providing parameters.
-     * The provided parameters always match with the pre-defined values for the defaultConstructorParameters.
-     * This method must never return {@code null}.
+     * Constructs a new instance of T with the providing parameters. The provided parameters always match with the pre-defined values for the
+     * defaultConstructorParameters. This method must never return {@code null}.
      *
      * @param param An array of parameters to create T from.
      * @return A new instance of T.
@@ -97,8 +95,7 @@ public abstract class Cache<T extends Cacheable, I, R> {
     protected abstract T construct(Object... param);
     
     /**
-     * Tries to {@linkplain #get(Object) get} an instance from the cache.
-     * If any exception is thrown, returns {@code null}.
+     * Tries to {@linkplain #get(Object) get} an instance from the cache. If any exception is thrown, returns {@code null}.
      *
      * @param identifier The identifier to look for.
      * @return The object of {@code null}.
@@ -163,8 +160,8 @@ public abstract class Cache<T extends Cacheable, I, R> {
      * @param ident      The identifier for the object.
      * @param parameters An array of parameters to create the object after, if its not cached.
      * @return The object.
-     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested}
-     *                                  parameters do not match the predefined default constructor parameters.
+     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested} parameters do not match the predefined default
+     *                                  constructor parameters.
      */
     public T getOrCreate(I ident, Object... parameters) throws IllegalArgumentException {
         if (containsKey(instances, ident)) {
@@ -197,8 +194,8 @@ public abstract class Cache<T extends Cacheable, I, R> {
      * @param requestIdent The request identifier for requesting new object traits.
      * @return The object.
      * @throws NoSuchElementException   If the recent used parameters for requesting are {@code null}.
-     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested}
-     *                                  parameters do not match the predefined default constructor parameters.
+     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested} parameters do not match the predefined default
+     *                                  constructor parameters.
      */
     public T getOrRequest(I ident, R requestIdent) throws NoSuchElementException, IllegalArgumentException {
         T val;
@@ -216,8 +213,7 @@ public abstract class Cache<T extends Cacheable, I, R> {
                 ref.setReference(val);
             }
         } else {
-            Object[] params = Objects.requireNonNull(requestConstructorParameters(requestIdent))
-                    .join();
+            Object[] params = Objects.requireNonNull(requestConstructorParameters(requestIdent)).join();
             if (!matchingParams(params)) throw new IllegalArgumentException(
                     "Cannot use parameters " + Arrays.toString(params) + " for creating new instance of " + typeClass.toGenericString());
             val = Objects.requireNonNull(construct(params), "Method \"construct\" must not " + "return null!");
@@ -234,8 +230,8 @@ public abstract class Cache<T extends Cacheable, I, R> {
      * @param ident The identifier to look at.
      * @return The instance.
      * @throws NoSuchElementException   If there is no reference at the given identifier.
-     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested}
-     *                                  parameters do not match the predefined default constructor parameters.
+     * @throws IllegalArgumentException If the {@linkplain #requestConstructorParameters(Object) requested} parameters do not match the predefined default
+     *                                  constructor parameters.
      */
     public T get(I ident) throws NoSuchElementException, IllegalArgumentException {
         T val;
@@ -261,26 +257,21 @@ public abstract class Cache<T extends Cacheable, I, R> {
         
         for (I ident : idents) {
             Objects.requireNonNull(ident);
-            instances.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey()
-                            .equals(ident))
-                    .forEachOrdered(entry -> {
-                        try {
-                            CacheReference<T, R> ref = entry.getValue();
-                            Object[] recentParameters = ref.getRecentParameters();
-                            if (recentParameters == null) throw new NoSuchElementException(
-                                    "Reference is not isCached and cant be created; " + "no recent parameters set.");
-                            if (!matchingParams(recentParameters)) throw new IllegalArgumentException(
-                                    "Cannot use parameters " + Arrays.toString(recentParameters) + " for creating new instance of " +
-                                    typeClass.toGenericString());
-                            ref.setReference(Objects.requireNonNull(construct(recentParameters), "Method \"construct\" must not " + "return null!"));
-                            logger.deeptrace("Constructed new instance with recent parameters " + Arrays.toString(recentParameters) + " of type " +
-                                             typeClass.toGenericString());
-                        } finally {
-                            list.add(ident);
-                        }
-                    });
+            instances.entrySet().stream().filter(entry -> entry.getKey().equals(ident)).forEachOrdered(entry -> {
+                try {
+                    CacheReference<T, R> ref = entry.getValue();
+                    Object[] recentParameters = ref.getRecentParameters();
+                    if (recentParameters == null) throw new NoSuchElementException(
+                            "Reference is not isCached and cant be created; " + "no recent parameters set.");
+                    if (!matchingParams(recentParameters)) throw new IllegalArgumentException(
+                            "Cannot use parameters " + Arrays.toString(recentParameters) + " for creating new instance of " + typeClass.toGenericString());
+                    ref.setReference(Objects.requireNonNull(construct(recentParameters), "Method \"construct\" must not " + "return null!"));
+                    logger.deeptrace(
+                            "Constructed new instance with recent parameters " + Arrays.toString(recentParameters) + " of type " + typeClass.toGenericString());
+                } finally {
+                    list.add(ident);
+                }
+            });
         }
         
         return list;
@@ -298,20 +289,16 @@ public abstract class Cache<T extends Cacheable, I, R> {
         
         for (I ident : idents) {
             Objects.requireNonNull(ident);
-            instances.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey()
-                            .equals(ident))
-                    .forEachOrdered(entry -> {
-                        try {
-                            CacheReference<T, R> ref = entry.getValue();
-                            instances.remove(entry.getKey(), ref);
-                            ref.uncache();
-                            ref.close();
-                        } finally {
-                            list.add(ident);
-                        }
-                    });
+            instances.entrySet().stream().filter(entry -> entry.getKey().equals(ident)).forEachOrdered(entry -> {
+                try {
+                    CacheReference<T, R> ref = entry.getValue();
+                    instances.remove(entry.getKey(), ref);
+                    ref.uncache();
+                    ref.close();
+                } finally {
+                    list.add(ident);
+                }
+            });
         }
         
         return list;
@@ -335,6 +322,7 @@ public abstract class Cache<T extends Cacheable, I, R> {
     
     // Static members
     
+// Static membe
     /**
      * Tries to get an instance of a cache for the provided parameters.
      *
@@ -347,20 +335,13 @@ public abstract class Cache<T extends Cacheable, I, R> {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Cacheable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
-        return cacheInstances.entrySet()
-                .stream()
-                .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .filter(cache -> {
-                    try {
-                        Cache<T, I, ?> o = (Cache<T, I, ?>) cache;
-                    } catch (Throwable e) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map(cache -> (Cache<T, I, ?>) cache)
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
+        return cacheInstances.entrySet().stream().filter(entry -> typeClass.isAssignableFrom(entry.getKey())).map(Map.Entry::getValue).filter(cache -> {
+            try {
+                Cache<T, I, ?> o = (Cache<T, I, ?>) cache;
+            } catch (Throwable e) {
+                return false;
+            }
+            return true;
+        }).map(cache -> (Cache<T, I, ?>) cache).findAny().orElseThrow(NoSuchElementException::new);
     }
 }

@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Map;
@@ -37,8 +38,7 @@ public class Endpoint {
     public boolean equals(Object obj) {
         if (obj instanceof Endpoint) {
             Endpoint target = (Endpoint) obj;
-            return target.url.toExternalForm()
-                    .equalsIgnoreCase(this.url.toExternalForm());
+            return target.url.toExternalForm().equalsIgnoreCase(this.url.toExternalForm());
         }
         return false;
     }
@@ -123,8 +123,7 @@ public class Endpoint {
         
         public int getParameterCount() {
             int splitted = location.split("%s").length - 1;
-            int end = (location.substring(location.length() - 2)
-                               .equalsIgnoreCase("%s") ? 1 : 0);
+            int end = (location.substring(location.length() - 2).equalsIgnoreCase("%s") ? 1 : 0);
             return splitted + end;
         }
         
@@ -149,9 +148,7 @@ public class Endpoint {
                 }
             }
             if (parameterCount == params.length) {
-                boolean olderInstanceExists = olderInstances.entrySet()
-                        .stream()
-                        .anyMatch(entry -> Arrays.compare(entry.getKey(), params) == 0);
+                boolean olderInstanceExists = olderInstances.entrySet().stream().anyMatch(entry -> Arrays.compare(entry.getKey(), params) == 0);
                 if (olderInstanceExists) {
                     for (Map.Entry<String[], Endpoint> entry : olderInstances.entrySet()) {
                         if (Arrays.compare(entry.getKey(), params) == 0) {
@@ -169,6 +166,7 @@ public class Endpoint {
         }
     }
     
+// Static membe
     public static Endpoint of(Location location, Object... parameter) {
         return location.toEndpoint(parameter);
     }

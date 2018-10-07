@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.event.server.role.RoleEditEvent;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.util.Set;
 
 public class RoleEditEventInternal extends EventBase implements RoleEditEvent {

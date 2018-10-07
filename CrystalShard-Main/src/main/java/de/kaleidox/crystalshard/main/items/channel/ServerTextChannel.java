@@ -23,6 +23,7 @@ public interface ServerTextChannel extends ServerChannel, TextChannel {
         Builder setNSFW(boolean nsfw);
     }
     
+// Static membe
     static Builder builder() throws IllegalCallerException {
         return builder(ThreadPool.getThreadDiscord());
     }

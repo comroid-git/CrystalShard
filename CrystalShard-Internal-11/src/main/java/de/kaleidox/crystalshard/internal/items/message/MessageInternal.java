@@ -12,6 +12,7 @@ import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal
 import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
@@ -39,9 +40,9 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -90,40 +91,25 @@ public class MessageInternal implements Message {
         logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
         this.discord = discord;
-        this.id = data.get("id")
-                .asLong();
-        this.channelId = data.get("channel_id")
-                .asLong();
-        this.channel = discord.getChannelCache()
-                .getOrRequest(channelId, channelId)
-                .toTextChannel()
-                .get();
-        if (channel.toServerChannel()
-                .isPresent()) {
-            this.server = channel.toServerChannel()
-                    .map(ServerChannel::getServer)
-                    .get();
+        this.id = data.get("id").asLong();
+        this.channelId = data.get("channel_id").asLong();
+        this.channel = discord.getChannelCache().getOrRequest(channelId, channelId).toTextChannel().get();
+        if (channel.toServerChannel().isPresent()) {
+            this.server = channel.toServerChannel().map(ServerChannel::getServer).get();
         } else this.server = null;
-        this.contentRaw = data.get("content")
-                .asText();
+        this.contentRaw = data.get("content").asText();
         try {
-            timestamp1 = Instant.parse(data.get("timestamp")
-                                               .asText());
+            timestamp1 = Instant.parse(data.get("timestamp").asText());
         } catch (DateTimeException ignored) {
             timestamp1 = null;
         }
         this.timestamp = timestamp1;
-        this.editedTimestamp = data.has("edited_timestamp") && !data.get("edited_timestamp")
-                .isNull() ? Instant.parse(data.get("edited_timestamp")
-                                                  .asText()) : null;
-        this.tts = data.get("tts")
-                .asBoolean(false);
-        this.mentionsEveryone = data.get("tts")
-                .asBoolean(false);
-        this.pinned = data.get("pinned")
-                .asBoolean(false);
-        this.type = MessageType.getTypeById(data.get("type")
-                                                    .asInt());
+        this.editedTimestamp = data.has("edited_timestamp") && !data.get("edited_timestamp").isNull() ? Instant.parse(data.get("edited_timestamp").asText()) :
+                               null;
+        this.tts = data.get("tts").asBoolean(false);
+        this.mentionsEveryone = data.get("tts").asBoolean(false);
+        this.pinned = data.get("pinned").asBoolean(false);
+        this.type = MessageType.getTypeById(data.get("type").asInt());
         this.activity = data.has("activity") ? new MessageActivityInternal(data.get("activity")) : null;
         this.application = data.has("application") ? new MessageApplicationInternal(data.get("application")) : null;
         if (!data.has("webhook_id")) {
@@ -137,8 +123,7 @@ public class MessageInternal implements Message {
         }
         
         for (JsonNode role : data.get("mention_roles")) {
-            roleMentions.add(discord.getRoleCache()
-                                     .getOrCreate(discord, server, role));
+            roleMentions.add(discord.getRoleCache().getOrCreate(discord, server, role));
         }
         
         for (JsonNode attachment : data.get("attachments")) {
@@ -160,6 +145,7 @@ public class MessageInternal implements Message {
         instances.put(id, this);
     }
     
+// Override Methods
     @Override
     public TextChannel getChannel() {
         return channel;
@@ -302,12 +288,10 @@ public class MessageInternal implements Message {
     
     @Override
     public CompletableFuture<Void> delete(String reason) {
-        if (channel.toServerChannel()
-                    .isPresent() && !author.isYourself() && !channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return CompletableFuture.failedFuture(
-                new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.", Permission.MANAGE_MESSAGES));
-        return new WebRequest<Void>(discord).method(Method.DELETE)
-                .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channelId, id))
-                .executeNull();
+        if (channel.toServerChannel().isPresent() && !author.isYourself() && !channel.hasPermission(discord, Permission.MANAGE_MESSAGES))
+            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.",
+                                                                                 Permission.MANAGE_MESSAGES));
+        return new WebRequest<Void>(discord).method(Method.DELETE).endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channelId, id)).executeNull();
     }
     
     @Override
@@ -315,11 +299,10 @@ public class MessageInternal implements Message {
         if (!channel.hasPermission(discord, Permission.READ_MESSAGE_HISTORY)) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Cannot read message history!",
                 Permission.READ_MESSAGE_HISTORY));
-        if (getReactions().stream()
-                    .map(Reaction::getEmoji)
-                    .map(Emoji::toDiscordPrintable)
-                    .noneMatch(emojiPrintable::equalsIgnoreCase) && !channel.hasPermission(discord, Permission.ADD_REACTIONS))
-            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot add new reactions!", Permission.ADD_REACTIONS));
+        if (getReactions().stream().map(Reaction::getEmoji).map(Emoji::toDiscordPrintable).noneMatch(emojiPrintable::equalsIgnoreCase) &&
+            !channel.hasPermission(discord, Permission.ADD_REACTIONS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+                "Cannot add new reactions!",
+                Permission.ADD_REACTIONS));
         return new WebRequest<Void>(discord).method(Method.PUT)
                 .endpoint(Endpoint.Location.REACTION_OWN.toEndpoint(channelId, id, emojiPrintable))
                 .executeNull();
@@ -330,9 +313,7 @@ public class MessageInternal implements Message {
         if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return CompletableFuture.failedFuture(new DiscordPermissionException(
                 "Cannot remove other peoples reactions.",
                 Permission.MANAGE_MESSAGES));
-        return new WebRequest<Void>(discord).method(Method.DELETE)
-                .endpoint(Endpoint.Location.REACTIONS.toEndpoint(channelId, id))
-                .executeNull();
+        return new WebRequest<Void>(discord).method(Method.DELETE).endpoint(Endpoint.Location.REACTIONS.toEndpoint(channelId, id)).executeNull();
     }
     
     @Override
@@ -343,14 +324,11 @@ public class MessageInternal implements Message {
         List<CompletableFuture<Void>> deletions = new ArrayList<>();
         
         reactions.stream()
-                .filter(reaction -> Stream.of(emojis)
-                        .anyMatch(emoji -> reaction.getEmoji()
-                                .equals(emoji)))
+                .filter(reaction -> Stream.of(emojis).anyMatch(emoji -> reaction.getEmoji().equals(emoji)))
                 .forEach(reaction -> deletions.add(new WebRequest<Void>(discord).method(Method.DELETE)
                                                            .endpoint(Endpoint.Location.REACTION_USER.toEndpoint(channelId,
                                                                                                                 id,
-                                                                                                                reaction.getEmoji()
-                                                                                                                        .toDiscordPrintable(),
+                                                                                                                reaction.getEmoji().toDiscordPrintable(),
                                                                                                                 reaction.getUser()))
                                                            .executeNull()));
         
@@ -365,14 +343,11 @@ public class MessageInternal implements Message {
         List<CompletableFuture<Void>> deletions = new ArrayList<>();
         
         reactions.stream()
-                .filter(reaction -> Stream.of(users)
-                        .anyMatch(user -> reaction.getUser()
-                                .equals(user)))
+                .filter(reaction -> Stream.of(users).anyMatch(user -> reaction.getUser().equals(user)))
                 .forEach(reaction -> deletions.add(new WebRequest<Void>(discord).method(Method.DELETE)
                                                            .endpoint(Endpoint.Location.REACTION_USER.toEndpoint(channelId,
                                                                                                                 id,
-                                                                                                                reaction.getEmoji()
-                                                                                                                        .toDiscordPrintable(),
+                                                                                                                reaction.getEmoji().toDiscordPrintable(),
                                                                                                                 reaction.getUser()))
                                                            .executeNull()));
         
@@ -381,16 +356,12 @@ public class MessageInternal implements Message {
     
     @Override
     public CompletableFuture<Message> pin() {
-        return new WebRequest<Message>(discord).method(Method.PUT)
-                .endpoint(Endpoint.Location.PIN_MESSAGE.toEndpoint(channelId, id))
-                .execute(node -> this);
+        return new WebRequest<Message>(discord).method(Method.PUT).endpoint(Endpoint.Location.PIN_MESSAGE.toEndpoint(channelId, id)).execute(node -> this);
     }
     
     @Override
     public CompletableFuture<Message> unpin() {
-        return new WebRequest<Message>(discord).method(Method.DELETE)
-                .endpoint(Endpoint.Location.PIN_MESSAGE.toEndpoint(channelId, id))
-                .execute(node -> this);
+        return new WebRequest<Message>(discord).method(Method.DELETE).endpoint(Endpoint.Location.PIN_MESSAGE.toEndpoint(channelId, id)).execute(node -> this);
     }
     
     @Override
@@ -449,6 +420,7 @@ public class MessageInternal implements Message {
             ids = new ArrayList<>();
         }
         
+// Override Methods
         @Override
         public BulkDelete setChannel(long channelId) {
             this.channelId = channelId;
@@ -488,10 +460,9 @@ public class MessageInternal implements Message {
         public CompletableFuture<Void> deleteAll() {
             Objects.requireNonNull(channelId, "ChannelID for BulkDelete must not be NULL!");
             if (ids.size() >= 100) throw new IllegalArgumentException("BulkDelete only allowed with up to 100 Messages!");
-            return new WebRequest<Void>(discord).method(Method.POST)
-                    .endpoint(Endpoint.Location.MESSAGES_BULK_DELETE.toEndpoint(channelId))
-                    .node(objectNode("messages", ids))
-                    .executeNull();
+            return new WebRequest<Void>(discord).method(Method.POST).endpoint(Endpoint.Location.MESSAGES_BULK_DELETE.toEndpoint(channelId)).node(objectNode(
+                    "messages",
+                    ids)).executeNull();
         }
     }
 }

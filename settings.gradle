@@ -1,7 +1,8 @@
 rootProject.name = 'CrystalShard'
-include 'CrystalShard-Core-11'
-include 'CrystalShard-Internal-11'
-include 'CrystalShard-Main'
-include 'CrystalShard-Util-11'
-include 'CrystalShard-Logging'
+include ':CrystalShard-Core-11'
+include ':CrystalShard-Internal-11'
+include ':CrystalShard-Main'
+include ':CrystalShard-Util-11'
+include ':CrystalShard-Logging'
+include ':CrystalShard-Java11'
 

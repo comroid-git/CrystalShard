@@ -19,6 +19,7 @@ public interface ServerVoiceChannel extends ServerChannel, VoiceChannel {
         Builder setUserLimit(int limit);
     }
     
+// Static membe
     static Builder builder() throws IllegalCallerException {
         return builder(ThreadPool.getThreadDiscord());
     }

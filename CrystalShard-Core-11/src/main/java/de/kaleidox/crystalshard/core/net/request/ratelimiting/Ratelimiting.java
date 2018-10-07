@@ -3,8 +3,9 @@ package de.kaleidox.crystalshard.core.net.request.ratelimiting;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.main.Discord;
+
 import java.net.http.HttpHeaders;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +17,7 @@ public class Ratelimiting {
     private final static Logger                                                logger = new Logger(Ratelimiting.class);
     final                ThreadPool                                            executePool;
     @SuppressWarnings("ALL")
-    private final        DiscordInternal                                       discord;
+    private final        Discord                                               discord;
     private final        BucketManager                                         bucketManager;
     private final        ConcurrentHashMap<Endpoint, AtomicInteger>            remainingMap;
     private final        ConcurrentHashMap<Endpoint, AtomicInteger>            limitMap;
@@ -27,7 +28,7 @@ public class Ratelimiting {
      *
      * @param discord The discord object to attach the ratelimiter to.
      */
-    public Ratelimiting(DiscordInternal discord) {
+    public Ratelimiting(Discord discord) {
         this.discord = discord;
         this.executePool = new ThreadPool(discord, -1, "Ratelimit Execution");
         this.bucketManager = new BucketManager(discord, this);
@@ -40,8 +41,7 @@ public class Ratelimiting {
         assureAtomicValues(endpoint);
         AtomicInteger remaining = remainingMap.get(endpoint);
         AtomicReference<Instant> reset = resetMap.get(endpoint);
-        if (remaining.get() == 0 && reset.get()
-                .isAfter(Instant.now())) {
+        if (remaining.get() == 0 && reset.get().isAfter(Instant.now())) {
             remaining.incrementAndGet();
         }
         return remaining;
@@ -71,19 +71,10 @@ public class Ratelimiting {
         headersFuture.thenAcceptAsync(headers -> {
             try {
                 // set fail-safe map elements, if not set for this endpoint
-                headers.firstValue("X-RateLimit-Remaining")
-                        .map(Integer::parseInt)
-                        .ifPresent(readyAt -> remainingMap.get(endpoint)
-                                .set(readyAt));
-                headers.firstValue("X-RateLimit-Limit")
-                        .map(Integer::parseInt)
-                        .ifPresent(limit -> limitMap.get(endpoint)
-                                .set(limit));
-                headers.firstValue("X-RateLimit-Reset")
-                        .map(Long::parseLong)
-                        .map(Instant::ofEpochMilli)
-                        .ifPresent(retryAt -> resetMap.get(endpoint)
-                                .set(retryAt));
+                headers.firstValue("X-RateLimit-Remaining").map(Integer::parseInt).ifPresent(readyAt -> remainingMap.get(endpoint).set(readyAt));
+                headers.firstValue("X-RateLimit-Limit").map(Integer::parseInt).ifPresent(limit -> limitMap.get(endpoint).set(limit));
+                headers.firstValue("X-RateLimit-Reset").map(Long::parseLong).map(Instant::ofEpochMilli).ifPresent(retryAt -> resetMap.get(endpoint)
+                        .set(retryAt));
             } catch (NullPointerException e) {
                 logger.exception(e, "NPE on Ratelimit header evaluation.");
             }
@@ -95,8 +86,6 @@ public class Ratelimiting {
     private void assureAtomicValues(Endpoint endpoint) {
         remainingMap.putIfAbsent(endpoint, new AtomicInteger(1));
         limitMap.putIfAbsent(endpoint, new AtomicInteger(1));
-        resetMap.putIfAbsent(endpoint,
-                             new AtomicReference<>(Instant.now()
-                                                           .minusSeconds(1)));
+        resetMap.putIfAbsent(endpoint, new AtomicReference<>(Instant.now().minusSeconds(1)));
     }
 }

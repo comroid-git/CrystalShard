@@ -16,6 +16,7 @@ import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
+
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,8 +28,7 @@ public class ChannelCache extends Cache<Channel, Long, Long> {
     
     public ChannelCache(DiscordInternal discordInternal) {
         super(ChannelInternal.class,
-              param -> ((JsonNode) param[2]).get("id")
-                      .asLong(),
+              param -> ((JsonNode) param[2]).get("id").asLong(),
               TimeUnit.HOURS.toMillis(12),
               Discord.class,
               Server.class,
@@ -40,15 +40,11 @@ public class ChannelCache extends Cache<Channel, Long, Long> {
     @NotNull
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(Long requestIdent) {
-        return new WebRequest<Object[]>(discordInternal).method(GET)
-                .endpoint(Endpoint.Location.CHANNEL.toEndpoint(requestIdent))
-                .execute(data -> {
-                    long guildId = data.path("guild_id")
-                            .asLong(-1);
-                    Server server = guildId == -1 ? null : discordInternal.getServerCache()
-                            .getOrRequest(guildId, guildId);
-                    return new Object[]{discordInternal, server, data};
-                });
+        return new WebRequest<Object[]>(discordInternal).method(GET).endpoint(Endpoint.Location.CHANNEL.toEndpoint(requestIdent)).execute(data -> {
+            long guildId = data.path("guild_id").asLong(-1);
+            Server server = guildId == -1 ? null : discordInternal.getServerCache().getOrRequest(guildId, guildId);
+            return new Object[]{discordInternal, server, data};
+        });
     }
     
     @NotNull
@@ -57,8 +53,7 @@ public class ChannelCache extends Cache<Channel, Long, Long> {
         Discord discord = (Discord) param[0];
         Server server = param[1] == null ? null : (Server) param[1];
         JsonNode data = (JsonNode) param[2];
-        switch (ChannelType.getFromId(data.get("type")
-                                              .asInt())) {
+        switch (ChannelType.getFromId(data.get("type").asInt())) {
             case GUILD_TEXT:
                 return new ServerTextChannelInternal(discord, server, data);
             case DM:

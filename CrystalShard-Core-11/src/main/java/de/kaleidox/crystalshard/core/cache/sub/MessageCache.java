@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -18,12 +19,7 @@ public class MessageCache extends Cache<Message, Long, IDPair> {
     private final DiscordInternal discordInternal;
     
     public MessageCache(DiscordInternal discordInternal) {
-        super(MessageInternal.class,
-              param -> ((JsonNode) param[1]).get("id")
-                      .asLong(),
-              TimeUnit.HOURS.toMillis(12),
-              Discord.class,
-              JsonNode.class);
+        super(MessageInternal.class, param -> ((JsonNode) param[1]).get("id").asLong(), TimeUnit.HOURS.toMillis(12), Discord.class, JsonNode.class);
         this.discordInternal = discordInternal;
     }
     
@@ -31,9 +27,9 @@ public class MessageCache extends Cache<Message, Long, IDPair> {
     @NotNull
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(IDPair idPair) {
-        return new WebRequest<Object[]>(discordInternal).method(Method.GET)
-                .endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(idPair.getOne(), idPair.getTwo()))
-                .execute(node -> new Object[]{discordInternal, node});
+        return new WebRequest<Object[]>(discordInternal).method(Method.GET).endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(idPair.getOne(),
+                                                                                                                                   idPair.getTwo())).execute(
+                node -> new Object[]{discordInternal, node});
     }
     
     @NotNull

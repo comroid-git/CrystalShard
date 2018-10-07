@@ -5,18 +5,16 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerDeleteEventInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerDeleteListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.util.concurrent.TimeUnit;
 
 public class GUILD_DELETE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("id")
-                .asLong();
-        Server server = discord.getServerCache()
-                .getOrNull(serverId);
-        boolean gotKicked = (!data.has("unavailable") || data.get("unavailable")
-                .isNull());
+        long serverId = data.get("id").asLong();
+        Server server = discord.getServerCache().getOrNull(serverId);
+        boolean gotKicked = (!data.has("unavailable") || data.get("unavailable").isNull());
         
         ServerDeleteEventInternal event = new ServerDeleteEventInternal(discord, server.getId(), gotKicked);
         
@@ -24,9 +22,6 @@ public class GUILD_DELETE extends HandlerBase {
                 .execute(() -> listener.onServerDelete(event)));
         
         server.detachAllListeners();
-        discord.getThreadPool()
-                .getScheduler()
-                .schedule(() -> discord.getServerCache()
-                        .destroyFromCache(serverId), 30, TimeUnit.MINUTES);
+        discord.getThreadPool().getScheduler().schedule(() -> discord.getServerCache().destroyFromCache(serverId), 30, TimeUnit.MINUTES);
     }
 }

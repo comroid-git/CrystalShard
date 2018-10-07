@@ -8,6 +8,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Author;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,11 +19,10 @@ import java.lang.annotation.Target;
  * <p>
  * Commands are always executed in {@link ThreadPool.Worker} threads.
  * <p>
- * Command methods may accept a varying assortment of parameters in any order. Supported Parameter types are: - {@link
- * MessageCreateEvent} - The event that triggered the handler. - {@link Discord} - The event's discord object. - {@link
- * Server} - The server that the command has been sent in. Will be {@code null} on private messages. - {@link
- * TextChannel} - The channel that the command message has been sent in. - {@link Message} - The command message of the
- * event. - {@link Author} - The author of the command message. - {@link String} - The contents of the command message.
+ * Command methods may accept a varying assortment of parameters in any order. Supported Parameter types are: - {@link MessageCreateEvent} - The event that
+ * triggered the handler. - {@link Discord} - The event's discord object. - {@link Server} - The server that the command has been sent in. Will be {@code null}
+ * on private messages. - {@link TextChannel} - The channel that the command message has been sent in. - {@link Message} - The command message of the event. -
+ * {@link Author} - The author of the command message. - {@link String} - The contents of the command message.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -63,8 +63,8 @@ public @interface Command {
     boolean enableServerChat() default true;
     
     /**
-     * Defines a permission that the user is required to have be in the executing context; e.g. the ServerTextChannel.
-     * Default value is {@link Permission#EMPTY}.
+     * Defines a permission that the user is required to have be in the executing context; e.g. the ServerTextChannel. Default value is {@link
+     * Permission#EMPTY}.
      *
      * @return The required permission to execute this command.
      */

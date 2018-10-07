@@ -11,12 +11,9 @@ public class GUILD_ROLE_CREATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id")
-                .asLong();
-        ServerInternal server = (ServerInternal) discord.getServerCache()
-                .getOrRequest(serverId, serverId);
-        Role role = discord.getRoleCache()
-                .getOrCreate(discord, server, data.get("role"));
+        long serverId = data.get("guild_id").asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache().getOrRequest(serverId, serverId);
+        Role role = discord.getRoleCache().getOrCreate(discord, server, data.get("role"));
         
         server.addRole(role);
         RoleCreateEventInternal event = new RoleCreateEventInternal(discord, server, role);

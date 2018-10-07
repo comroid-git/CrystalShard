@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.util.command;
 
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageCreateListener;
@@ -12,8 +13,8 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.util.discord.messages.PagedEmbed;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.objects.functional.Switch;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -67,9 +68,7 @@ public class CommandFramework {
      * @return All registered Command annotations.
      */
     public List<Command> getCommands() {
-        return commands.stream()
-                .map(inst -> inst.annotation)
-                .collect(Collectors.toList());
+        return commands.stream().map(inst -> inst.annotation).collect(Collectors.toList());
     }
     
     /**
@@ -111,21 +110,16 @@ public class CommandFramework {
      * @return Whether the {@link TextChannel} could be removed from the ignored list.
      */
     public boolean unignore(TextChannel object) {
-        return ignored.stream()
-                .filter(object::equals)
-                .findAny()
-                .map(ignored::remove)
-                .orElse(false);
+        return ignored.stream().filter(object::equals).findAny().map(ignored::remove).orElse(false);
     }
     
     private void handle(MessageCreateEvent event) {
         if (enabled.get()) {
-            if (!ignored.contains(event.getChannel()
-                                          .toTextChannel()
-                                          .orElseThrow(AssertionError::new))) {
+            if (!ignored.contains(event.getChannel().toTextChannel().orElseThrow(AssertionError::new))) {
                 commands.stream()
                         .filter(instance -> checkAlias(instance, event.getMessageContent()))
-                        .filter(instance -> checkProperties(instance.annotation, event))
+                        .filter(instance -> checkProperties(instance.annotation,
+                                                            event))
                         .map(instance -> instance.method)
                         .forEach(method -> runWithDynamicParams(method, event));
             }
@@ -134,11 +128,8 @@ public class CommandFramework {
     
     private void runWithDynamicParams(Method method, MessageCreateEvent event) {
         Discord discord = event.getDiscord();
-        Server server = event.getServer()
-                .orElse(null);
-        TextChannel channel = event.getChannel()
-                .toTextChannel()
-                .orElseThrow(AssertionError::new);
+        Server server = event.getServer().orElse(null);
+        TextChannel channel = event.getChannel().toTextChannel().orElseThrow(AssertionError::new);
         Message message = event.getMessage();
         Author author = event.getMessageAuthor();
         String content = event.getMessageContent();
@@ -161,14 +152,13 @@ public class CommandFramework {
             classSwitch.test(parameterTypes[ref.i]);
         }
         
-        discord.getThreadPool()
-                .execute(() -> {
-                    try {
-                        method.invoke(this, finalParam);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        logger.exception(e, "Exception invoking command Method: " + method.toGenericString());
-                    }
-                });
+        discord.getThreadPool().execute(() -> {
+            try {
+                method.invoke(this, finalParam);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                logger.exception(e, "Exception invoking command Method: " + method.toGenericString());
+            }
+        });
     }
     
     private boolean checkProperties(Command annotation, MessageCreateEvent event) {
@@ -180,9 +170,7 @@ public class CommandFramework {
         int userMentions = annotation.requireUserMentions();
         int roleMentions = annotation.requireRoleMentions();
         
-        TextChannel channel = event.getChannel()
-                .toTextChannel()
-                .orElseThrow(AssertionError::new);
+        TextChannel channel = event.getChannel().toTextChannel().orElseThrow(AssertionError::new);
         Optional<AuthorUser> authorUserOpt = event.getMessageAuthorUser();
         Message message = event.getMessage();
         
@@ -193,12 +181,9 @@ public class CommandFramework {
         if (serverChat == !channel.isPrivate()) criteria++;
         else if (privateChat == channel.isPrivate()) criteria++;
         
-        if (message.getChannelMentions()
-                    .size() >= channelMentions) criteria++;
-        if (message.getUserMentions()
-                    .size() >= userMentions) criteria++;
-        if (message.getRoleMentions()
-                    .size() >= roleMentions) criteria++;
+        if (message.getChannelMentions().size() >= channelMentions) criteria++;
+        if (message.getUserMentions().size() >= userMentions) criteria++;
+        if (message.getRoleMentions().size() >= roleMentions) criteria++;
         
         return criteria == 6;
     }
@@ -209,8 +194,7 @@ public class CommandFramework {
             boolean prefixHasSpace = (prefix.charAt(prefix.length() - 1) == ' ');
             for (String alias : instance.annotation.aliases()) {
                 Objects.requireNonNull(alias);
-                if (split.get(prefixHasSpace ? 1 : 0)
-                        .equalsIgnoreCase((prefixHasSpace ? "" : prefix) + alias)) {
+                if (split.get(prefixHasSpace ? 1 : 0).equalsIgnoreCase((prefixHasSpace ? "" : prefix) + alias)) {
                     return true;
                 }
             }
@@ -227,9 +211,7 @@ public class CommandFramework {
      * @throws IllegalStateException     If a Command-Method is not {@link Modifier#STATIC}.
      */
     public void registerCommands(Class commandClass) throws IllegalArgumentException, IllegalStateException {
-        Stream.of(commandClass.getMethods())
-                .filter(method -> method.isAnnotationPresent(Command.class))
-                .forEach(this::registerCommandMethod);
+        Stream.of(commandClass.getMethods()).filter(method -> method.isAnnotationPresent(Command.class)).forEach(this::registerCommandMethod);
     }
     
     /**
@@ -251,11 +233,7 @@ public class CommandFramework {
      * @return Whether the command could be unregistered.
      */
     public boolean unregisterCommand(Method commandMethod) {
-        return commands.stream()
-                .filter(instance -> instance.method == commandMethod)
-                .findAny()
-                .map(commands::remove)
-                .orElse(false);
+        return commands.stream().filter(instance -> instance.method == commandMethod).findAny().map(commands::remove).orElse(false);
     }
     
     private void registerCommandMethod(Method method) throws IllegalArgumentException, IllegalStateException {
@@ -263,8 +241,7 @@ public class CommandFramework {
                 "Method " + method.toGenericString() + " does not have annotation " + Command.class + ".");
         Command commandAnnot = method.getAnnotationsByType(Command.class)[0];
         if (!Modifier.isStatic(method.getModifiers())) throw new IllegalStateException("The command methods must be static.");
-        if (!commandAnnot.enableServerChat() && Set.of(method.getParameterTypes())
-                .contains(Server.class)) logger.exception(new InvalidParameterException(
+        if (!commandAnnot.enableServerChat() && Set.of(method.getParameterTypes()).contains(Server.class)) logger.exception(new InvalidParameterException(
                 "Command " + method.toGenericString() + " is " + "annotated to not run on " + "Servers, yet expects a Server-Parameter. It will " +
                 "only recieve " + "null."), "Error in Command method body for: " + method.toGenericString());
         if (hasAliasesRegistered(commandAnnot.aliases())) logger.exception(new IllegalArgumentException(
@@ -275,10 +252,7 @@ public class CommandFramework {
     }
     
     private boolean hasAliasesRegistered(String[] aliases) {
-        return commands.stream()
-                .flatMap(cmd -> Stream.of(cmd.annotation.aliases()))
-                .anyMatch(alias -> List.of(aliases)
-                        .contains(alias));
+        return commands.stream().flatMap(cmd -> Stream.of(cmd.annotation.aliases())).anyMatch(alias -> List.of(aliases).contains(alias));
     }
     
     private class Instance {
@@ -293,9 +267,10 @@ public class CommandFramework {
     
     // Static members
     
+// Static membe
     /**
-     * This method describes the default help command. This command is being enabled by passing {@code TRUE} as third
-     * argument when initializing the Command Framework.
+     * This method describes the default help command. This command is being enabled by passing {@code TRUE} as third argument when initializing the Command
+     * Framework.
      *
      * @param discord A discord.
      * @param server  A server.
@@ -304,60 +279,52 @@ public class CommandFramework {
      */
     @Command(aliases = "help", description = "Shows a list of all commands.")
     public static void defaultHelp(Discord discord, Server server, Author author, TextChannel channel) {
-        CommandFramework framework = discord.getUtilities()
-                .getCommandFramework();
+        CommandFramework framework = discord.getUtilities().getCommandFramework();
         PagedEmbed embed = new PagedEmbed(channel, () -> {
             Embed.Builder builder = Embed.BUILDER();
             Self self = discord.getSelf();
             
-            self.getAvatarUrl()
-                    .map(URL::toExternalForm)
-                    .ifPresent(builder::setThumbnail);
+            self.getAvatarUrl().map(URL::toExternalForm).ifPresent(builder::setThumbnail);
             builder.setTitle(self.getDisplayName(server) + "'s Commands");
-            author.toAuthorUser()
-                    .ifPresent(user -> user.getAvatarUrl()
-                            .map(URL::toExternalForm)
-                            .ifPresentOrElse(ava -> builder.setFooter("Requested by " + user.getDisplayName(server), ava),
-                                             () -> builder.setFooter("Requested by " + user.getDisplayName(server))));
+            author.toAuthorUser().ifPresent(user -> user.getAvatarUrl()
+                    .map(URL::toExternalForm)
+                    .ifPresentOrElse(ava -> builder.setFooter("Requested by " + user.getDisplayName(server), ava),
+                                     () -> builder.setFooter("Requested by " + user.getDisplayName(server))));
             
             return builder;
         });
-        framework.commands.stream()
-                .map(instance -> instance.annotation)
-                .forEach(annotation -> {
-                    if (annotation.shownInDefaultHelp()) {
-                        StringBuilder sb = new StringBuilder();
-                        String description = annotation.description();
-                        
-                        sb.append(description)
-                                .append("\n\n")
-                                .append(annotation.enableServerChat() ? "✅" : "❌")
-                                .append(" Server Chat | ")
-                                .append(annotation.enablePrivateChat() ? "✅" : "❌")
-                                .append(" Private Chat")
-                                .append("\n")
-                                .append("Required Discord Permission: ")
-                                .append(annotation.requiredDiscordPermission()
-                                                .name())
-                                .append("\n")
-                                .append(annotation.requireChannelMentions() == 0 ? "" : "Required Channel mentions: " + annotation.requireChannelMentions())
-                                .append("\n")
-                                .append(annotation.requireUserMentions() == 0 ? "" : "Required User mentions: " + annotation.requireUserMentions())
-                                .append("\n")
-                                .append(annotation.requireRoleMentions() == 0 ? "" : "Required Role mentions: " + annotation.requireRoleMentions());
-                        
-                        StringBuilder aliases = new StringBuilder(framework.prefix);
-                        Iterator<String> iterator = List.of(annotation.aliases())
-                                .iterator();
-                        while (iterator.hasNext()) {
-                            String next = iterator.next();
-                            aliases.append(next);
-                            if (iterator.hasNext()) aliases.append(" | ");
-                        }
-                        
-                        embed.addField(aliases.toString(), sb.toString());
-                    }
-                });
+        framework.commands.stream().map(instance -> instance.annotation).forEach(annotation -> {
+            if (annotation.shownInDefaultHelp()) {
+                StringBuilder sb = new StringBuilder();
+                String description = annotation.description();
+                
+                sb.append(description)
+                        .append("\n\n")
+                        .append(annotation.enableServerChat() ? "✅" : "❌")
+                        .append(" Server Chat | ")
+                        .append(annotation.enablePrivateChat() ? "✅" : "❌")
+                        .append(" Private Chat")
+                        .append("\n")
+                        .append("Required Discord Permission: ")
+                        .append(annotation.requiredDiscordPermission().name())
+                        .append("\n")
+                        .append(annotation.requireChannelMentions() == 0 ? "" : "Required Channel mentions: " + annotation.requireChannelMentions())
+                        .append("\n")
+                        .append(annotation.requireUserMentions() == 0 ? "" : "Required User mentions: " + annotation.requireUserMentions())
+                        .append("\n")
+                        .append(annotation.requireRoleMentions() == 0 ? "" : "Required Role mentions: " + annotation.requireRoleMentions());
+                
+                StringBuilder aliases = new StringBuilder(framework.prefix);
+                Iterator<String> iterator = List.of(annotation.aliases()).iterator();
+                while (iterator.hasNext()) {
+                    String next = iterator.next();
+                    aliases.append(next);
+                    if (iterator.hasNext()) aliases.append(" | ");
+                }
+                
+                embed.addField(aliases.toString(), sb.toString());
+            }
+        });
         embed.build();
     }
 }

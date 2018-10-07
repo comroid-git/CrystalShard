@@ -1,10 +1,11 @@
 package de.kaleidox.crystalshard.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.command.CommandFramework;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class DiscordUtils {
     private final        Discord          discord;
     private final        CommandFramework commandFramework;
     
+// Init Blocks
     // Init Blocks
     static {
         // Get or Create configuration node
@@ -38,12 +40,8 @@ public class DiscordUtils {
         this.discord = discord;
         
         commandFramework = new CommandFramework(discord,
-                                                configuration.path("commands")
-                                                        .path("prefix")
-                                                        .asText("!"),
-                                                configuration.path("commands")
-                                                        .path("enable_default_help")
-                                                        .asBoolean(true));
+                                                configuration.path("commands").path("prefix").asText("!"),
+                                                configuration.path("commands").path("enable_default_help").asBoolean(true));
         
         defaultEmbed = new DefaultEmbed(discord, configuration.has("default_embd") ? configuration.path("default_embed") : nodeOf(null));
     }
@@ -60,6 +58,7 @@ public class DiscordUtils {
         return discord;
     }
     
+// Static membe
     // Static members
     private static JsonNode createDefaultConfig() {
         logger.info("No configuration file " + configFile + " found at resources root. Using default configuration.");

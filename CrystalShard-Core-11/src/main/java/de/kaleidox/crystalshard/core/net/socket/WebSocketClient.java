@@ -6,11 +6,12 @@ import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -27,26 +28,21 @@ public class WebSocketClient {
     private final        ThreadPool      threadPool;
     
     public WebSocketClient(Discord discordObject) {
-        URI gatewayUrl = new WebRequest<String>(discordObject).method(Method.GET)
-                .endpoint(Endpoint.Location.GATEWAY.toEndpoint())
-                .execute(node -> node.get("url")
-                        .asText())
-                .exceptionally(throwable -> {
-                    logger.exception(throwable);
-                    return "wss://gateway.discord.gg"; // default
-                    // gateway if gateway couldn't be retrieved
-                })
-                .thenApply(URI::create)
-                .join();
+        URI gatewayUrl = new WebRequest<String>(discordObject).method(Method.GET).endpoint(Endpoint.Location.GATEWAY.toEndpoint()).execute(node -> node.get(
+                "url").asText()).exceptionally(throwable -> {
+            logger.exception(throwable);
+            return "wss://gateway.discord.gg"; // default
+            // gateway if gateway couldn't be retrieved
+        }).thenApply(URI::create).join();
         this.threadPool = new ThreadPool(discordObject, 1, "WebSocketClient");
         this.discord = (DiscordInternal) discordObject;
         this.webSocket = CLIENT.newWebSocketBuilder()
                 .header("Authorization", discordObject.getPrefixedToken())
-                .buildAsync(gatewayUrl, new WebSocketListener((DiscordInternal) discordObject))
+                .buildAsync(gatewayUrl,
+                            new WebSocketListener((DiscordInternal) discordObject))
                 .join();
         identification();
-        Runtime.getRuntime()
-                .addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
     
     public CompletableFuture<WebSocket> sendPayload(Payload payload) {

@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.main.items;
 
 import de.kaleidox.crystalshard.internal.items.SnowflakeInternal;
+
 import java.time.Instant;
 
 public interface Snowflake {
@@ -11,14 +12,13 @@ public interface Snowflake {
     
     long getId();
     
+// Static membe
     // Static members
     static Snowflake of(long id) {
         return SnowflakeInternal.of(id);
     }
     
     static boolean canBeSnowflake(long id) {
-        return Snowflake.of(id)
-                       .getCreatedTimestamp()
-                       .toEpochMilli() < DISCORD_EPOCH;
+        return Snowflake.of(id).getCreatedTimestamp().toEpochMilli() < DISCORD_EPOCH;
     }
 }

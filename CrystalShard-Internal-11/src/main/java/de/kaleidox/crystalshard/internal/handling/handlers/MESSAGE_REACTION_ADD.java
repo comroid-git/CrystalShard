@@ -17,23 +17,13 @@ public class MESSAGE_REACTION_ADD extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long channelId = data.get("channel_id")
-                .asLong();
-        long messageId = data.get("id")
-                .asLong();
-        TextChannel channel = discord.getChannelCache()
-                .getOrRequest(channelId, channelId)
-                .toTextChannel()
-                .orElseThrow(AssertionError::new);
-        Message message = discord.getMessageCache()
-                .getOrRequest(messageId, IDPair.of(channelId, messageId));
-        Server server = channel.toServerChannel()
-                .map(ServerChannel::getServer)
-                .orElse(null);
-        long userId = data.get("user_id")
-                .asLong();
-        User user = discord.getUserCache()
-                .getOrRequest(userId, userId);
+        long channelId = data.get("channel_id").asLong();
+        long messageId = data.get("id").asLong();
+        TextChannel channel = discord.getChannelCache().getOrRequest(channelId, channelId).toTextChannel().orElseThrow(AssertionError::new);
+        Message message = discord.getMessageCache().getOrRequest(messageId, IDPair.of(channelId, messageId));
+        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
+        long userId = data.get("user_id").asLong();
+        User user = discord.getUserCache().getOrRequest(userId, userId);
         
         Reaction reaction = ReactionInternal.getInstance(server, message, user, data, 1);
         ReactionAddEventInternal event = new ReactionAddEventInternal(discord, reaction, message);

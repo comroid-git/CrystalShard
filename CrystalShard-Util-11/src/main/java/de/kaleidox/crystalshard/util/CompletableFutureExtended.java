@@ -1,7 +1,5 @@
 package de.kaleidox.crystalshard.util;
 
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
@@ -11,8 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * This class represents an extension to the CompletableFuture class. For async methods, it will always use a bot-own
- * thread for asynchronity.
+ * This class represents an extension to the CompletableFuture class. For async methods, it will always use a bot-own thread for asynchronity.
  *
  * @param <T> The type variable of the Item.
  */
@@ -36,14 +33,12 @@ public class CompletableFutureExtended<T> extends CompletableFuture<T> {
     }
     
     @Override
-    public <U, V> CompletableFuture<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T, ?
-            super U, ? extends V> fn) {
+    public <U, V> CompletableFuture<V> thenCombineAsync(CompletionStage<? extends U> other, BiFunction<? super T, ? super U, ? extends V> fn) {
         return super.thenCombineAsync(other, fn, executor);
     }
     
     @Override
-    public <U> CompletableFuture<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T,
-            ? super U> action) {
+    public <U> CompletableFuture<Void> thenAcceptBothAsync(CompletionStage<? extends U> other, BiConsumer<? super T, ? super U> action) {
         return super.thenAcceptBothAsync(other, action, executor);
     }
     

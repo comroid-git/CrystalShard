@@ -80,8 +80,6 @@ public enum LoggingLevel {
      * @return The logging level with that name.
      */
     public static Optional<LoggingLevel> ofName(String name) {
-        return Stream.of(values())
-                .filter(level -> level.name.equalsIgnoreCase(name))
-                .findAny();
+        return Stream.of(values()).filter(level -> level.name.equalsIgnoreCase(name)).findAny();
     }
 }

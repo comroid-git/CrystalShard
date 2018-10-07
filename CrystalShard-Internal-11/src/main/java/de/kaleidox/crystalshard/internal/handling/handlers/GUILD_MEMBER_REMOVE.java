@@ -11,12 +11,9 @@ public class GUILD_MEMBER_REMOVE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id")
-                .asLong();
-        ServerInternal server = (ServerInternal) discord.getServerCache()
-                .getOrRequest(serverId, serverId);
-        User user = discord.getUserCache()
-                .getOrCreate(discord, data);
+        long serverId = data.get("guild_id").asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache().getOrRequest(serverId, serverId);
+        User user = discord.getUserCache().getOrCreate(discord, data);
         
         server.removeUser(user);
         ServerMemberLeaveEventInternal event = new ServerMemberLeaveEventInternal(discord, server, user);

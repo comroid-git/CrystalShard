@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,11 +40,9 @@ public class RefreshableMessage {
     }
     
     private void onRefresh(ReactionEvent event) {
-        if (!event.getUser()
-                .isYourself()) {
+        if (!event.getUser().isYourself()) {
             Emoji emoji = event.getEmoji();
-            if (emoji.getMentionTag()
-                    .equals(REFRESH_EMOJI)) {
+            if (emoji.getMentionTag().equals(REFRESH_EMOJI)) {
                 this.refresh();
             }
         }

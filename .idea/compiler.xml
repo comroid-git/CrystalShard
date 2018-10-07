@@ -6,10 +6,12 @@
       <module name="CrystalShard-Core-11_test" target="11" />
       <module name="CrystalShard-Internal-11_main" target="11" />
       <module name="CrystalShard-Internal-11_test" target="11" />
-      <module name="CrystalShard-Logging_main" target="11" />
-      <module name="CrystalShard-Logging_test" target="11" />
-      <module name="CrystalShard-Main_main" target="11" />
-      <module name="CrystalShard-Main_test" target="11" />
+      <module name="CrystalShard-Java11_main" target="11" />
+      <module name="CrystalShard-Java11_test" target="11" />
+      <module name="CrystalShard-Logging_main" target="1.8" />
+      <module name="CrystalShard-Logging_test" target="1.8" />
+      <module name="CrystalShard-Main_main" target="1.8" />
+      <module name="CrystalShard-Main_test" target="1.8" />
       <module name="CrystalShard-Util-11_main" target="11" />
       <module name="CrystalShard-Util-11_test" target="11" />
       <module name="CrystalShard_main" target="11" />

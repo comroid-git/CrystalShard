@@ -15,6 +15,7 @@ import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Executor;

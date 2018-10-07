@@ -3,12 +3,13 @@ package de.kaleidox.crystalshard.internal.items.message.embed;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.util.Container;
+import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
+
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -137,31 +138,21 @@ public class EmbedDraftInternal implements EmbedDraft {
         Container thumbnailContainer = null;
         if (footer != null) {
             footerText = footer.getText();
-            footerIconUrl = footer.getIconUrl()
-                    .map(URL::toExternalForm)
-                    .orElse(null);
+            footerIconUrl = footer.getIconUrl().map(URL::toExternalForm).orElse(null);
             footerIconContainer = footer.getContainer();
         }
         if (image != null) {
-            imageUrl = image.getUrl()
-                    .map(URL::toExternalForm)
-                    .orElse(null);
+            imageUrl = image.getUrl().map(URL::toExternalForm).orElse(null);
             imageContainer = image.getContainer();
         }
         if (author != null) {
             authorName = author.getName();
-            authorUrl = author.getUrl()
-                    .map(URL::toExternalForm)
-                    .orElse(null);
-            authorIconUrl = author.getIconUrl()
-                    .map(URL::toExternalForm)
-                    .orElse(null);
+            authorUrl = author.getUrl().map(URL::toExternalForm).orElse(null);
+            authorIconUrl = author.getIconUrl().map(URL::toExternalForm).orElse(null);
             authorIconContainer = author.getContainer();
         }
         if (thumbnail != null) {
-            thumbnailUrl = thumbnail.getUrl()
-                    .map(URL::toExternalForm)
-                    .orElse(null);
+            thumbnailUrl = thumbnail.getUrl().map(URL::toExternalForm).orElse(null);
             thumbnailContainer = thumbnail.getContainer();
         }
         
@@ -194,12 +185,10 @@ public class EmbedDraftInternal implements EmbedDraft {
             }
         }
         if (imageUrl != null && !imageUrl.equals("")) {
-            object.putObject("image")
-                    .set("url", JsonHelper.nodeOf(imageUrl));
+            object.putObject("image").set("url", JsonHelper.nodeOf(imageUrl));
         }
         if (imageContainer != null) {
-            object.putObject("image")
-                    .set("url", JsonHelper.nodeOf("attachment://" + imageContainer.getFullName()));
+            object.putObject("image").set("url", JsonHelper.nodeOf("attachment://" + imageContainer.getFullName()));
         }
         if (authorName != null && !authorName.equals("")) {
             ObjectNode author = object.putObject("author");
@@ -215,12 +204,10 @@ public class EmbedDraftInternal implements EmbedDraft {
             }
         }
         if (thumbnailUrl != null && !thumbnailUrl.equals("")) {
-            object.putObject("thumbnail")
-                    .set("url", JsonHelper.nodeOf(thumbnailUrl));
+            object.putObject("thumbnail").set("url", JsonHelper.nodeOf(thumbnailUrl));
         }
         if (thumbnailContainer != null) {
-            object.putObject("thumbnail")
-                    .set("url", JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
+            object.putObject("thumbnail").set("url", JsonHelper.nodeOf("attachment://" + thumbnailContainer.getFullName()));
         }
         if (fields.size() > 0) {
             ArrayNode jsonFields = object.putArray("fields");
