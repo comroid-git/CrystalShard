@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
-import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -21,13 +20,14 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.helpers.NullHelper;
-import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.helpers.NullHelper;
+import de.kaleidox.crystalshard.util.helpers.UrlHelper;
+import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
@@ -173,7 +173,7 @@ public class UserInternal implements User {
     
     @Override
     public Collection<Role> getRoles(Server server) {
-        return null;
+        return Collections.emptyList();
     }
     
     @Override

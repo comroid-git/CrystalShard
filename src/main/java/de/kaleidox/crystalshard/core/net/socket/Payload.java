@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.core.net.socket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 import java.util.ArrayList;
 import java.util.List;
 

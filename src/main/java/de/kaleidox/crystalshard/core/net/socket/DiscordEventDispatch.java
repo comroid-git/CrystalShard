@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.core.net.socket;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
-import de.kaleidox.logging.Logger;
+import de.kaleidox.crystalshard.logging.Logger;
 
 public class DiscordEventDispatch {
     private final static Logger logger = new Logger(DiscordEventDispatch.class);

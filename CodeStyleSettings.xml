@@ -17,8 +17,8 @@
       </value>
     </option>
     <REPEAT_ANNOTATIONS>
-      <ANNO name="de.kaleidox.util.annotations.NotNull" />
-      <ANNO name="de.kaleidox.util.annotations.Nullable" />
+      <ANNO name="de.kaleidox.crystalshard.util.annotations.NotNull" />
+      <ANNO name="de.kaleidox.crystalshard.util.annotations.Nullable" />
     </REPEAT_ANNOTATIONS>
   </JavaCodeStyleSettings>
   <codeStyleSettings language="JAVA">

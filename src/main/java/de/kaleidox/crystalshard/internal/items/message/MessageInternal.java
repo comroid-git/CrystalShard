@@ -39,9 +39,9 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.objects.functional.Evaluation;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {

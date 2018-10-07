@@ -5,7 +5,7 @@ import com.vdurmont.emoji.EmojiParser;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
-import de.kaleidox.logging.Logger;
+import de.kaleidox.crystalshard.logging.Logger;
 
 public class UnicodeEmojiInternal implements UnicodeEmoji {
     private final static Logger          logger = new Logger(UnicodeEmojiInternal.class);

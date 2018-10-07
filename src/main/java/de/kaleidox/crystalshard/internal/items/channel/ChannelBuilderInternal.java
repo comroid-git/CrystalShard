@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
 
 public class ChannelBuilderInternal {
     public static class ChannelInviteBuilder implements ServerChannel.InviteBuilder {

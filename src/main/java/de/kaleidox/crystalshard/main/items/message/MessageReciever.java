@@ -4,7 +4,7 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.util.DefaultEmbed;
-import de.kaleidox.util.annotations.Range;
+import de.kaleidox.crystalshard.util.annotations.Range;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;

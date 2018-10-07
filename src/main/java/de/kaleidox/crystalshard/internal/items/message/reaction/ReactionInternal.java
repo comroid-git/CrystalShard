@@ -9,10 +9,10 @@ import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
-import de.kaleidox.util.helpers.MapHelper;
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.annotations.NotNull;
+import de.kaleidox.crystalshard.util.annotations.Nullable;
+import de.kaleidox.crystalshard.util.helpers.MapHelper;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ReactionInternal implements Reaction {

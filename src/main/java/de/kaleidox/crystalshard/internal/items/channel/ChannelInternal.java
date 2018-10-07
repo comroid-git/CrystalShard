@@ -15,7 +15,7 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

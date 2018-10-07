@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.internal.util;
 
-import de.kaleidox.util.FileType;
+import de.kaleidox.crystalshard.util.FileType;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;

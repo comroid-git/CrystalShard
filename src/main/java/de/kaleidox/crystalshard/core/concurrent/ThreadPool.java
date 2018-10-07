@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.core.concurrent;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.CompletableFutureExtended;
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.CompletableFutureExtended;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

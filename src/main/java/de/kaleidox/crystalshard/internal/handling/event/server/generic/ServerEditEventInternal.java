@@ -5,8 +5,8 @@ import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerEditEvent;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.annotations.NotContainNull;
-import de.kaleidox.util.annotations.NotNull;
+import de.kaleidox.crystalshard.util.annotations.NotContainNull;
+import de.kaleidox.crystalshard.util.annotations.NotNull;
 import java.util.Set;
 
 public class ServerEditEventInternal extends EventBase implements ServerEditEvent {

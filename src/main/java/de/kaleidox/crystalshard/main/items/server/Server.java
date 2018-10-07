@@ -19,7 +19,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-import de.kaleidox.util.annotations.Range;
+import de.kaleidox.crystalshard.util.annotations.Range;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;

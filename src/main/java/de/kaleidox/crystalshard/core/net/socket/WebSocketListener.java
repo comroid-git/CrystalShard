@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.logging.Logger;
-import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;

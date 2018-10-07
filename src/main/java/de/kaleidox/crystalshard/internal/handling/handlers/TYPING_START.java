@@ -33,7 +33,8 @@ public class TYPING_START extends HandlerBase {
         
         TypingStartEventInternal event = new TypingStartEventInternal(discord, channel, user);
         
-        collectListeners(TypingStartListener.class, discord, server, channel, roles.toArray(new Role[0]), user).forEach(listener -> discord.getThreadPool()
+        collectListeners(TypingStartListener.class, discord, server, channel, roles.toArray(new Role[0]), user)
+                .forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onTypingStart(event)));
     }
 }
