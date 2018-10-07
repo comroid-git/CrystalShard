@@ -1,4 +1,5 @@
 group 'de.kaleidox'
+name "CrystalShard-Internal-11"
 version '0.8'
 
 apply plugin: 'java-library'
@@ -7,16 +8,6 @@ apply plugin: 'maven-publish'
 sourceCompatibility = 11
 targetCompatibility = 11
 
-task myJavadocs(type: Javadoc) {
-    source = sourceSets.main.allJava
-    options.encoding = 'UTF-8'
-}
-
-javadoc {
-    options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("A:\\IntelliJ Workspace\\CrystalShardDocumentation\\"))
-}
- 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.incremental = true
@@ -28,4 +19,15 @@ publishing {
             from components.java
         }
     }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    module 'de.kaleidox:CrystalShard-Main:release.latest'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+    implementation 'com.vdurmont:emoji-java:4.0.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
