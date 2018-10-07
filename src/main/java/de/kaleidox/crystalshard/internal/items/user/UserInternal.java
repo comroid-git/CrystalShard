@@ -5,6 +5,9 @@ import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
+import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
@@ -50,6 +53,7 @@ public class UserInternal implements User {
     private              boolean                                                 verified;
     private              String                                                  locale;
     private              String                                                  email;
+    private List<ListenerManager<? extends UserAttachableListener>> listenerManangers;
     String discriminator;
     
     UserInternal(User user) {
@@ -249,7 +253,9 @@ public class UserInternal implements User {
     
     @Override
     public <C extends UserAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null; // todo
+        ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
+        listenerManangers.add(manager);
+        return manager;
     }
     
     @Override

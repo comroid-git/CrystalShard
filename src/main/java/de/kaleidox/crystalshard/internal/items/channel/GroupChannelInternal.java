@@ -42,19 +42,4 @@ public class GroupChannelInternal extends TextChannelInternal implements GroupCh
         
         return traits;
     }
-    
-    @Override
-    public Channel.Updater getUpdater() {
-        return null;
-    }
-    
-    @Override
-    public String getTopic() {
-        return null;
-    }
-    
-    @Override
-    public boolean isNsfw() {
-        return false;
-    }
 }

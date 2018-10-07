@@ -5,6 +5,9 @@ import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
+import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
@@ -19,8 +22,10 @@ import de.kaleidox.logging.Logger;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.markers.IDPair;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,18 +33,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.*;
 
 public class RoleInternal implements Role {
-    private final static Logger                        logger    = new Logger(RoleInternal.class);
-    private final static ConcurrentHashMap<Long, Role> instances = new ConcurrentHashMap<>();
-    private final        Server                        server;
+    private final static Logger                                                  logger    = new Logger(RoleInternal.class);
+    private final static ConcurrentHashMap<Long, Role>                           instances = new ConcurrentHashMap<>();
+    private final        Server                                                  server;
     private final        long                          id;
-    private final        Discord                       discord;
-    private              PermissionList                permissions;
-    private              String                        name;
-    private              Color                         color;
-    private              boolean                       grouping;
-    private              int                           position;
-    private              boolean                       managed;
-    private              boolean                       mentionable;
+    private final        Discord                                                 discord;
+    private              PermissionList                                          permissions;
+    private String                                                  name;
+    private Color                                                   color;
+    private boolean                                                 grouping;
+    private int                                                     position;
+    private boolean                                                 managed;
+    private boolean                                                 mentionable;
+    private List<ListenerManager<? extends RoleAttachableListener>> listenerManangers;
     
     public RoleInternal(Discord discord, Server server, JsonNode data) {
         logger.deeptrace("Creating role object for data: " + data.toString());
@@ -61,6 +67,8 @@ public class RoleInternal implements Role {
                 .asBoolean();
         this.mentionable = data.get("mentionable")
                 .asBoolean();
+        
+        listenerManangers = new ArrayList<>();
         
         instances.putIfAbsent(id, this);
     }
@@ -139,7 +147,9 @@ public class RoleInternal implements Role {
     
     @Override
     public <C extends RoleAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null; // todo
+        ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
+        listenerManangers.add(manager);
+        return manager;
     }
     
     @Override

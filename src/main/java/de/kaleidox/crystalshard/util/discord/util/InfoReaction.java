@@ -21,7 +21,7 @@ public class InfoReaction {
                 .exceptionally(Logger::get);
         
         MessageDeleteListener deleteListener = event -> {
-            message.removeReactionsByUser(emoji);
+            message.removeReactionsByEmoji(emoji);
             message.delete();
         };
         

@@ -5,6 +5,8 @@ import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
@@ -57,32 +59,32 @@ import static de.kaleidox.util.helpers.JsonHelper.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {
-    private final static ConcurrentHashMap<Long, Message>                instances       = new ConcurrentHashMap<>();
-    private final static Logger                                          logger          = new Logger(MessageInternal.class);
-    private final        long                                            id;
-    private final        long                                            channelId;
-    private final        Author                                          author;
-    private final        String                                          contentRaw;
+    private final static ConcurrentHashMap<Long, Message>                                 instances       = new ConcurrentHashMap<>();
+    private final static Logger                                                           logger          = new Logger(MessageInternal.class);
+    private final        long                                                             id;
+    private final        long                                                             channelId;
+    private final        Author                                                           author;
+    private final        String                                                           contentRaw;
     // todo Format and store various content versions
-    private final        Instant                                         timestamp;
-    private final        Instant                                         editedTimestamp;
-    private final        boolean                                         tts;
-    private final        boolean                                         mentionsEveryone;
-    private final        boolean                                         pinned;
-    private final        MessageType                                     type;
-    private final        MessageActivity                                 activity;
-    private final        MessageApplication                              application;
-    private final        List<User>                                      userMentions    = new ArrayList<>();
-    private final        List<Role>                                      roleMentions    = new ArrayList<>();
-    private final        List<Attachment>                                attachments     = new ArrayList<>();
-    private final        List<SentEmbed>                                 embeds          = new ArrayList<>();
-    private final        List<Reaction>                                  reactions       = new ArrayList<>();
-    private final        Server                                          server;
-    private final        Discord                                         discord;
-    private final        List<Emoji>                                     emojis          = new ArrayList<>();
-    private final        List<Channel>                                   channelMentions = new ArrayList<>();
-    private final        TextChannel                                     channel;
-    private              Collection<? extends MessageAttachableListener> listeners;
+    private final        Instant                                                          timestamp;
+    private final        Instant                                                          editedTimestamp;
+    private final        boolean                                                          tts;
+    private final        boolean                                                          mentionsEveryone;
+    private final        boolean                                                          pinned;
+    private final        MessageType                                                      type;
+    private final        MessageActivity                                                  activity;
+    private final        MessageApplication                                               application;
+    private final        List<User>                                                       userMentions    = new ArrayList<>();
+    private final        List<Role>                                                       roleMentions    = new ArrayList<>();
+    private final        List<Attachment>                                                 attachments     = new ArrayList<>();
+    private final        List<SentEmbed>                                                  embeds          = new ArrayList<>();
+    private final        List<Reaction>                                                   reactions       = new ArrayList<>();
+    private final        Server                                                           server;
+    private final        Discord                                                          discord;
+    private final        List<Emoji>                                                      emojis          = new ArrayList<>();
+    private final        List<Channel>                                                    channelMentions = new ArrayList<>();
+    private final        TextChannel                                                      channel;
+    private              Collection<ListenerManager<? extends MessageAttachableListener>> listeners;
     
     public MessageInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating message object for data: " + data.toString());
@@ -153,7 +155,7 @@ public class MessageInternal implements Message {
             }
         }
         
-        listeners = new ArrayList<>();
+        listeners = new ArrayList<ListenerManager<? extends MessageAttachableListener>>();
         
         instances.put(id, this);
     }
@@ -398,7 +400,9 @@ public class MessageInternal implements Message {
     
     @Override
     public <C extends MessageAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null;
+        ListenerManager<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
+        listeners.add(manager);
+        return manager;
     }
     
     @Override

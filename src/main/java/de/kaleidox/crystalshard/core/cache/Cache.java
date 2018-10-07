@@ -82,7 +82,7 @@ public abstract class Cache<T extends CacheStorable, I, R> {
      * @return A future that completes with an array of objects. This array is required to test {@code TRUE} on
      * {@link #matchingParams(Object...)}.
      */
-    @NotNull
+    @NotNull // FIXME: 30.09.2018 Seems to not complete properly; thus blocking all #getOrRequest calls.
     protected abstract CompletableFuture<Object[]> requestConstructorParameters(R requestIdent);
     
     /**
