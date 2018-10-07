@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.internal.handling.event.server.role.RoleDeleteEv
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleDeleteListener;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.objects.markers.IDPair;
 
 public class GUILD_ROLE_DELETE extends HandlerBase {
     // Override Methods

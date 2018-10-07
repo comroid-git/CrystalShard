@@ -18,8 +18,8 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.objects.functional.Evaluation;
+import util.objects.markers.IDPair;
 
 import java.awt.Color;
 import java.util.ArrayList;

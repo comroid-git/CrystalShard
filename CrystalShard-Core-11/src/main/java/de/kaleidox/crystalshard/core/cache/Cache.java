@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.core.cache;
 
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.util.annotations.NotContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
-import de.kaleidox.crystalshard.util.annotations.Nullable;
+import util.annotations.NotContainNull;
+import util.annotations.NotNull;
+import util.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import static de.kaleidox.crystalshard.util.helpers.MapHelper.*;
 
 /**
  * This class is the basic implementation of a cache.

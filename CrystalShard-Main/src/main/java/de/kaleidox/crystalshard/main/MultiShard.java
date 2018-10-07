@@ -11,9 +11,9 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.DiscordUtils;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.DiscordUtils;
+import util.objects.functional.Evaluation;
+import util.objects.markers.IDPair;
 
 import java.util.ArrayList;
 import java.util.Collection;

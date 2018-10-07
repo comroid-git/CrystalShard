@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 
 import java.net.http.WebSocket;
@@ -11,11 +11,11 @@ import java.util.concurrent.CompletionStage;
 
 public class WebSocketListener implements WebSocket.Listener {
     private final static Logger                    logger        = new Logger(WebSocketListener.class);
-    private final        DiscordInternal           discord;
+    private final        Discord discord;
     private              StringBuilder             onTextBuilder = new StringBuilder();
     private              CompletableFuture<String> onTextFuture  = new CompletableFuture<>();
     
-    public WebSocketListener(DiscordInternal discordObject) {
+    public WebSocketListener(Discord discordObject) {
         this.discord = discordObject;
     }
     

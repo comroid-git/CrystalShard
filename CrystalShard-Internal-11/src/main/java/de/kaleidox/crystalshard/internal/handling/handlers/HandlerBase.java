@@ -22,8 +22,8 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.annotations.MayContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
+import util.annotations.MayContainNull;
+import util.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;

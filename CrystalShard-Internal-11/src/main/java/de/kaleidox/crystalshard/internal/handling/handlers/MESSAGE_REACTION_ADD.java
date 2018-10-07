@@ -11,7 +11,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.objects.markers.IDPair;
 
 public class MESSAGE_REACTION_ADD extends HandlerBase {
     // Override Methods

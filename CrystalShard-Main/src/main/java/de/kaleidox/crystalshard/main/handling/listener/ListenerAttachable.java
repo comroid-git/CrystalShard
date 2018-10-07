@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.main.handling.listener;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+import util.objects.functional.Evaluation;
 
 import java.util.Collection;
 

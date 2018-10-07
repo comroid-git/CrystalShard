@@ -39,8 +39,8 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+import util.helpers.UrlHelper;
+import util.objects.functional.Evaluation;
 
 import java.net.MalformedURLException;
 import java.net.URL;

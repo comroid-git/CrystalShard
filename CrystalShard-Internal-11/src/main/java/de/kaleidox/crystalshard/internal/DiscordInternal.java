@@ -7,7 +7,7 @@ import de.kaleidox.crystalshard.core.cache.sub.MessageCache;
 import de.kaleidox.crystalshard.core.cache.sub.RoleCache;
 import de.kaleidox.crystalshard.core.cache.sub.ServerCache;
 import de.kaleidox.crystalshard.core.cache.sub.UserCache;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolInternal;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiting;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
@@ -23,10 +23,10 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.DiscordUtils;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-import de.kaleidox.crystalshard.util.objects.functional.LivingInt;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.DiscordUtils;
+import util.objects.functional.Evaluation;
+import util.objects.functional.LivingInt;
+import util.objects.markers.IDPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,13 +38,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DiscordInternal implements Discord {
-    private final static Logger                                                           logger            = new Logger(DiscordInternal.class);
-    private final        ThreadPool                                                       pool;
-    private final        String                                                           token;
-    private final        AccountType                                                      type;
-    private final        WebSocketClient                                                  webSocket;
-    private final        Ratelimiting                                                     ratelimiter;
-    private final        List<Server>                                                     servers;
+    private final static Logger             logger            = new Logger(DiscordInternal.class);
+    private final        ThreadPoolInternal pool;
+    private final        String             token;
+    private final        AccountType        type;
+    private final        WebSocketClient    webSocket;
+    private final        Ratelimiting       ratelimiter;
+    private final        List<Server>       servers;
     private final        DiscordUtils                                                     utils;
     private final        Collection<ListenerManager<? extends DiscordAttachableListener>> listenerManangers = new ArrayList<>();
     private final        int                                                              thisShard;
@@ -72,7 +72,7 @@ public class DiscordInternal implements Discord {
         serversInit.onStopHit(() -> init = true);
         this.thisShard = thisShard;
         this.shardCount = ShardCount;
-        this.pool = new ThreadPool(this);
+        this.pool = new ThreadPoolInternal(this);
         this.token = token;
         Logger.addBlankedWord(token);
         this.type = type;
@@ -88,7 +88,7 @@ public class DiscordInternal implements Discord {
     }
     
     public DiscordInternal(String token) {
-        this.pool = new ThreadPool(this, 1, "GetShards Discord Pool");
+        this.pool = new ThreadPoolInternal(this, 1, "GetShards Discord Pool");
         this.token = token;
         this.type = AccountType.BOT;
         this.webSocket = null;
@@ -108,7 +108,7 @@ public class DiscordInternal implements Discord {
     
     // Override Methods
     @Override
-    public ThreadPool getThreadPool() {
+    public ThreadPoolInternal getThreadPool() {
         return pool;
     }
     

@@ -7,8 +7,8 @@ import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
+import util.helpers.JsonHelper;
+import util.helpers.UrlHelper;
 
 import java.awt.Color;
 import java.net.URL;

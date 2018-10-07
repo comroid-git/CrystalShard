@@ -13,8 +13,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
-
 public class RoleBuilderInternal implements Role.Builder {
     private final Discord                    discord;
     private final Server                     server;

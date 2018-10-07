@@ -4,13 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
 import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.main.Discord;
 
 public class DiscordEventDispatch {
     private final static Logger logger = new Logger(DiscordEventDispatch.class);
     
     // Static members
     // Static membe
-    public static void handle(DiscordInternal discord, JsonNode data) {
+    public static void handle(Discord discord, JsonNode data) {
         WebSocketClient webSocket = discord.getWebSocket();
         OpCode.getByCode(data.get("op").asInt()).ifPresent(opCode -> {
             logger.trace("Recieved Packet with OpCode " + opCode + " and body: " + data.toString());

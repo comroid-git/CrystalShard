@@ -6,8 +6,8 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
-import de.kaleidox.crystalshard.util.CompletableFutureExtended;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+import util.CompletableFutureExtended;
+import util.helpers.JsonHelper;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -17,8 +17,6 @@ import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
 
 /**
  * This class is used for creating requests to discord.

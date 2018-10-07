@@ -1,12 +1,12 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimiting;
 
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolInternal;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.MapHelper;
-import de.kaleidox.crystalshard.util.helpers.QueueHelper;
-import de.kaleidox.crystalshard.util.objects.functional.LivingInt;
+import util.helpers.MapHelper;
+import util.helpers.QueueHelper;
+import util.objects.functional.LivingInt;
 
 import javax.naming.LimitExceededException;
 import java.time.Instant;
@@ -23,14 +23,14 @@ class BucketManager {
     private final        Discord                       discord;
     private final        Ratelimiting                  ratelimiting;
     private final        ConcurrentLinkedQueue<Bucket> bucketQueue;
-    private final        ThreadPool                    atomicPool;
+    private final        ThreadPoolInternal            atomicPool;
     private final        LivingInt                     globalRatelimit;
     
     BucketManager(Discord discord, Ratelimiting ratelimiting) {
         this.discord = discord;
         this.ratelimiting = ratelimiting;
         this.bucketQueue = new ConcurrentLinkedQueue<>();
-        this.atomicPool = new ThreadPool(discord, 1, "BucketManager");
+        this.atomicPool = new ThreadPoolInternal(discord, 1, "BucketManager");
         this.globalRatelimit = new LivingInt(0, 0, -1, 20, TimeUnit.MILLISECONDS);
         
         cycle();

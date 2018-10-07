@@ -13,8 +13,8 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-import de.kaleidox.crystalshard.util.DiscordUtils;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.DiscordUtils;
+import util.objects.markers.IDPair;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -41,6 +41,8 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     Executor getExecutor();
     
     ThreadPool getThreadPool();
+    
+    WebSocket getWebSocket();
     
     Collection<Server> getServers();
     

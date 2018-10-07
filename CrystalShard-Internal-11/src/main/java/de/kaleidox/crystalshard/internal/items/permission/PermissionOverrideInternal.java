@@ -10,8 +10,8 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.helpers.JsonHelper;
+import util.objects.markers.IDPair;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;

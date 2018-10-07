@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimiting;
 
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolInternal;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.logging.Logger;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class Ratelimiting {
     private final static Logger                                                logger = new Logger(Ratelimiting.class);
-    final                ThreadPool                                            executePool;
+    final                ThreadPoolInternal                                    executePool;
     @SuppressWarnings("ALL")
     private final        Discord                                               discord;
     private final        BucketManager                                         bucketManager;
@@ -30,7 +30,7 @@ public class Ratelimiting {
      */
     public Ratelimiting(Discord discord) {
         this.discord = discord;
-        this.executePool = new ThreadPool(discord, -1, "Ratelimit Execution");
+        this.executePool = new ThreadPoolInternal(discord, -1, "Ratelimit Execution");
         this.bucketManager = new BucketManager(discord, this);
         this.remainingMap = new ConcurrentHashMap<>();
         this.limitMap = new ConcurrentHashMap<>();

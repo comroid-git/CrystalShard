@@ -19,7 +19,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-import de.kaleidox.crystalshard.util.annotations.Nullable;
+import util.annotations.Nullable;
 
 import java.net.URL;
 import java.util.Collection;

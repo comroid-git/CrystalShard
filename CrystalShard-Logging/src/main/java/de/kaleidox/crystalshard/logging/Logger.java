@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.LowStackTraceable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+import util.helpers.JsonHelper;
 
 import java.io.IOException;
 import java.io.InputStream;

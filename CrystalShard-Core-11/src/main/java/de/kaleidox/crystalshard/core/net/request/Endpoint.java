@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.core.net.request;
 
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.helpers.UrlHelper;
+import util.objects.markers.IDPair;
 
 import java.net.URL;
 import java.util.Arrays;

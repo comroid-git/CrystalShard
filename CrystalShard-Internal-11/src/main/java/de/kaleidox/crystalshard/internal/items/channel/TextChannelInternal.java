@@ -25,8 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
-
 public abstract class TextChannelInternal extends ChannelInternal implements TextChannel {
     final ConcurrentHashMap<Long, Message> messages;
     final ConcurrentHashMap<Long, Message> pinned;

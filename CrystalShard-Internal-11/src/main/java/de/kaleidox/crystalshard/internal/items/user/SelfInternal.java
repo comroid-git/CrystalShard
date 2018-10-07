@@ -17,13 +17,11 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+import util.helpers.JsonHelper;
 
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.*;
 
 public class SelfInternal extends UserInternal implements Self {
     private final static Logger            logger = new Logger(SelfInternal.class);

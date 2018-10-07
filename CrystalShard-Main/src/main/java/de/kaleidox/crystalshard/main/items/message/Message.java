@@ -25,9 +25,9 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.annotations.NotContainNull;
-import de.kaleidox.crystalshard.util.annotations.Range;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import util.annotations.NotContainNull;
+import util.annotations.Range;
+import util.objects.markers.IDPair;
 
 import java.time.Instant;
 import java.util.List;
