@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Main">
+    <output-path>$PROJECT_DIR$/classes/artifacts/Main</output-path>
+    <root id="archive" name="CrystalShard-Full.jar">
+      <element id="module-output" name="CrystalShard_main" />
+    </root>
+  </artifact>
+</component>
