@@ -1,7 +1,4 @@
-.gradle/4.9/
-.gradle/buildOutputCleanup/
-.gradle/vcsWorkingDirs/
-
+.gradle/
 build/
 classes/
 
