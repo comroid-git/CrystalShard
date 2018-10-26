@@ -29,94 +29,60 @@ allprojects {
     repositories {
         jcenter()
     }
-}
-
-// Import Helping Modules
-project(':CrystalShard-Java11') {
-    sourceCompatibility = 11
-    targetCompatibility = 11
 
     dependencies {
-        implementation project(':CrystalShard-Main')
-        implementation project(':CrystalShard-Util')
-        implementation project(':CrystalShard-Internal-11')
-        implementation project(':CrystalShard-Core-11')
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
     }
 }
 
-// Modules
-project(':CrystalShard-Main') {
+project(":Main") {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
-        implementation project(':CrystalShard-Core')
-        implementation project(':CrystalShard-Util')
-    }
-}
+        implementation project(":Util")
+        implementation project(":Logging")
 
-project(':CrystalShard-Logging') {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        implementation project(':CrystalShard-Main')
-        implementation project(':CrystalShard-Util')
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
-    }
-}
-
-project(':CrystalShard-Util') {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        implementation project(':CrystalShard-Main')
-        implementation project(':CrystalShard-Logging')
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
-    }
-}
-
-project(':CrystalShard-Core') {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        implementation project(':CrystalShard-Main')
-        implementation project(':CrystalShard-Util')
-        implementation project(':CrystalShard-Logging')
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
-    }
-}
-
-// Implementation Modules
-project(':CrystalShard-Internal-11') {
-    sourceCompatibility = 11
-    targetCompatibility = 11
-
-    dependencies {
-        implementation project(':CrystalShard-Main')
-        implementation project(':CrystalShard-Util')
-        implementation project(':CrystalShard-Logging')
-        implementation project(':CrystalShard-Core-11')
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
         implementation 'com.vdurmont:emoji-java:4.0.0'
     }
 }
 
-project(':CrystalShard-Core-11') {
+project(":Util") {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencies {
+        implementation project(":Logging")
+    }
+}
+
+project(":Logging") {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+}
+
+project(":Core-11") {
     sourceCompatibility = 11
     targetCompatibility = 11
 
     dependencies {
-        implementation project(':CrystalShard-Core')
-        
-        implementation project(':CrystalShard-Main')
-        implementation project(':CrystalShard-Util')
-        implementation project(':CrystalShard-Logging')
-        
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+        implementation project(":Main")
+        implementation project(":Util")
+        implementation project(":Logging")
+
+        implementation 'com.vdurmont:emoji-java:4.0.0'
+    }
+}
+
+project(":Internal-11") {
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    dependencies {
+        implementation project(":Main")
+        implementation project(":Util")
+        implementation project(":Logging")
+
         implementation 'com.vdurmont:emoji-java:4.0.0'
     }
 }
