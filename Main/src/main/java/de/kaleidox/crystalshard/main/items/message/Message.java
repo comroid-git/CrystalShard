@@ -399,4 +399,12 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
         return InternalDelegate.newInstance(BulkDelete.class, messages[0].getDiscord()).setChannel(messages[0].getChannel().getId()).addMessages(messages).deleteAll();
     }
+    
+    static Message getFromId(Discord discord, long id) {
+        return discord.getMessageCache().get(id);
+    }
+    
+    static Message getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
 }

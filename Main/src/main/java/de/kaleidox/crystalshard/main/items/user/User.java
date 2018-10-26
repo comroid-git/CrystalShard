@@ -3,9 +3,11 @@ package de.kaleidox.crystalshard.main.items.user;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -64,4 +66,12 @@ public interface User
     }
     
     Optional<ServerMember> toServerMember(Server server);
+    
+    static User getFromId(Discord discord, long id) {
+        return discord.getUserCache().get(id);
+    }
+    
+    static User getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
 }
