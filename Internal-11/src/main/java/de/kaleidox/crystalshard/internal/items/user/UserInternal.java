@@ -55,7 +55,6 @@ public class UserInternal implements User {
     private              boolean                                                 verified;
     private              String                                                  locale;
     private              String                                                  email;
-    private              List<ListenerManager<? extends UserAttachableListener>> listenerManangers;
     String discriminator;
     
     UserInternal(User user) {
@@ -242,7 +241,7 @@ public class UserInternal implements User {
     @Override
     public <C extends UserAttachableListener> ListenerManager<C> attachListener(C listener) {
         ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
-        listenerManangers.add(manager);
+        listenerManagers.add(manager);
         return manager;
     }
     
@@ -254,6 +253,11 @@ public class UserInternal implements User {
     @Override
     public Collection<UserAttachableListener> getAttachedListeners() {
         return null;
+    }
+    
+    @Override
+    public Collection<ListenerManager<? extends UserAttachableListener>> getListenerManagers() {
+        return listenerManagers;
     }
     
     @Override
