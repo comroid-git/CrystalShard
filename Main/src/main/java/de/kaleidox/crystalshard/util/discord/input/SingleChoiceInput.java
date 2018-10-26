@@ -89,7 +89,7 @@ public class SingleChoiceInput<T> extends Base<T> {
                                         .contains(event.getEmoji().toDiscordPrintable())) {
                                 Optional<Choice<T>> any = choices.stream().filter(choice -> choice.getEmojiRepresentation()
                                         .equals(event.getEmoji().toDiscordPrintable())).findAny();
-                                if (any.isEmpty()) {
+                                if (!any.isPresent()) {
                                     event.getReaction().remove();
                                     assert false : "This point should never be reached.";
                                 }

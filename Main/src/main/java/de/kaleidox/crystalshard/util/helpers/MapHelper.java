@@ -234,7 +234,7 @@ public class MapHelper extends NullHelper {
                                                                                                      Function<iK, oK> keyMapper, Function<iV, oV> valueMapper) {
         Comparator<iK> comparator = (map instanceof TreeMap) ? ((TreeMap) map).comparator() : null;
         oMap newMap;
-        newMap = (oMap) Objects.requireNonNullElse(outputMapPointer, new HashMap<oK, oV>());
+        newMap = (oMap) NullHelper.requireNonNullElse(outputMapPointer, new HashMap<oK, oV>());
         newMap = (oMap) getMapOfParent(map, newMap);
         for (Map.Entry<iK, iV> entry : map.entrySet()) {
             newMap.put(keyMapper.apply(entry.getKey()), valueMapper.apply(entry.getValue()));

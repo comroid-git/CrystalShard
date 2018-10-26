@@ -149,7 +149,7 @@ public class Endpoint {
                 }
             }
             if (parameterCount == params.length) {
-                boolean olderInstanceExists = olderInstances.entrySet().stream().anyMatch(entry -> Arrays.compare(entry.getKey(), params) == 0);
+                boolean olderInstanceExists = olderInstances.entrySet().stream().anyMatch(entry -> ArrayHelper.compare(entry.getKey(), params) == 0);
                 if (olderInstanceExists) {
                     for (Map.Entry<String[], Endpoint> entry : olderInstances.entrySet()) {
                         if (ArrayHelper.compare(entry.getKey(), params) == 0) {

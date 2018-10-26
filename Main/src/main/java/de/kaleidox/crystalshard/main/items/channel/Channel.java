@@ -25,7 +25,7 @@ public interface Channel
     CompletableFuture<Void> delete();
     
     default boolean isPrivate() {
-        return toServerChannel().isEmpty();
+        return !toServerChannel().isPresent();
     }
     
     default Optional<ChannelCategory> toChannelCategory() {

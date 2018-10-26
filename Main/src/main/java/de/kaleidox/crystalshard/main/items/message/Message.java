@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -390,7 +391,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
         CompletableFuture<Void> deleteAll();
     }
     
-    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalCallerException {
+    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalThreadException {
         Discord discord = ThreadPool.getThreadDiscord();
         return InternalDelegate.newInstance(BulkDelete.class, discord).setChannel(channelId).addIds(messageIds).deleteAll();
     }

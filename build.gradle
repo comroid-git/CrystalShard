@@ -9,7 +9,6 @@ task myJavadocs(type: Javadoc) {
 javadoc {
     options.encoding = 'UTF-8'
     options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
-    exclude("internal")
 }
 
 publishing {
@@ -22,8 +21,7 @@ publishing {
 
 allprojects {
     group 'de.kaleidox'
-    version '0.8'
-
+    
     apply plugin: 'java-library'
     
     compileJava {
@@ -36,36 +34,35 @@ allprojects {
 
     dependencies {
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
+        implementation 'com.vdurmont:emoji-java:4.0.0'
     }
 }
 
 project(":Main") {
+    version '0.9'
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-
-    dependencies {
-        implementation 'com.vdurmont:emoji-java:4.0.0'
-    }
 }
 
 project(":Core-11") {
+    version '0.9'
+
     sourceCompatibility = 11
     targetCompatibility = 11
 
     dependencies {
         implementation project(":Main")
-
-        implementation 'com.vdurmont:emoji-java:4.0.0'
     }
 }
 
 project(":Internal-11") {
+    version '0.9'
+
     sourceCompatibility = 11
     targetCompatibility = 11
 
     dependencies {
         implementation project(":Main")
-
-        implementation 'com.vdurmont:emoji-java:4.0.0'
     }
 }

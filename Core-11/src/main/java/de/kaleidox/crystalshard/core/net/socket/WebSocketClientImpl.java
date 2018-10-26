@@ -45,7 +45,7 @@ public class WebSocketClientImpl implements WebSocketClient {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
     
-    public CompletableFuture<WebSocket> sendPayload(Payload payload) {
+    public CompletableFuture<Void> sendPayload(Payload payload) {
         assert payload != null : "Payload must not be null!";
         CompletableFuture<WebSocket> future = new CompletableFuture<>();
         this.threadPool.execute(() -> {
@@ -75,7 +75,7 @@ public class WebSocketClientImpl implements WebSocketClient {
                 }
             }
         });
-        return future;
+        return future.thenApply(n -> null);
     }
     
     private void identification() {

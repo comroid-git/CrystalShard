@@ -22,7 +22,7 @@ public class FutureHelper extends NullHelper {
      */
     @SafeVarargs
     public static <T> CompletableFuture<T> linkFutures(CompletableFuture<T> parentFuture, CompletableFuture<T>... others) {
-        List.of(others).forEach(otherFuture -> {
+        ListHelper.of(others).forEach(otherFuture -> {
             parentFuture.thenAcceptAsync(otherFuture::complete);
             parentFuture.exceptionally(throwable -> {
                 otherFuture.completeExceptionally(throwable);
