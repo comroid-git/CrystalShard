@@ -1,5 +1,9 @@
-.gradle
-/build/
+.gradle/4.9/
+.gradle/buildOutputCleanup/
+.gradle/vcsWorkingDirs/
+
+build/
+classes/
 
 # IntelliJ
 *.iml
@@ -15,17 +19,10 @@
 gradle-app.setting
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+!.gradle/wrapper/gradle-wrapper.jar
 
 # Cache of project
 .gradletasknamecache
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
-
-# Ignore testing dir
-/src/test/java/
-
-/out/
-CrystalShard.iml
-*.jar
