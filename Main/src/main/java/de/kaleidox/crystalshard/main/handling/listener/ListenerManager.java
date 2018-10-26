@@ -14,4 +14,10 @@ public interface ListenerManager<T extends Listener> {
     ListenerManager<T> detachIn(long time, TimeUnit unit);
     
     ListenerManager<T> onDetach(Runnable runnable);
+    
+    ListenerManager<T> enable();
+    
+    ListenerManager<T> disable();
+    
+    boolean isEnabled();
 }

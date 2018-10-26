@@ -3,6 +3,8 @@ package de.kaleidox.crystalshard.main.handling.listener;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 
 import java.util.Collection;
@@ -15,6 +17,8 @@ import java.util.Collection;
  * @see ServerAttachableListener
  * @see ChannelAttachableListener
  * @see MessageAttachableListener
+ * @see RoleAttachableListener
+ * @see UserAttachableListener
  */
 public interface ListenerAttachable<T extends Listener> {
     /**
@@ -40,6 +44,13 @@ public interface ListenerAttachable<T extends Listener> {
      * @return A collection with the attached listeners.
      */
     Collection<T> getAttachedListeners();
+    
+    /**
+     * Returns a collection of all ListenerManagers attached to this object.
+     *
+     * @return A collection with attached ListenerManagers.
+     */
+    Collection<ListenerManager<? extends T>> getListenerManagers();
     
     /**
      * Detached all listeners from the current object.

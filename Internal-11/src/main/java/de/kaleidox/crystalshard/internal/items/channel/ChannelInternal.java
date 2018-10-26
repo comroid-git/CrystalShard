@@ -67,6 +67,11 @@ public abstract class ChannelInternal implements Channel {
     }
     
     @Override
+    public Collection<ListenerManager<? extends ChannelAttachableListener>> getListenerManagers() {
+        return listenerManagers;
+    }
+    
+    @Override
     public ChannelType getType() {
         return type;
     }

@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
@@ -86,7 +85,7 @@ public class MessageInternal implements Message {
     private final        List<Emoji>                                                      emojis          = new ArrayList<>();
     private final        List<Channel>                                                    channelMentions = new ArrayList<>();
     private final        TextChannel                                                      channel;
-    private              Collection<ListenerManager<? extends MessageAttachableListener>> listeners;
+    private              Collection<ListenerManager<? extends MessageAttachableListener>> listenerManagers;
     
     public MessageInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating message object for data: " + data.toString());
@@ -141,7 +140,7 @@ public class MessageInternal implements Message {
             }
         }
         
-        listeners = new ArrayList<ListenerManager<? extends MessageAttachableListener>>();
+        listenerManagers = new ArrayList<ListenerManager<? extends MessageAttachableListener>>();
         
         instances.put(id, this);
     }
@@ -373,7 +372,7 @@ public class MessageInternal implements Message {
     @Override
     public <C extends MessageAttachableListener> ListenerManager<C> attachListener(C listener) {
         ListenerManager<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
-        listeners.add(manager);
+        listenerManagers.add(manager);
         return manager;
     }
     
@@ -385,6 +384,11 @@ public class MessageInternal implements Message {
     @Override
     public Collection<MessageAttachableListener> getAttachedListeners() {
         return null;
+    }
+    
+    @Override
+    public Collection<ListenerManager<? extends MessageAttachableListener>> getListenerManagers() {
+        return listenerManagers;
     }
     
     @Override

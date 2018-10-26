@@ -153,6 +153,11 @@ public class RoleInternal implements Role {
     }
     
     @Override
+    public Collection<ListenerManager<? extends RoleAttachableListener>> getListenerManagers() {
+        return listenerManangers;
+    }
+    
+    @Override
     public int compareTo(Role o) {
         return getPosition() - o.getPosition();
     }

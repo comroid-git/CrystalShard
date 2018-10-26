@@ -364,6 +364,11 @@ public class ServerInternal implements Server {
     }
     
     @Override
+    public Collection<ListenerManager<? extends ServerAttachableListener>> getListenerManagers() {
+        return listenerManangers;
+    }
+    
+    @Override
     public boolean hasPermission(User user, Permission permission) {
         return members.stream().filter(user::equals).map(usr -> usr.toServerMember().orElseThrow(AssertionError::new)).flatMap(member -> member.getRoles()
                 .stream()).sorted().map(Role::getPermissions).anyMatch(perm -> perm.contains(permission));

@@ -17,6 +17,7 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
     private final        T                                                                       listener;
     private final        List<ListenerAttachable<T>>                                             attachedTo      = new ArrayList<>();
     private final        List<Runnable>                                                          detachRunnables = new ArrayList<>();
+    private boolean enabled;
     
     ListenerManagerInternal(DiscordInternal discord, T listener) {
         this.discord = discord;
@@ -24,7 +25,6 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         instances.putIfAbsent(listener.hashCode(), this);
     }
     
-    // Override Methods
     @Override
     public DiscordInternal getDiscord() {
         return discord;
@@ -60,12 +60,27 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         return this;
     }
     
+    @Override
+    public ListenerManager<T> enable() {
+        enabled = true;
+        return this;
+    }
+    
+    @Override
+    public ListenerManager<T> disable() {
+        enabled = false;
+        return this;
+    }
+    
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
     public <C extends ListenerAttachable<T>> void addAttached(C attached) {
         attachedTo.add(attached);
     }
     
-    // Static members
-    // Static membe
     @SuppressWarnings("unchecked")
     public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal, T listener) {
         if (instances.containsKey(listener.hashCode())) return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
