@@ -1,5 +1,8 @@
 package de.kaleidox.crystalshard.internal;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.main.Discord;
+
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
@@ -19,4 +22,10 @@ public abstract class InternalDelegate {
     public static <T> T newInstance(Class<T> tClass, Object... args) {
         return delegate.makeInstance(tClass, args);
     }
+    
+    public static void tryHandle(Discord discord, JsonNode data) {
+        delegate.tryHandleDelegate(discord, data);
+    }
+    
+    protected abstract void tryHandleDelegate(Discord discord, JsonNode data);
 }

@@ -9,6 +9,8 @@ import de.kaleidox.crystalshard.core.net.request.WebRequestImpl;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
+import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 
 import java.net.URI;
 import java.net.http.HttpClient;

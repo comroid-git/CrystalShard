@@ -76,27 +76,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         execute(() -> logger.deeptrace("New ThreadPool created: " + name));
     }
     
-    /**
-     * Gets the executor for this ThreadPool. This will be useful for CompletableFuture async methods that use an executor.
-     *
-     * @return The executor.
-     * @see CompletableFutureExtended
-     * @see CompletableFuture#supplyAsync(Supplier, Executor)
-     * @see CompletableFuture#acceptEitherAsync(CompletionStage, Consumer, Executor)
-     * @see CompletableFuture#applyToEitherAsync(CompletionStage, Function, Executor)
-     * @see CompletableFuture#completeAsync(Supplier, Executor)
-     * @see CompletableFuture#handleAsync(BiFunction, Executor)
-     * @see CompletableFuture#runAfterBothAsync(CompletionStage, Runnable, Executor)
-     * @see CompletableFuture#runAfterEitherAsync(CompletionStage, Runnable, Executor)
-     * @see CompletableFuture#runAsync(Runnable, Executor)
-     * @see CompletableFuture#thenAcceptAsync(Consumer, Executor)
-     * @see CompletableFuture#thenAcceptBothAsync(CompletionStage, BiConsumer, Executor)
-     * @see CompletableFuture#thenApplyAsync(Function, Executor)
-     * @see CompletableFuture#thenCombineAsync(CompletionStage, BiFunction, Executor)
-     * @see CompletableFuture#thenComposeAsync(Function, Executor)
-     * @see CompletableFuture#thenRunAsync(Runnable, Executor)
-     * @see CompletableFuture#whenCompleteAsync(BiConsumer, Executor)
-     */
+    @Override
     public Executor getExecutor() {
         return executor;
     }

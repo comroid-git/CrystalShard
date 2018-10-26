@@ -21,15 +21,6 @@ public interface DiscordItem {
     Discord getDiscord();
     
     /**
-     * Gets the ID as a snowflake.
-     *
-     * @return The ID as a snowflage
-     */
-    default Snowflake getIdAsSnowflake() {
-        return Snowflake.of(getId());
-    }
-    
-    /**
      * Used for comparing two DiscordItems after their ID.
      *
      * @param other The DiscordItem to equals to.

@@ -14,9 +14,15 @@ public interface WebRequest<T> {
     
     WebRequest<T> method(Method method);
     
+    Endpoint getEndpoint();
+    
+    JsonNode getNode();
+    
+    Method getMethod();
+    
     CompletableFuture<JsonNode> execute();
     
     CompletableFuture<T> execute(Function<JsonNode, T> mapper);
     
-    CompletableFuture<Void> executeVoid();
+    CompletableFuture<Void> executeNull();
 }

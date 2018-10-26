@@ -1,14 +1,14 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.items.server.emoji.UnicodeEmojiInternal;
+import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-import util.annotations.NotNull;
-import util.annotations.Nullable;
+import de.kaleidox.crystalshard.util.annotations.NotNull;
+import de.kaleidox.crystalshard.util.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -27,8 +27,6 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      * @return A discord-printable string of this emoji.
      */
     String toDiscordPrintable();
-    
-    // Override Methods
     
     /**
      * Gets the universal replacement of this emoji.
@@ -58,10 +56,9 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
         return castTo(CustomEmoji.class);
     }
     
-// Static membe
     static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
         if (data.get("id").isNull()) {
-            return new UnicodeEmojiInternal(discord, data, true);
+            return InternalDelegate.newInstance(UnicodeEmoji.class, discord, data, true);
         } else {
             return discord.getEmojiCache().getOrCreate(discord, server, data, true);
         }

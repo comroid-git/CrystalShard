@@ -1,9 +1,10 @@
 package de.kaleidox.crystalshard.main.items.message.embed;
 
-import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
-import de.kaleidox.crystalshard.internal.util.Container;
+import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.items.Nameable;
+import de.kaleidox.crystalshard.main.util.FileContainer;
 
+import javax.imageio.stream.FileCacheImageOutputStream;
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -33,43 +34,39 @@ public interface EmbedDraft extends Embed {
     
     List<Field> getFields();
     
-    interface Footer extends Container.Interface {
+    interface Footer extends FileContainer.Containable {
         String getText();
         
         Optional<URL> getIconUrl();
         
-// Static membe
         static Footer BUILD(String text, String iconUrl) {
-            return new EmbedDraftInternal.Footer(text, iconUrl);
+            return InternalDelegate.newInstance(Footer.class, text, iconUrl);
         }
     }
     
-    interface Image extends Container.Interface {
+    interface Image extends FileContainer.Containable {
         Optional<URL> getUrl();
         
-// Static membe
         static Image BUILD(String url) {
-            return new EmbedDraftInternal.Image(url);
+            return InternalDelegate.newInstance(Image.class, url);
         }
     }
     
-    interface Author extends Nameable, Container.Interface {
+    interface Author extends Nameable, FileContainer.Containable {
         Optional<URL> getUrl();
         
         Optional<URL> getIconUrl();
         
-// Static membe
         static Author BUILD(String name, String url, String iconUrl) {
-            return new EmbedDraftInternal.Author(name, url, iconUrl);
+            return InternalDelegate.newInstance(Author.class, name, url, iconUrl);
         }
     }
     
-    interface Thumbnail extends Container.Interface {
+    interface Thumbnail extends FileContainer.Containable {
         Optional<URL> getUrl();
         
-// Static membe
         static Thumbnail BUILD(String url) {
-            return new EmbedDraftInternal.Thumbnail(url);
+            return InternalDelegate.newInstance(Thumbnail.class, url);
         }
     }
     
@@ -83,19 +80,17 @@ public interface EmbedDraft extends Embed {
         int getTotalCharCount();
         
         default Optional<EditableField> toEditableField() {
-            return Optional.of(new EmbedDraftInternal.EditableField(this));
+            return Optional.of(InternalDelegate.newInstance(EditableField.class, this));
         }
         
-// Static membe
         static Field BUILD(String title, String text, boolean inline) {
-            return new EmbedDraftInternal.Field(title, text, (Objects.nonNull(inline) && inline));
+            return InternalDelegate.newInstance(Field.class, title, text, (Objects.nonNull(inline) && inline));
         }
     }
     
     interface EditableField extends Field {
-// Static membe
         static EditableField BUILD(Field fromField) {
-            return new EmbedDraftInternal.EditableField(fromField);
+            return InternalDelegate.newInstance(EditableField.class, fromField);
         }
     }
 }

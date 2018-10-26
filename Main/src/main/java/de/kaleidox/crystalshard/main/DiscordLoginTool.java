@@ -1,9 +1,10 @@
 package de.kaleidox.crystalshard.main;
 
+import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.Method;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 
 import java.util.ArrayList;
@@ -70,18 +71,18 @@ public class DiscordLoginTool {
     @Deprecated
     public DiscordLoginTool setRecommendedShardCount() {
         Objects.requireNonNull(token, "Token must be set first!");
-        Discord login = new DiscordInternal(token);
-        return new WebRequest<DiscordLoginTool>(login).method(Method.GET).endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint()).execute(node -> setShardCount(
+        Discord login = InternalDelegate.newInstance(Discord.class, token);
+        return CoreDelegate.webRequest(DiscordLoginTool.class, login).method(Method.GET).endpoint(Endpoint.Location.GATEWAY_BOT.toEndpoint()).execute(node -> setShardCount(
                 node.path("shards").asInt(1))).join();
     }
     
     public Discord login() {
-        return new DiscordInternal(token, type, shard, shardCount);
+        return InternalDelegate.newInstance(Discord.class, token, type, shard, shardCount);
     }
     
     public CompletableFuture<Discord> loginWaitForServers() {
         return CompletableFuture.supplyAsync(() -> {
-            DiscordInternal discordInternal = new DiscordInternal(token, type, shard, shardCount);
+            Discord discordInternal = InternalDelegate.newInstance(Discord.class, token, type, shard, shardCount);
             while (!discordInternal.initFinished()) {
                 try {
                     Thread.sleep(500);
@@ -95,14 +96,10 @@ public class DiscordLoginTool {
     public MultiShard loginMultiShard() {
         List<Discord> loggedIn = new ArrayList<>();
         for (int i = 0; i < shardCount; i++) {
-            loggedIn.add(new DiscordInternal(token, type, i, shardCount));
+            loggedIn.add(InternalDelegate.newInstance(Discord.class, token, type, i, shardCount));
         }
         return new MultiShard(loggedIn);
     }
-    
-    // Static membe
-    
-    // Static members
     
     /**
      * Creates a new instance.

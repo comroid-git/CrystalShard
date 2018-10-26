@@ -9,32 +9,55 @@ import de.kaleidox.crystalshard.core.cache.sub.MessageCacheImpl;
 import de.kaleidox.crystalshard.core.cache.sub.RoleCacheImpl;
 import de.kaleidox.crystalshard.core.cache.sub.ServerCacheImpl;
 import de.kaleidox.crystalshard.core.cache.sub.UserCacheImpl;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.WebRequestImpl;
+import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
+import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
+import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
+import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.main.Discord;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
 
 public class CoreDelegateJRE11Impl extends CoreDelegate {
-    @SuppressWarnings("unchecked")
+    private final static Hashtable<Class, Class> implementations;
+    
+    static {
+        implementations = new Hashtable<>();
+        implementations.put(Cache.class, CacheImpl.class);
+        implementations.put(ThreadPool.class, ThreadPoolImpl.class);
+        implementations.put(WebRequest.class, WebRequestImpl.class);
+        implementations.put(Ratelimiter.class, RatelimiterImpl.class);
+        implementations.put(WebSocketClient.class, WebSocketClientImpl.class);
+    }
+    
+    @SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
     @Override
     protected <T> T makeInstance(Class<T> tClass, Object... args) {
-        try {
-            Class[] types = Stream.of(args).map(Object::getClass).toArray(Class[]::new);
-            switch (tClass.getSimpleName()) {
-                case "ThreadPool":
-                    return (T) ThreadPoolImpl.class.getConstructor(types).newInstance(args);
-                case "WebRequest":
-                    return (T) WebRequest.class.getConstructor(types).newInstance(args);
-            }
-        } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
+        Class[] types = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            types[i] = args[i].getClass();
         }
-        throw new NoSuchElementException("Cannot create instance of "+tClass.getName()+"!");
+        try {
+            return (T) implementations.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getKey().getName().equalsIgnoreCase(tClass.getName()))
+                    .findAny()
+                    .orElseThrow(() -> new IllegalStateException("No override found for class: " + tClass.getName()))
+                    .getValue()
+                    .getConstructor(types)
+                    .newInstance(args);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException("No constructor found for argument types: " + Arrays.toString(types));
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -55,26 +78,32 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
         return new WebRequestImpl<>(discord);
     }
     
+    @Override
     protected ChannelCacheImpl makeChannelCache(Discord discord) {
         return new ChannelCacheImpl(discord);
     }
     
+    @Override
     protected EmojiCacheImpl makeEmojiCache(Discord discord) {
         return new EmojiCacheImpl(discord);
     }
     
+    @Override
     protected MessageCacheImpl makeMessageCache(Discord discord) {
         return new MessageCacheImpl(discord);
     }
     
+    @Override
     protected RoleCacheImpl makeRoleCache(Discord discord) {
         return new RoleCacheImpl(discord);
     }
     
+    @Override
     protected ServerCacheImpl makeServerCache(Discord discord) {
         return new ServerCacheImpl(discord);
     }
     
+    @Override
     protected UserCacheImpl makeUserCache(Discord discord) {
         return new UserCacheImpl(discord);
     }

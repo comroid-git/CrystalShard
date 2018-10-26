@@ -15,8 +15,8 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-import util.DiscordUtils;
-import util.objects.markers.IDPair;
+import de.kaleidox.crystalshard.util.discord.DiscordUtils;
+import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -25,6 +25,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public interface Discord extends UserContainer, ChannelContainer, ListenerAttachable<DiscordAttachableListener> {
     String getPrefixedToken();
+    
+    boolean initFinished();
     
     int getShardId();
     

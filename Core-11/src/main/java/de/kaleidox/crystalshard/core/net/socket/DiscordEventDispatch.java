@@ -1,27 +1,25 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
-import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
+import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 
 public class DiscordEventDispatch {
     private final static Logger logger = new Logger(DiscordEventDispatch.class);
     
-    // Static members
-    // Static membe
     public static void handle(Discord discord, JsonNode data) {
-        WebSocketClient webSocket = discord.getWebSocket();
+        WebSocketClientImpl webSocket = (WebSocketClientImpl) discord.getWebSocket();
         OpCode.getByCode(data.get("op").asInt()).ifPresent(opCode -> {
             logger.trace("Recieved Packet with OpCode " + opCode + " and body: " + data.toString());
             switch (opCode) {
                 case HELLO:
                     long heartbeat_interval = (data.get("d").get("heartbeat_interval").asLong());
-                    discord.getThreadPool().startHeartbeat(heartbeat_interval);
+                    ((ThreadPoolImpl) discord.getThreadPool()).startHeartbeat(heartbeat_interval);
                     break;
                 case DISPATCH:
-                    HandlerBase.tryHandle(discord, data);
+                    InternalDelegate.tryHandle(discord, data);
                     break;
                 case HEARTBEAT:
                     webSocket.heartbeat();

@@ -11,15 +11,9 @@
       <module fileurl="file://$PROJECT_DIR$/Internal-11/Internal-11.iml" filepath="$PROJECT_DIR$/Internal-11/Internal-11.iml" group="Internal-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" group="Internal-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_test.iml" group="Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/Logging/Logging.iml" filepath="$PROJECT_DIR$/Logging/Logging.iml" group="Logging" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Logging/Logging_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Logging/Logging_main.iml" group="Logging" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Logging/Logging_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Logging/Logging_test.iml" group="Logging" />
       <module fileurl="file://$PROJECT_DIR$/Main/Main.iml" filepath="$PROJECT_DIR$/Main/Main.iml" group="Main" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" group="Main" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" group="Main" />
-      <module fileurl="file://$PROJECT_DIR$/Util/Util.iml" filepath="$PROJECT_DIR$/Util/Util.iml" group="Util" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Util/Util_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Util/Util_main.iml" group="Util" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Util/Util_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Util/Util_test.iml" group="Util" />
     </modules>
   </component>
 </project>

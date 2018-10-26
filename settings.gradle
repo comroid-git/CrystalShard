@@ -2,6 +2,4 @@ rootProject.name = 'CrystalShard'
 include ':Core-11'
 include ':Internal-11'
 include ':Main'
-include ':Logging'
-include ':Util'
 

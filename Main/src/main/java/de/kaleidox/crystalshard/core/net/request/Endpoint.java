@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.core.net.request;
 
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
+import de.kaleidox.crystalshard.util.helpers.ArrayHelper;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 

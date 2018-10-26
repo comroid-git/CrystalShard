@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.main.items.message;
 
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
@@ -25,9 +25,9 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
-import util.annotations.NotContainNull;
-import util.annotations.Range;
-import util.objects.markers.IDPair;
+import de.kaleidox.crystalshard.util.annotations.NotContainNull;
+import de.kaleidox.crystalshard.util.annotations.Range;
+import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
 import java.time.Instant;
 import java.util.List;
@@ -390,13 +390,12 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
         CompletableFuture<Void> deleteAll();
     }
     
-// Static membe
     static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalCallerException {
         Discord discord = ThreadPool.getThreadDiscord();
-        return new MessageInternal.BulkDeleteInternal(discord).setChannel(channelId).addIds(messageIds).deleteAll();
+        return InternalDelegate.newInstance(BulkDelete.class, discord).setChannel(channelId).addIds(messageIds).deleteAll();
     }
     
     static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
-        return new MessageInternal.BulkDeleteInternal(messages[0].getDiscord()).setChannel(messages[0].getChannel().getId()).addMessages(messages).deleteAll();
+        return InternalDelegate.newInstance(BulkDelete.class, messages[0].getDiscord()).setChannel(messages[0].getChannel().getId()).addMessages(messages).deleteAll();
     }
 }

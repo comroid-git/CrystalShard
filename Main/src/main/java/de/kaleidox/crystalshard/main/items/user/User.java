@@ -64,36 +64,4 @@ public interface User
     }
     
     Optional<ServerMember> toServerMember(Server server);
-    
-    // Static membe
-    static CompletableFuture<User> of(UserContainer in, long id) {
-        CompletableFuture<User> userFuture;
-        
-        if (in instanceof Server) {
-            Server srv = (Server) in;
-            Discord discord = srv.getDiscord();
-            
-            userFuture = srv.getUserById(id).map(CompletableFuture::completedFuture).orElseGet(() -> CoreDelegate.webRequest(discord).method(GET)
-                    .endpoint(Endpoint.of(Endpoint.Location.USER, id))
-                    .execute(node -> {
-                        if (node.isObject()) {
-                            return InternalDelegate.newInstance(User.class, discord, node);
-                        } else throw new NoSuchElementException("No User with ID " + id + " found!");
-                    }));
-        } else if (in instanceof Discord) {
-            Discord discord = (Discord) in;
-            
-            userFuture = discord.getUserById(id).map(CompletableFuture::completedFuture).orElseGet(() -> CoreDelegate.webRequest(discord).method(GET)
-                    .endpoint(Endpoint.of(Endpoint.Location.USER, id))
-                    .execute(node -> {
-                        if (node.isObject()) {
-                            return InternalDelegate.newInstance(User.class, discord, node);
-                        } else throw new NoSuchElementException("No User with ID " + id + " found!");
-                    }));
-        } else {
-            throw new IllegalArgumentException(in.getClass().getSimpleName() + " is not a valid UserContainer!");
-        }
-        
-        return userFuture;
-    }
 }

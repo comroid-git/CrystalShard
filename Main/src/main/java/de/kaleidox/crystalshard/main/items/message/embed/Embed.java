@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.main.items.message.embed;
 
-import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
-import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
+import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.user.User;
@@ -62,19 +61,19 @@ public interface Embed extends Castable<Embed> {
         }
         
         default Builder setFooter(String footerText) {
-            return setFooter(new EmbedDraftInternal.Footer(footerText, null));
+            return setFooter(EmbedDraft.Footer.BUILD(footerText, null));
         }
         
         default Builder setFooter(String footerText, String iconUrl) {
-            return setFooter(new EmbedDraftInternal.Footer(footerText, iconUrl));
+            return setFooter(EmbedDraft.Footer.BUILD(footerText, null));
         }
         
         default Builder setImage(String imageUrl) {
-            return setImage(new EmbedDraftInternal.Image(imageUrl));
+            return setImage(EmbedDraft.Image.BUILD(imageUrl));
         }
         
         default Builder setThumbnail(String thumbnailUrl) {
-            return setThumbnail(new EmbedDraftInternal.Thumbnail(thumbnailUrl));
+            return setThumbnail(EmbedDraft.Thumbnail.BUILD(thumbnailUrl));
         }
         
         default Builder setAuthor(User user, String url) {
@@ -90,7 +89,7 @@ public interface Embed extends Castable<Embed> {
         }
         
         default Builder setAuthor(String name, String url, String iconUrl) {
-            return setAuthor(new EmbedDraftInternal.Author(name, url, iconUrl));
+            return setAuthor(EmbedDraft.Author.BUILD(name, url, iconUrl));
         }
         
         default Builder addField(String title, String text) {
@@ -125,6 +124,6 @@ public interface Embed extends Castable<Embed> {
     }
     
     static Builder BUILDER() {
-        return new EmbedBuilderInternal();
+        return InternalDelegate.newInstance(Embed.Builder.class);
     }
 }

@@ -88,6 +88,11 @@ public class WebRequestImpl<T> implements WebRequest<T> {
         return endpoint;
     }
     
+    @Override
+    public JsonNode getNode() {
+        return node;
+    }
+    
     public Method getMethod() {
         return method;
     }
@@ -96,7 +101,7 @@ public class WebRequestImpl<T> implements WebRequest<T> {
         return future;
     }
     
-    public CompletableFuture<Void> executeVoid() {
+    public CompletableFuture<Void> executeNull() {
         return execute().thenApply(node -> null);
     }
     

@@ -2,8 +2,17 @@ package de.kaleidox.crystalshard.core.concurrent;
 
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
+import de.kaleidox.crystalshard.util.objects.CompletableFutureExtended;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface ThreadPool {
@@ -18,6 +27,29 @@ public interface ThreadPool {
      * @param description A short description on what this task does.
      */
     void execute(Runnable task, String... description);
+    
+    /**
+     * Gets the executor for this ThreadPool. This will be useful for CompletableFuture async methods that use an executor.
+     *
+     * @return The executor.
+     * @see CompletableFutureExtended
+     * @see CompletableFuture#supplyAsync(Supplier, Executor)
+     * @see CompletableFuture#acceptEitherAsync(CompletionStage, Consumer, Executor)
+     * @see CompletableFuture#applyToEitherAsync(CompletionStage, Function, Executor)
+     * @see CompletableFuture#completeAsync(Supplier, Executor)
+     * @see CompletableFuture#handleAsync(BiFunction, Executor)
+     * @see CompletableFuture#runAfterBothAsync(CompletionStage, Runnable, Executor)
+     * @see CompletableFuture#runAfterEitherAsync(CompletionStage, Runnable, Executor)
+     * @see CompletableFuture#runAsync(Runnable, Executor)
+     * @see CompletableFuture#thenAcceptAsync(Consumer, Executor)
+     * @see CompletableFuture#thenAcceptBothAsync(CompletionStage, BiConsumer, Executor)
+     * @see CompletableFuture#thenApplyAsync(Function, Executor)
+     * @see CompletableFuture#thenCombineAsync(CompletionStage, BiFunction, Executor)
+     * @see CompletableFuture#thenComposeAsync(Function, Executor)
+     * @see CompletableFuture#thenRunAsync(Runnable, Executor)
+     * @see CompletableFuture#whenCompleteAsync(BiConsumer, Executor)
+     */
+    Executor getExecutor();
     
     /**
      * Gets the Scheduler for this ThreadPool. This will be useful for e.g. updating the discord status.

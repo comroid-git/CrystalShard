@@ -2,6 +2,8 @@ package de.kaleidox.crystalshard.main;
 
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
+import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -11,9 +13,9 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
-import util.DiscordUtils;
-import util.objects.functional.Evaluation;
-import util.objects.markers.IDPair;
+import de.kaleidox.crystalshard.util.discord.DiscordUtils;
+import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +32,11 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
     public String getPrefixedToken() {
         return get(0).getPrefixedToken();
+    }
+    
+    @Override
+    public boolean initFinished() {
+        return false;
     }
     
     @Override
@@ -74,6 +81,16 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     
     @Override
     public ThreadPool getThreadPool() {
+        return null;
+    }
+    
+    @Override
+    public WebSocketClient getWebSocket() {
+        return null;
+    }
+    
+    @Override
+    public Ratelimiter getRatelimiter() {
         return null;
     }
     

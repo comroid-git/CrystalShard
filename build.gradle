@@ -25,7 +25,11 @@ allprojects {
     version '0.8'
 
     apply plugin: 'java-library'
-
+    
+    compileJava {
+        options.encoding = 'UTF-8'
+    }
+    
     repositories {
         jcenter()
     }
@@ -40,25 +44,8 @@ project(":Main") {
     targetCompatibility = 1.8
 
     dependencies {
-        implementation project(":Util")
-        implementation project(":Logging")
-
         implementation 'com.vdurmont:emoji-java:4.0.0'
     }
-}
-
-project(":Util") {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        implementation project(":Logging")
-    }
-}
-
-project(":Logging") {
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 }
 
 project(":Core-11") {
@@ -67,8 +54,6 @@ project(":Core-11") {
 
     dependencies {
         implementation project(":Main")
-        implementation project(":Util")
-        implementation project(":Logging")
 
         implementation 'com.vdurmont:emoji-java:4.0.0'
     }
@@ -80,8 +65,6 @@ project(":Internal-11") {
 
     dependencies {
         implementation project(":Main")
-        implementation project(":Util")
-        implementation project(":Logging")
 
         implementation 'com.vdurmont:emoji-java:4.0.0'
     }
