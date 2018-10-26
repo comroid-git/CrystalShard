@@ -34,6 +34,7 @@
       <option name="SPACE_WITHIN_EMPTY_ARRAY_INITIALIZER_BRACES" value="true" />
       <option name="CALL_PARAMETERS_WRAP" value="5" />
       <option name="PREFER_PARAMETERS_WRAP" value="true" />
+      <option name="METHOD_PARAMETERS_WRAP" value="5" />
       <option name="RESOURCE_LIST_WRAP" value="5" />
       <option name="EXTENDS_LIST_WRAP" value="1" />
       <option name="THROWS_LIST_WRAP" value="1" />
@@ -62,7 +63,7 @@
       </indentOptions>
       <arrangement>
         <rules>
-          <section start_comment="// Static Fields">
+          <section>
             <rule>
               <match>
                 <AND>
@@ -154,7 +155,7 @@
               </match>
             </rule>
           </section>
-          <section start_comment="// Fields">
+          <section>
             <rule>
               <match>
                 <AND>
@@ -245,7 +246,7 @@
               </match>
             </rule>
           </section>
-          <section start_comment="// Init Blocks">
+          <section>
             <rule>
               <match>
                 <AND>
@@ -292,7 +293,7 @@
               </match>
             </rule>
           </section>
-          <section start_comment="// Override Methods">
+          <section>
             <rule>
               <match>
                 <OVERRIDDEN />
@@ -327,7 +328,7 @@
               </match>
             </rule>
           </section>
-          <section start_comment="// Static membe">
+          <section>
             <rule>
               <match>
                 <AND>

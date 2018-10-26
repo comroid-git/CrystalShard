@@ -2,30 +2,22 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Core-11/Core-11.iml" filepath="$PROJECT_DIR$/Core-11/Core-11.iml" group="Core-11" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11_main.iml" group="Core-11" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11_test.iml" group="Core-11" />
       <module fileurl="file://$PROJECT_DIR$/CrystalShard.iml" filepath="$PROJECT_DIR$/CrystalShard.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Core.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Core.iml" group="CrystalShard-Core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Core-11.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Core-11.iml" group="CrystalShard-Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Core-11/CrystalShard-Core-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Core-11/CrystalShard-Core-11_main.iml" group="CrystalShard-Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Core-11/CrystalShard-Core-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Core-11/CrystalShard-Core-11_test.iml" group="CrystalShard-Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Core/CrystalShard-Core_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Core/CrystalShard-Core_main.iml" group="CrystalShard-Core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Core/CrystalShard-Core_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Core/CrystalShard-Core_test.iml" group="CrystalShard-Core" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11.iml" group="CrystalShard-Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_main.iml" group="CrystalShard-Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Internal-11/CrystalShard-Internal-11_test.iml" group="CrystalShard-Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Java11.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Java11.iml" group="CrystalShard-Java11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_main.iml" group="CrystalShard-Java11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Java11/CrystalShard-Java11_test.iml" group="CrystalShard-Java11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Logging.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Logging.iml" group="CrystalShard-Logging" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_main.iml" group="CrystalShard-Logging" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Logging/CrystalShard-Logging_test.iml" group="CrystalShard-Logging" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Main.iml" group="CrystalShard-Main" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Main/CrystalShard-Main_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Main/CrystalShard-Main_main.iml" group="CrystalShard-Main" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Main/CrystalShard-Main_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Main/CrystalShard-Main_test.iml" group="CrystalShard-Main" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Util.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Util.iml" group="CrystalShard-Util" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Util/CrystalShard-Util_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Util/CrystalShard-Util_main.iml" group="CrystalShard-Util" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard-Util/CrystalShard-Util_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard-Util/CrystalShard-Util_test.iml" group="CrystalShard-Util" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard_main.iml" group="CrystalShard" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard_test.iml" group="CrystalShard" />
+      <module fileurl="file://$PROJECT_DIR$/Internal-11/Internal-11.iml" filepath="$PROJECT_DIR$/Internal-11/Internal-11.iml" group="Internal-11" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" group="Internal-11" />
+      <module fileurl="file://$PROJECT_DIR$/Logging/Logging.iml" filepath="$PROJECT_DIR$/Logging/Logging.iml" group="Logging" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Logging/Logging_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Logging/Logging_main.iml" group="Logging" />
+      <module fileurl="file://$PROJECT_DIR$/Main/Main.iml" filepath="$PROJECT_DIR$/Main/Main.iml" group="Main" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" group="Main" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" group="Main" />
+      <module fileurl="file://$PROJECT_DIR$/Util/Util.iml" filepath="$PROJECT_DIR$/Util/Util.iml" group="Util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Util/Util_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Util/Util_main.iml" group="Util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Util/Util_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Util/Util_test.iml" group="Util" />
     </modules>
   </component>
 </project>
