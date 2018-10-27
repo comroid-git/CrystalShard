@@ -1,7 +1,7 @@
 .gradle
 build/
 out/
-/.idea/
+.idea/
 
 !Core-11.iml
 !Internal-11.iml
