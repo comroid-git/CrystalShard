@@ -1,13 +1,16 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
 import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.Castable;
 
 import java.util.Optional;
@@ -90,5 +93,13 @@ public interface Channel
          * @return A future that completes with the built channel.
          */
         CompletableFuture<R> build();
+    }
+    
+    static Channel getFromId(Discord discord, long id) {
+        return discord.getChannelCache().get(id);
+    }
+    
+    static Channel getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
     }
 }

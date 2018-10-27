@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.main.items.role;
 
 import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -9,6 +12,7 @@ import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
+import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
 import java.awt.Color;
@@ -43,5 +47,13 @@ public interface Role
         Builder setMentionable(boolean mentionable);
         
         CompletableFuture<Role> build();
+    }
+    
+    static Role getFromId(Discord discord, long id) {
+        return discord.getRoleCache().get(id);
+    }
+    
+    static Role getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
     }
 }

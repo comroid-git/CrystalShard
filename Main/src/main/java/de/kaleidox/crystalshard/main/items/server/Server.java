@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.main.items.server;
 
 import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -126,5 +129,13 @@ public interface Server
         Builder add(ServerComponent component);
         
         CompletableFuture<Server> build();
+    }
+    
+    static Server getFromId(Discord discord, long id) {
+        return discord.getServerCache().get(id);
+    }
+    
+    static Server getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
     }
 }
