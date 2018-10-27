@@ -3,30 +3,18 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11.iml" group="Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11.iml" group="Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11_main.iml" group="Core-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11_main.iml" group="Core-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11_test.iml" group="Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Core-11/Core-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Core-11/Core-11_test.iml" group="Core-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard.iml" />
       <module fileurl="file://$PROJECT_DIR$/CrystalShard.iml" filepath="$PROJECT_DIR$/CrystalShard.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/CrystalShardForked.iml" filepath="$PROJECT_DIR$/.idea/CrystalShardForked.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard_main.iml" group="CrystalShard" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard_main.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard_main.iml" group="CrystalShard" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard_test.iml" group="CrystalShard" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CrystalShard_test.iml" filepath="$PROJECT_DIR$/.idea/modules/CrystalShard_test.iml" group="CrystalShard" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11.iml" group="Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11.iml" group="Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" group="Internal-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_main.iml" group="Internal-11" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_test.iml" group="Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Internal-11/Internal-11_test.iml" group="Internal-11" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main.iml" group="Main" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main.iml" group="Main" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" group="Main" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_main.iml" group="Main" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" group="Main" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Main/Main_test.iml" group="Main" />
     </modules>
   </component>
