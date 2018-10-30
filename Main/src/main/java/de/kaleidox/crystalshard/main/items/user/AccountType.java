@@ -5,11 +5,11 @@ public enum AccountType {
     BOT("Bot "),
     WEBHOOK(null);
     private final String prefix;
-    
+
     AccountType(String prefix) {
         this.prefix = prefix;
     }
-    
+
     public String getPrefix() {
         return prefix;
     }

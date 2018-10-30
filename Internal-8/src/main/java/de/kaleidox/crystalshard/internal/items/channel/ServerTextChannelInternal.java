@@ -2,9 +2,9 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.CoreDelegate;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.main.Discord;
@@ -22,12 +22,8 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.helpers.ListHelper;
 import de.kaleidox.crystalshard.util.helpers.OptionalHelper;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,7 +44,8 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
         this.overrides = new ArrayList<>();
         updateData(data);
 
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
 
         instances.put(id, this);
     }
@@ -58,28 +55,39 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
 
-        if (isNsfw != data.path("nsfw").asBoolean(isNsfw)) {
-            isNsfw = data.get("nsfw").asBoolean();
+        if (isNsfw != data.path("nsfw")
+                .asBoolean(isNsfw)) {
+            isNsfw = data.get("nsfw")
+                    .asBoolean();
             traits.add(NSFW_FLAG);
         }
-        if (topic == null || !topic.equals(data.path("topic").asText(topic))) {
-            topic = data.get("topic").asText();
+        if (topic == null || !topic.equals(data.path("topic")
+                .asText(topic))) {
+            topic = data.get("topic")
+                    .asText();
             traits.add(TOPIC);
         }
-        if (name == null || !name.equals(data.path("name").asText(name))) {
-            name = data.get("name").asText();
+        if (name == null || !name.equals(data.path("name")
+                .asText(name))) {
+            name = data.get("name")
+                    .asText();
             traits.add(NAME);
         }
         //noinspection ConstantConditions
         if (category == null || (this.category == null && data.has("parent_id"))) {
-            long parentId = data.path("parent_id").asLong(-1);
-            this.category = parentId == -1 ? null : discord.getChannelCache().getOrRequest(parentId, parentId).toChannelCategory().orElse(null);
+            long parentId = data.path("parent_id")
+                    .asLong(-1);
+            this.category = parentId == -1 ? null : discord.getChannelCache()
+                    .getOrRequest(parentId, parentId)
+                    .toChannelCategory()
+                    .orElse(null);
         } else //noinspection ConstantConditions
             if (this.category != null && !data.has("parent_id")) {
                 this.category = null;
             }
         List<PermissionOverride> overrides = new ArrayList<>();
-        data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
+        data.path("permission_overwrites")
+                .forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
         if (!ListHelper.equalContents(overrides, this.overrides)) {
             this.overrides.clear();
             this.overrides.addAll(overrides);
@@ -126,11 +134,13 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
                     "Cannot get channel invite!",
                     Permission.MANAGE_CHANNELS));
         WebRequest<Collection<MetaInvite>> request = CoreDelegate.webRequest(discord);
-        return request.method(Method.GET).endpoint(Endpoint.Location.CHANNEL_INVITE.toEndpoint(id)).execute(data -> {
-            List<MetaInvite> list = new ArrayList<>();
-            data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
-            return list;
-        });
+        return request.setMethod(HttpMethod.GET)
+                .setUri(DiscordEndpoint.CHANNEL_INVITE.createUri(id))
+                .executeAs(data -> {
+                    List<MetaInvite> list = new ArrayList<>();
+                    data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
+                    return list;
+                });
     }
 
     @Override
@@ -152,13 +162,19 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     public boolean hasPermission(User user, Permission permission) {
         return OptionalHelper.or(overrides.stream()
                 .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent().equals(user))
-                .map(override -> override.getAllowed().contains(permission))
-                .findAny(), () -> OptionalHelper.or(this.getCategory().flatMap(channelCategory -> channelCategory.getPermissionOverrides()
-                .stream()
-                .filter(override -> override.getParent() != null)
-                .filter(override -> override.getParent().equals(user))
-                .findAny()).map(override -> override.getAllowed().contains(permission)), () -> Optional.of(toServerChannel().map(ServerChannel::getServer)
+                .filter(override -> override.getParent()
+                        .equals(user))
+                .map(override -> override.getAllowed()
+                        .contains(permission))
+                .findAny(), () -> OptionalHelper.or(this.getCategory()
+                .flatMap(channelCategory -> channelCategory.getPermissionOverrides()
+                        .stream()
+                        .filter(override -> override.getParent() != null)
+                        .filter(override -> override.getParent()
+                                .equals(user))
+                        .findAny())
+                .map(override -> override.getAllowed()
+                        .contains(permission)), () -> Optional.of(toServerChannel().map(ServerChannel::getServer)
                 .orElseThrow(AssertionError::new)
                 .getEveryoneRole()
                 .getPermissions()

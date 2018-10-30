@@ -4,8 +4,8 @@ public class Choice<T> {
     private final String emojiRepresentation;
     private final String name;
     private final String description;
-    private final T      value;
-    
+    private final T value;
+
     public Choice(String emojiRepresentation, String name, String description, T value) {
         this.emojiRepresentation = emojiRepresentation;
         this.name = name;
@@ -16,15 +16,15 @@ public class Choice<T> {
     public String getEmojiRepresentation() {
         return emojiRepresentation;
     }
-    
+
     public String getDescription() {
         return description;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public T getValue() {
         return value;
     }

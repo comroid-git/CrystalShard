@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class DialogueEndpoint extends DialogueBranch<Void> {
     private final Consumer<List<NamedItem>> responsesConsumer;
-    
+
     /**
      * Creates a new DialogueEndpoint object.
      *
@@ -26,7 +26,7 @@ public class DialogueEndpoint extends DialogueBranch<Void> {
         super(null);
         this.responsesConsumer = responsesConsumer;
     }
-    
+
     // Override Methods
     @Override
     protected CompletableFuture<Void> runEndpoint(List<NamedItem> collectedItems) {

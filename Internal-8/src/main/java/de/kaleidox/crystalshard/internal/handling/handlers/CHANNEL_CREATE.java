@@ -15,11 +15,14 @@ public class CHANNEL_CREATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Channel channel = discord.getChannelCache().getOrCreate(discord, data);
-        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
-        
+        Channel channel = discord.getChannelCache()
+                .getOrCreate(discord, data);
+        Server server = channel.toServerChannel()
+                .map(ServerChannel::getServer)
+                .orElse(null);
+
         ChannelCreateEventInternal fireEvent = new ChannelCreateEventInternal(discord, channel);
-        
+
         collectListeners(ChannelCreateListener.class, discord, server).forEach(listener -> listener.onChannelCreate(fireEvent));
     }
 }

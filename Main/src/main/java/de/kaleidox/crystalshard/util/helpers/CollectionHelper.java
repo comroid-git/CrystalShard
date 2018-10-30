@@ -12,7 +12,7 @@ public class CollectionHelper extends NullHelper {
         }
         return collection;
     }
-    
+
     static void nullChecks(Collection<?>... lists) {
         for (Collection<?> x : lists) {
             Objects.requireNonNull(x);

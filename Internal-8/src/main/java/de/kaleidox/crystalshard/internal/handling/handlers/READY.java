@@ -8,6 +8,7 @@ public class READY extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        discord.getSelfFuture().complete(new SelfInternal(discord, data.get("user")));
+        discord.getSelfFuture()
+                .complete(new SelfInternal(discord, data.get("user")));
     }
 }

@@ -8,18 +8,21 @@ public enum ExplicitContentFilterLevel {
     MEMBERS_WITHOUT_ROLES(1),
     ALL_MEMBERS(2);
     private final int id;
-    
+
     ExplicitContentFilterLevel(int id) {
         this.id = id;
     }
-    
-    public int getId() {
-        return id;
-    }
-    
+
     // Static members
     // Static membe
     public static ExplicitContentFilterLevel getFromId(int id) {
-        return Stream.of(values()).filter(level -> level.id == id).findAny().orElse(UNKNOWN);
+        return Stream.of(values())
+                .filter(level -> level.id == id)
+                .findAny()
+                .orElse(UNKNOWN);
+    }
+
+    public int getId() {
+        return id;
     }
 }

@@ -9,23 +9,23 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class ServerCreateEventInternal extends EventBase implements ServerCreateEvent {
     private final Server server;
-    
+
     public ServerCreateEventInternal(DiscordInternal discordInternal, Server server) {
         super(discordInternal);
         this.server = server;
     }
-    
+
     // Override Methods
     @Override
     public ServerMember getOwner() {
         return server.getOwner();
     }
-    
+
     @Override
     public Server getServer() {
         return server;
     }
-    
+
     @Override
     public Discord getDiscord() {
         return super.getDiscord();

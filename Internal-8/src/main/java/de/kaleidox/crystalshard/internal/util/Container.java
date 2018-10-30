@@ -4,7 +4,7 @@ import de.kaleidox.crystalshard.main.util.FileContainer;
 import de.kaleidox.crystalshard.util.FileType;
 
 import javax.imageio.ImageIO;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,11 +15,7 @@ import java.util.Base64;
 public class Container implements FileContainer {
     public Container(File file) {
     }
-    
-    public String getFullName() {
-        return null;
-    }
-    
+
     public static String encodeBase64(File image, FileType type, Dimension res) {
         if (!type.isType(image)) throw new IllegalArgumentException("Only " + type + " type files accepted!");
         try {
@@ -30,7 +26,7 @@ public class Container implements FileContainer {
             throw new NullPointerException("Image could not be read: " + e.getMessage());
         }
     }
-    
+
     private static String encodeFileToBase64Binary(File file) {
         String encodedFile;
         try {
@@ -40,10 +36,15 @@ public class Container implements FileContainer {
             int read = fileInputStreamReader.read(bytes);
             if (read > 7500000) // keep 500 kb free
                 throw new IllegalArgumentException("File is too big!");
-            encodedFile = new String(Base64.getEncoder().encode(bytes), StandardCharsets.UTF_8);
+            encodedFile = new String(Base64.getEncoder()
+                    .encode(bytes), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new NullPointerException("Error encoding file; " + e.getMessage());
         }
         return encodedFile;
+    }
+
+    public String getFullName() {
+        return null;
     }
 }

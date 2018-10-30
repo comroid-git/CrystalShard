@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

@@ -14,11 +14,13 @@ public class GUILD_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Server server = discord.getServerCache().getOrCreate(discord, data);
-        
+        Server server = discord.getServerCache()
+                .getOrCreate(discord, data);
+
         Set<EditTrait<Server>> editTraits = ((ServerInternal) server).updateData(data);
         ServerEditEventInternal event = new ServerEditEventInternal(discord, server, editTraits);
-        
-        collectListeners(ServerEditListener.class, discord, server).forEach(listener -> discord.getThreadPool().execute(() -> listener.onServerEdit(event)));
+
+        collectListeners(ServerEditListener.class, discord, server).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onServerEdit(event)));
     }
 }

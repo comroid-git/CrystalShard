@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
  * null.
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
-public @interface Nullable { }
+public @interface Nullable {
+}

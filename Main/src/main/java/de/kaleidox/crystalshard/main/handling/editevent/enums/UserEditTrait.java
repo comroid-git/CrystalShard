@@ -10,6 +10,6 @@ public enum UserEditTrait implements EditTrait<User> {
     MFA_STATE,
     LOCALE,
     VERIFIED_STATE, // requires OAuth Scope: email
-    
+
     EMAIL // requires OAuth2 Scope: email
 }

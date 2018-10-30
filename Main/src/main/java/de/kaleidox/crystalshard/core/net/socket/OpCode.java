@@ -8,57 +8,57 @@ public enum OpCode {
      * Dispatches an listener.
      */
     DISPATCH(0),
-    
+
     /**
      * Used for ping checking.
      */
     HEARTBEAT(1),
-    
+
     /**
      * Used for client handshake.
      */
     IDENTIFY(2),
-    
+
     /**
      * Used to update the client status.
      */
     STATUS_UPDATE(3),
-    
+
     /**
      * Used to join/move/leave voice channels.
      */
     VOICE_STATE_UPDATE(4),
-    
+
     /**
      * Used for voice ping checking.
      */
     VOICE_SERVER_PING(5),
-    
+
     /**
      * Used to resume a closed connection.
      */
     RESUME(6),
-    
+
     /**
      * Used to tell clients to reconnect to the gateway.
      */
     RECONNECT(7),
-    
+
     /**
      * Used to request guild members.
      */
     REQUEST_GUILD_MEMBERS(8),
-    
+
     /**
      * Used to notify client they have an invalid session id.
      */
     INVALID_SESSION(9),
-    
+
     /**
      * Sent immediately after connecting, contains heartbeat and server debug information.
      */
     HELLO(10),
-    
+
     /**
      * Sent immediately following a client heartbeat that was received.
      */
@@ -67,7 +67,7 @@ public enum OpCode {
      * The actual numeric code.
      */
     private final int code;
-    
+
     /**
      * Creates a new gateway opcode.
      *
@@ -76,13 +76,21 @@ public enum OpCode {
     OpCode(int code) {
         this.code = code;
     }
-    
+
+    // Static members
+    // Static membe
+    public static Optional<OpCode> getByCode(int code) {
+        return Stream.of(values())
+                .filter(opCode -> opCode.code == code)
+                .findAny();
+    }
+
     // Override Methods
     @Override
     public String toString() {
         return this.name() + "(" + code + ")";
     }
-    
+
     /**
      * Gets the actual numeric code.
      *
@@ -90,11 +98,5 @@ public enum OpCode {
      */
     public int getCode() {
         return code;
-    }
-    
-    // Static members
-    // Static membe
-    public static Optional<OpCode> getByCode(int code) {
-        return Stream.of(values()).filter(opCode -> opCode.code == code).findAny();
     }
 }

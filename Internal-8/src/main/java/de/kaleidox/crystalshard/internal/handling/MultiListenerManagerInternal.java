@@ -11,28 +11,28 @@ public class MultiListenerManagerInternal<T extends Listener> implements Listene
     private MultiListenerManagerInternal(DiscordInternal discord, T listener) {
         // todo
     }
-    
+
     // Override Methods
     @Override
     public Discord getDiscord() {
         return null;
     }
-    
+
     @Override
     public T getListener() {
         return null;
     }
-    
+
     @Override
     public ListenerManager<T> detachNow() {
         return null;
     }
-    
+
     @Override
     public ListenerManager<T> detachIn(long time, TimeUnit unit) {
         return null;
     }
-    
+
     @Override
     public ListenerManager<T> onDetach(Runnable runnable) {
         return null;

@@ -12,17 +12,25 @@ public enum LogicalOperator {
     NOT("not"),
     XOR("xor");
     String name;
-    
+
     LogicalOperator(String name) {
         this.name = name;
     }
-    
+
+    // Static members
+    // Static membe
+    public static Optional<LogicalOperator> find(String tag) {
+        return Stream.of(values())
+                .filter(lo -> lo.name.equalsIgnoreCase(tag))
+                .findAny();
+    }
+
     // Override Methods
     @Override
     public String toString() {
         return "LogicalOperator (" + name + ")";
     }
-    
+
     public boolean test(Stream<Boolean> booleans) {
         if (this == UNKNOWN) throw new NullPointerException();
         switch (this) {
@@ -31,25 +39,21 @@ public enum LogicalOperator {
             case OR:
                 return booleans.anyMatch(b -> b);
             case XOR:
-                return booleans.filter(b -> b).count() > 1;
+                return booleans.filter(b -> b)
+                        .count() > 1;
             case NOT:
                 return booleans.noneMatch(b -> b);
             default:
                 return false;
         }
     }
-    
+
     public <T> boolean test(Predicate<T> predicate, Collection<T> collection) {
-        return test(collection.stream().map(predicate::test));
+        return test(collection.stream()
+                .map(predicate::test));
     }
-    
+
     public String getName() {
         return name;
-    }
-    
-    // Static members
-    // Static membe
-    public static Optional<LogicalOperator> find(String tag) {
-        return Stream.of(values()).filter(lo -> lo.name.equalsIgnoreCase(tag)).findAny();
     }
 }

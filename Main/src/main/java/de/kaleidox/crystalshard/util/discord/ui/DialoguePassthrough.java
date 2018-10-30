@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 public class DialoguePassthrough<A> extends DialogueBranch<A> {
     private final Consumer<List<NamedItem>> responsesConsumer;
-    
+
     /**
      * Creates a new DialogueEndpoint object.
      *
@@ -21,9 +21,9 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
         super(questionElement);
         this.responsesConsumer = responsesConsumer;
     }
-    
+
     // Override Methods
-    
+
     /**
      * Adds a new handling possibility to the current branch.
      *
@@ -36,7 +36,7 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
     public <B> DialoguePassthrough<A> addOption(Predicate<A> tester, DialogueBranch<B> followingBranch) {
         return addOption(new Option<B>(tester, this, followingBranch));
     }
-    
+
     /**
      * Adds a new handling possibility to the current branch.
      *
@@ -47,10 +47,10 @@ public class DialoguePassthrough<A> extends DialogueBranch<A> {
     @Override
     public <B> DialoguePassthrough<A> addOption(Option<B> option) {
         options.add(option);
-        
+
         return this;
     }
-    
+
     @Override
     protected CompletableFuture<Void> runPassthrough(List<NamedItem> collectedItems) {
         return CompletableFuture.supplyAsync(() -> {

@@ -2,10 +2,9 @@ package de.kaleidox.crystalshard.core.net.socket;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.core.net.request.WebRequestImpl;
+import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
+import de.kaleidox.crystalshard.core.net.request.HttpMethod;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
@@ -19,32 +18,39 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class WebSocketClientImpl implements WebSocketClient {
-    private static final Logger         logger        = new Logger(WebSocketClient.class);
-    private static final HttpClient     CLIENT        = HttpClient.newHttpClient();
-    private final        Discord        discord;
-    private final        WebSocket      webSocket;
-    private final        AtomicLong     lastPacket    = new AtomicLong(0);
-    private final        AtomicLong     lastHeartbeat = new AtomicLong(0);
-    private final        ThreadPoolImpl threadPool;
-    
+    private static final Logger logger = new Logger(WebSocketClient.class);
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    private final Discord discord;
+    private final WebSocket webSocket;
+    private final AtomicLong lastPacket = new AtomicLong(0);
+    private final AtomicLong lastHeartbeat = new AtomicLong(0);
+    private final ThreadPoolImpl threadPool;
+
     public WebSocketClientImpl(Discord discordObject) {
-        URI gatewayUrl = new WebRequestImpl<String>(discordObject).method(Method.GET).endpoint(Endpoint.Location.GATEWAY.toEndpoint()).execute(node -> node.get(
-                "url").asText()).exceptionally(throwable -> {
-            logger.exception(throwable);
-            return "wss://gateway.discord.gg"; // default
-            // gateway if gateway couldn't be retrieved
-        }).thenApply(URI::create).join();
+        URI gatewayUrl = new DiscordRequestImpl<String>(discordObject).setMethod(HttpMethod.GET)
+                .setUri(DiscordEndpoint.GATEWAY.createUri())
+                .executeAs(node -> node.get(
+                        "url")
+                        .asText())
+                .exceptionally(throwable -> {
+                    logger.exception(throwable);
+                    return "wss://gateway.discord.gg"; // default
+                    // gateway if gateway couldn't be retrieved
+                })
+                .thenApply(URI::create)
+                .join();
         this.threadPool = new ThreadPoolImpl(discordObject, 1, "WebSocketClient");
         this.discord = discordObject;
         this.webSocket = CLIENT.newWebSocketBuilder()
                 .header("Authorization", discordObject.getPrefixedToken())
                 .buildAsync(gatewayUrl,
-                            new WebSocketListener(discordObject))
+                        new WebSocketListener(discordObject))
                 .join();
         identification();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
+        Runtime.getRuntime()
+                .addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
-    
+
     public CompletableFuture<Void> sendPayload(Payload payload) {
         assert payload != null : "Payload must not be null!";
         CompletableFuture<WebSocket> future = new CompletableFuture<>();
@@ -77,24 +83,24 @@ public class WebSocketClientImpl implements WebSocketClient {
         });
         return future.thenApply(n -> null);
     }
-    
+
     private void identification() {
         ObjectNode data = JsonHelper.objectNode("properties",
-                                                JsonHelper.objectNode("$os",
-                                                                      JsonHelper.nodeOf(System.getProperty("os.name")),
-                                                                      "$browser",
-                                                                      JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
-                                                                      "$device",
-                                                                      JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
+                JsonHelper.objectNode("$os",
+                        JsonHelper.nodeOf(System.getProperty("os.name")),
+                        "$browser",
+                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
+                        "$device",
+                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
         sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
     }
-    
+
     public void heartbeat() {
         Payload payload = Payload.create(OpCode.HEARTBEAT, JsonHelper.nodeOf(null));
         sendPayload(payload);
         lastHeartbeat.set(System.currentTimeMillis());
     }
-    
+
     public boolean respondToHeartbeat() {
         if (lastHeartbeat.get() < System.currentTimeMillis() - 4000) {
             return true;

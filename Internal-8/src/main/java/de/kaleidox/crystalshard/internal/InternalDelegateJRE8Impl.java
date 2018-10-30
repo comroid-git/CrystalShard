@@ -2,12 +2,7 @@ package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
-import de.kaleidox.crystalshard.internal.items.channel.GroupChannelInternal;
-import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
-import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
+import de.kaleidox.crystalshard.internal.items.channel.*;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
@@ -21,11 +16,7 @@ import de.kaleidox.crystalshard.internal.items.server.emoji.UnicodeEmojiInternal
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
-import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.main.items.channel.*;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -45,7 +36,7 @@ import java.util.Hashtable;
 
 public class InternalDelegateJRE8Impl extends InternalDelegate {
     private final static Hashtable<Class, Class> implementations;
-    
+
     static {
         implementations = new Hashtable<>();
         implementations.put(ServerTextChannel.class, ServerTextChannelInternal.class);
@@ -76,7 +67,7 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
         implementations.put(Invite.class, InviteInternal.class);
         implementations.put(SentEmbed.class, SentEmbedInternal.class);
     }
-    
+
     @SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
     @Override
     protected <T> T makeInstance(Class<T> tClass, Object... args) {
@@ -87,7 +78,9 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
         try {
             return (T) implementations.entrySet()
                     .stream()
-                    .filter(entry -> entry.getKey().getName().equalsIgnoreCase(tClass.getName()))
+                    .filter(entry -> entry.getKey()
+                            .getName()
+                            .equalsIgnoreCase(tClass.getName()))
                     .findAny()
                     .orElseThrow(() -> new IllegalStateException("No override found for class: " + tClass.getName()))
                     .getValue()
@@ -99,10 +92,10 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
             throw new IllegalStateException("No constructor found for argument types: " + Arrays.toString(types));
         }
     }
-    
+
     @Override
     protected void tryHandleDelegate(Discord discord, JsonNode data) {
         HandlerBase.tryHandle((DiscordInternal) discord, data);
-        
+
     }
 }

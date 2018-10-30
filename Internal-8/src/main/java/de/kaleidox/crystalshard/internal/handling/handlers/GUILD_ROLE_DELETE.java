@@ -11,14 +11,18 @@ import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 public class GUILD_ROLE_DELETE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id").asLong();
-        long roleId = data.get("role_id").asLong();
-        ServerInternal server = (ServerInternal) discord.getServerCache().getOrRequest(serverId, serverId);
-        RoleInternal role = (RoleInternal) discord.getRoleCache().getOrRequest(roleId, IDPair.of(serverId, roleId));
-        
+        long serverId = data.get("guild_id")
+                .asLong();
+        long roleId = data.get("role_id")
+                .asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        RoleInternal role = (RoleInternal) discord.getRoleCache()
+                .getOrRequest(roleId, IDPair.of(serverId, roleId));
+
         server.removeRole(role);
         RoleDeleteEventInternal event = new RoleDeleteEventInternal(discord, role, server);
-        
+
         collectListeners(ServerRoleDeleteListener.class, discord, server, role).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onRoleDelete(event)));
     }

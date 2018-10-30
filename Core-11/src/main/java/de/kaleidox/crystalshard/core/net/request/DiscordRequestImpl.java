@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 import de.kaleidox.crystalshard.util.objects.CompletableFutureExtended;
+
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -22,7 +23,7 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
 
     @Override
     public String toString() {
-        return "DiscordRequest -> "+uri.toString();
+        return "DiscordRequest -> " + uri.toString();
     }
 
     @Override
@@ -71,7 +72,9 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
                     default: // Anything else
                         JsonNode responseNode = JsonHelper.parse(responseBody);
                         logger.traceElseInfo(
-                                "{" + statusCode + ":" + responseNode.get("code").asText() + ":\"" + responseNode.get("message").asText() + "\"} " +
+                                "{" + statusCode + ":" + responseNode.get("code")
+                                        .asText() + ":\"" + responseNode.get("message")
+                                        .asText() + "\"} " +
                                         (unknown ? "Recieved unknown status code from Discord" + " " + "with responseBody: " + responseBody :
                                                 "Untreated code recieved with body: " + responseBody), "Recieved unknown status code: " + statusCode);
                         future.completeExceptionally(new DiscordResponseException(

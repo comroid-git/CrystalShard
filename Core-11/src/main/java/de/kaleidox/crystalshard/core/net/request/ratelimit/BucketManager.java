@@ -19,24 +19,24 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 class BucketManager {
-    private final static Logger                        logger = new Logger(BucketManager.class);
+    private final static Logger logger = new Logger(BucketManager.class);
     @SuppressWarnings("ALL")
-    private final        Discord                       discord;
-    private final        RatelimiterImpl               ratelimiterImpl;
-    private final        ConcurrentLinkedQueue<Bucket> bucketQueue;
-    private final        ThreadPoolImpl                atomicPool;
-    private final        LivingInt                     globalRatelimit;
-    
+    private final Discord discord;
+    private final RatelimiterImpl ratelimiterImpl;
+    private final ConcurrentLinkedQueue<Bucket> bucketQueue;
+    private final ThreadPoolImpl atomicPool;
+    private final LivingInt globalRatelimit;
+
     BucketManager(Discord discord, RatelimiterImpl ratelimiterImpl) {
         this.discord = discord;
         this.ratelimiterImpl = ratelimiterImpl;
         this.bucketQueue = new ConcurrentLinkedQueue<>();
         this.atomicPool = new ThreadPoolImpl(discord, 1, "BucketManager");
         this.globalRatelimit = new LivingInt(0, 0, -1, 20, TimeUnit.MILLISECONDS);
-        
+
         cycle();
     }
-    
+
     private void cycle() {
         atomicPool.execute(() -> {
             synchronized (bucketQueue) {
@@ -59,7 +59,7 @@ class BucketManager {
             }
         });
     }
-    
+
     void schedule(RequestURI discordRequestURI, Runnable requestExecution) {
         synchronized (bucketQueue) {
             try {
@@ -81,29 +81,35 @@ class BucketManager {
             }
         }
     }
-    
+
     private class Bucket {
         private ConcurrentHashMap<RequestURI, Runnable[]> requests;
-        
+
         Bucket() {
             this.requests = new ConcurrentHashMap<>();
         }
-        
+
         // Override Methods
         @Override
         public String toString() {
             int numEndpoints = requests.size();
-            int numRequests = requests.entrySet().stream().map(Map.Entry::getValue).mapToInt(arr -> arr.length).sum();
+            int numRequests = requests.entrySet()
+                    .stream()
+                    .map(Map.Entry::getValue)
+                    .mapToInt(arr -> arr.length)
+                    .sum();
             return "Bucket [" + numEndpoints + " Endpoint" + (numEndpoints == 1 ? "" : "s") + ", " + numRequests + " Requests]";
         }
-        
+
         boolean canAccept(RequestURI discordRequestURI) {
-            return (MapHelper.countKeyOccurrences(requests, discordRequestURI) < ratelimiterImpl.getLimit(discordRequestURI).get());
+            return (MapHelper.countKeyOccurrences(requests, discordRequestURI) < ratelimiterImpl.getLimit(discordRequestURI)
+                    .get());
         }
-        
+
         void addRequest(RequestURI discordRequestURI, Runnable requestExecution) throws LimitExceededException {
             synchronized (bucketQueue) {
-                if (!MapHelper.containsKey(requests, discordRequestURI)) requests.put(discordRequestURI, new Runnable[0]);
+                if (!MapHelper.containsKey(requests, discordRequestURI))
+                    requests.put(discordRequestURI, new Runnable[0]);
                 Runnable[] getOrDefault = MapHelper.getEquals(requests, discordRequestURI, null); // null because value will never be absent
                 AtomicInteger limit = ratelimiterImpl.getLimit(discordRequestURI);
                 AtomicInteger remaining = ratelimiterImpl.getRemaining(discordRequestURI);
@@ -113,7 +119,7 @@ class BucketManager {
                 remaining.decrementAndGet();
             }
         }
-        
+
         void runAll() {
             globalRatelimit.change(requests.size());
             requests.forEach((endpoint, runnables) -> {
@@ -131,42 +137,59 @@ class BucketManager {
                 requests.clear();
             }
         }
-        
+
         boolean canRun() {
-            if (globalRatelimit.get() + requests.size() >= 50) return false; // false if global ratelimit counter would be over 50
+            if (globalRatelimit.get() + requests.size() >= 50)
+                return false; // false if global ratelimit counter would be over 50
             int trueC = 0;
-            
-            for (RequestURI end : requests.entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toList())) {
-                final int remaining = ratelimiterImpl.getRemaining(end).get();
-                final int limit = ratelimiterImpl.getLimit(end).get();
-                final Instant reset = ratelimiterImpl.getReset(end).get();
-                
+
+            for (RequestURI end : requests.entrySet()
+                    .stream()
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList())) {
+                final int remaining = ratelimiterImpl.getRemaining(end)
+                        .get();
+                final int limit = ratelimiterImpl.getLimit(end)
+                        .get();
+                final Instant reset = ratelimiterImpl.getReset(end)
+                        .get();
+
                 if (remaining == 0) {
                     if (reset.isBefore(Instant.now())) {
                         trueC++;
                     }
-                } else if ((remaining + requests.entrySet().stream().map(Map.Entry::getKey).map(RequestURI::getAppendix).mapToInt(a -> 1).sum()) < limit) {
+                } else if ((remaining + requests.entrySet()
+                        .stream()
+                        .map(Map.Entry::getKey)
+                        .map(RequestURI::getAppendix)
+                        .mapToInt(a -> 1)
+                        .sum()) < limit) {
                     trueC++;
                 }
             }
-            
+
             return trueC == requests.size();
         }
-        
+
         long waitDuration() {
             long val = 0;
             for (Map.Entry<RequestURI, Runnable[]> endpointEntry : requests.entrySet()) {
-                Instant reset = ratelimiterImpl.getReset(endpointEntry.getKey()).get();
+                Instant reset = ratelimiterImpl.getReset(endpointEntry.getKey())
+                        .get();
                 long calc = TimeUnit.SECONDS.toMillis(reset.getEpochSecond()) + TimeUnit.NANOSECONDS.toMillis(reset.getNano());
                 if (calc > val) val = calc;
             }
             return val;
         }
-        
+
         private int numberRequests(DiscordRequestURI discordRequestURI) {
-            return requests.entrySet().stream().filter(entry -> ((DiscordRequestURI) entry.getKey()).sameRatelimit(discordRequestURI)).mapToInt(entry -> entry.getValue().length).sum();
+            return requests.entrySet()
+                    .stream()
+                    .filter(entry -> ((DiscordRequestURI) entry.getKey()).sameRatelimit(discordRequestURI))
+                    .mapToInt(entry -> entry.getValue().length)
+                    .sum();
         }
-        
+
         private Runnable[] addToArray(Runnable[] arr, Runnable add) {
             Runnable[] putArr = new Runnable[arr.length + 1];
             System.arraycopy(arr, 0, putArr, 0, arr.length);

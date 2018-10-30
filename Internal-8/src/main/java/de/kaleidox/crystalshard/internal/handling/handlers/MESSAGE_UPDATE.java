@@ -25,12 +25,16 @@ public class MESSAGE_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        MessageInternal message = (MessageInternal) discord.getMessageCache().getOrCreate(discord, data);
+        MessageInternal message = (MessageInternal) discord.getMessageCache()
+                .getOrCreate(discord, data);
         TextChannel channel = message.getChannel();
-        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
-        User user = message.getAuthorAsUser().orElse(null);
+        Server server = channel.toServerChannel()
+                .map(ServerChannel::getServer)
+                .orElse(null);
+        User user = message.getAuthorAsUser()
+                .orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
-        
+
         List<SentEmbed> embeds = message.getEmbeds();
         SentEmbed prevEmbed = (embeds.isEmpty() ? null : embeds.get(0));
         String prevContent = message.getContent();
@@ -38,15 +42,16 @@ public class MESSAGE_UPDATE extends HandlerBase {
         if (message.isPinned()) {
             ((TextChannelInternal) channel).updatePinned(message);
         }
-        
+
         MessageEditEventInternal event = new MessageEditEventInternal(discord, message, traits, prevContent, prevEmbed);
-        
+
         collectListeners(MessageEditListener.class,
-                         discord,
-                         server,
-                         channel,
-                         user,
-                         new RoleContainer(roles),
-                         message).forEach(listener -> discord.getThreadPool().execute(() -> listener.onMessageEdit(event)));
+                discord,
+                server,
+                channel,
+                user,
+                new RoleContainer(roles),
+                message).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onMessageEdit(event)));
     }
 }

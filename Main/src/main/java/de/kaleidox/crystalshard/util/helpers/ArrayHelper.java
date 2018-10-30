@@ -7,7 +7,7 @@ public class ArrayHelper extends CollectionHelper {
         // A null array is less than a non-null array
         if (a == null || b == null)
             return a == null ? -1 : 1;
-    
+
         int length = Math.min(a.length, b.length);
         for (int i = 0; i < length; i++) {
             T oa = a[i];
@@ -22,7 +22,7 @@ public class ArrayHelper extends CollectionHelper {
                 }
             }
         }
-    
+
         return a.length - b.length;
     }
 }

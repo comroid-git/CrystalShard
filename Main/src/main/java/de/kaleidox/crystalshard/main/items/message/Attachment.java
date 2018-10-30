@@ -1,3 +1,4 @@
 package de.kaleidox.crystalshard.main.items.message;
 
-public interface Attachment { }
+public interface Attachment {
+}

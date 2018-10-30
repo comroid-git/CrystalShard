@@ -6,7 +6,7 @@ import de.kaleidox.crystalshard.util.helpers.JsonHelper;
 
 public interface JsonNodeable {
     JsonNode toJsonNode(ObjectNode baseNode);
-    
+
     default JsonNode toJsonNode() {
         return toJsonNode(JsonHelper.objectNode());
     }

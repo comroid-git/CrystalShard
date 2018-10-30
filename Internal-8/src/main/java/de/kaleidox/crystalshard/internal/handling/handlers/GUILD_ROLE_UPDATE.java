@@ -16,13 +16,16 @@ public class GUILD_ROLE_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id").asLong();
-        ServerInternal server = (ServerInternal) discord.getServerCache().getOrRequest(serverId, serverId);
-        RoleInternal role = (RoleInternal) discord.getRoleCache().getOrCreate(discord, server, data);
-        
+        long serverId = data.get("guild_id")
+                .asLong();
+        ServerInternal server = (ServerInternal) discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        RoleInternal role = (RoleInternal) discord.getRoleCache()
+                .getOrCreate(discord, server, data);
+
         Set<EditTrait<Role>> traits = new HashSet<>(role.updateData(data.get("role")));
         RoleEditEventInternal event = new RoleEditEventInternal(discord, server, role, traits);
-        
+
         collectListeners(ServerRoleEditListener.class, discord, server, role).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onRoleEdit(event)));
     }

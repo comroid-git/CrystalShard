@@ -27,143 +27,143 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     MultiShard(List<Discord> loggedIn) {
         super(loggedIn);
     }
-    
+
     // Override Methods
     @Override
     public String getPrefixedToken() {
         return get(0).getPrefixedToken();
     }
-    
+
     @Override
     public boolean initFinished() {
         return false;
     }
-    
+
     @Override
     public int getShardId() {
         throw new IllegalStateException("Can not get the shard id of several shards!");
     }
-    
+
     @Override
     public int getShards() {
         return get(0).getShards();
     }
-    
+
     @Override
     public DiscordUtils getUtilities() {
         return null;
     }
-    
+
     @Override
     public Optional<Channel> getChannelById(long id) {
         return Optional.empty();
     }
-    
+
     @Override
     public Optional<User> getUserById(long id) {
         return Optional.empty();
     }
-    
+
     @Override
     public Self getSelf() {
         return null;
     }
-    
+
     @Override
     public Optional<Server> getServerById(long id) {
         return Optional.empty();
     }
-    
+
     @Override
     public Executor getExecutor() {
         return null;
     }
-    
+
     @Override
     public ThreadPool getThreadPool() {
         return null;
     }
-    
+
     @Override
     public WebSocketClient getWebSocket() {
         return null;
     }
-    
+
     @Override
     public Ratelimiter getRatelimiter() {
         return null;
     }
-    
+
     @Override
     public Collection<Server> getServers() {
         return null;
     }
-    
+
     @Override
     public Collection<User> getUsers() {
         return null;
     }
-    
+
     @Override
     public int getServerCount() {
         return 0;
     }
-    
+
     @Override
     public int getUserCount() {
         return 0;
     }
-    
+
     @Override
     public Cache<Server, Long, Long> getServerCache() {
         return null;
     }
-    
+
     @Override
     public Cache<Message, Long, IDPair> getMessageCache() {
         return null;
     }
-    
+
     @Override
     public Cache<CustomEmoji, Long, IDPair> getEmojiCache() {
         return null;
     }
-    
+
     @Override
     public Cache<Channel, Long, Long> getChannelCache() {
         return null;
     }
-    
+
     @Override
     public Cache<User, Long, Long> getUserCache() {
         return null;
     }
-    
+
     @Override
     public Cache<Role, Long, IDPair> getRoleCache() {
         return null;
     }
-    
+
     @Override
     public long getId() {
         return 0;
     }
-    
+
     @Override
     public Discord getDiscord() {
         return null;
     }
-    
+
     @Override
     public <C extends DiscordAttachableListener> ListenerManager<C> attachListener(C listener) {
         return null;
     }
-    
+
     @Override
     public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
         return null;
     }
-    
+
     @Override
     public Collection<DiscordAttachableListener> getAttachedListeners() {
         return null;

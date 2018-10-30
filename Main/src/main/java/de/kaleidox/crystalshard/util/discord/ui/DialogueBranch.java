@@ -20,10 +20,10 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess", "unused"})
 public class DialogueBranch<A> extends Dialogue {
-    final         ResponseElement<A> questionElement;
-    final         ArrayList<Option>  options;
-    private final Dialogue           previousBranch;
-    
+    final ResponseElement<A> questionElement;
+    final ArrayList<Option> options;
+    private final Dialogue previousBranch;
+
     /**
      * Creates a new DialogueBranch without a parent branch.
      *
@@ -32,7 +32,7 @@ public class DialogueBranch<A> extends Dialogue {
     public DialogueBranch(ResponseElement<A> questionElement) {
         this(null, questionElement);
     }
-    
+
     /**
      * Creates a new DialogueBranch with a parent branch.
      *
@@ -42,10 +42,10 @@ public class DialogueBranch<A> extends Dialogue {
     public DialogueBranch(Dialogue previousBranch, ResponseElement<A> questionElement) {
         this.previousBranch = previousBranch;
         this.questionElement = questionElement;
-        
+
         this.options = new ArrayList<>();
     }
-    
+
     /**
      * Adds a new handling possibility to the current branch.
      *
@@ -57,7 +57,7 @@ public class DialogueBranch<A> extends Dialogue {
     public <B> DialogueBranch<A> addOption(Predicate<A> tester, DialogueBranch<B> followingBranch) {
         return addOption(new Option<>(tester, this, followingBranch));
     }
-    
+
     /**
      * Adds a new handling possibility to the current branch.
      *
@@ -67,46 +67,49 @@ public class DialogueBranch<A> extends Dialogue {
      */
     public <B> DialogueBranch<A> addOption(Option<B> option) {
         options.add(option);
-        
+
         return this;
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void start(List<NamedItem> collectedItems) throws NullPointerException {
-        questionElement.setParentBranch(this).build().thenAcceptAsync(response -> options.stream()
-                .filter(option -> ((Predicate<A>) option.tester).test(response.getItem()))
-                .map(Option::getGoToBranch)
-                .forEachOrdered(branch -> {
-                    collectedItems.add(response);
-                    if (branch.getClass() == DialogueEndpoint.class) {
-                        branch.runEndpoint(collectedItems);
-                    } else if (branch.getClass() == DialoguePassthrough.class) {
-                        branch.runPassthrough(collectedItems);
-                        branch.start(new ArrayList<>());
-                    } else {
-                        branch.start(collectedItems);
-                    }
-                })).exceptionally(Logger::handle);
+        questionElement.setParentBranch(this)
+                .build()
+                .thenAcceptAsync(response -> options.stream()
+                        .filter(option -> ((Predicate<A>) option.tester).test(response.getItem()))
+                        .map(Option::getGoToBranch)
+                        .forEachOrdered(branch -> {
+                            collectedItems.add(response);
+                            if (branch.getClass() == DialogueEndpoint.class) {
+                                branch.runEndpoint(collectedItems);
+                            } else if (branch.getClass() == DialoguePassthrough.class) {
+                                branch.runPassthrough(collectedItems);
+                                branch.start(new ArrayList<>());
+                            } else {
+                                branch.start(collectedItems);
+                            }
+                        }))
+                .exceptionally(Logger::handle);
     }
-    
+
     protected CompletableFuture<Void> runEndpoint(List<NamedItem> collectedItems) {
         throw new AbstractMethodError("Abstract method; used by DialogueEndpoint.");
     }
-    
+
     protected CompletableFuture<Void> runPassthrough(List<NamedItem> collectedItems) {
         throw new AbstractMethodError("Abstract method; used by DialoguePassthrough.");
     }
-    
+
     /**
      * This subclass represents an option of the result.
      *
      * @param <B> The type of the following branch.
      */
     public class Option<B> {
-        private final Predicate<A>      tester;
+        private final Predicate<A> tester;
         private final DialogueBranch<A> parentBranch;
         private final DialogueBranch<B> goToBranch;
-        
+
         /**
          * Creates a new option.
          *
@@ -119,15 +122,15 @@ public class DialogueBranch<A> extends Dialogue {
             this.parentBranch = parentBranch;
             this.goToBranch = goToBranch;
         }
-        
+
         public Predicate<A> getTester() {
             return tester;
         }
-        
+
         public DialogueBranch<A> getParentBranch() {
             return parentBranch;
         }
-        
+
         public DialogueBranch<B> getGoToBranch() {
             return goToBranch;
         }

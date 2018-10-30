@@ -3,29 +3,14 @@ package de.kaleidox.crystalshard.core.concurrent;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
-import de.kaleidox.crystalshard.util.objects.CompletableFutureExtended;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicMarkableReference;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * This class is the main concurrent implementation.
@@ -33,18 +18,18 @@ import java.util.function.Supplier;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.ThreadPool {
     // Static Fields
-    private final static Logger                                   logger               = new Logger(ThreadPoolImpl.class);
-    private final        ConcurrentHashMap<Worker, AtomicBoolean> threads;
-    private final        Discord                                  discord;
-    private final        int                                      maxSize;
-    private final        LinkedBlockingQueue<Task>                queue;
-    private final        AtomicInteger                            busyThreads          = new AtomicInteger(0);
-    private final        Factory                                  factory;
-    private              Executor                                 executor;
-    private              ScheduledExecutorService                 scheduler;
-    private              String                                   name;
-    private              List<Worker>                             factoriedThreads     = new ArrayList<>();
-    
+    private final static Logger logger = new Logger(ThreadPoolImpl.class);
+    private final ConcurrentHashMap<Worker, AtomicBoolean> threads;
+    private final Discord discord;
+    private final int maxSize;
+    private final LinkedBlockingQueue<Task> queue;
+    private final AtomicInteger busyThreads = new AtomicInteger(0);
+    private final Factory factory;
+    private Executor executor;
+    private ScheduledExecutorService scheduler;
+    private String name;
+    private List<Worker> factoriedThreads = new ArrayList<>();
+
     /**
      * Creates a new, unlimited ThreadPool for the specified discord object.
      *
@@ -54,10 +39,10 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         this(discord, -1, "CrystalShard Main Worker");
         this.executor = new BotOwn(this);
         this.scheduler = Executors.newSingleThreadScheduledExecutor(factory);
-        
+
         scheduler.scheduleAtFixedRate(this::cleanupThreads, 30, 30, TimeUnit.SECONDS);
     }
-    
+
     /**
      * Creates a new limited ThreadPool for the specified discord object.
      *
@@ -72,19 +57,31 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         this.queue = new LinkedBlockingQueue<>();
         this.name = name;
         this.factory = new Factory();
-        
+
         execute(() -> logger.deeptrace("New ThreadPool created: " + name));
     }
-    
+
+    /**
+     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
+     *
+     * @param task The task to check.
+     * @return Whether the task is most likely from an async stage.
+     */
+    private static boolean nonFutureTask(Runnable task) {
+        return !task.toString()
+                .toLowerCase()
+                .contains("future");
+    }
+
     @Override
     public Executor getExecutor() {
         return executor;
     }
-    
+
     public Discord getDiscord() {
         return discord;
     }
-    
+
     /**
      * This method is used internally to start heartbeating to discord. Do not call this method on your own.
      *
@@ -93,36 +90,38 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
     public void startHeartbeat(long heartbeat) {
         scheduler.scheduleAtFixedRate(() -> ((WebSocketClientImpl) discord.getWebSocket()).heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
     }
-    
+
     @Override
     public void execute(Runnable task, String... description) {
         synchronized (queue) {
             if (threads.size() < maxSize || maxSize == -1) {
-                if (busyThreads.get() <= queue.size()) factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
+                if (busyThreads.get() <= queue.size())
+                    factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
             }
             queue.add(new Task(task, description));
             queue.notify();
         }
     }
-    
+
     public ScheduledExecutorService getScheduler() {
         return scheduler;
     }
-    
+
     /**
      * Removes terminated Threads from the {@code factoriedThreads} list, and decrements the name counter for each thread.
      */
     void cleanupThreads() {
-        factoriedThreads.stream().filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
+        factoriedThreads.stream()
+                .filter(worker -> worker.getState() == Thread.State.TERMINATED) // only exited threads
                 .peek(Worker::interrupt) // interrupt the thread
                 .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one
                 // each thread
                 .forEach(factoriedThreads::remove); // remove the thread from the list
     }
-    
+
     public class Factory implements ThreadFactory {
         private final AtomicInteger nameCounter = new AtomicInteger(1);
-        
+
         // Override Methods
         @Override
         public Thread newThread(Runnable r) {
@@ -130,32 +129,38 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
             factoriedThreads.add(worker);
             return worker;
         }
-        
+
         /**
          * Checks if an older {@link Worker} threads is available, otherwise creates a new Worker thread and returns it.
          *
          * @return A {@link Worker} thread.
          */
         public Worker getOrCreateWorker() {
-            return threads.entrySet().stream().filter(entry -> !entry.getValue().get()).findFirst().map(Map.Entry::getKey).orElseGet(() -> {
-                WorkerImpl worker = new WorkerImpl(discord, nameCounter.getAndIncrement());
-                threads.put(worker, worker.isBusy);
-                //logger.deeptrace("New worker created: " + worker.getName());
-                if (!worker.isAlive()) {
-                    worker.start();
-                    //logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
-                }
-                return worker;
-            });
+            return threads.entrySet()
+                    .stream()
+                    .filter(entry -> !entry.getValue()
+                            .get())
+                    .findFirst()
+                    .map(Map.Entry::getKey)
+                    .orElseGet(() -> {
+                        WorkerImpl worker = new WorkerImpl(discord, nameCounter.getAndIncrement());
+                        threads.put(worker, worker.isBusy);
+                        //logger.deeptrace("New worker created: " + worker.getName());
+                        if (!worker.isAlive()) {
+                            worker.start();
+                            //logger.deeptrace("Worker Thread \"" + worker.getName() + "\" started!");
+                        }
+                        return worker;
+                    });
         }
     }
-    
+
     /**
      * This class represents an implementation of an executor interface to this current ThreadPool.
      */
     public class BotOwn implements Executor {
         private final ThreadPoolImpl pool;
-        
+
         /**
          * Creates a new executor instance.
          *
@@ -164,23 +169,23 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         BotOwn(ThreadPoolImpl pool) {
             this.pool = pool;
         }
-        
+
         // Override Methods
         @Override
         public void execute(Runnable command) {
             pool.execute(command);
         }
     }
-    
+
     /**
      * This class represents a bot-own worker thread.
      */
     public class WorkerImpl extends Worker {
-        private final Discord               discord;
+        private final Discord discord;
         private final AtomicMarkableReference<Task> nextTask = new AtomicMarkableReference<>(null, false);
-        private final AtomicBoolean                 isBusy;
-        private final boolean                       runnableAttachedThread;
-        
+        private final AtomicBoolean isBusy;
+        private final boolean runnableAttachedThread;
+
         /**
          * Creates a new {@link Worker} thread.
          *
@@ -193,14 +198,14 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
             this.isBusy = new AtomicBoolean(false);
             this.runnableAttachedThread = false;
         }
-    
+
         WorkerImpl(Runnable initTask, Discord discord, int id) {
             super(initTask, name == null ? ("Worker Thread #" + id) : name + " Thread" + (maxSize == 1 ? "" : " #" + id));
             this.discord = discord;
             this.isBusy = new AtomicBoolean(true);
             this.runnableAttachedThread = true;
         }
-        
+
         // Override Methods
         @Override
         public void run() {
@@ -243,7 +248,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
                 super.run();
             }
         }
-        
+
         /**
          * Attaches a new Runnable to this worker. This method should not be used for chaining tasks, but for attaching runnables to worker threads in the
          * {@code java.lang.Thread.State.RUNNABLE} state. For chaining tasks, use {@link #execute(Runnable, String...)} instead.
@@ -261,7 +266,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
                 }
             }
         }
-        
+
         /**
          * Gets the discord instance attached to the current worker thread.
          *
@@ -271,27 +276,27 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         public Discord getDiscord() {
             return discord;
         }
-        
+
         private void busy() {
             isBusy.set(true);
             busyThreads.incrementAndGet();
         }
-        
+
         private void unbusy() {
             isBusy.set(false);
             busyThreads.decrementAndGet();
         }
     }
-    
+
     private class Task implements Runnable {
         private final Runnable runnable;
         private final String[] description;
-        
+
         Task(Runnable runnable, String... description) {
             this.runnable = runnable;
             this.description = description;
         }
-        
+
         // Override Methods
         @Override
         public void run() {
@@ -301,23 +306,13 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
                 logger.exception(e);
             }
         }
-        
+
         public boolean hasDescription() {
             return description.length != 0;
         }
-        
+
         public String getDescription() {
             return description.length == 0 ? "No task description." : String.join(" ", description);
         }
-    }
-    
-    /**
-     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
-     *
-     * @param task The task to check.
-     * @return Whether the task is most likely from an async stage.
-     */
-    private static boolean nonFutureTask(Runnable task) {
-        return !task.toString().toLowerCase().contains("future");
     }
 }

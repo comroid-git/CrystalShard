@@ -7,6 +7,6 @@ public class MESSAGE_DELETE_BULK extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-    
+
     }
 }

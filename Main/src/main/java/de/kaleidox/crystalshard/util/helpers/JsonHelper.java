@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("FinalStaticMethod")
 public final class JsonHelper extends NullHelper {
     private final static Logger logger = new Logger(JsonHelper.class);
-    
+
     public final static JsonNode nodeOf(Object of) {
         if (of == null) {
             return JsonNodeFactory.instance.nullNode();
@@ -41,36 +41,38 @@ public final class JsonHelper extends NullHelper {
             return JsonNodeFactory.instance.textNode(of.toString());
         }
     }
-    
+
     public final static <T, N> ArrayNode arrayNode(List<T> items, Function<T, N> mapper) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
         for (T item : items) node.add(nodeOf(mapper.apply(item)));
         return node;
     }
-    
+
     public final static <T> ArrayNode arrayNode(List<T> items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
         for (T item : items) node.add(nodeOf(item));
         return node;
     }
-    
+
     public final static ArrayNode arrayNode(Object... items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.length);
         for (Object item : items) node.add(nodeOf(item));
         return node;
     }
-    
+
     public final static ObjectNode objectNode(Object... data) {
         if (data.length == 0) return JsonNodeFactory.instance.objectNode();
-        if (data.length % 2 != 0) throw new IllegalArgumentException("You must provide an even amount of objects to be placed in the node.");
+        if (data.length % 2 != 0)
+            throw new IllegalArgumentException("You must provide an even amount of objects to be placed in the node.");
         ObjectNode objectNode = objectNode();
         for (List<Object> pair : ListHelper.everyOfList(2, ListHelper.of(data))) {
-            if (Objects.nonNull(pair.get(0)) && Objects.nonNull(pair.get(1))) objectNode.set(pair.get(0).toString(), nodeOf(pair.get(1)));
+            if (Objects.nonNull(pair.get(0)) && Objects.nonNull(pair.get(1))) objectNode.set(pair.get(0)
+                    .toString(), nodeOf(pair.get(1)));
             // ignore all pairs of which both sides are NULL
         }
         return objectNode;
     }
-    
+
     public final static JsonNode parse(String body) {
         try {
             return new ObjectMapper().readTree(body);

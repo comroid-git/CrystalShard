@@ -14,13 +14,17 @@ public class GUILD_BAN_REMOVE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id").asLong();
-        Server server = discord.getServerCache().getOrRequest(serverId, serverId);
-        ServerMember user = ServerMemberInternal.getInstance(discord.getUserCache().getOrCreate(discord, data.get("user")), server);
+        long serverId = data.get("guild_id")
+                .asLong();
+        Server server = discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        ServerMember user = ServerMemberInternal.getInstance(discord.getUserCache()
+                .getOrCreate(discord, data.get("user")), server);
         Ban ban = new BanInternal(server, user);
-        
+
         ServerBanEventInternal event = new ServerBanEventInternal(discord, ban);
-        
-        collectListeners(ServerBanListener.class, discord, server).forEach(listener -> discord.getThreadPool().execute(() -> listener.onServerBanAdd(event)));
+
+        collectListeners(ServerBanListener.class, discord, server).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onServerBanAdd(event)));
     }
 }

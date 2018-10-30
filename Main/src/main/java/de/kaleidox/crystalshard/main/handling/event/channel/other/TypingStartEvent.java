@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 
 public interface TypingStartEvent extends ChannelEvent, UserEvent {
     default TextChannel getTextChannel() {
-        return getChannel().toTextChannel().orElseThrow(AssertionError::new);
+        return getChannel().toTextChannel()
+                .orElseThrow(AssertionError::new);
     }
 }

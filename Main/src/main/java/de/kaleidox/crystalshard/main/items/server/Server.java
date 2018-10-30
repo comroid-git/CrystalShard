@@ -33,109 +33,110 @@ import java.util.concurrent.CompletableFuture;
 public interface Server
         extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>, Cacheable<Server, Long, Long>,
         PermissionApplyable {
+    static Server getFromId(Discord discord, long id) {
+        return discord.getServerCache()
+                .get(id);
+    }
+
+    static Server getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
+
     Optional<URL> getIconUrl();
-    
+
     Optional<URL> getSplashUrl();
-    
+
     ServerMember getOwner();
-    
+
     PermissionList getOwnPermissions();
-    
+
     VoiceRegion getVoiceRegion();
-    
+
     Optional<ServerVoiceChannel> getAfkChannel();
-    
+
     int getAfkTimeout();
-    
+
     boolean isEmbeddable();
-    
+
     Optional<ServerChannel> getEmbedChannel();
-    
+
     boolean isWidgetable();
-    
+
     Optional<ServerChannel> getWidgetChannel();
-    
+
     Optional<ServerTextChannel> getSystemChannel();
-    
+
     VerificationLevel getVerificationLevel();
-    
+
     DefaultMessageNotificationLevel getDefaultMessageNotificationLevel();
-    
+
     ExplicitContentFilterLevel getExplicitContentFilterLevel();
-    
+
     Collection<Role> getRoles();
-    
+
     Collection<CustomEmoji> getCustomEmojis();
-    
+
     Collection<String> getFeatures();
-    
+
     MFALevel getMFALevel();
-    
+
     boolean isLarge();
-    
+
     boolean isUnavailable();
-    
+
     int getMemberCount();
-    
+
     Role getEveryoneRole();
-    
+
     Collection<VoiceState> getVoiceStates();
-    
+
     Collection<ServerMember> getMembers();
-    
+
     Collection<ServerChannel> getChannels();
-    
+
     ChannelStructure getChannelStructure();
-    
+
     Collection<Presence> getPresenceStates();
-    
+
     Optional<User> getUserById(long id);
-    
+
     Optional<ServerMember> getServerMember(User ofUser);
-    
+
     CompletableFuture<Void> delete();
-    
+
     CompletableFuture<Void> prune(@Range(min = 1, max = 365) int days);
-    
+
     CompletableFuture<Collection<Integration>> requestIntegrations();
-    
+
     CompletableFuture<URL> getVanityUrl();
-    
+
     ServerMember.Updater getMemberUpdater(ServerMember member);
-    
+
     default Optional<ServerMember.Updater> getMemberUpdater(User user) {
         if (user instanceof ServerMember) return Optional.of(getMemberUpdater((ServerMember) user));
         else if (getServerMember(user).isPresent()) return Optional.of(getMemberUpdater(getServerMember(user).get()));
         return Optional.empty();
     }
-    
+
     interface Builder {
         Builder setName(String name);
-        
+
         Builder setRegion(VoiceRegion region);
-        
+
         Builder setIcon(File icon);
-        
+
         Builder setVerificationLevel(VerificationLevel level);
-        
+
         Builder setDefaultNotificationLevel(DefaultMessageNotificationLevel level);
-        
+
         Builder setExplicitContentFilter(ExplicitContentFilterLevel level);
-        
+
         Builder addRole(Role.Builder roleBuilder);
-        
+
         Builder addChannel(ServerChannel.Builder channelBuilder);
-        
+
         Builder add(ServerComponent component);
-        
+
         CompletableFuture<Server> build();
-    }
-    
-    static Server getFromId(Discord discord, long id) {
-        return discord.getServerCache().get(id);
-    }
-    
-    static Server getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
     }
 }

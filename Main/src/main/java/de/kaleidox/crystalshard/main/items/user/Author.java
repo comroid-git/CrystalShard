@@ -16,13 +16,13 @@ public interface Author extends DiscordItem, Nameable {
      * @return The authored message.
      */
     Message getMessage();
-    
+
     Optional<AuthorUser> toAuthorUser();
-    
+
     Optional<AuthorWebhook> toAuthorWebhook();
-    
+
     boolean isYourself();
-    
+
     /**
      * Returns whether the author of the message was a user.
      *
@@ -31,7 +31,7 @@ public interface Author extends DiscordItem, Nameable {
     default boolean isAuthorUser() {
         return this instanceof AuthorUser;
     }
-    
+
     /**
      * Returns whether the author of the message was a webhook.
      *
