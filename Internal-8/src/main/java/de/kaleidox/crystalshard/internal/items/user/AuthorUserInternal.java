@@ -12,23 +12,23 @@ import java.util.Optional;
 
 public class AuthorUserInternal extends UserInternal implements Author, AuthorUser {
     private final MessageInternal message;
-    
+
     public AuthorUserInternal(Discord discord, MessageInternal messageParent, JsonNode data) {
         super(discord, data);
         this.message = messageParent;
     }
-    
+
     // Override Methods
     @Override
     public Message getMessage() {
         return message;
     }
-    
+
     @Override
     public Optional<AuthorWebhook> toAuthorWebhook() {
         return Optional.empty();
     }
-    
+
     @Override
     public Optional<AuthorUser> toAuthorUser() {
         return Optional.of(this);

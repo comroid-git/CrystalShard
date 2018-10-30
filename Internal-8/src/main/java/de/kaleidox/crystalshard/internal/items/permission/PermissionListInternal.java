@@ -12,65 +12,65 @@ import java.util.stream.Stream;
 
 public class PermissionListInternal extends HashSet<Permission> implements PermissionList {
     private final PermissionOverwritable parent;
-    
+
     public PermissionListInternal(PermissionOverwritable parent, int permissionInteger) {
         super(Stream.of(Permission.values())
-                      .filter(permission -> permission.partOf(permissionInteger))
-                      .filter(permission -> permission != Permission.EMPTY)
-                      .collect(Collectors.toList()));
+                .filter(permission -> permission.partOf(permissionInteger))
+                .filter(permission -> permission != Permission.EMPTY)
+                .collect(Collectors.toList()));
         this.parent = parent;
     }
-    
+
     public PermissionListInternal(PermissionOverwritable parent) {
         super();
         this.parent = parent;
     }
-    
+
     public PermissionListInternal(int permissionInteger) {
         this(null, permissionInteger);
     }
-    
+
     // Override Methods
     @Override
     public int toPermissionInt() {
         int value = Permission.EMPTY.getValue();
-        
+
         forEach(permission -> permission.apply(value, true));
-        
+
         return value;
     }
-    
+
     @Override
     public PermissionOverride toOverride() {
         if (parent == null) throw new NullPointerException("No parent is defined!");
         return new PermissionOverrideInternal(parent.getDiscord(), parent.getServer(), parent, this);
     }
-    
+
     @Override
     public Optional<PermissionOverwritable> getParent() {
         return Optional.ofNullable(parent);
     }
-    
+
     @Override
     public boolean add(Permission permission) {
         boolean success = false;
-        
+
         if (!contains(permission)) {
             super.add(permission);
         }
-        
+
         return success;
     }
-    
+
     @Override
     public boolean remove(Object o) {
         if (o instanceof Permission) {
             boolean success = false;
-            
+
             if (contains(o)) {
                 super.remove(o);
             }
-            
+
             return success;
         } else return false;
     }

@@ -22,9 +22,9 @@ public class PRESENCE_UPDATE extends HandlerBase {
         Server server = presence.getServer();
         ServerMember user = presence.getUser();
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
-        
+
         ServerPresenceUpdateEventInternal event = new ServerPresenceUpdateEventInternal(discord, presence);
-        
+
         collectListeners(ServerPresenceUpdateListener.class, discord, server, user, new RoleContainer(roles)).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onPresenceUpdate(event)));
     }

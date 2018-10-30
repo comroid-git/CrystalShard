@@ -23,15 +23,21 @@ public class MESSAGE_CREATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long channel_id = data.get("channel_id").asLong();
-        Channel channel = discord.getChannelCache().getOrRequest(channel_id, channel_id);
-        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
-        Message message = discord.getMessageCache().getOrCreate(discord, data);
-        User user = message.getAuthorAsUser().orElse(null);
+        long channel_id = data.get("channel_id")
+                .asLong();
+        Channel channel = discord.getChannelCache()
+                .getOrRequest(channel_id, channel_id);
+        Server server = channel.toServerChannel()
+                .map(ServerChannel::getServer)
+                .orElse(null);
+        Message message = discord.getMessageCache()
+                .getOrCreate(discord, data);
+        User user = message.getAuthorAsUser()
+                .orElse(null);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
-        
+
         MessageCreateEvent event = new MessageCreateEventInternal(discord, message);
-        
+
         collectListeners(MessageCreateListener.class, discord, server, channel, user, new RoleContainer(roles)).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onMessageCreate(event)));
     }

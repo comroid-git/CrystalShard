@@ -31,32 +31,35 @@ public enum VoiceRegion {
     VIP_US_WEST("vip-us-west", "US West (VIP)", true),
     VIP_US_CENTRAL("vip-us-central", "US Central (VIP)", true),
     VIP_US_SOUTH("vip-us-south", "US South (VIP)", true);
-    private final String  regionKey;
-    private final String  name;
+    private final String regionKey;
+    private final String name;
     private final boolean vip;
-    
+
     VoiceRegion(String regionKey, String name, boolean vip) {
         this.regionKey = regionKey;
         this.name = name;
         this.vip = vip;
     }
-    
-    public String getRegionKey() {
-        return regionKey;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public boolean isVip() {
-        return vip;
-    }
-    
+
     // Static members
     // Static membe
     public static VoiceRegion getFromRegionKey(String regionKey) {
         if (regionKey == null) return UNKNOWN;
-        return Stream.of(values()).filter(region -> region.regionKey.equals(regionKey)).findAny().orElse(UNKNOWN);
+        return Stream.of(values())
+                .filter(region -> region.regionKey.equals(regionKey))
+                .findAny()
+                .orElse(UNKNOWN);
+    }
+
+    public String getRegionKey() {
+        return regionKey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isVip() {
+        return vip;
     }
 }

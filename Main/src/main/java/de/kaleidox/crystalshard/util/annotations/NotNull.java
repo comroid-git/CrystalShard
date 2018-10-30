@@ -8,4 +8,5 @@ import java.lang.annotation.Target;
  * When annotating a Method, this annotation guarantees for the method not to return null.
  */
 @Target({ElementType.PARAMETER, ElementType.METHOD})
-public @interface NotNull { }
+public @interface NotNull {
+}

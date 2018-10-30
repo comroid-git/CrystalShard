@@ -25,51 +25,51 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public interface Discord extends UserContainer, ChannelContainer, ListenerAttachable<DiscordAttachableListener> {
     String getPrefixedToken();
-    
+
     boolean initFinished();
-    
+
     int getShardId();
-    
+
     int getShards();
-    
+
     DiscordUtils getUtilities();
-    
+
     Optional<Channel> getChannelById(long id);
-    
+
     Optional<User> getUserById(long id);
-    
+
     Self getSelf();
-    
+
     Optional<Server> getServerById(long id);
-    
+
     Executor getExecutor();
-    
+
     ThreadPool getThreadPool();
-    
+
     WebSocketClient getWebSocket();
-    
+
     Ratelimiter getRatelimiter();
-    
+
     Collection<Server> getServers();
-    
+
     Collection<User> getUsers();
-    
+
     int getServerCount();
-    
+
     int getUserCount();
-    
+
     Cache<Server, Long, Long> getServerCache();
-    
+
     Cache<User, Long, Long> getUserCache();
-    
+
     Cache<Role, Long, IDPair> getRoleCache();
-    
+
     Cache<Channel, Long, Long> getChannelCache();
-    
+
     Cache<Message, Long, IDPair> getMessageCache();
-    
+
     Cache<CustomEmoji, Long, IDPair> getEmojiCache();
-    
+
     default ScheduledExecutorService getScheduler() {
         return getThreadPool().getScheduler();
     }

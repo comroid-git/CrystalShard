@@ -6,17 +6,18 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 
 public interface ChannelCategory extends ServerChannel {
-    ServerChannel.Updater getUpdater();
-    
-    @SuppressWarnings("JavaDoc")
-    interface Builder extends ServerChannel.Builder<Builder, ChannelCategory> { }
-    
-// Static membe
+    // Static membe
     static Builder builder() throws IllegalThreadException {
         return builder(ThreadPool.getThreadDiscord());
     }
-    
+
     static Builder builder(Discord discord) {
         return InternalDelegate.newInstance(Builder.class, discord);
+    }
+
+    ServerChannel.Updater getUpdater();
+
+    @SuppressWarnings("JavaDoc")
+    interface Builder extends ServerChannel.Builder<Builder, ChannelCategory> {
     }
 }

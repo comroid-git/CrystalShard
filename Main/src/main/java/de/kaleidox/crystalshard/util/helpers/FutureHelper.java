@@ -8,9 +8,9 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class FutureHelper extends NullHelper {
     // Static membe
-    
+
     // Static members
-    
+
     /**
      * Links the CompletableFutures together. When the parent future is done, the value gets passed to the other futures. When the parent future completes
      * exceptionally, the exception is passed to the other futures.
@@ -22,16 +22,17 @@ public class FutureHelper extends NullHelper {
      */
     @SafeVarargs
     public static <T> CompletableFuture<T> linkFutures(CompletableFuture<T> parentFuture, CompletableFuture<T>... others) {
-        ListHelper.of(others).forEach(otherFuture -> {
-            parentFuture.thenAcceptAsync(otherFuture::complete);
-            parentFuture.exceptionally(throwable -> {
-                otherFuture.completeExceptionally(throwable);
-                return null;
-            });
-        });
+        ListHelper.of(others)
+                .forEach(otherFuture -> {
+                    parentFuture.thenAcceptAsync(otherFuture::complete);
+                    parentFuture.exceptionally(throwable -> {
+                        otherFuture.completeExceptionally(throwable);
+                        return null;
+                    });
+                });
         return parentFuture;
     }
-    
+
     /**
      * Waits for the completion of all given {@link CompletableFuture}s. Returns a future that completes with a list of values returned by the Futures. Runs in
      * async by default.
@@ -43,31 +44,32 @@ public class FutureHelper extends NullHelper {
     public static <U> CompletableFuture<List<U>> waitForCompletion(Collection<CompletableFuture<U>> futures) {
         CompletableFuture<List<U>> val = new CompletableFuture<>();
         List<U> returnVals = new ArrayList<>();
-        
-        CompletableFuture.supplyAsync(() -> new int[]{ }).thenAcceptAsync(a -> {
-            boolean stop = false;
-            while (!stop) {
-                for (CompletableFuture<U> future : futures) {
-                    if (future.isDone()) {
-                        returnVals.add(future.join());
+
+        CompletableFuture.supplyAsync(() -> new int[]{})
+                .thenAcceptAsync(a -> {
+                    boolean stop = false;
+                    while (!stop) {
+                        for (CompletableFuture<U> future : futures) {
+                            if (future.isDone()) {
+                                returnVals.add(future.join());
+                            }
+
+                            if (future.isCancelled()) {
+                                futures.remove(future);
+                            }
+                        }
+
+                        if (returnVals.size() == futures.size()) {
+                            val.complete(returnVals);
+
+                            stop = true;
+                        }
                     }
-                    
-                    if (future.isCancelled()) {
-                        futures.remove(future);
-                    }
-                }
-                
-                if (returnVals.size() == futures.size()) {
-                    val.complete(returnVals);
-                    
-                    stop = true;
-                }
-            }
-        });
-        
+                });
+
         return val;
     }
-    
+
     public static <T> CompletableFuture<T> newFuture() {
         return new CompletableFuture<>();
     }

@@ -10,25 +10,25 @@ import java.time.Instant;
 
 public interface Integration extends DiscordItem, Nameable {
     String getType();
-    
+
     boolean isEnabled();
-    
+
     boolean isSyncing();
-    
+
     Role getSubscribersRole();
-    
+
     int expireBehaviour();
-    
+
     int expireGracePeriod();
-    
+
     User getUser();
-    
+
     Account getAccount();
-    
+
     Instant syncedAt();
-    
+
     Server getServer();
-    
+
     interface Account extends Nameable {
         String getId();
     }

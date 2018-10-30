@@ -12,33 +12,33 @@ import java.util.Optional;
 
 public class ServerPresenceUpdateEventInternal extends EventBase implements ServerPresenceUpdateEvent {
     private final Presence presence;
-    
+
     public ServerPresenceUpdateEventInternal(DiscordInternal discordInternal, Presence presence) {
         super(discordInternal);
         this.presence = presence;
     }
-    
+
     // Override Methods
     @Override
     public Presence getPresence() {
         return presence;
     }
-    
+
     @Override
     public Optional<UserActivity> getActivity() {
         return presence.getActivity();
     }
-    
+
     @Override
     public Presence.Status getStatus() {
         return presence.getStatus();
     }
-    
+
     @Override
     public ServerMember getMember() {
         return presence.getUser();
     }
-    
+
     @Override
     public Server getServer() {
         return presence.getServer();

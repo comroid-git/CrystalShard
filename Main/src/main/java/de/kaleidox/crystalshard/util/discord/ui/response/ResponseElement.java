@@ -4,8 +4,8 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.objects.markers.NamedItem;
 import de.kaleidox.crystalshard.util.discord.ui.DialogueBranch;
+import de.kaleidox.crystalshard.util.objects.markers.NamedItem;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -15,33 +15,41 @@ import java.util.function.Supplier;
 
 @SuppressWarnings({"unused", "WeakerAccess", "FieldCanBeLocal", "UnusedReturnValue"})
 public abstract class ResponseElement<ResultType> {
-    protected final String                  name;
-    protected final MessageReciever         parent;
+    protected final String name;
+    protected final MessageReciever parent;
     protected final Supplier<Embed.Builder> embedBaseSupplier;
-    protected final Predicate<User>         userCanRespond;
-    protected final ArrayList<Message>      affiliateMessages;
+    protected final Predicate<User> userCanRespond;
+    protected final ArrayList<Message> affiliateMessages;
     // Default Settings
-    protected       long                    duration    = 5;
-    protected       TimeUnit                timeUnit    = TimeUnit.MINUTES;
-    protected       boolean                 deleteLater = false;
-    private         DialogueBranch          parentBranch;
-    
+    protected long duration = 5;
+    protected TimeUnit timeUnit = TimeUnit.MINUTES;
+    protected boolean deleteLater = false;
+    private DialogueBranch parentBranch;
+
     public ResponseElement(String name, MessageReciever parent, Supplier<Embed.Builder> embedBaseSupplier, Predicate<User> userCanRespond) {
         this.name = name;
         this.parent = parent;
-        this.embedBaseSupplier = (embedBaseSupplier == null ? () -> parent.getDiscord().getUtilities().getDefaultEmbed().getBuilder() : embedBaseSupplier);
+        this.embedBaseSupplier = (embedBaseSupplier == null ? () -> parent.getDiscord()
+                .getUtilities()
+                .getDefaultEmbed()
+                .getBuilder() : embedBaseSupplier);
         this.userCanRespond = (userCanRespond == null ? user -> true : userCanRespond);
-        
+
         this.affiliateMessages = new ArrayList<>();
     }
-    
+
+    // Static membe
+    public static Predicate<User> sameUserPredicate(User user) {
+        return usr -> usr.equals(user);
+    }
+
     public abstract CompletableFuture<NamedItem<ResultType>> build();
-    
+
     public ResponseElement<ResultType> setParentBranch(DialogueBranch parentBranch) {
         this.parentBranch = parentBranch;
         return this;
     }
-    
+
     /**
      * Sets how long it will take for the ResponseElement to end.
      *
@@ -52,10 +60,10 @@ public abstract class ResponseElement<ResultType> {
     public ResponseElement<ResultType> setTimeout(long duration, TimeUnit timeUnit) {
         this.duration = duration;
         this.timeUnit = timeUnit;
-        
+
         return this;
     }
-    
+
     /**
      * Toggles whether the message should be deleted after a response. Default is "FALSE".
      *
@@ -64,7 +72,7 @@ public abstract class ResponseElement<ResultType> {
     public ResponseElement<ResultType> deleteLater() {
         return deleteLater(!deleteLater);
     }
-    
+
     /**
      * Sets whether the messages should be deleted after the response.
      *
@@ -75,7 +83,7 @@ public abstract class ResponseElement<ResultType> {
         this.deleteLater = bool;
         return this;
     }
-    
+
     /**
      * Builds and Sends the ResponseElement to the Messageable.
      *
@@ -87,13 +95,8 @@ public abstract class ResponseElement<ResultType> {
         setTimeout(duration, timeUnit);
         return CompletableFuture.supplyAsync(build().join()::getItem);
     }
-    
+
     public String getName() {
         return name;
-    }
-    
-// Static membe
-    public static Predicate<User> sameUserPredicate(User user) {
-        return usr -> usr.equals(user);
     }
 }

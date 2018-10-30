@@ -18,12 +18,12 @@ public class EmbedInternal implements Embed {
             throw new AssertionError();
         }
     }
-    
+
     @Override
     public Optional<SentEmbed> toSentEmbed() {
         return castTo(SentEmbed.class);
     }
-    
+
     @Override
     public Builder toBuilder() {
         if (this instanceof EmbedDraft) {

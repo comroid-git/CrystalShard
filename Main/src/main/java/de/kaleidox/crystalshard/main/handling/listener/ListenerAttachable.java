@@ -29,7 +29,7 @@ public interface ListenerAttachable<T extends Listener> {
      * @return The ListenerManager of the attached listener.
      */
     <C extends T> ListenerManager<C> attachListener(C listener);
-    
+
     /**
      * Tries to detach the given listener from the object.
      *
@@ -37,21 +37,21 @@ public interface ListenerAttachable<T extends Listener> {
      * @return An Evaluation object that tells if the detach could be performed.
      */
     Evaluation<Boolean> detachListener(T listener);
-    
+
     /**
      * Returns a collection of all listeners that are attached to this object.
      *
      * @return A collection with the attached listeners.
      */
     Collection<T> getAttachedListeners();
-    
+
     /**
      * Returns a collection of all ListenerManagers attached to this object.
      *
      * @return A collection with attached ListenerManagers.
      */
     Collection<ListenerManager<? extends T>> getListenerManagers();
-    
+
     /**
      * Detached all listeners from the current object.
      */

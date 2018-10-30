@@ -9,13 +9,13 @@ import java.util.stream.Stream;
 
 public interface Presence {
     ServerMember getUser();
-    
+
     Optional<UserActivity> getActivity();
-    
+
     Server getServer();
-    
+
     Status getStatus();
-    
+
     enum Status {
         UNKNOWN(null),
         HIDDEN("hidden"),
@@ -24,22 +24,22 @@ public interface Presence {
         DND("dnd"),
         IDLE("idle");
         private final String key;
-        
+
         Status(String key) {
             this.key = key;
         }
-        
-        public String getKey() {
-            return key;
-        }
-        
-// Static membe
+
+        // Static membe
         public static Status getFromKey(String key) {
             return Stream.of(values())
                     .filter(status -> Objects.nonNull(status.key))
                     .filter(status -> status.key.equalsIgnoreCase(key))
                     .findAny()
                     .orElse(UNKNOWN);
+        }
+
+        public String getKey() {
+            return key;
         }
     }
 }

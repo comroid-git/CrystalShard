@@ -11,11 +11,12 @@ public class GUILD_CREATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        Server server = discord.getServerCache().getOrCreate(discord, data);
-        
+        Server server = discord.getServerCache()
+                .getOrCreate(discord, data);
+
         ServerCreateEvent event = new ServerCreateEventInternal(discord, server);
         discord.addServer(server);
-        
+
         collectListeners(ServerCreateListener.class, discord).forEach(listener -> listener.onServerCreate(event));
     }
 }

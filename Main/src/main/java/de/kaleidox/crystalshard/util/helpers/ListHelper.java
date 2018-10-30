@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.util.helpers;
 import de.kaleidox.crystalshard.util.objects.Difference;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,9 +15,9 @@ import java.util.function.Supplier;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ListHelper extends CollectionHelper {
     // Static membe
-    
+
     // Static members
-    
+
     /**
      * Moves all items within a list after the given {@code distance}. If an object is null or not available, it gets replaced with {@code defaultValue}. All
      * items that get moved below index {@code 0} get dropped. The given list pointer is being overwritten by the new, modified list.
@@ -49,7 +48,7 @@ public class ListHelper extends CollectionHelper {
         list = newList;
         return list;
     }
-    
+
     /**
      * Search for an item within a list without having to modify the list. This way, you provide a Function to convert the list type of item into the criteria
      * type of item.
@@ -63,20 +62,21 @@ public class ListHelper extends CollectionHelper {
      */
     public static <A, B> Optional<A> findComplex(List<A> list, B criteria, Function<A, B> criteriaExtractor) {
         for (A item : list) {
-            if (criteriaExtractor.apply(item).equals(criteria)) {
+            if (criteriaExtractor.apply(item)
+                    .equals(criteria)) {
                 return Optional.of(item);
             }
         }
-        
+
         return Optional.empty();
     }
-    
+
     public static <T> boolean booleanOfAll(List<T> list, Function<T, Boolean> booleanFunction) {
         int c = 0;
         for (T t : list) if (booleanFunction.apply(t)) c++;
         return c == list.size();
     }
-    
+
     /**
      * Creates a List of Lists of every {@code OF} items whithin the list {@code of}.
      *
@@ -89,36 +89,37 @@ public class ListHelper extends CollectionHelper {
         ArrayList<List<T>> val = new ArrayList<>();
         ArrayList<T> count = new ArrayList<>();
         int i = 0, run = 0;
-        
+
         while (run != of.size()) {
             if (i == every) i = 0;
-            
+
             if (i == 0) {
                 count = new ArrayList<>();
                 val.add(count);
             }
-            
+
             count.add(of.get(run));
-            
+
             i++;
             run++;
         }
-        
+
         return val;
     }
-    
+
     public static <T> boolean equalContents(List<T> a, List<T> b) {
         nullChecks(a, b);
         if (a.size() != b.size()) return false;
         int matches = 0;
-        
+
         for (int i = 0; i < a.size(); i++) {
-            if (a.get(i).equals(b.get(i))) matches++;
+            if (a.get(i)
+                    .equals(b.get(i))) matches++;
         }
-        
+
         return matches == a.size();
     }
-    
+
     public static <T> boolean containsEquals(List<T> list, T item) {
         requireNoNull(list);
         for (T x : list) {
@@ -126,21 +127,21 @@ public class ListHelper extends CollectionHelper {
         }
         return false;
     }
-    
+
     public static <T> Difference<T> getDifference(List<T> source, List<T> target) {
         nullChecks(source, target);
         Difference.Builder<T> difBuilder = new Difference.Builder<>();
-        
+
         for (T x : source) {
             if (!containsEquals(target, x)) difBuilder.addAdded(x);
         }
         for (T x : target) {
             if (!containsEquals(source, x)) difBuilder.addRemoved(x);
         }
-        
+
         return difBuilder.build();
     }
-    
+
     @SuppressWarnings({"UseBulkOperation", "ManualArrayToCollectionCopy"})
     public static <T> List<T> of(T[] data) {
         List<T> list = new ArrayList<>();

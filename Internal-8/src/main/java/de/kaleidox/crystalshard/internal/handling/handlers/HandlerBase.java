@@ -17,26 +17,28 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class HandlerBase {
-    private final static Package                                handlerPackage = HandlerBase.class.getPackage();
-    private final static ConcurrentHashMap<String, HandlerBase> instances      = new ConcurrentHashMap<>();
-    final static         Logger                                 baseLogger     = new Logger(HandlerBase.class);
-    
-    public abstract void handle(DiscordInternal discord, JsonNode data);
-    
+    final static Logger baseLogger = new Logger(HandlerBase.class);
+    private final static Package handlerPackage = HandlerBase.class.getPackage();
+    private final static ConcurrentHashMap<String, HandlerBase> instances = new ConcurrentHashMap<>();
+
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
         T handler;
-        String type = data.path("t").asText("");
-        
+        String type = data.path("t")
+                .asText("");
+
         if (instances.containsKey(type)) {
             ((T) instances.get(type)).handle(discord, data.get("d"));
         } else if (!type.isEmpty()) {
             try {
                 Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
-                handler = tClass.getConstructor().newInstance();
+                handler = tClass.getConstructor()
+                        .newInstance();
                 instances.put(type, handler);
                 try {
-                    baseLogger.trace("Dispatching event '" + data.get("t").asText() + "' with body: " + data.get("d").toString());
+                    baseLogger.trace("Dispatching event '" + data.get("t")
+                            .asText() + "' with body: " + data.get("d")
+                            .toString());
                     handler.handle(discord, data.get("d"));
                 } catch (Exception e) {
                     baseLogger.exception(e, "Exception in Handler: " + type);
@@ -48,21 +50,22 @@ public abstract class HandlerBase {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @SafeVarargs
     static <L extends Listener, C extends ListenerAttachable<? super L>> List<L> collectListeners(@NotNull Class<L> listenerClass,
                                                                                                   @MayContainNull C... collectIn) {
         Objects.requireNonNull(listenerClass);
         List<L> collect = new ArrayList<>();
-    
+
         for (C item : collectIn) {
             if (Objects.nonNull(item)) {
                 if (item instanceof RoleContainer) {
                     for (Role role : ((RoleContainer) item).getRoles()) {
                         role.getListenerManagers()
                                 .stream()
-                                .filter(manager -> listenerClass.isAssignableFrom(manager.getListener().getClass()))
+                                .filter(manager -> listenerClass.isAssignableFrom(manager.getListener()
+                                        .getClass()))
                                 .filter(ListenerManager::isEnabled)
                                 .map(ListenerManager::getListener)
                                 .map(listener -> (L) listener) // TODO: 30.10.2018 Test if this cast is safe
@@ -70,14 +73,17 @@ public abstract class HandlerBase {
                     }
                 } else item.getListenerManagers()
                         .stream()
-                        .filter(manager -> listenerClass.isAssignableFrom(manager.getListener().getClass()))
+                        .filter(manager -> listenerClass.isAssignableFrom(manager.getListener()
+                                .getClass()))
                         .filter(ListenerManager::isEnabled)
                         .map(ListenerManager::getListener)
                         .map(listener -> (L) listener)
                         .forEachOrdered(collect::add);
             }
         }
-        
+
         return collect;
     }
+
+    public abstract void handle(DiscordInternal discord, JsonNode data);
 }

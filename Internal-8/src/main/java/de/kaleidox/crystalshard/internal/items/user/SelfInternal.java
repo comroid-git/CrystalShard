@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.CoreDelegate;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
-import de.kaleidox.crystalshard.core.net.request.Method;
+import de.kaleidox.crystalshard.core.net.request.HttpMethod;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.crystalshard.core.net.socket.Payload;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
@@ -26,78 +26,83 @@ import java.util.function.Consumer;
 import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
 
 public class SelfInternal extends UserInternal implements Self {
-    private final static Logger            logger = new Logger(SelfInternal.class);
-    private              Presence.Status   status;
-    private              UserActivity.Type type;
-    private              String            title;
-    private              String            url;
-    
+    private final static Logger logger = new Logger(SelfInternal.class);
+    private Presence.Status status;
+    private UserActivity.Type type;
+    private String title;
+    private String url;
+
     public SelfInternal(Discord discord, JsonNode data) {
         super(discord, data);
     }
-    
+
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
         throw new AbstractMethodError("Cannot message yourself!");
     }
-    
+
     @Override
     public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
         throw new AbstractMethodError("Cannot message yourself!");
     }
-    
+
     @Override
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
         throw new AbstractMethodError("Cannot message yourself!");
     }
-    
+
     @Override
     public CompletableFuture<Message> sendMessage(String content) {
         throw new AbstractMethodError("Cannot message yourself!");
     }
-    
+
     @Override
     public CompletableFuture<Void> typing() {
         throw new AbstractMethodError("Cannot type to yourself!");
     }
-    
+
     @Override
     public CompletableFuture<Void> setName(String name) {
-        return CoreDelegate.webRequest(this.getDiscord()).method(Method.PATCH)
-                .endpoint(Endpoint.of(Endpoint.Location.SELF_INFO))
-                .node(objectNode().set("username",
-                                       JsonHelper.nodeOf(name)))
-                .execute(data -> {
-                    if (!discriminator.equals(data.path("discriminator").asText(discriminator))) discriminator = data.get("discriminator").asText();
+        return CoreDelegate.webRequest(this.getDiscord())
+                .setMethod(HttpMethod.PATCH)
+                .setUri(DiscordEndpoint.SELF_INFO.createUri())
+                .setNode(objectNode().set("username",
+                        JsonHelper.nodeOf(name)))
+                .executeAs(data -> {
+                    if (!discriminator.equals(data.path("discriminator")
+                            .asText(discriminator))) discriminator = data.get("discriminator")
+                            .asText();
                     return null;
-                }).thenApply(n -> null);
+                })
+                .thenApply(n -> null);
     }
-    
+
     @Override
     public CompletableFuture<Void> setNickname(String nickname, Server inServer) {
-        return CoreDelegate.webRequest(getDiscord()).method(Method.PATCH)
-                .endpoint(Endpoint.Location.SELF_NICKNAME.toEndpoint(inServer))
-                .node(objectNode("nick",
-                                 nickname))
-                .executeNull();
+        return CoreDelegate.webRequest(getDiscord())
+                .setMethod(HttpMethod.PATCH)
+                .setUri(DiscordEndpoint.SELF_NICKNAME.createUri(inServer))
+                .setNode(objectNode("nick",
+                        nickname))
+                .executeAsVoid();
     }
-    
+
     @Override
     public CompletableFuture<Void> setAvatar(URL avatarUrl) {
         return null; // todo @ Image Patch
     }
-    
+
     @Override
     public CompletableFuture<Void> setStatus(Presence.Status status) {
         this.status = status;
         return sendStatus();
     }
-    
+
     @Override
     public CompletableFuture<Void> setActivity(UserActivity.Type type, String title) {
         return setActivity(type, title, null);
     }
-    
+
     @Override
     public CompletableFuture<Void> setActivity(UserActivity.Type type, String title, String url) {
         this.type = type;
@@ -105,22 +110,24 @@ public class SelfInternal extends UserInternal implements Self {
         this.url = url;
         return sendStatus();
     }
-    
+
     private CompletableFuture<Void> sendStatus() {
-        return ((DiscordInternal) getDiscord()).getWebSocket().sendPayload(Payload.create(OpCode.STATUS_UPDATE,
-                                                                                          objectNode("since",
-                                                                                                     (status == Presence.Status.IDLE ?
-                                                                                                      System.currentTimeMillis() : null),
-                                                                                                     "game",
-                                                                                                     objectNode("type", type.getId(), "name", title,
-                                                                                                                // only include an URL if there is a URL
-                                                                                                                // actually
-                                                                                                                // set, else include nothing
-                                                                                                                (url != null ? new Object[]{"url", url} :
-                                                                                                                 new Object[0])),
-                                                                                                     "status",
-                                                                                                     status.getKey(),
-                                                                                                     "afk",
-                                                                                                     false))).thenApply(e -> null);
+        return ((DiscordInternal) getDiscord()).getWebSocket()
+                .sendPayload(Payload.create(OpCode.STATUS_UPDATE,
+                        objectNode("since",
+                                (status == Presence.Status.IDLE ?
+                                        System.currentTimeMillis() : null),
+                                "game",
+                                objectNode("type", type.getId(), "name", title,
+                                        // only include an URL if there is a URL
+                                        // actually
+                                        // set, else include nothing
+                                        (url != null ? new Object[]{"url", url} :
+                                                new Object[0])),
+                                "status",
+                                status.getKey(),
+                                "afk",
+                                false)))
+                .thenApply(e -> null);
     }
 }

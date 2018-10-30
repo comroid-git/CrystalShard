@@ -16,15 +16,22 @@ import java.util.List;
 public class GUILD_MEMBER_UPDATE extends HandlerBase {
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id").asLong();
-        Server server = discord.getServerCache().getOrRequest(serverId, serverId);
+        long serverId = data.get("guild_id")
+                .asLong();
+        Server server = discord.getServerCache()
+                .getOrRequest(serverId, serverId);
         List<Role> userRoles = new ArrayList<>();
-        data.get("roles").forEach(roleId -> userRoles.add(discord.getRoleCache().getOrRequest(roleId.asLong(), IDPair.of(serverId, roleId.asLong()))));
-        ServerMember user = discord.getUserCache().getOrCreate(discord, data.get("user")).toServerMember(server, data);
-        String nickname = data.get("nick").asText();
-        
+        data.get("roles")
+                .forEach(roleId -> userRoles.add(discord.getRoleCache()
+                        .getOrRequest(roleId.asLong(), IDPair.of(serverId, roleId.asLong()))));
+        ServerMember user = discord.getUserCache()
+                .getOrCreate(discord, data.get("user"))
+                .toServerMember(server, data);
+        String nickname = data.get("nick")
+                .asText();
+
         ServerMemberUpdateEventInternal event = new ServerMemberUpdateEventInternal(discord, userRoles, nickname, Collections.emptySet(), user, server);
-        
+
         collectListeners(ServerMemberUpdateListener.class, discord, server, user).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onMemberUpdate(event)));
     }

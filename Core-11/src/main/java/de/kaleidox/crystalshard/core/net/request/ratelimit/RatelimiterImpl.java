@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.core.net.request.Endpoint;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
@@ -15,15 +15,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RatelimiterImpl implements Ratelimiter {
-    private final static Logger                                                logger = new Logger(RatelimiterImpl.class);
-    final                ThreadPoolImpl                                        executePool;
+    private final static Logger logger = new Logger(RatelimiterImpl.class);
+    final ThreadPoolImpl executePool;
     @SuppressWarnings("ALL")
-    private final        Discord                                               discord;
-    private final        BucketManager                                         bucketManager;
-    private final        ConcurrentHashMap<Endpoint, AtomicInteger>            remainingMap;
-    private final        ConcurrentHashMap<Endpoint, AtomicInteger>            limitMap;
-    private final        ConcurrentHashMap<Endpoint, AtomicReference<Instant>> resetMap;
-    
+    private final Discord discord;
+    private final BucketManager bucketManager;
+    private final ConcurrentHashMap<RequestURI, AtomicInteger> remainingMap;
+    private final ConcurrentHashMap<RequestURI, AtomicInteger> limitMap;
+    private final ConcurrentHashMap<RequestURI, AtomicReference<Instant>> resetMap;
+
     /**
      * Creates a new Ratelimiter Instance.
      *
@@ -37,27 +37,28 @@ public class RatelimiterImpl implements Ratelimiter {
         this.limitMap = new ConcurrentHashMap<>();
         this.resetMap = new ConcurrentHashMap<>();
     }
-    
-    public AtomicInteger getRemaining(Endpoint endpoint) {
-        assureAtomicValues(endpoint);
-        AtomicInteger remaining = remainingMap.get(endpoint);
-        AtomicReference<Instant> reset = resetMap.get(endpoint);
-        if (remaining.get() == 0 && reset.get().isAfter(Instant.now())) {
+
+    public AtomicInteger getRemaining(RequestURI discordRequestURI) {
+        assureAtomicValues(discordRequestURI);
+        AtomicInteger remaining = remainingMap.get(discordRequestURI);
+        AtomicReference<Instant> reset = resetMap.get(discordRequestURI);
+        if (remaining.get() == 0 && reset.get()
+                .isAfter(Instant.now())) {
             remaining.incrementAndGet();
         }
         return remaining;
     }
-    
-    public AtomicInteger getLimit(Endpoint endpoint) {
-        assureAtomicValues(endpoint);
-        return limitMap.get(endpoint);
+
+    public AtomicInteger getLimit(RequestURI discordRequestURI) {
+        assureAtomicValues(discordRequestURI);
+        return limitMap.get(discordRequestURI);
     }
-    
-    public AtomicReference<Instant> getReset(Endpoint endpoint) {
-        assureAtomicValues(endpoint);
-        return resetMap.get(endpoint);
+
+    public AtomicReference<Instant> getReset(RequestURI discordRequestURI) {
+        assureAtomicValues(discordRequestURI);
+        return resetMap.get(discordRequestURI);
     }
-    
+
     /**
      * Schedules a Request to be sent at the next available slot. Use {@link WebRequest} to execute a request.
      *
@@ -67,26 +68,36 @@ public class RatelimiterImpl implements Ratelimiter {
      * @param <T>           Type variable for the request.
      */
     public <T> void schedule(WebRequest<T> request, CompletableFuture<HttpHeaders> headersFuture, Runnable requestTask) {
-        Endpoint endpoint = request.getEndpoint();
-        
+        RequestURI requestUri = request.getUri();
+
         headersFuture.thenAcceptAsync(headers -> {
             try {
                 // set fail-safe map elements, if not set for this endpoint
-                headers.firstValue("X-RateLimit-Remaining").map(Integer::parseInt).ifPresent(readyAt -> remainingMap.get(endpoint).set(readyAt));
-                headers.firstValue("X-RateLimit-Limit").map(Integer::parseInt).ifPresent(limit -> limitMap.get(endpoint).set(limit));
-                headers.firstValue("X-RateLimit-Reset").map(Long::parseLong).map(Instant::ofEpochMilli).ifPresent(retryAt -> resetMap.get(endpoint)
-                        .set(retryAt));
+                headers.firstValue("X-RateLimit-Remaining")
+                        .map(Integer::parseInt)
+                        .ifPresent(readyAt -> remainingMap.get(requestUri)
+                                .set(readyAt));
+                headers.firstValue("X-RateLimit-Limit")
+                        .map(Integer::parseInt)
+                        .ifPresent(limit -> limitMap.get(requestUri)
+                                .set(limit));
+                headers.firstValue("X-RateLimit-Reset")
+                        .map(Long::parseLong)
+                        .map(Instant::ofEpochMilli)
+                        .ifPresent(retryAt -> resetMap.get(requestUri)
+                                .set(retryAt));
             } catch (NullPointerException e) {
                 logger.exception(e, "NPE on Ratelimit header evaluation.");
             }
         });
-        
-        bucketManager.schedule(endpoint, requestTask);
+
+        bucketManager.schedule(requestUri, requestTask);
     }
-    
-    private void assureAtomicValues(Endpoint endpoint) {
-        remainingMap.putIfAbsent(endpoint, new AtomicInteger(1));
-        limitMap.putIfAbsent(endpoint, new AtomicInteger(1));
-        resetMap.putIfAbsent(endpoint, new AtomicReference<>(Instant.now().minusSeconds(1)));
+
+    private void assureAtomicValues(RequestURI discordRequestURI) {
+        remainingMap.putIfAbsent(discordRequestURI, new AtomicInteger(1));
+        limitMap.putIfAbsent(discordRequestURI, new AtomicInteger(1));
+        resetMap.putIfAbsent(discordRequestURI, new AtomicReference<>(Instant.now()
+                .minusSeconds(1)));
     }
 }

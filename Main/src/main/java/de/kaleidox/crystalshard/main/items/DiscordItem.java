@@ -12,14 +12,14 @@ public interface DiscordItem {
      * @return The ID of the item.
      */
     long getId();
-    
+
     /**
      * Gets the Discord object of the item.
      *
      * @return The Discord object of the item.
      */
     Discord getDiscord();
-    
+
     /**
      * Used for comparing two DiscordItems after their ID.
      *

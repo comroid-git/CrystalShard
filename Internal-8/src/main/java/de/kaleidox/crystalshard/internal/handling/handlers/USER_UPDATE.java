@@ -14,11 +14,13 @@ public class USER_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        UserInternal user = (UserInternal) discord.getUserCache().getOrCreate(discord, data);
-        
+        UserInternal user = (UserInternal) discord.getUserCache()
+                .getOrCreate(discord, data);
+
         Set<EditTrait<User>> traits = user.updateData(data);
         UserUpdateEventInternal event = new UserUpdateEventInternal(discord, user, traits);
-        
-        collectListeners(UserUpdateListener.class, discord, user).forEach(listener -> discord.getThreadPool().execute(() -> listener.onUserUpdate(event)));
+
+        collectListeners(UserUpdateListener.class, discord, user).forEach(listener -> discord.getThreadPool()
+                .execute(() -> listener.onUserUpdate(event)));
     }
 }

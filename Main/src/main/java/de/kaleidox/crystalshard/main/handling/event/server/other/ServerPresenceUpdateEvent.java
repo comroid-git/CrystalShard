@@ -9,8 +9,8 @@ import java.util.Optional;
 
 public interface ServerPresenceUpdateEvent extends ServerEvent, ServerMemberEvent {
     Presence getPresence();
-    
+
     Optional<UserActivity> getActivity();
-    
+
     Presence.Status getStatus();
 }

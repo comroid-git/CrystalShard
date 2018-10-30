@@ -1,15 +1,6 @@
 package de.kaleidox.crystalshard.util.helpers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.BiFunction;
@@ -24,9 +15,15 @@ public class MapHelper extends NullHelper {
     // Static members
     // Static membe
     public static <K, V> V getEquals(Map<K, V> map, K key, V valueIfAbsent) {
-        return map.entrySet().stream().filter(entry -> entry.getKey().equals(key)).map(Map.Entry::getValue).findAny().orElse(valueIfAbsent);
+        return map.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey()
+                        .equals(key))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElse(valueIfAbsent);
     }
-    
+
     /**
      * Another implementation of {@link Map#containsKey(Object)}, but uses {@link Object#equals(Object)} instead of comparing hash codes.
      *
@@ -38,9 +35,12 @@ public class MapHelper extends NullHelper {
      * @see Map#containsKey(Object)
      */
     public static <K, V> boolean containsKey(Map<K, V> map, K key) {
-        return map.entrySet().stream().map(Map.Entry::getKey).anyMatch(check -> check.equals(key));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .anyMatch(check -> check.equals(key));
     }
-    
+
     /**
      * Another implementation of {@link Map#containsValue(Object)}, but uses {@link Object#equals(Object)} instead of comparing hash codes.
      *
@@ -52,9 +52,12 @@ public class MapHelper extends NullHelper {
      * @see Map#containsValue(Object)
      */
     public static <K, V> boolean containsValue(Map<K, V> map, V value) {
-        return map.entrySet().stream().map(Map.Entry::getValue).anyMatch(check -> check.equals(value));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .anyMatch(check -> check.equals(value));
     }
-    
+
     /**
      * Checks whether the given map contains any Entry whose key {@link Object#equals(Object)} the value returned by the {@code extractor} for that key.
      *
@@ -67,9 +70,13 @@ public class MapHelper extends NullHelper {
      * @return Whether the map contains a key that can be mapped to the value.
      */
     public static <K, V, T> boolean containsKey(Map<K, V> map, T value, Function<K, T> extractor) {
-        return map.entrySet().stream().map(Map.Entry::getKey).map(extractor).anyMatch(t -> t.equals(value));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .map(extractor)
+                .anyMatch(t -> t.equals(value));
     }
-    
+
     /**
      * Checks whether the given map contains any Entry whose value {@link Object#equals(Object)} the value returned by the {@code extractor} for that value.
      *
@@ -82,27 +89,40 @@ public class MapHelper extends NullHelper {
      * @return Whether the map contains a key that can be mapped to the value.
      */
     public static <K, V, T> boolean containsValue(Map<K, V> map, T value, Function<V, T> extractor) {
-        return map.entrySet().stream().map(Map.Entry::getValue).map(extractor).anyMatch(t -> t.equals(value));
+        return map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .map(extractor)
+                .anyMatch(t -> t.equals(value));
     }
-    
+
     public static <K, V> int countKeyOccurrences(Map<K, V> map, K key) {
-        return Math.toIntExact(map.entrySet().stream().map(Map.Entry::getKey).filter(check -> check.equals(key)).count());
+        return Math.toIntExact(map.entrySet()
+                .stream()
+                .map(Map.Entry::getKey)
+                .filter(check -> check.equals(key))
+                .count());
     }
-    
+
     public static <K, V> int countValueOccurrences(Map<K, V> map, V value) {
-        return Math.toIntExact(map.entrySet().stream().map(Map.Entry::getValue).filter(check -> check.equals(value)).count());
+        return Math.toIntExact(map.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .filter(check -> check.equals(value))
+                .count());
     }
-    
+
     public static <K, V> Map<V, List<K>> reverseMap(Map<K, V> map) {
         Map<V, List<K>> newMap = new HashMap<>();
         getMapOfParent(map, newMap);
         map.forEach((key, value) -> {
             newMap.putIfAbsent(value, new ArrayList<>());
-            newMap.get(value).add(key);
+            newMap.get(value)
+                    .add(key);
         });
         return newMap;
     }
-    
+
     /**
      * Gets a list of all Keys of a map.
      *
@@ -112,14 +132,14 @@ public class MapHelper extends NullHelper {
      */
     public static <T> List<T> getAllKeys(Map<T, ?> ofMap) {
         List<T> val = new ArrayList<>();
-        
+
         for (Map.Entry<T, ?> entry : ofMap.entrySet()) {
             val.add(entry.getKey());
         }
-        
+
         return Collections.unmodifiableList(val);
     }
-    
+
     /**
      * Gets a list of all Values of a map.
      *
@@ -129,14 +149,14 @@ public class MapHelper extends NullHelper {
      */
     public static <T> List<T> getAllValues(Map<?, T> ofMap) {
         List<T> val = new ArrayList<>();
-        
+
         for (Map.Entry<?, T> entry : ofMap.entrySet()) {
             val.add(entry.getValue());
         }
-        
+
         return Collections.unmodifiableList(val);
     }
-    
+
     /**
      * Reformats a {@link TreeMap} after the provided Functions, then returns the new map and overwrites the provided {@code outputMapPointer} with the new map.
      * This method requires an additional comparator to be attached to the output TreeMap.
@@ -161,7 +181,7 @@ public class MapHelper extends NullHelper {
         newMap.putAll(reformat);
         return newMap;
     }
-    
+
     /**
      * Reformats a {@link TreeMap} after the provided Functions, then returns the new map and overwrites the provided {@code outputMapPointer} with the new map.
      * This method requires an additional comparator to be attached to the output TreeMap.
@@ -186,7 +206,7 @@ public class MapHelper extends NullHelper {
         outputMapPointer.putAll(reformat);
         return outputMapPointer;
     }
-    
+
     /**
      * Reformats a map after the provided Functions, then returns the new map. This method is an overloaded version of {@link #reformat(Map, Map, Function,
      * Function)}, but with {@code null} as outputMapPointer. When trying to reformat a {@link TreeMap} including its keys, please use {@link #reformat(TreeMap,
@@ -209,7 +229,7 @@ public class MapHelper extends NullHelper {
                                                                                                      Function<iV, oV> valueMapper) {
         return reformat(map, null, keyMapper, valueMapper);
     }
-    
+
     /**
      * Reformats a map after the provided Functions, then returns the new map and overwrites the provided {@code outputMapPointer} with the new map. When trying
      * to reformat a {@link TreeMap} including its keys, consider using {@link #reformat(TreeMap, TreeMap, Function, Function, Comparator)}, as that method will
@@ -246,7 +266,7 @@ public class MapHelper extends NullHelper {
         }
         return newMap;
     }
-    
+
     /**
      * Creates a new parented map of the type of {@code inputMap} and injects it into {@code outputMap}. This way, methods like {@link #reformat(Map, Function,
      * Function)} can always return the correct map type. The class of {@code inputMap} should always equal the class of the returned {@code outputMap}, given
@@ -281,14 +301,25 @@ public class MapHelper extends NullHelper {
         }
         return outputMap;
     }
-    
+
     public static <K, V, T> V getSpecial(Map<K, V> map, T superKey, Supplier<V> defaultValue, Function<K, T> keyFunction) {
         if (!containsKey(map, superKey, keyFunction)) return defaultValue.get();
-        return map.entrySet().stream().filter(entry -> keyFunction.apply(entry.getKey()).equals(superKey)).map(Map.Entry::getValue).findAny().orElseGet(
-                defaultValue);
+        return map.entrySet()
+                .stream()
+                .filter(entry -> keyFunction.apply(entry.getKey())
+                        .equals(superKey))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElseGet(
+                        defaultValue);
     }
-    
+
     public static <K, V, T> V getSpecialComparator(Map<K, V> map, T superKey, Supplier<V> defaultValue, BiFunction<K, T, Boolean> keyFunction) {
-        return map.entrySet().stream().filter(entry -> keyFunction.apply(entry.getKey(), superKey)).map(Map.Entry::getValue).findAny().orElseGet(defaultValue);
+        return map.entrySet()
+                .stream()
+                .filter(entry -> keyFunction.apply(entry.getKey(), superKey))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElseGet(defaultValue);
     }
 }

@@ -10,10 +10,10 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Evaluation<T> {
-    private final T            value;
+    private final T value;
     private final Predicate<T> tester;
-    private final boolean      result;
-    
+    private final boolean result;
+
     /**
      * Creates a new Evaluation instance.
      *
@@ -25,13 +25,23 @@ public class Evaluation<T> {
         this.tester = tester;
         this.result = tester.test(of);
     }
-    
+
+    /**
+     * Creates a new Evaluation instance for a predefined boolean.
+     *
+     * @param bool The boolean to use for testing.
+     * @return The Evaluation instance.
+     */
+    public static Evaluation<Boolean> of(boolean bool) {
+        return new Evaluation<>(bool, n -> n);
+    }
+
     // Override Methods
     @Override
     public String toString() {
         return "Evaluation [" + value.toString() + "; tested " + (result ? "TRUE" : "FALSE") + "]";
     }
-    
+
     /**
      * Gets the actual value.
      *
@@ -40,7 +50,7 @@ public class Evaluation<T> {
     public T getValue() {
         return value;
     }
-    
+
     /**
      * Gets whether the evaluation has succeeded.
      *
@@ -49,7 +59,7 @@ public class Evaluation<T> {
     public boolean getResult() {
         return result;
     }
-    
+
     /**
      * Performs an action if the pre-defined Predicate has tested {@code TRUE}.
      *
@@ -60,7 +70,7 @@ public class Evaluation<T> {
         if (result) successAction.accept(value);
         return result;
     }
-    
+
     /**
      * Performs an action if a given Predicate tests {@code TRUE}.
      *
@@ -75,7 +85,7 @@ public class Evaluation<T> {
         }
         return false;
     }
-    
+
     /**
      * Performs an action if the pre-defined Predicate tests {@code FALSE}.
      *
@@ -86,7 +96,7 @@ public class Evaluation<T> {
         if (!result) failureAction.accept(value);
         return result;
     }
-    
+
     /**
      * Performs an action if a given Predicate tests {@code FALSE}.
      *
@@ -101,7 +111,11 @@ public class Evaluation<T> {
         }
         return false;
     }
-    
+
+    // Static membe
+
+    // Static members
+
     /**
      * Performs one of the given action, depending on whether the predicate failed or succeeded.
      *
@@ -113,19 +127,5 @@ public class Evaluation<T> {
         boolean b = onSuccess(successAction);
         if (!b) failureAction.accept(value);
         return b;
-    }
-    
-    // Static membe
-    
-    // Static members
-    
-    /**
-     * Creates a new Evaluation instance for a predefined boolean.
-     *
-     * @param bool The boolean to use for testing.
-     * @return The Evaluation instance.
-     */
-    public static Evaluation<Boolean> of(boolean bool) {
-        return new Evaluation<>(bool, n -> n);
     }
 }

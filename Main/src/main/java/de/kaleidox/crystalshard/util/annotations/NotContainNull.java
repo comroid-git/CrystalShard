@@ -10,4 +10,5 @@ import java.util.Collection;
  * @see NotNull
  */
 @Target(ElementType.PARAMETER)
-public @interface NotContainNull { }
+public @interface NotContainNull {
+}

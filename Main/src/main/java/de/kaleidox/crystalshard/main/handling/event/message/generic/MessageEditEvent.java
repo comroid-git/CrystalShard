@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface MessageEditEvent extends MessageCreateEvent, EditEvent<Message> {
     Optional<String> getPreviousContent();
-    
+
     Optional<SentEmbed> getPreviousEmbed();
 }

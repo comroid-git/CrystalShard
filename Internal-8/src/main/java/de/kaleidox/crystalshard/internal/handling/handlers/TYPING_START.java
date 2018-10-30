@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -17,11 +18,19 @@ public class TYPING_START extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long channelId = data.get("channel_id").asLong();
-        TextChannel channel = discord.getChannelCache().getOrRequest(channelId, channelId).toTextChannel().orElseThrow(AssertionError::new);
-        Server server = channel.toServerChannel().map(ServerChannel::getServer).orElse(null);
-        long userId = data.get("user_id").asLong();
-        User user = discord.getUserCache().getOrRequest(userId, userId);
+        long channelId = data.get("channel_id")
+                .asLong();
+        TextChannel channel = discord.getChannelCache()
+                .getOrRequest(channelId, channelId)
+                .toTextChannel()
+                .orElseThrow(AssertionError::new);
+        Server server = channel.toServerChannel()
+                .map(ServerChannel::getServer)
+                .orElse(null);
+        long userId = data.get("user_id")
+                .asLong();
+        User user = discord.getUserCache()
+                .getOrRequest(userId, userId);
         Collection<Role> roles = (user != null ? user.getRoles(server) : Collections.emptyList());
 
         TypingStartEventInternal event = new TypingStartEventInternal(discord, channel, user);

@@ -18,7 +18,7 @@ public @interface Range {
      * @return The minimum value of the number.
      */
     long min() default 0;
-    
+
     /**
      * Defines the maximum value of the number.
      *

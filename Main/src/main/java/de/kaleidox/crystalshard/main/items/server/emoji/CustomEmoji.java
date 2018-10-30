@@ -17,7 +17,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @return The server.
      */
     Server getServer();
-    
+
     /**
      * Asynchrounously requests all data about the CustomEmoji, so that future requesting tasks will complete instantly. Use this method if you want to acquire
      * a lot of CustomEmoji data soon, and block the thread using {@link CompletableFuture#join()} upon calling this method. That way all future requests on
@@ -28,7 +28,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @return A future that completes with {@code null} when all data has been recieved.
      */
     CompletableFuture<Void> requestAllData();
-    
+
     /**
      * Gets the creator of the user. Throws an exception if no data is available. Data can be requested available with {@link #requestAllData()}.
      *
@@ -36,7 +36,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @throws NoSuchElementException If the data is not available.
      */
     User getCreator() throws NoSuchElementException;
-    
+
     /**
      * Gets whether the emoji is animated. Throws an exception if no data is available. Data can be requested available with {@link #requestAllData()}.
      *
@@ -44,7 +44,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @throws NoSuchElementException If the data is not available.
      */
     boolean isAnimated() throws NoSuchElementException;
-    
+
     /**
      * Gets whether the emoji is managed. Throws an exception if no data is available. Data can be requested available with {@link #requestAllData()}.
      *
@@ -52,7 +52,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @throws NoSuchElementException If the data is not available.
      */
     boolean isManaged() throws NoSuchElementException;
-    
+
     /**
      * Gets whether the emoji must be wrapped in colons. Throws an exception if no data is available. Data can be requested available with {@link
      * #requestAllData()}.
@@ -61,7 +61,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @throws NoSuchElementException If the data is not available.
      */
     boolean requireColons() throws NoSuchElementException;
-    
+
     /**
      * Performs a request to acquire the creator of this emoji. If there has been any request that includes this data made already, the returned future is
      * completed instantly, and you can use {@link #getCreator()} instead.
@@ -69,7 +69,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @return A future to contain the creator of this emoji.
      */
     CompletableFuture<User> requestCreator();
-    
+
     /**
      * Performs a request to acquire whether this emoji is animated. If there has been any request that includes this data made already, the returned future is
      * completed instantly, and you can use {@link #isAnimated()} instead. The method {@link #toDiscordPrintable()} always requires to know whether the emoji is
@@ -79,7 +79,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @return A future to contain whether the emoji is animated.
      */
     CompletableFuture<Boolean> requestIsAnimated();
-    
+
     /**
      * Performs a request to acquire whether this emoji is managed. If there has been any request that includes this data made already, the returned future is
      * completed instantly, and you can use {@link #isManaged()} instead.
@@ -87,7 +87,7 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @return A future to contain whether the emoji is managed.
      */
     CompletableFuture<Boolean> requestIsManaged();
-    
+
     /**
      * Performs a request to acquire whether this emoji requires to be wrapped in colons. If there has been any request that includes this data made already,
      * the returned future is completed instantly, and you can use {@link #requireColons()} instead. Usually, the result of this method is {@code TRUE} and
@@ -96,9 +96,9 @@ public interface CustomEmoji extends DiscordItem, Emoji, Cacheable<CustomEmoji, 
      * @return A future to contain whether the emoji requires to be wrapped in colons.
      */
     CompletableFuture<Boolean> requestRequireColons();
-    
+
     // Override Methods
-    
+
     /**
      * {@inheritDoc} This method needs to know whether the emoji is animated, so it performs a blocking {@link #requestIsAnimated()}.
      */

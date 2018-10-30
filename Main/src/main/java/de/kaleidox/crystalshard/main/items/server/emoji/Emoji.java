@@ -13,13 +13,23 @@ import de.kaleidox.crystalshard.util.annotations.Nullable;
 import java.util.Optional;
 
 public interface Emoji extends Mentionable, Castable<Emoji> {
+    static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
+        if (data.get("id")
+                .isNull()) {
+            return InternalDelegate.newInstance(UnicodeEmoji.class, discord, data, true);
+        } else {
+            return discord.getEmojiCache()
+                    .getOrCreate(discord, server, data, true);
+        }
+    }
+
     /**
      * Gets the alias or name of this emoji.
      *
      * @return The alias of the emoji.
      */
     String toAlias();
-    
+
     /**
      * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji. This method is analogous to {@link
      * Mentionable#getMentionTag()}.
@@ -27,7 +37,7 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      * @return A discord-printable string of this emoji.
      */
     String toDiscordPrintable();
-    
+
     /**
      * Gets the universal replacement of this emoji.
      *
@@ -35,10 +45,10 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      */
     @Override
     String toString();
-    
+
     @Override
     boolean equals(Object obj);
-    
+
     /**
      * Gets the name of this emoji.
      *
@@ -47,20 +57,12 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
     default String getName() {
         return this.toAlias();
     }
-    
+
     default Optional<UnicodeEmoji> toUnicodeEmoji() {
         return castTo(UnicodeEmoji.class);
     }
-    
+
     default Optional<CustomEmoji> toCustomEmoji() {
         return castTo(CustomEmoji.class);
-    }
-    
-    static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
-        if (data.get("id").isNull()) {
-            return InternalDelegate.newInstance(UnicodeEmoji.class, discord, data, true);
-        } else {
-            return discord.getEmojiCache().getOrCreate(discord, server, data, true);
-        }
     }
 }

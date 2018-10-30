@@ -33,35 +33,35 @@ public @interface Command {
      * @return The aliases of the command.
      */
     String[] aliases();
-    
+
     /**
      * Defines the description that is shown in the default help command.
      *
      * @return The description of the command.
      */
     String description() default "No description provided.";
-    
+
     /**
      * Defines whether the command is shown in the default help command. Default value is {@code TRUE}.
      *
      * @return Whether to list this command in the default help command.
      */
     boolean shownInDefaultHelp() default true;
-    
+
     /**
      * Defines whether this command should be usable in a private chat. Default value is {@code true}.
      *
      * @return Whether this command is available in private chat.
      */
     boolean enablePrivateChat() default true;
-    
+
     /**
      * Defines whether this command should be usable in a server chat. Default value is {@code true}.
      *
      * @return Whether this command is available in server chat.
      */
     boolean enableServerChat() default true;
-    
+
     /**
      * Defines a permission that the user is required to have be in the executing context; e.g. the ServerTextChannel. Default value is {@link
      * Permission#EMPTY}.
@@ -69,21 +69,21 @@ public @interface Command {
      * @return The required permission to execute this command.
      */
     Permission requiredDiscordPermission() default Permission.EMPTY;
-    
+
     /**
      * Defines the minimum amount of channel mentions required for the command to run. Default value is {@code 0}.
      *
      * @return The required minimum amount of channel mentions.
      */
     int requireChannelMentions() default 0;
-    
+
     /**
      * Defines the minimum amount of user mentions required for the command to run. Default value is {@code 0}.
      *
      * @return The required minimum amount of user mentions.
      */
     int requireUserMentions() default 0;
-    
+
     /**
      * Defines the minimum amount of role mentions required for the command to run. Default value is {@code 0}.
      *

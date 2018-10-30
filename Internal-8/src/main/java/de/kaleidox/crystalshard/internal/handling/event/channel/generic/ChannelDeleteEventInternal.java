@@ -9,12 +9,12 @@ import java.util.Optional;
 
 public class ChannelDeleteEventInternal extends EventBase implements ChannelDeleteEvent {
     private final Channel channel;
-    
+
     public ChannelDeleteEventInternal(DiscordInternal discordInternal, Channel channel) {
         super(discordInternal);
         this.channel = channel;
     }
-    
+
     // Override Methods
     @Override
     public Optional<Channel> getChannel() {

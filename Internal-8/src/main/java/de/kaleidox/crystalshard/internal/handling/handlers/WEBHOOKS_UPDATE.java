@@ -14,13 +14,17 @@ public class WEBHOOKS_UPDATE extends HandlerBase {
     // Override Methods
     @Override
     public void handle(DiscordInternal discord, JsonNode data) {
-        long serverId = data.get("guild_id").asLong();
-        long channelId = data.get("channel_id").asLong();
-        Server server = discord.getServerCache().getOrRequest(serverId, serverId);
-        Channel channel = discord.getChannelCache().getOrRequest(channelId, channelId);
-        
+        long serverId = data.get("guild_id")
+                .asLong();
+        long channelId = data.get("channel_id")
+                .asLong();
+        Server server = discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        Channel channel = discord.getChannelCache()
+                .getOrRequest(channelId, channelId);
+
         ServerWebhookUpdateEventInternal event = new ServerWebhookUpdateEventInternal(discord, server, channel);
-        
+
         collectListeners(ServerWebhookUpdateListener.class, discord, server, channel).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onWebhookUpdate(event)));
     }
