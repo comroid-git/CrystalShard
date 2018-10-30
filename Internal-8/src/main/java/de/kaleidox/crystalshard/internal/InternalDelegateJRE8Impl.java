@@ -43,7 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Hashtable;
 
-public class InternalDelegateJRE11Impl extends InternalDelegate {
+public class InternalDelegateJRE8Impl extends InternalDelegate {
     private final static Hashtable<Class, Class> implementations;
     
     static {
