@@ -2,10 +2,12 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.handling.listener.Listener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.util.annotations.MayContainNull;
 import de.kaleidox.crystalshard.util.annotations.NotNull;
 
@@ -28,7 +30,7 @@ public abstract class HandlerBase {
         
         if (instances.containsKey(type)) {
             ((T) instances.get(type)).handle(discord, data.get("d"));
-        } else if (!type.isBlank() && !type.isEmpty()) {
+        } else if (!type.isEmpty()) {
             try {
                 Class<T> tClass = (Class<T>) Class.forName(handlerPackage.getName() + "." + type);
                 handler = tClass.getConstructor().newInstance();
@@ -47,6 +49,7 @@ public abstract class HandlerBase {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @SafeVarargs
     static <L extends Listener, C extends ListenerAttachable<? super L>> List<L> collectListeners(@NotNull Class<L> listenerClass,
                                                                                                   @MayContainNull C... collectIn) {
@@ -54,12 +57,25 @@ public abstract class HandlerBase {
         List<L> collect = new ArrayList<>();
     
         for (C item : collectIn) {
-            if (Objects.nonNull(item)) item.getListenerManagers()
-                    .stream()
-                    .filter(ListenerManager::isEnabled)
-                    .map(ListenerManager::getListener)
-                    .map(listener -> (L) listener)
-                    .forEachOrdered(collect::add);
+            if (Objects.nonNull(item)) {
+                if (item instanceof RoleContainer) {
+                    for (Role role : ((RoleContainer) item).getRoles()) {
+                        role.getListenerManagers()
+                                .stream()
+                                .filter(manager -> listenerClass.isAssignableFrom(manager.getListener().getClass()))
+                                .filter(ListenerManager::isEnabled)
+                                .map(ListenerManager::getListener)
+                                .map(listener -> (L) listener) // TODO: 30.10.2018 Test if this cast is safe
+                                .forEachOrdered(collect::add);
+                    }
+                } else item.getListenerManagers()
+                        .stream()
+                        .filter(manager -> listenerClass.isAssignableFrom(manager.getListener().getClass()))
+                        .filter(ListenerManager::isEnabled)
+                        .map(ListenerManager::getListener)
+                        .map(listener -> (L) listener)
+                        .forEachOrdered(collect::add);
+            }
         }
         
         return collect;

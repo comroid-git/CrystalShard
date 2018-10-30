@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.generic.MessageDeleteEventInternal;
+import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageDeleteListener;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -35,7 +36,7 @@ public class MESSAGE_DELETE extends HandlerBase {
                          discord,
                          server,
                          channel,
-                         roles.toArray(new Role[0]),
+                         new RoleContainer(roles),
                          user,
                          message).forEach(listener -> discord.getThreadPool().execute(() -> listener.onMessageDelete(event)));
         

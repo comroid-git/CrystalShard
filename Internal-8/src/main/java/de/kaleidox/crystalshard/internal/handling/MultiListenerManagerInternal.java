@@ -37,4 +37,19 @@ public class MultiListenerManagerInternal<T extends Listener> implements Listene
     public ListenerManager<T> onDetach(Runnable runnable) {
         return null;
     }
+
+    @Override
+    public ListenerManager<T> enable() {
+        return null;
+    }
+
+    @Override
+    public ListenerManager<T> disable() {
+        return null;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

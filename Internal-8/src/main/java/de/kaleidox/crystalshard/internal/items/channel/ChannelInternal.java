@@ -15,6 +15,7 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachable
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public abstract class ChannelInternal implements Channel {
     
     @Override
     public CompletableFuture<Void> delete() {
-        if (!hasPermission(discord.getSelf(), Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!hasPermission(discord.getSelf(), Permission.MANAGE_CHANNELS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot delete channel!",
                 Permission.MANAGE_CHANNELS));
         return CoreDelegate.webRequest(discord).method(Method.DELETE).endpoint(Endpoint.Location.CHANNEL.toEndpoint(id)).executeNull();

@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.generic.MessageEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.channel.TextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageEditListener;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
@@ -45,7 +46,7 @@ public class MESSAGE_UPDATE extends HandlerBase {
                          server,
                          channel,
                          user,
-                         roles.toArray(new Role[0]),
+                         new RoleContainer(roles),
                          message).forEach(listener -> discord.getThreadPool().execute(() -> listener.onMessageEdit(event)));
     }
 }

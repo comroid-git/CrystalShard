@@ -15,6 +15,7 @@ import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -98,7 +99,7 @@ public class ChannelUpdaterInternal {
         @Override
         public CompletableFuture<ChannelCategory> update() {
             if (!channel.getServerOfChannel().orElseThrow(AssertionError::new).hasPermission(discord, Permission.MANAGE_CHANNELS))
-                return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
+                return FutureHelper.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return CoreDelegate.webRequest(ChannelCategory.class, discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
                     .node((name != null ? new Object[]{"name",
@@ -140,7 +141,7 @@ public class ChannelUpdaterInternal {
         @Override
         public CompletableFuture<ServerTextChannel> update() {
             if (!channel.getServerOfChannel().orElseThrow(AssertionError::new).hasPermission(discord, Permission.MANAGE_CHANNELS))
-                return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
+                return FutureHelper.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return CoreDelegate.webRequest(ServerTextChannel.class, discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
                     .node((name != null ? new Object[]{"name",
@@ -188,7 +189,7 @@ public class ChannelUpdaterInternal {
         @Override
         public CompletableFuture<ServerVoiceChannel> update() {
             if (!channel.getServerOfChannel().orElseThrow(AssertionError::new).hasPermission(discord, Permission.MANAGE_CHANNELS))
-                return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
+                return FutureHelper.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
             return CoreDelegate.webRequest(ServerVoiceChannel.class, discord).method(Method.PATCH)
                     .endpoint(Endpoint.Location.CHANNEL.toEndpoint(channel))
                     .node((name != null ? new Object[]{"name",

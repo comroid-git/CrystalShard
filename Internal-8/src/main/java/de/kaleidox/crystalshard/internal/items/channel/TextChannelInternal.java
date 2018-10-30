@@ -16,6 +16,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     // Override Methods
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
-        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
+        if (checkPermissions()) return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
         return CoreDelegate.webRequest(Message.class, discord).method(Method.POST)
                 .endpoint(Endpoint.Location.MESSAGE.toEndpoint(this))
@@ -56,7 +57,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
+        if (checkPermissions()) return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
         Embed.Builder builder = discord.getUtilities().getDefaultEmbed().getBuilder();
         defaultEmbedModifier.accept(builder);
@@ -65,7 +66,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
+        if (checkPermissions()) return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
         return CoreDelegate.webRequest(Message.class, discord).method(Method.POST).endpoint(Endpoint.Location.MESSAGE.toEndpoint(this)).node(objectNode("content",
                                                                                                                                          "",
@@ -84,7 +85,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     
     @Override
     public CompletableFuture<Message> sendMessage(String content) {
-        if (checkPermissions()) return CompletableFuture.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
+        if (checkPermissions()) return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
                                                                                                      Permission.SEND_MESSAGES));
         return CoreDelegate.webRequest(Message.class, discord).method(Method.POST).endpoint(Endpoint.Location.MESSAGE.toEndpoint(this)).node(objectNode("content",
                                                                                                                                          content,
@@ -105,7 +106,7 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     @Override
     public CompletableFuture<Collection<Message>> getMessages(int limit) {
         if (limit < 1 || limit > 100) throw new IllegalArgumentException("Parameter 'limit' is not within its bounds! [1, 100]");
-        if (!hasPermission(discord, Permission.READ_MESSAGES)) return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot read " + toString(),
+        if (!hasPermission(discord, Permission.READ_MESSAGES)) return FutureHelper.failedFuture(new DiscordPermissionException("Cannot read " + toString(),
                                                                                                                                     Permission.READ_MESSAGES));
         if (!hasPermission(discord, Permission.READ_MESSAGE_HISTORY)) return CompletableFuture.completedFuture(Collections.emptyList());
         WebRequest<Collection<Message>> request = CoreDelegate.webRequest(discord);

@@ -40,6 +40,7 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 
@@ -277,21 +278,21 @@ public class ServerInternal implements Server {
     
     @Override
     public CompletableFuture<Void> delete() {
-        if (!getOwner().equals(discord.getSelf())) return CompletableFuture.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
+        if (!getOwner().equals(discord.getSelf())) return FutureHelper.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
         return CoreDelegate.webRequest(discord).method(Method.DELETE).endpoint(Endpoint.of(Endpoint.Location.SELF_GUILD, this)).executeNull();
     }
     
     @Override
     public CompletableFuture<Void> prune(int days) {
         if (days < 1 || days > 365) throw new IllegalArgumentException("Parameter 'days' is not within its bounds! [1,365]");
-        if (!hasPermission(discord, Permission.KICK_MEMBERS)) return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot prune!",
+        if (!hasPermission(discord, Permission.KICK_MEMBERS)) return FutureHelper.failedFuture(new DiscordPermissionException("Cannot prune!",
                                                                                                                                    Permission.KICK_MEMBERS));
         return CoreDelegate.webRequest(discord).method(Method.POST).endpoint(Endpoint.Location.GUILD_PRUNE.toEndpoint(id)).node("days", days).executeNull();
     }
     
     @Override
     public CompletableFuture<Collection<Integration>> requestIntegrations() {
-        if (!hasPermission(discord, Permission.MANAGE_GUILD)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!hasPermission(discord, Permission.MANAGE_GUILD)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot get guild integrations!",
                 Permission.MANAGE_GUILD));
         WebRequest<Collection<Integration>> request = CoreDelegate.webRequest(discord);
@@ -308,7 +309,7 @@ public class ServerInternal implements Server {
     
     @Override
     public CompletableFuture<URL> getVanityUrl() {
-        if (!hasPermission(discord, Permission.MANAGE_GUILD)) return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!",
+        if (!hasPermission(discord, Permission.MANAGE_GUILD)) return FutureHelper.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!",
                                                                                                                                    Permission.MANAGE_GUILD));
         return CoreDelegate.webRequest(URL.class, discord).method(Method.GET).endpoint(Endpoint.Location.GUILD_VANITY_INVITE.toEndpoint(id)).execute(node -> {
             if (!node.has("code")) throw new NullPointerException("Guild does not have a vanity URL!");

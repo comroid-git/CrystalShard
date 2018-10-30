@@ -12,6 +12,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.helpers.UrlHelper;
 
 import java.net.URL;
@@ -79,7 +80,7 @@ public class InviteInternal implements Invite {
     
     @Override
     public CompletableFuture<Void> delete() {
-        if (!channel.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!channel.hasPermission(discord, Permission.MANAGE_CHANNELS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot delete invite.",
                 Permission.MANAGE_CHANNELS));
         return CoreDelegate.webRequest(discord).method(Method.DELETE).endpoint(Endpoint.Location.INVITE.toEndpoint(code)).executeNull();

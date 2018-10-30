@@ -18,6 +18,7 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
@@ -104,7 +105,7 @@ public class RoleInternal implements Role {
     @Override
     public CompletableFuture<Void> delete() {
         if (!server.hasPermission(discord, Permission.MANAGE_ROLES))
-            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot delete roles!", Permission.MANAGE_ROLES));
+            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot delete roles!", Permission.MANAGE_ROLES));
         return CoreDelegate.webRequest(discord).method(Method.DELETE).endpoint(Endpoint.Location.GUILD_ROLE_SPECIFIC.toEndpoint(server, id)).executeNull();
     }
     

@@ -14,6 +14,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 
+import de.kaleidox.crystalshard.util.helpers.OptionalHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -90,12 +91,11 @@ public class ChannelCategoryInternal extends ChannelInternal implements ChannelC
     
     @Override
     public boolean hasPermission(User user, Permission permission) {
-        return overrides.stream()
+        return OptionalHelper.or(overrides.stream()
                 .filter(override -> override.getParent() != null)
                 .filter(override -> override.getParent().equals(user))
                 .map(override -> override.getAllowed().contains(permission))
-                .findAny()
-                .or(() -> Optional.of(server.getEveryoneRole().getPermissions().contains(permission)))
+                .findAny(), () -> Optional.of(server.getEveryoneRole().getPermissions().contains(permission)))
                 .orElse(true); // If no information could be acquired, assert TRUE
     }
     

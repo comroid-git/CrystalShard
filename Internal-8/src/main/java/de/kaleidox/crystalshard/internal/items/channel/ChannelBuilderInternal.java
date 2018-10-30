@@ -19,6 +19,7 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -148,7 +149,7 @@ public class ChannelBuilderInternal {
         
         @Override
         public CompletableFuture<ChannelCategory> build() {
-            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot create channel!",
                     Permission.MANAGE_CHANNELS));
             if (name == null) throw new IllegalArgumentException("No channel name set!");
@@ -194,7 +195,7 @@ public class ChannelBuilderInternal {
         
         @Override
         public CompletableFuture<ServerTextChannel> build() {
-            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot create channel!",
                     Permission.MANAGE_CHANNELS));
             if (name == null) throw new IllegalArgumentException("No channel name set!");
@@ -243,7 +244,7 @@ public class ChannelBuilderInternal {
         
         @Override
         public CompletableFuture<ServerVoiceChannel> build() {
-            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+            if (!server.hasPermission(discord, Permission.MANAGE_CHANNELS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot create channel!",
                     Permission.MANAGE_CHANNELS));
             if (name == null) throw new IllegalArgumentException("No channel name set!");

@@ -40,6 +40,7 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
@@ -289,18 +290,18 @@ public class MessageInternal implements Message {
     @Override
     public CompletableFuture<Void> delete(String reason) {
         if (channel.toServerChannel().isPresent() && !author.isYourself() && !channel.hasPermission(discord, Permission.MANAGE_MESSAGES))
-            return CompletableFuture.failedFuture(new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.",
-                                                                                 Permission.MANAGE_MESSAGES));
+            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.",
+                    Permission.MANAGE_MESSAGES));
         return CoreDelegate.webRequest(discord).method(Method.DELETE).endpoint(Endpoint.Location.MESSAGE_SPECIFIC.toEndpoint(channelId, id)).executeNull();
     }
     
     @Override
     public CompletableFuture<Void> addReaction(String emojiPrintable) {
-        if (!channel.hasPermission(discord, Permission.READ_MESSAGE_HISTORY)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!channel.hasPermission(discord, Permission.READ_MESSAGE_HISTORY)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot read message history!",
                 Permission.READ_MESSAGE_HISTORY));
         if (getReactions().stream().map(Reaction::getEmoji).map(Emoji::toDiscordPrintable).noneMatch(emojiPrintable::equalsIgnoreCase) &&
-            !channel.hasPermission(discord, Permission.ADD_REACTIONS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+            !channel.hasPermission(discord, Permission.ADD_REACTIONS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot add new reactions!",
                 Permission.ADD_REACTIONS));
         return CoreDelegate.webRequest(discord).method(Method.PUT)
@@ -310,7 +311,7 @@ public class MessageInternal implements Message {
     
     @Override
     public CompletableFuture<Void> removeAllReactions() {
-        if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot remove other peoples reactions.",
                 Permission.MANAGE_MESSAGES));
         return CoreDelegate.webRequest(discord).method(Method.DELETE).endpoint(Endpoint.Location.REACTIONS.toEndpoint(channelId, id)).executeNull();
@@ -318,7 +319,7 @@ public class MessageInternal implements Message {
     
     @Override
     public CompletableFuture<Void> removeReactionsByEmoji(Emoji... emojis) {
-        if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot remove other peoples reactions.",
                 Permission.MANAGE_MESSAGES));
         List<CompletableFuture<Void>> deletions = new ArrayList<>();
@@ -337,7 +338,7 @@ public class MessageInternal implements Message {
     
     @Override
     public CompletableFuture<Void> removeReactionsByUser(User... users) {
-        if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!channel.hasPermission(discord, Permission.MANAGE_MESSAGES)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot remove other peoples reactions.",
                 Permission.MANAGE_MESSAGES));
         List<CompletableFuture<Void>> deletions = new ArrayList<>();

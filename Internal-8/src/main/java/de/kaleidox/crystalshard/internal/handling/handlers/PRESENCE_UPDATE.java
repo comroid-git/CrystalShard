@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.other.ServerPresenceUpdateEventInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
+import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.main.handling.listener.server.other.ServerPresenceUpdateListener;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -24,7 +25,7 @@ public class PRESENCE_UPDATE extends HandlerBase {
         
         ServerPresenceUpdateEventInternal event = new ServerPresenceUpdateEventInternal(discord, presence);
         
-        collectListeners(ServerPresenceUpdateListener.class, discord, server, user, roles.toArray(new Role[0])).forEach(listener -> discord.getThreadPool()
+        collectListeners(ServerPresenceUpdateListener.class, discord, server, user, new RoleContainer(roles)).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onPresenceUpdate(event)));
     }
 }

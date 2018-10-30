@@ -5,10 +5,11 @@ import de.kaleidox.crystalshard.main.handling.listener.DiscordAttachableListener
 import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
+import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 
 @FunctionalInterface
 public interface MessageEditListener
-        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener, MessageAttachableListener {
+        extends DiscordAttachableListener, ServerAttachableListener, ChannelAttachableListener, UserAttachableListener, MessageAttachableListener, RoleAttachableListener {
     void onMessageEdit(MessageEditEvent event);
 }

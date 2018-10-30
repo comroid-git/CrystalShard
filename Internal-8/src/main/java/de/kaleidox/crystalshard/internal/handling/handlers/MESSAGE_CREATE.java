@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.generic.MessageCreateEventInternal;
+import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageCreateListener;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
@@ -31,7 +32,7 @@ public class MESSAGE_CREATE extends HandlerBase {
         
         MessageCreateEvent event = new MessageCreateEventInternal(discord, message);
         
-        collectListeners(MessageCreateListener.class, discord, server, channel, user, roles.toArray(new Role[0])).forEach(listener -> discord.getThreadPool()
+        collectListeners(MessageCreateListener.class, discord, server, channel, user, new RoleContainer(roles)).forEach(listener -> discord.getThreadPool()
                 .execute(() -> listener.onMessageCreate(event)));
     }
 }

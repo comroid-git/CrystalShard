@@ -19,8 +19,10 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.helpers.ListHelper;
 
+import de.kaleidox.crystalshard.util.helpers.OptionalHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -112,12 +114,11 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     
     @Override
     public boolean hasPermission(User user, Permission permission) {
-        return overrides.stream()
+        return OptionalHelper.or(overrides.stream()
                 .filter(override -> override.getParent() != null)
                 .filter(override -> override.getParent().equals(user))
                 .map(override -> override.getAllowed().contains(permission))
-                .findAny()
-                .or(() -> this.getCategory().flatMap(channelCategory -> channelCategory.getPermissionOverrides()
+                .findAny(), () -> this.getCategory().flatMap(channelCategory -> channelCategory.getPermissionOverrides()
                         .stream()
                         .filter(override -> override.getParent() != null)
                         .filter(override -> override.getParent().equals(user))
@@ -131,7 +132,7 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     
     @Override
     public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
-        if (!hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
+        if (!hasPermission(discord, Permission.MANAGE_CHANNELS)) return FutureHelper.failedFuture(new DiscordPermissionException(
                 "Cannot get channel invite!",
                 Permission.MANAGE_CHANNELS));
         WebRequest<Collection<MetaInvite>> request = CoreDelegate.webRequest(discord);

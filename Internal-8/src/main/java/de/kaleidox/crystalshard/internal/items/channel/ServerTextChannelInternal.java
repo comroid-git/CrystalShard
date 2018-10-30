@@ -19,8 +19,9 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.util.helpers.FutureHelper;
 import de.kaleidox.crystalshard.util.helpers.ListHelper;
-
+import de.kaleidox.crystalshard.util.helpers.OptionalHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -34,29 +35,29 @@ import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEdit
 
 public class ServerTextChannelInternal extends TextChannelInternal implements ServerTextChannel {
     final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();
-    final        List<PermissionOverride>                   overrides;
-    final        Server                                     server;
-    boolean         isNsfw;
-    String          topic;
-    String          name;
+    final List<PermissionOverride> overrides;
+    final Server server;
+    boolean isNsfw;
+    String topic;
+    String name;
     ChannelCategory category;
-    
+
     public ServerTextChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
         this.server = server;
         this.overrides = new ArrayList<>();
         updateData(data);
-        
+
         data.path("permission_overwrites").forEach(node -> overrides.add(new PermissionOverrideInternal(discord, server, node)));
-        
+
         instances.put(id, this);
     }
-    
+
     // Override Methods
     @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
-        
+
         if (isNsfw != data.path("nsfw").asBoolean(isNsfw)) {
             isNsfw = data.get("nsfw").asBoolean();
             traits.add(NSFW_FLAG);
@@ -84,45 +85,46 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
             this.overrides.addAll(overrides);
             traits.add(PERMISSION_OVERWRITES);
         }
-        
+
         return traits;
     }
-    
+
     @Override
     public Server getServer() {
         return server;
     }
-    
+
     @Override
     public Optional<ChannelCategory> getCategory() {
         return Optional.ofNullable(category);
     }
-    
+
     @Override
     public List<PermissionOverride> getPermissionOverrides() {
         return overrides;
     }
-    
+
     @Override
     public String getName() {
         return name;
     }
-    
+
     @Override
     public int getPosition() {
         return 0; // todo
     }
-    
+
     @Override
     public String getTopic() {
         return topic;
     }
-    
+
     @Override
     public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
-        if (!hasPermission(discord, Permission.MANAGE_CHANNELS)) return CompletableFuture.failedFuture(new DiscordPermissionException(
-                "Cannot get channel invite!",
-                Permission.MANAGE_CHANNELS));
+        if (!hasPermission(discord, Permission.MANAGE_CHANNELS))
+            return FutureHelper.failedFuture(new DiscordPermissionException(
+                    "Cannot get channel invite!",
+                    Permission.MANAGE_CHANNELS));
         WebRequest<Collection<MetaInvite>> request = CoreDelegate.webRequest(discord);
         return request.method(Method.GET).endpoint(Endpoint.Location.CHANNEL_INVITE.toEndpoint(id)).execute(data -> {
             List<MetaInvite> list = new ArrayList<>();
@@ -130,39 +132,37 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
             return list;
         });
     }
-    
+
     @Override
     public InviteBuilder getInviteBuilder() {
         return new ChannelBuilderInternal.ChannelInviteBuilder(this);
     }
-    
+
     @Override
     public boolean isNsfw() {
         return isNsfw;
     }
-    
+
     @Override
     public ServerTextChannel.Updater getUpdater() {
         return new ChannelUpdaterInternal.ServerTextChannelUpdater(discord, this);
     }
-    
+
     @Override
     public boolean hasPermission(User user, Permission permission) {
-        return overrides.stream()
+        return OptionalHelper.or(overrides.stream()
                 .filter(override -> override.getParent() != null)
                 .filter(override -> override.getParent().equals(user))
                 .map(override -> override.getAllowed().contains(permission))
-                .findAny()
-                .or(() -> this.getCategory().flatMap(channelCategory -> channelCategory.getPermissionOverrides()
-                        .stream()
-                        .filter(override -> override.getParent() != null)
-                        .filter(override -> override.getParent().equals(user))
-                        .findAny()).map(override -> override.getAllowed().contains(permission)))
-                .or(() -> Optional.of(toServerChannel().map(ServerChannel::getServer)
-                                              .orElseThrow(AssertionError::new)
-                                              .getEveryoneRole()
-                                              .getPermissions()
-                                              .contains(Permission.SEND_MESSAGES)))
+                .findAny(), () -> OptionalHelper.or(this.getCategory().flatMap(channelCategory -> channelCategory.getPermissionOverrides()
+                .stream()
+                .filter(override -> override.getParent() != null)
+                .filter(override -> override.getParent().equals(user))
+                .findAny()).map(override -> override.getAllowed().contains(permission)), () -> Optional.of(toServerChannel().map(ServerChannel::getServer)
+                .orElseThrow(AssertionError::new)
+                .getEveryoneRole()
+                .getPermissions()
+                .contains(Permission.SEND_MESSAGES))))
                 .orElse(true); // if no information could be found, assert TRUE
     }
 }

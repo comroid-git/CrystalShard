@@ -128,13 +128,13 @@ public class EmbedBuilderInternal implements Embed.Builder {
         if (fields.size() >= Embed.Boundaries.FIELD_COUNT) {
             throw new IllegalArgumentException("Field amount must not exceed " + Embed.Boundaries.FIELD_COUNT + "!");
         }
-        if (field.getTitle().isBlank()) {
+        if (field.getTitle().isEmpty()) {
             throw new IllegalArgumentException("Field title must not be blank!");
         }
         if (field.getTitle().length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
             throw new IllegalArgumentException("Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
         }
-        if (field.getText().isBlank()) {
+        if (field.getText().isEmpty()) {
             throw new IllegalArgumentException("Field text must not be blank!");
         }
         if (field.getText().length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
