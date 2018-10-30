@@ -45,18 +45,18 @@ project(":Main") {
     targetCompatibility = 1.8
 }
 
-project(":Core-11") {
+project(":Internal-8") {
     version '0.9'
 
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     dependencies {
         implementation project(":Main")
     }
 }
 
-project(":Internal-11") {
+project(":Core-11") {
     version '0.9'
 
     sourceCompatibility = 11
