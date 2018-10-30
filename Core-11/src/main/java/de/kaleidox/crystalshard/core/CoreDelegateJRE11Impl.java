@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.core.cache.sub.ServerCacheImpl;
 import de.kaleidox.crystalshard.core.cache.sub.UserCacheImpl;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
+import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.WebRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
@@ -75,7 +76,7 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
     
     @Override
     protected <T> WebRequest<T> makeWebRequest(Discord discord) {
-        return new WebRequestImpl<>(discord);
+        return new DiscordRequestImpl<>(discord);
     }
     
     @Override

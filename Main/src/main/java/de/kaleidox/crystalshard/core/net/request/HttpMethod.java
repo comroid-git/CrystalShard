@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.core.net.request;
 
-public enum Method {
+public enum HttpMethod {
     GET("GET"),
     PUT("PUT"),
     POST("POST"),
@@ -8,7 +8,7 @@ public enum Method {
     DELETE("DELETE");
     private final String descriptor;
     
-    Method(String descriptor) {
+    HttpMethod(String descriptor) {
         this.descriptor = descriptor;
     }
     
