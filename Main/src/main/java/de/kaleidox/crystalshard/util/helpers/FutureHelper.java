@@ -71,4 +71,10 @@ public class FutureHelper extends NullHelper {
     public static <T> CompletableFuture<T> newFuture() {
         return new CompletableFuture<>();
     }
+
+    public static <T> CompletableFuture<T> failedFuture(Throwable throwable) {
+        CompletableFuture<T> future = newFuture();
+        future.completeExceptionally(throwable);
+        return future;
+    }
 }
