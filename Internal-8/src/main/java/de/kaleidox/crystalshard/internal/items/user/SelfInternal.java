@@ -112,7 +112,7 @@ public class SelfInternal extends UserInternal implements Self {
     }
 
     private CompletableFuture<Void> sendStatus() {
-        return ((DiscordInternal) getDiscord()).getWebSocket()
+        return getDiscord().getWebSocket()
                 .sendPayload(Payload.create(OpCode.STATUS_UPDATE,
                         objectNode("since",
                                 (status == Presence.Status.IDLE ?
