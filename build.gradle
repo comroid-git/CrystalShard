@@ -1,6 +1,12 @@
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 
+project.version = 0.10
+def mainV = '0.10'
+def impl8V = '0.10'
+def core8V = '0.10'
+def core11V = '0.10'
+
 task myJavadocs(type: Javadoc) {
     source = sourceSets.main.allJava
     options.encoding = 'UTF-8'
@@ -21,13 +27,13 @@ publishing {
 
 allprojects {
     group 'de.kaleidox'
-    
+
     apply plugin: 'java-library'
-    
+
     compileJava {
         options.encoding = 'UTF-8'
     }
-    
+
     repositories {
         jcenter()
     }
@@ -39,20 +45,32 @@ allprojects {
 }
 
 project(":Main") {
-    version '0.9'
+    version = (mainV == null ? project.version : mainV)
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 }
 
 project(":Internal-8") {
-    version '0.9'
+    version = (impl8V == null ? project.version : impl8V)
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
         implementation project(":Main")
+    }
+}
+
+project(":Core-8") {
+    version = (core8V == null ? project.version : core8V)
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencies {
+        implementation project(":Main")
+        implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     }
 }
 
@@ -69,7 +87,7 @@ project(":Core-8") {
 }
 
 project(":Core-11") {
-    version '0.9'
+    version = (core11V == null ? project.version : core11V)
 
     sourceCompatibility = 11
     targetCompatibility = 11
