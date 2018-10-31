@@ -3,7 +3,12 @@ package de.kaleidox.crystalshard.core;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.cache.CacheImpl;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
-import de.kaleidox.crystalshard.core.cache.sub.*;
+import de.kaleidox.crystalshard.core.cache.sub.ChannelCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.EmojiCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.MessageCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.RoleCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.ServerCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.UserCacheImpl;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
@@ -14,14 +19,13 @@ import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.main.Discord;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class CoreDelegateJRE11Impl extends CoreDelegate {
+public class CoreDelegateJRE8Impl extends CoreDelegate {
     private final static Hashtable<Class, Class> implementations;
 
     static {

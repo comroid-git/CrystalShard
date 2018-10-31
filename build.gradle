@@ -56,6 +56,18 @@ project(":Internal-8") {
     }
 }
 
+project(":Core-8") {
+    version '0.9'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencies {
+        implementation project(":Main")
+        implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    }
+}
+
 project(":Core-11") {
     version '0.9'
 
