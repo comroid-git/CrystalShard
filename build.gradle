@@ -42,6 +42,17 @@ allprojects {
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
         implementation 'com.vdurmont:emoji-java:4.0.0'
     }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = ["src\\main\\java"]
+            }
+            resources {
+                srcDirs = ["src\\main\\resources"]
+            }
+        }
+    }
 }
 
 project(":Main") {
