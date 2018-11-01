@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.core.concurrent;
 
 import de.kaleidox.crystalshard.main.Discord;
 
+
 public abstract class Worker extends Thread {
     public Worker(String name) {
         super(name);

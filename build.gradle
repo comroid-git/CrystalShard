@@ -12,11 +12,6 @@ task myJavadocs(type: Javadoc) {
     options.encoding = 'UTF-8'
 }
 
-javadoc {
-    options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -46,6 +41,11 @@ allprojects {
 
 project(":Main") {
     version = (mainV == null ? project.version : mainV)
+
+    javadoc {
+        options.encoding = 'UTF-8'
+        options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
+    }
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8

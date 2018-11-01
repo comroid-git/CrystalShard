@@ -9,12 +9,11 @@ package de.kaleidox.crystalshard.core.cache;
  */
 public interface Cacheable<T extends Cacheable, I, R> {
     /**
-     * @param typeClass
-     * @param ident
-     * @param <T>
-     * @param <I>
-     * @return
-     * @see Cache#get(I)
+     * @param typeClass The class that defines the type of the cache.
+     * @param ident The identifier to gather from the cache.
+     * @param <T> Type of the return item.
+     * @param <I> Type of the identifier.
+     * @return An object of T matching the given identifier.
      */
     static <T extends Cacheable, I> T getInstance(Class<T> typeClass, I ident) {
         return Cache.getCacheInstance(typeClass, ident)

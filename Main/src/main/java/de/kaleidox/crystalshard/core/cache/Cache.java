@@ -28,7 +28,7 @@ public interface Cache<T, I, R> {
      * Request the parameters required to create a new instance after the given {@code requestIdent} object. This method must never return {@code null}.
      *
      * @param requestIdent The ident object to request parameters for.
-     * @return A future that completes with an array of objects. This array is required to test {@code TRUE} on {@link #matchingParams(Object...)}.
+     * @return A future that completes with an array of objects. This array is required to test {@code TRUE} on a test whether it can fit into the construction parameters.
      */
     @NotNull
     // FIXME: 30.09.2018 Seems to not complete properly; thus blocking all #getOrRequest calls.
