@@ -27,3 +27,4 @@ CrystalShard.iml
 src/test/java/de/kaleidox/Test.java
 *.jar
 *.class
+Tests/src/test/resources/token.txt

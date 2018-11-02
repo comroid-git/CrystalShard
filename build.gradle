@@ -55,6 +55,31 @@ allprojects {
     }
 }
 
+project(":Tests") {
+    version = 1
+    
+    sourceCompatibility = 11
+    targetCompatibility = 11
+    
+    dependencies {
+        testImplementation project(':Main')
+        testImplementation project(':Internal-8')
+        testImplementation project(':Core-11')
+        testImplementation 'junit:junit:4.12'
+    }
+
+    sourceSets {
+        test {
+            java {
+                srcDirs = ["src\\test\\java"]
+            }
+            resources {
+                srcDirs = ["src\\test\\resources"]
+            }
+        }
+    }
+}
+
 project(":Main") {
     version = (mainV == null ? project.version : mainV)
 

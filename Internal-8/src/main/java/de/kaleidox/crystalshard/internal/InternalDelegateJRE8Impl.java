@@ -2,7 +2,12 @@ package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
-import de.kaleidox.crystalshard.internal.items.channel.*;
+import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
+import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
+import de.kaleidox.crystalshard.internal.items.channel.GroupChannelInternal;
+import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
+import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
+import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
@@ -16,7 +21,11 @@ import de.kaleidox.crystalshard.internal.items.server.emoji.UnicodeEmojiInternal
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.*;
+import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -29,7 +38,7 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.User;
-
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -68,34 +77,12 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
         implementations.put(SentEmbed.class, SentEmbedInternal.class);
     }
 
-    @SuppressWarnings({"unchecked", "JavaReflectionMemberAccess"})
-    @Override
-    protected <T> T makeInstance(Class<T> tClass, Object... args) {
-        Class[] types = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            types[i] = args[i].getClass();
-        }
-        try {
-            return (T) implementations.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey()
-                            .getName()
-                            .equalsIgnoreCase(tClass.getName()))
-                    .findAny()
-                    .orElseThrow(() -> new IllegalStateException("No override found for class: " + tClass.getName()))
-                    .getValue()
-                    .getConstructor(types)
-                    .newInstance(args);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException("No constructor found for argument types: " + Arrays.toString(types));
-        }
+    public InternalDelegateJRE8Impl() {
+        super(implementations);
     }
 
     @Override
     protected void tryHandleDelegate(Discord discord, JsonNode data) {
         HandlerBase.tryHandle((DiscordInternal) discord, data);
-
     }
 }

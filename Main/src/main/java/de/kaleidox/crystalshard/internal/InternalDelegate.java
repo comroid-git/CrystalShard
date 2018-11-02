@@ -1,12 +1,14 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.crystalshard.DelegateBase;
 import de.kaleidox.crystalshard.main.Discord;
 
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.ServiceLoader;
 
-public abstract class InternalDelegate {
+public abstract class InternalDelegate extends DelegateBase {
     public final static InternalDelegate delegate;
 
     static {
@@ -18,6 +20,10 @@ public abstract class InternalDelegate {
             throw new IllegalStateException("More than one implementation for " + InternalDelegate.class.getName() + " found!");
     }
 
+    public InternalDelegate(Hashtable<Class, Class> implementations) {
+        super(implementations);
+    }
+
     public static <T> T newInstance(Class<T> tClass, Object... args) {
         return delegate.makeInstance(tClass, args);
     }
@@ -25,8 +31,6 @@ public abstract class InternalDelegate {
     public static void tryHandle(Discord discord, JsonNode data) {
         delegate.tryHandleDelegate(discord, data);
     }
-
-    protected abstract <T> T makeInstance(Class<T> tClass, Object... args);
 
     protected abstract void tryHandleDelegate(Discord discord, JsonNode data);
 }

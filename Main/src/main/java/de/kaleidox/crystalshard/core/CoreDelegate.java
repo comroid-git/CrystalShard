@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.core;
 
+import de.kaleidox.crystalshard.DelegateBase;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -12,11 +13,12 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.objects.markers.IDPair;
 
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 
-public abstract class CoreDelegate {
+public abstract class CoreDelegate extends DelegateBase {
     public final static CoreDelegate delegate;
 
     static {
@@ -26,6 +28,10 @@ public abstract class CoreDelegate {
         else throw new IllegalStateException("No implementation for " + CoreDelegate.class.getName() + " found!");
         if (iterator.hasNext())
             throw new IllegalStateException("More than one implementation for " + CoreDelegate.class.getName() + " found!");
+    }
+
+    public CoreDelegate(Hashtable<Class, Class> implementations) {
+        super(implementations);
     }
 
     public static Cache<Channel, Long, Long> channelCache(Discord discord) {
@@ -79,8 +85,6 @@ public abstract class CoreDelegate {
         WebRequest<T> request = webRequest(discord);
         return request;
     }
-
-    protected abstract <T> T makeInstance(Class<T> tClass, Object... args);
 
     protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident);
 

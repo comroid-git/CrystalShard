@@ -30,14 +30,13 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
     public CompletableFuture<String> execute() throws RuntimeException {
         Objects.requireNonNull(uri, "URI is not set!");
         Objects.requireNonNull(method, "Method is not set!");
-        Objects.requireNonNull(node, "Node is not set!");
 
         CompletableFuture<String> future = new CompletableFutureExtended<>(discord.getExecutor());
         CompletableFuture<HttpHeaders> headersFuture = new CompletableFutureExtended<>(discord.getExecutor());
         RatelimiterImpl ratelimiter = (RatelimiterImpl) discord.getRatelimiter();
         ratelimiter.schedule(this, headersFuture, () -> {
             try {
-                String body = (method == HttpMethod.GET ? "" : node.toString());
+                String body = (method == HttpMethod.GET ? "" : (node == null ? "" : node.toString()));
                 logger.trace("Creating request: " + toString() + " with request body: " + body);
                 HttpRequest request = requestBuilder.uri(uri.getURI())
                         .header("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)")

@@ -50,7 +50,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
      * @param maxSize       The maximum capacity of workers for this thread. -1 for infinite.
      * @param name          The name for this ThreadPool. New Workers will get this name attached.
      */
-    public ThreadPoolImpl(Discord discordObject, int maxSize, String name) {
+    public ThreadPoolImpl(Discord discordObject, Integer maxSize, String name) {
         this.discord = discordObject;
         this.maxSize = maxSize;
         this.threads = new ConcurrentHashMap<>();
