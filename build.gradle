@@ -7,6 +7,11 @@ def impl8V = '0.10'
 def core8V = '0.10'
 def core11V = '0.10'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.9'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
 task myJavadocs(type: Javadoc) {
     source = sourceSets.main.allJava
     options.encoding = 'UTF-8'
