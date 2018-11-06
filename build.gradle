@@ -30,6 +30,10 @@ publishing {
     }
 }
 
+jar {
+    test
+}
+
 allprojects {
     group 'de.kaleidox'
 
@@ -37,6 +41,11 @@ allprojects {
 
     compileJava {
         options.encoding = 'UTF-8'
+    }
+
+    jar {
+        archiveName = "CrystalShard-${project.name}.jar"
+        destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
     }
 
     repositories {
@@ -63,8 +72,8 @@ allprojects {
 project(":Tests") {
     version = 1
 
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 10
+    targetCompatibility = 10
     
     dependencies {
         testImplementation project(':Main')
