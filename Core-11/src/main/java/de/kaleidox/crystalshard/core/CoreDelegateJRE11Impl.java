@@ -93,4 +93,9 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
     protected UserCacheImpl makeUserCache(Discord discord) {
         return new UserCacheImpl(discord);
     }
+
+    @Override
+    public int getJdkVersion() {
+        return 11;
+    }
 }

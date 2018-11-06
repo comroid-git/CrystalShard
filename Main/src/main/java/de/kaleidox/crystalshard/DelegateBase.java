@@ -1,15 +1,30 @@
 package de.kaleidox.crystalshard;
 
+import de.kaleidox.crystalshard.logging.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Set;
 
-public class DelegateBase {
+public abstract class DelegateBase {
+    protected final static Logger logger = new Logger(DelegateBase.class);
     private final Hashtable<Class, Class> implementations;
+    private final Set<Class> mustOverride;
 
-    public DelegateBase(Hashtable<Class, Class> implementations) {
+    public DelegateBase(Hashtable<Class, Class> implementations, Set<Class> mustOverride) {
         this.implementations = implementations;
+        this.mustOverride = mustOverride;
+    }
+
+    public abstract int getJdkVersion();
+
+    public Hashtable<Class, Class> implementations() {
+        return implementations;
+    }
+
+    public Set<Class> mustOverride() {
+        return mustOverride;
     }
 
     @SuppressWarnings("unchecked")
@@ -40,7 +55,7 @@ public class DelegateBase {
                         .append("\n");
             throw new IllegalStateException("No constructor found for " + (triedClass[0] == null ? "" : ("class " +
                     triedClass[0].getSimpleName() + " with")) + " argument types:\n" + classTypes(args) + "\n" +
-                    "\tAvailable constructors:\n"+sb.toString());
+                    "\tAvailable constructors:\n" + sb.toString());
         }
     }
 

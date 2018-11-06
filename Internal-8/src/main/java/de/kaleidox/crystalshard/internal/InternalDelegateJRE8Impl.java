@@ -85,4 +85,9 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
     protected void tryHandleDelegate(Discord discord, JsonNode data) {
         HandlerBase.tryHandle((DiscordInternal) discord, data);
     }
+
+    @Override
+    public int getJdkVersion() {
+        return 8;
+    }
 }

@@ -57,17 +57,20 @@ allprojects {
 
 project(":Tests") {
     version = 1
-    
+
     sourceCompatibility = 11
     targetCompatibility = 11
     
     dependencies {
         testImplementation project(':Main')
         testImplementation project(':Internal-8')
+        testImplementation project(':Core-8')
         testImplementation project(':Core-11')
+        
         testImplementation 'junit:junit:4.12'
+        testImplementation 'org.reflections:reflections:0.9.11'
     }
-
+    
     sourceSets {
         test {
             java {
@@ -77,6 +80,10 @@ project(":Tests") {
                 srcDirs = ["src\\test\\resources"]
             }
         }
+    }
+    
+    test {
+        test.outputs.upToDateWhen {false}
     }
 }
 
