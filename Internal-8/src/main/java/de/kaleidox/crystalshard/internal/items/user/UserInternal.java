@@ -93,7 +93,7 @@ public class UserInternal implements User {
                 .asText(null) : null;
         listenerManagers = new ArrayList<>();
 
-        logger.nonNullChecks(name, discriminator);
+        NullHelper.requireNonNull(name, discriminator);
         instances.putIfAbsent(id, this);
     }
 

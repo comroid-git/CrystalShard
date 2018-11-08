@@ -48,7 +48,7 @@ public final class JsonHelper extends NullHelper {
         return node;
     }
 
-    public final static <T> ArrayNode arrayNode(List<T> items) {
+    public final static <T> ArrayNode arrayNode(Collection<T> items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.size());
         for (T item : items) node.add(nodeOf(item));
         return node;
@@ -56,7 +56,8 @@ public final class JsonHelper extends NullHelper {
 
     public final static ArrayNode arrayNode(Object... items) {
         ArrayNode node = JsonNodeFactory.instance.arrayNode(items.length);
-        for (Object item : items) node.add(nodeOf(item));
+        for (Object item : items)
+            node.add(nodeOf(item));
         return node;
     }
 

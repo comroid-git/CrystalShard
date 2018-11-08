@@ -55,7 +55,7 @@ public class DiscordInternal implements Discord {
     private boolean init = false;
     private LivingInt serversInit;
 
-    public DiscordInternal(String token, AccountType type, int thisShard, int ShardCount) {
+    public DiscordInternal(String token, AccountType type, Integer thisShard, Integer ShardCount) {
         this.serverCache = CoreDelegate.serverCache(this);
         this.userCache = CoreDelegate.userCache(this);
         this.roleCache = CoreDelegate.roleCache(this);

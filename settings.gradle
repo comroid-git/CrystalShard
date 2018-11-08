@@ -4,3 +4,5 @@ include ':Main'
 include ':Internal-8'
 include ':Core-8'
 include ':Core-11'
+
+include ':Tests'

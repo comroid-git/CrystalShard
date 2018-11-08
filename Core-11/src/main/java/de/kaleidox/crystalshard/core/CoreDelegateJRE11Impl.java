@@ -15,7 +15,9 @@ import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.main.Discord;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
@@ -33,29 +35,8 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
         implementations.put(WebSocketClient.class, WebSocketClientImpl.class);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <T> T makeInstance(Class<T> tClass, Object... args) {
-        Class[] types = new Class[args.length];
-        for (int i = 0; i < args.length; i++) {
-            types[i] = args[i].getClass();
-        }
-        try {
-            return (T) implementations.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey()
-                            .getName()
-                            .equalsIgnoreCase(tClass.getName()))
-                    .findAny()
-                    .orElseThrow(() -> new IllegalStateException("No override found for class: " + tClass.getName()))
-                    .getValue()
-                    .getConstructor(types)
-                    .newInstance(args);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException("No constructor found for argument types: " + Arrays.toString(types));
-        }
+    public CoreDelegateJRE11Impl() {
+        super(implementations);
     }
 
     @SuppressWarnings("unchecked")
@@ -111,5 +92,10 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
     @Override
     protected UserCacheImpl makeUserCache(Discord discord) {
         return new UserCacheImpl(discord);
+    }
+
+    @Override
+    public int getJdkVersion() {
+        return 11;
     }
 }

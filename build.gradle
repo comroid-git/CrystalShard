@@ -7,6 +7,11 @@ def impl8V = '0.10'
 def core8V = '0.10'
 def core11V = '0.10'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10.2'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
 task myJavadocs(type: Javadoc) {
     source = sourceSets.main.allJava
     options.encoding = 'UTF-8'
@@ -25,6 +30,10 @@ publishing {
     }
 }
 
+jar {
+    test
+}
+
 allprojects {
     group 'de.kaleidox'
 
@@ -32,6 +41,13 @@ allprojects {
 
     compileJava {
         options.encoding = 'UTF-8'
+    }
+
+    jar {
+        if (!System.getenv().containsKey("TRAVIS")) {
+            archiveName = "CrystalShard-${project.name}.jar"
+            destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+        }
     }
 
     repositories {
@@ -52,6 +68,38 @@ allprojects {
                 srcDirs = ["src\\main\\resources"]
             }
         }
+    }
+}
+
+project(":Tests") {
+    version = 1
+
+    sourceCompatibility = 10
+    targetCompatibility = 10
+    
+    dependencies {
+        testImplementation project(':Main')
+        testImplementation project(':Internal-8')
+        testImplementation project(':Core-8')
+        testImplementation project(':Core-11')
+        
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.reflections:reflections:0.9.11'
+    }
+    
+    sourceSets {
+        test {
+            java {
+                srcDirs = ["src\\test\\java"]
+            }
+            resources {
+                srcDirs = ["src\\test\\resources"]
+            }
+        }
+    }
+    
+    test {
+        test.outputs.upToDateWhen {false}
     }
 }
 

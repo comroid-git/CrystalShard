@@ -1,0 +1,14 @@
+language: java
+sudo: true
+
+jdk:
+  - oraclejdk11
+
+script:
+  - ./gradlew -v
+  - ./gradlew clean test
+
+jobs:
+  include:
+  - stage: deploy
+    install: skip
