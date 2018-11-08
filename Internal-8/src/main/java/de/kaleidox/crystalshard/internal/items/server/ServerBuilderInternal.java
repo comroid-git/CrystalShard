@@ -9,10 +9,14 @@ import de.kaleidox.crystalshard.internal.util.Container;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.*;
+import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
+import de.kaleidox.crystalshard.main.items.server.ExplicitContentFilterLevel;
+import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.ServerComponent;
+import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
+import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
 import de.kaleidox.util.FileType;
-
-import java.awt.*;
+import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

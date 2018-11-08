@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.command.CommandFramework;
 import de.kaleidox.crystalshard.util.command.CommandFrameworkImpl;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
@@ -15,6 +14,9 @@ public class DiscordUtilsImpl {
     private final static Logger logger = new Logger(DiscordUtilsImpl.class);
     private final static JsonNode configuration;
     private final static String configFile = "/discordutils_settings.json";
+    private final DefaultEmbed defaultEmbed;
+    private final Discord discord;
+    private final CommandFramework commandFramework;
 
     static {
         // Get or Create configuration node
@@ -30,10 +32,6 @@ public class DiscordUtilsImpl {
         } else configuration = createDefaultConfig();
     }
 
-    private final DefaultEmbed defaultEmbed;
-    private final Discord discord;
-    private final CommandFramework commandFramework;
-
     public DiscordUtilsImpl(Discord discord) {
         this.discord = discord;
 
@@ -48,11 +46,6 @@ public class DiscordUtilsImpl {
         defaultEmbed = new DefaultEmbedImpl(discord, configuration.has("default_embd") ? configuration.path("default_embed") : JsonHelper.nodeOf(null));
     }
 
-    private static JsonNode createDefaultConfig() {
-        logger.info("No configuration file " + configFile + " found at resources root. Using default configuration.");
-        return JsonHelper.objectNode("commands", JsonHelper.objectNode("prefix", "!", "enable_default_help", true), "default_embed", JsonHelper.nodeOf(null));
-    }
-
     public DefaultEmbed getDefaultEmbed() {
         return defaultEmbed;
     }
@@ -63,5 +56,10 @@ public class DiscordUtilsImpl {
 
     public Discord getDiscord() {
         return discord;
+    }
+
+    private static JsonNode createDefaultConfig() {
+        logger.info("No configuration file " + configFile + " found at resources root. Using default configuration.");
+        return JsonHelper.objectNode("commands", JsonHelper.objectNode("prefix", "!", "enable_default_help", true), "default_embed", JsonHelper.nodeOf(null));
     }
 }

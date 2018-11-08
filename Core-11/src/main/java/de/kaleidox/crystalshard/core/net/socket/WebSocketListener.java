@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.core.net.socket;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
@@ -24,12 +23,6 @@ public class WebSocketListener implements WebSocket.Listener {
     public void onOpen(WebSocket webSocket) {
         webSocket.request(1);
         logger.trace("WebSocket opened: " + webSocket);
-    }
-
-    @Override
-    public void onError(WebSocket webSocket, Throwable error) {
-        webSocket.request(1);
-        logger.exception(error, "WebSocket error");
     }
 
     @Override
@@ -76,5 +69,11 @@ public class WebSocketListener implements WebSocket.Listener {
         webSocket.request(1);
         logger.trace("WebSocket closed with code \'" + statusCode + "\' and reason: " + reason);
         return null;
+    }
+
+    @Override
+    public void onError(WebSocket webSocket, Throwable error) {
+        webSocket.request(1);
+        logger.exception(error, "WebSocket error");
     }
 }

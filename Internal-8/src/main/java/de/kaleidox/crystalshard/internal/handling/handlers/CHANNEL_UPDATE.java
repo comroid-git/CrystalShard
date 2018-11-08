@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.generic.ChannelEd
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
-
 import java.util.Set;
 
 /**

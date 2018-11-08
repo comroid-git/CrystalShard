@@ -10,8 +10,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.objects.markers.IDPair;
-
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -61,25 +60,6 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
                 .put(server.getId(), this);
     }
 
-    public static ServerMember getInstance(User user, Server server) {
-        instances.putIfAbsent(user.getId(), new ConcurrentHashMap<>());
-        return instances.get(user.getId())
-                .containsKey(server.getId()) ? instances.get(user.getId())
-                .get(server.getId()) :
-                CoreDelegate.webRequest(ServerMember.class, user.getDiscord())
-                        .setMethod(HttpMethod.GET)
-                        .setUri(DiscordEndpoint.GUILD_MEMBER.createUri(server.getId(),
-                                user.getId()))
-                        .executeAs(node -> getInstance(user, server, node))
-                        .join();
-    }
-
-    public static ServerMember getInstance(User user, Server server, JsonNode dataIfAbsent) {
-        instances.putIfAbsent(user.getId(), new ConcurrentHashMap<>());
-        return instances.get(user.getId())
-                .getOrDefault(server.getId(), new ServerMemberInternal(user.getDiscord(), server, dataIfAbsent));
-    }
-
     // Override Methods
     @Override
     public Server getServer() {
@@ -116,5 +96,24 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
         return roles.stream()
                 .min(Comparator.reverseOrder())
                 .map(Role::getColor);
+    }
+
+    public static ServerMember getInstance(User user, Server server) {
+        instances.putIfAbsent(user.getId(), new ConcurrentHashMap<>());
+        return instances.get(user.getId())
+                .containsKey(server.getId()) ? instances.get(user.getId())
+                .get(server.getId()) :
+                CoreDelegate.webRequest(ServerMember.class, user.getDiscord())
+                        .setMethod(HttpMethod.GET)
+                        .setUri(DiscordEndpoint.GUILD_MEMBER.createUri(server.getId(),
+                                user.getId()))
+                        .executeAs(node -> getInstance(user, server, node))
+                        .join();
+    }
+
+    public static ServerMember getInstance(User user, Server server, JsonNode dataIfAbsent) {
+        instances.putIfAbsent(user.getId(), new ConcurrentHashMap<>());
+        return instances.get(user.getId())
+                .getOrDefault(server.getId(), new ServerMemberInternal(user.getDiscord(), server, dataIfAbsent));
     }
 }

@@ -15,6 +15,10 @@ public enum MessageActivityType {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     // Static members
     // Static membe
     public static MessageActivityType getById(int id) {
@@ -22,9 +26,5 @@ public enum MessageActivityType {
                 .filter(type -> type.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
-    }
-
-    public int getId() {
-        return id;
     }
 }

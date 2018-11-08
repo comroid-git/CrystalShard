@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.items.message.embed;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-
 import java.util.Optional;
 
 public class EmbedInternal implements Embed {
@@ -20,11 +19,6 @@ public class EmbedInternal implements Embed {
     }
 
     @Override
-    public Optional<SentEmbed> toSentEmbed() {
-        return castTo(SentEmbed.class);
-    }
-
-    @Override
     public Builder toBuilder() {
         if (this instanceof EmbedDraft) {
             return ((EmbedDraft) this).toBuilder();
@@ -33,5 +27,10 @@ public class EmbedInternal implements Embed {
         } else {
             throw new AssertionError("Embed has unknown type.");
         }
+    }
+
+    @Override
+    public Optional<SentEmbed> toSentEmbed() {
+        return castTo(SentEmbed.class);
     }
 }

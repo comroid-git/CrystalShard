@@ -5,8 +5,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-
-import java.awt.*;
+import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
@@ -68,14 +67,65 @@ public class EmbedBuilderInternal implements Embed.Builder {
     }
 
     @Override
-    public Embed.Builder setTimestamp(Instant time) {
-        this.timestamp = time;
+    public Embed.Builder setColor(Color color) {
+        this.color = color;
         return this;
     }
 
     @Override
-    public Embed.Builder setColor(Color color) {
-        this.color = color;
+    public Embed.Builder addField(EmbedDraft.Field field) {
+        Objects.requireNonNull(field);
+        charCounter = charCounter + field.getText()
+                .length() + field.getTitle()
+                .length();
+        testCharCounter();
+        if (fields.size() >= Embed.Boundaries.FIELD_COUNT) {
+            throw new IllegalArgumentException("Field amount must not exceed " + Embed.Boundaries.FIELD_COUNT + "!");
+        }
+        if (field.getTitle()
+                .isEmpty()) {
+            throw new IllegalArgumentException("Field title must not be blank!");
+        }
+        if (field.getTitle()
+                .length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
+            throw new IllegalArgumentException("Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
+        }
+        if (field.getText()
+                .isEmpty()) {
+            throw new IllegalArgumentException("Field text must not be blank!");
+        }
+        if (field.getText()
+                .length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
+            throw new IllegalArgumentException("Field text must not exceed " + Embed.Boundaries.FIELD_TEXT_LENGTH + " characters!");
+        }
+        this.fields.add(field);
+        return this;
+    }
+
+    @Override
+    public Embed.Builder removeAllFields() {
+        fields.clear();
+        return this;
+    }
+
+    @Override
+    public Collection<EmbedDraft.Field> getFields() {
+        return Collections.unmodifiableCollection(fields);
+    }
+
+    @Override
+    public EmbedDraft build() {
+        return new EmbedDraftInternal(title, description, url, timestamp, color, footer, image, thumbnail, author, fields);
+    }
+
+    @Override
+    public CompletableFuture<Message> send(MessageReciever sendTo) {
+        return sendTo.sendMessage(this.build());
+    }
+
+    @Override
+    public Embed.Builder setTimestamp(Instant time) {
+        this.timestamp = time;
         return this;
     }
 
@@ -124,36 +174,6 @@ public class EmbedBuilderInternal implements Embed.Builder {
         return addField(new EmbedDraftInternal.Field(title, text, inline));
     }
 
-    @Override
-    public Embed.Builder addField(EmbedDraft.Field field) {
-        Objects.requireNonNull(field);
-        charCounter = charCounter + field.getText()
-                .length() + field.getTitle()
-                .length();
-        testCharCounter();
-        if (fields.size() >= Embed.Boundaries.FIELD_COUNT) {
-            throw new IllegalArgumentException("Field amount must not exceed " + Embed.Boundaries.FIELD_COUNT + "!");
-        }
-        if (field.getTitle()
-                .isEmpty()) {
-            throw new IllegalArgumentException("Field title must not be blank!");
-        }
-        if (field.getTitle()
-                .length() > Embed.Boundaries.FIELD_TITLE_LENGTH) {
-            throw new IllegalArgumentException("Field title must not exceed " + Embed.Boundaries.FIELD_TITLE_LENGTH + " characters!");
-        }
-        if (field.getText()
-                .isEmpty()) {
-            throw new IllegalArgumentException("Field text must not be blank!");
-        }
-        if (field.getText()
-                .length() > Embed.Boundaries.FIELD_TEXT_LENGTH) {
-            throw new IllegalArgumentException("Field text must not exceed " + Embed.Boundaries.FIELD_TEXT_LENGTH + " characters!");
-        }
-        this.fields.add(field);
-        return this;
-    }
-
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public Embed.Builder updateFields(Predicate<EmbedDraft.Field> predicate, Function<EmbedDraft.EditableField, EmbedDraft.Field> updater) {
@@ -165,27 +185,6 @@ public class EmbedBuilderInternal implements Embed.Builder {
             }
         }
         return this;
-    }
-
-    @Override
-    public Embed.Builder removeAllFields() {
-        fields.clear();
-        return this;
-    }
-
-    @Override
-    public Collection<EmbedDraft.Field> getFields() {
-        return Collections.unmodifiableCollection(fields);
-    }
-
-    @Override
-    public EmbedDraft build() {
-        return new EmbedDraftInternal(title, description, url, timestamp, color, footer, image, thumbnail, author, fields);
-    }
-
-    @Override
-    public CompletableFuture<Message> send(MessageReciever sendTo) {
-        return sendTo.sendMessage(this.build());
     }
 
     private void testCharCounter() {

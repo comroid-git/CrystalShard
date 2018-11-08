@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.util.helpers.ListHelper;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,11 +23,6 @@ public class InformationMessage {
         selfMap.putIfAbsent(messageable, this);
     }
 
-    @SuppressWarnings("FinalStaticMethod")
-    public final static InformationMessage getInstance(MessageReciever messageable) {
-        return selfMap.getOrDefault(messageable, new InformationMessage(messageable));
-    }
-
     public InformationMessage addField(String name, String title, String text) {
         return addField(name, title, text, false);
     }
@@ -41,10 +35,6 @@ public class InformationMessage {
 
     public InformationMessage editField(String name, String newText) {
         return editField(name, null, newText, false);
-    }
-
-    public InformationMessage editField(String name, String newTitle, String newText) {
-        return editField(name, newTitle, newText, false);
     }
 
     public InformationMessage editField(String name, String newTitle, String newText, boolean newInline) {
@@ -61,6 +51,10 @@ public class InformationMessage {
         }
 
         return this;
+    }
+
+    public InformationMessage editField(String name, String newTitle, String newText) {
+        return editField(name, newTitle, newText, false);
     }
 
     public InformationMessage removeField(String name) {
@@ -99,6 +93,11 @@ public class InformationMessage {
                     .thenAcceptAsync(msg -> myMessage.set(msg))
                     .exceptionally(Logger::handle);
         }
+    }
+
+    @SuppressWarnings("FinalStaticMethod")
+    public final static InformationMessage getInstance(MessageReciever messageable) {
+        return selfMap.getOrDefault(messageable, new InformationMessage(messageable));
     }
 
     class InformationField {

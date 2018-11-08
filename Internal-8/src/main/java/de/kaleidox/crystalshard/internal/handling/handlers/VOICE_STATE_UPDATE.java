@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.handling.listener.voice.VoiceStateUpdateLis
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.Set;
 
 public class VOICE_STATE_UPDATE extends HandlerBase {

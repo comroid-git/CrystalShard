@@ -2,8 +2,7 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.message.Message;
-
-import java.awt.*;
+import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
@@ -275,6 +274,16 @@ public interface SentEmbed extends Embed {
      */
     interface Footer {
         /**
+         * This method converts this SentEmbed's footer into an EmbedDraft's footer, which then can be attached to an {@link Embed.Builder}.
+         *
+         * @return The converted version of the footer.
+         */
+        default EmbedDraft.Footer toDraft() {
+            return EmbedDraft.Footer.BUILD(getText(), getIconUrl().map(URL::toExternalForm)
+                    .orElse(null));
+        }
+
+        /**
          * Gets the footer text.
          *
          * @return The footer text.
@@ -287,29 +296,12 @@ public interface SentEmbed extends Embed {
          * @return The URL to the footer icon.
          */
         Optional<URL> getIconUrl();
-
-        /**
-         * This method converts this SentEmbed's footer into an EmbedDraft's footer, which then can be attached to an {@link Embed.Builder}.
-         *
-         * @return The converted version of the footer.
-         */
-        default EmbedDraft.Footer toDraft() {
-            return EmbedDraft.Footer.BUILD(getText(), getIconUrl().map(URL::toExternalForm)
-                    .orElse(null));
-        }
     }
 
     /**
      * This interface represents a SentEmbed's Image.
      */
     interface Image {
-        /**
-         * Gets the URL to the image.
-         *
-         * @return The URL to the image.
-         */
-        Optional<URL> getUrl();
-
         /**
          * This method converts this SentEmbed's author object to its EmbedDraft counterpart, which can be then attached to an {@link Embed.Builder}.
          *
@@ -319,12 +311,30 @@ public interface SentEmbed extends Embed {
             return EmbedDraft.Image.BUILD(getUrl().map(URL::toExternalForm)
                     .orElse(null));
         }
+
+        /**
+         * Gets the URL to the image.
+         *
+         * @return The URL to the image.
+         */
+        Optional<URL> getUrl();
     }
 
     /**
      * This interface represents a sent embed's author.
      */
     interface Author extends Nameable {
+        /**
+         * This method converts this SentEmbed's author object into the embedDraft counterpart, which can be then attached to an {@link Embed.Builder}.
+         *
+         * @return The converted author object.
+         */
+        default EmbedDraft.Author toDraft() {
+            return EmbedDraft.Author.BUILD(getName(), getUrl().map(URL::toExternalForm)
+                    .orElse(null), getIconUrl().map(URL::toExternalForm)
+                    .orElse(null));
+        }
+
         /**
          * Gets the URL the author is pointing to.
          *
@@ -338,30 +348,12 @@ public interface SentEmbed extends Embed {
          * @return The URL to the icon image.
          */
         Optional<URL> getIconUrl();
-
-        /**
-         * This method converts this SentEmbed's author object into the embedDraft counterpart, which can be then attached to an {@link Embed.Builder}.
-         *
-         * @return The converted author object.
-         */
-        default EmbedDraft.Author toDraft() {
-            return EmbedDraft.Author.BUILD(getName(), getUrl().map(URL::toExternalForm)
-                    .orElse(null), getIconUrl().map(URL::toExternalForm)
-                    .orElse(null));
-        }
     }
 
     /**
      * This innterface represents a sent embed's thumbnail.
      */
     interface Thumbnail {
-        /**
-         * Gets the URL of the thumbnail image.
-         *
-         * @return The URL of the thumbnail image.
-         */
-        Optional<URL> getUrl();
-
         /**
          * This method converts the SentEmbed's thumbnail object into it's EmbedDraft counterpart, which then can be added to an {@link Embed.Builder}.
          *
@@ -371,12 +363,28 @@ public interface SentEmbed extends Embed {
             return EmbedDraft.Thumbnail.BUILD(getUrl().map(URL::toExternalForm)
                     .orElse(null));
         }
+
+        /**
+         * Gets the URL of the thumbnail image.
+         *
+         * @return The URL of the thumbnail image.
+         */
+        Optional<URL> getUrl();
     }
 
     /**
      * This interface represents a sent embed's field.
      */
     interface Field {
+        /**
+         * Converts this SentEmbed's field into a {@link EmbedDraft.Field} that then can be attached to an {@link Embed.Builder}.
+         *
+         * @return The converted field.
+         */
+        default EmbedDraft.Field toDraft() {
+            return EmbedDraft.Field.BUILD(getTitle(), getText(), isInline());
+        }
+
         /**
          * Gets the title value of the embed field.
          *
@@ -397,15 +405,6 @@ public interface SentEmbed extends Embed {
          * @return Whether the field is inline.
          */
         boolean isInline();
-
-        /**
-         * Converts this SentEmbed's field into a {@link EmbedDraft.Field} that then can be attached to an {@link Embed.Builder}.
-         *
-         * @return The converted field.
-         */
-        default EmbedDraft.Field toDraft() {
-            return EmbedDraft.Field.BUILD(getTitle(), getText(), isInline());
-        }
     }
 
     /**

@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.annotations.NotNull;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 

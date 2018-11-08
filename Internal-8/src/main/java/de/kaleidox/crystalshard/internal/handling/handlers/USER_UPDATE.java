@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserUpdateListener;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.Set;
 
 public class USER_UPDATE extends HandlerBase {

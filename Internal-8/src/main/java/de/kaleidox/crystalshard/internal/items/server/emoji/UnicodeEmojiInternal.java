@@ -38,11 +38,6 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     }
 
     @Override
-    public String toAlias() {
-        return aliases;
-    }
-
-    @Override
     public String toString() {
         return emojiExact;
     }
@@ -50,6 +45,11 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
     @Override
     public String toDiscordPrintable() {
         return emojiExact;
+    }
+
+    @Override
+    public String toAlias() {
+        return aliases;
     }
 
     @Override

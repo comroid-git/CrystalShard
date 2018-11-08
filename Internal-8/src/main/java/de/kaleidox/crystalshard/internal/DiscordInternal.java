@@ -23,7 +23,6 @@ import de.kaleidox.crystalshard.util.UtilDelegate;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.functional.LivingInt;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -102,10 +101,68 @@ public class DiscordInternal implements Discord {
         this.emojiCache = null;
     }
 
-    // Override Methods
     @Override
-    public ThreadPool getThreadPool() {
-        return pool;
+    public String getPrefixedToken() {
+        return type.getPrefix() + token;
+    }
+
+    public boolean initFinished() {
+        return init;
+    }
+
+    @Override
+    public int getShardId() {
+        return thisShard;
+    }
+
+    @Override
+    public int getShards() {
+        return shardCount;
+    }
+
+    @Override
+    public DiscordUtils getUtilities() {
+        return utils;
+    }
+
+    @Override
+    public Optional<Channel> getChannelById(long id) {
+        return servers.stream()
+                .flatMap(server -> server.getChannels()
+                        .stream())
+                .filter(channel -> channel.getId() == id)
+                .map(Channel.class::cast)
+                .findAny();
+    }
+
+    @Override
+    public Optional<User> getUserById(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Self getSelf() {
+        return self;
+    }
+
+    @Override
+    public Optional<Server> getServerById(long id) {
+        return servers.stream()
+                .filter(server -> server.getId() == id)
+                .findAny();
+    }
+
+    @Override
+    public Executor getExecutor() {
+        return getThreadPool().getExecutor();
+    }
+
+    public WebSocketClient getWebSocket() {
+        return webSocket;
+    }
+
+    public Ratelimiter getRatelimiter() {
+        return ratelimiter;
     }
 
     @Override
@@ -158,62 +215,10 @@ public class DiscordInternal implements Discord {
         return emojiCache;
     }
 
-    public Collection<DiscordAttachableListener> getAttachedListeners() {
-        return listenerManangers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
-    }
-
+    // Override Methods
     @Override
-    public String getPrefixedToken() {
-        return type.getPrefix() + token;
-    }
-
-    @Override
-    public int getShardId() {
-        return thisShard;
-    }
-
-    @Override
-    public int getShards() {
-        return shardCount;
-    }
-
-    @Override
-    public DiscordUtils getUtilities() {
-        return utils;
-    }
-
-    @Override
-    public Optional<Channel> getChannelById(long id) {
-        return servers.stream()
-                .flatMap(server -> server.getChannels()
-                        .stream())
-                .filter(channel -> channel.getId() == id)
-                .map(Channel.class::cast)
-                .findAny();
-    }
-
-    @Override
-    public Optional<User> getUserById(long id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Self getSelf() {
-        return self;
-    }
-
-    @Override
-    public Optional<Server> getServerById(long id) {
-        return servers.stream()
-                .filter(server -> server.getId() == id)
-                .findAny();
-    }
-
-    @Override
-    public Executor getExecutor() {
-        return getThreadPool().getExecutor();
+    public ThreadPool getThreadPool() {
+        return pool;
     }
 
     @Override
@@ -227,12 +232,6 @@ public class DiscordInternal implements Discord {
     }
 
     @Override
-    public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
-        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener()
-                .equals(listener)));
-    }
-
-    @Override
     public <C extends DiscordAttachableListener> ListenerManager<C> attachListener(C listener) {
         ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance(this, listener);
         listenerManangers.add(manager);
@@ -240,24 +239,24 @@ public class DiscordInternal implements Discord {
     }
 
     @Override
-    public String toString() {
-        return "Discord Connection to " + self;
+    public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
+        return Evaluation.of(listenerManangers.removeIf(manager -> manager.getListener()
+                .equals(listener)));
     }
 
-    public boolean initFinished() {
-        return init;
+    public Collection<DiscordAttachableListener> getAttachedListeners() {
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
 
     public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers() {
         return listenerManangers;
     }
 
-    public WebSocketClient getWebSocket() {
-        return webSocket;
-    }
-
-    public Ratelimiter getRatelimiter() {
-        return ratelimiter;
+    @Override
+    public String toString() {
+        return "Discord Connection to " + self;
     }
 
     public Collection<ListenerManager<? extends DiscordAttachableListener>> getAllListenerManagers() {

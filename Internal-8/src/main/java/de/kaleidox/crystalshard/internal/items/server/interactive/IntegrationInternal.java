@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.time.Instant;
 
 public class IntegrationInternal implements Integration {
@@ -106,13 +105,13 @@ public class IntegrationInternal implements Integration {
     }
 
     @Override
-    public long getId() {
-        return id;
+    public Discord getDiscord() {
+        return discord;
     }
 
     @Override
-    public Discord getDiscord() {
-        return discord;
+    public long getId() {
+        return id;
     }
 
     @Override

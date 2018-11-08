@@ -13,8 +13,11 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.objects.markers.IDPair;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,33 +70,13 @@ public class CustomEmojiInternal implements CustomEmoji {
     }
 
     @Override
-    public Server getServer() {
-        return server;
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
-    @Override
-    public String toAlias() {
-        return name;
-    }
-
-    @Override
-    public String toDiscordPrintable() {
-        return "<:" + (requestIsAnimated().join() ? "a:" : "") + name + ":" + id + ">";
-    }
-
-    @Override
     public String toString() {
         return ":" + name + ":";
     }
 
     @Override
-    public Discord getDiscord() {
-        return null;
+    public Server getServer() {
+        return server;
     }
 
     @Override
@@ -189,6 +172,26 @@ public class CustomEmojiInternal implements CustomEmoji {
                             .asBoolean();
                     return requireColons;
                 });
+    }
+
+    @Override
+    public String toDiscordPrintable() {
+        return "<:" + (requestIsAnimated().join() ? "a:" : "") + name + ":" + id + ">";
+    }
+
+    @Override
+    public String toAlias() {
+        return name;
+    }
+
+    @Override
+    public Discord getDiscord() {
+        return null;
+    }
+
+    @Override
+    public long getId() {
+        return id;
     }
 
     @Override

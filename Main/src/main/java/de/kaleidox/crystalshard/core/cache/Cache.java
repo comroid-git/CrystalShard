@@ -4,26 +4,11 @@ import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.annotations.Nullable;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
 public interface Cache<T, I, R> {
-    /**
-     * Tries to get an instance of a cache for the provided parameters.
-     *
-     * @param typeClass The type class of the cache.
-     * @param ident     The identifier for the cache.
-     * @param <T>       Type variable for the CacheImpl type.
-     * @param <I>       Type variable for the CacheImpl identifier.
-     * @return The CacheImpl.
-     * @throws NoSuchElementException If no cache fitting the parameters was found.
-     */
-    static <T extends Cacheable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
-        return CoreDelegate.getCacheInstance(typeClass, ident);
-    }
-
     /**
      * Request the parameters required to create a new instance after the given {@code requestIdent} object. This method must never return {@code null}.
      *
@@ -121,4 +106,18 @@ public interface Cache<T, I, R> {
      * @return A list of idents that could be removed.
      */
     List<I> destroyFromCache(@NotContainNull I... idents);
+
+    /**
+     * Tries to get an instance of a cache for the provided parameters.
+     *
+     * @param typeClass The type class of the cache.
+     * @param ident     The identifier for the cache.
+     * @param <T>       Type variable for the CacheImpl type.
+     * @param <I>       Type variable for the CacheImpl identifier.
+     * @return The CacheImpl.
+     * @throws NoSuchElementException If no cache fitting the parameters was found.
+     */
+    static <T extends Cacheable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
+        return CoreDelegate.getCacheInstance(typeClass, ident);
+    }
 }

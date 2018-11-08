@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.crystalshard.core.net.socket.Payload;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -18,12 +17,11 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import static de.kaleidox.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public class SelfInternal extends UserInternal implements Self {
     private final static Logger logger = new Logger(SelfInternal.class);

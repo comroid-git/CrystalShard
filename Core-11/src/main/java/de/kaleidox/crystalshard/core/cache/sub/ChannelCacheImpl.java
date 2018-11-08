@@ -7,15 +7,20 @@ import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.*;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.ChannelType;
+import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.annotations.NotNull;
-
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static de.kaleidox.crystalshard.core.net.request.HttpMethod.GET;
+import static de.kaleidox.crystalshard.core.net.request.HttpMethod.*;
 
 public class ChannelCacheImpl extends CacheImpl<Channel, Long, Long> {
     private final Discord discordInternal;

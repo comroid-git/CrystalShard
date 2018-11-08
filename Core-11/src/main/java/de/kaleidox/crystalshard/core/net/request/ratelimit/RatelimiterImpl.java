@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-
 import java.net.http.HttpHeaders;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
@@ -16,13 +15,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class RatelimiterImpl implements Ratelimiter {
     private final static Logger logger = new Logger(RatelimiterImpl.class);
-    final ThreadPoolImpl executePool;
     @SuppressWarnings("ALL")
     private final Discord discord;
     private final BucketManager bucketManager;
     private final ConcurrentHashMap<RequestURI, AtomicInteger> remainingMap;
     private final ConcurrentHashMap<RequestURI, AtomicInteger> limitMap;
     private final ConcurrentHashMap<RequestURI, AtomicReference<Instant>> resetMap;
+    final ThreadPoolImpl executePool;
 
     /**
      * Creates a new Ratelimiter Instance.
@@ -47,6 +46,13 @@ public class RatelimiterImpl implements Ratelimiter {
             remaining.incrementAndGet();
         }
         return remaining;
+    }
+
+    private void assureAtomicValues(RequestURI discordRequestURI) {
+        remainingMap.putIfAbsent(discordRequestURI, new AtomicInteger(1));
+        limitMap.putIfAbsent(discordRequestURI, new AtomicInteger(1));
+        resetMap.putIfAbsent(discordRequestURI, new AtomicReference<>(Instant.now()
+                .minusSeconds(1)));
     }
 
     public AtomicInteger getLimit(RequestURI discordRequestURI) {
@@ -92,12 +98,5 @@ public class RatelimiterImpl implements Ratelimiter {
         });
 
         bucketManager.schedule(requestUri, requestTask);
-    }
-
-    private void assureAtomicValues(RequestURI discordRequestURI) {
-        remainingMap.putIfAbsent(discordRequestURI, new AtomicInteger(1));
-        limitMap.putIfAbsent(discordRequestURI, new AtomicInteger(1));
-        resetMap.putIfAbsent(discordRequestURI, new AtomicReference<>(Instant.now()
-                .minusSeconds(1)));
     }
 }

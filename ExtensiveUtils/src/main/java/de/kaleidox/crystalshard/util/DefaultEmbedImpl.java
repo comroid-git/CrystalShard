@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,6 +35,36 @@ public class DefaultEmbedImpl implements DefaultEmbed {
                 .toBuilder();
         EMPTY_SUPPLIER = () -> EMPTY_BUILDER.get()
                 .build();
+    }
+
+    @Override
+    public EmbedDraft get() {
+        if (modifiers.isEmpty()) {
+            return EMPTY_SUPPLIER.get();
+        } else {
+            Embed.Builder builder = Embed.BUILDER();
+            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
+            return builder.build();
+        }
+    }
+
+    public Discord getDiscord() {
+        return discord;
+    }
+
+    public de.kaleidox.crystalshard.util.DefaultEmbedImpl addModifier(Consumer<Embed.Builder> modifier) {
+        modifiers.add(modifier);
+        return this;
+    }
+
+    public Embed.Builder getBuilder() {
+        if (modifiers.isEmpty()) {
+            return EMPTY_BUILDER.get();
+        } else {
+            Embed.Builder builder = EMPTY_BUILDER.get();
+            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
+            return builder;
+        }
     }
 
     /**
@@ -133,35 +162,5 @@ public class DefaultEmbedImpl implements DefaultEmbed {
         throw new IllegalThreadException("The method DefaultEmbed#getStatic may only be called from a bot-own " +
                 "thread, such as in listeners or scheduler tasks. You may not use it from " + "contexts like " +
                 "CompletableFuture#thenAcceptAsync or such.");
-    }
-
-    @Override
-    public EmbedDraft get() {
-        if (modifiers.isEmpty()) {
-            return EMPTY_SUPPLIER.get();
-        } else {
-            Embed.Builder builder = Embed.BUILDER();
-            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
-            return builder.build();
-        }
-    }
-
-    public Discord getDiscord() {
-        return discord;
-    }
-
-    public de.kaleidox.crystalshard.util.DefaultEmbedImpl addModifier(Consumer<Embed.Builder> modifier) {
-        modifiers.add(modifier);
-        return this;
-    }
-
-    public Embed.Builder getBuilder() {
-        if (modifiers.isEmpty()) {
-            return EMPTY_BUILDER.get();
-        } else {
-            Embed.Builder builder = EMPTY_BUILDER.get();
-            modifiers.forEach(builderConsumer -> builderConsumer.accept(builder));
-            return builder;
-        }
     }
 }

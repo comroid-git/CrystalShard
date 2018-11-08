@@ -30,13 +30,13 @@ public class ReactionRemoveEventInternal extends EventBase implements ReactionRe
     }
 
     @Override
-    public User getUser() {
-        return reaction.getUser();
+    public int getCount() {
+        return reaction.getCount();
     }
 
     @Override
-    public int getCount() {
-        return reaction.getCount();
+    public User getUser() {
+        return reaction.getUser();
     }
 
     @Override

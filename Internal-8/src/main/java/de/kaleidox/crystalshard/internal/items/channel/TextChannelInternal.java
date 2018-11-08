@@ -16,14 +16,17 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.util.helpers.FutureHelper;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public abstract class TextChannelInternal extends ChannelInternal implements TextChannel {
     final ConcurrentHashMap<Long, Message> messages;
@@ -52,43 +55,6 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
                     messages.put(message.getId(), message);
                     return message;
                 });
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        if (checkPermissions())
-            return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
-                    Permission.SEND_MESSAGES));
-        Embed.Builder builder = discord.getUtilities()
-                .getDefaultEmbed()
-                .getBuilder();
-        defaultEmbedModifier.accept(builder);
-        return sendMessage(builder.build());
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        if (checkPermissions())
-            return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
-                    Permission.SEND_MESSAGES));
-        return CoreDelegate.webRequest(Message.class, discord)
-                .setMethod(HttpMethod.POST)
-                .setUri(DiscordEndpoint.MESSAGE.createUri(this))
-                .setNode(objectNode("content",
-                        "",
-                        "embed",
-                        ((EmbedDraftInternal) embedDraft)
-                                .toJsonNode(
-                                        objectNode()),
-                        "file",
-                        "content"))
-                .executeAs(
-                        node -> {
-                            Message message = discord.getMessageCache()
-                                    .getOrCreate(discord, node);
-                            messages.put(message.getId(), message);
-                            return message;
-                        });
     }
 
     @Override
@@ -143,15 +109,52 @@ public abstract class TextChannelInternal extends ChannelInternal implements Tex
     }
 
     @Override
+    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
+        if (checkPermissions())
+            return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
+                    Permission.SEND_MESSAGES));
+        Embed.Builder builder = discord.getUtilities()
+                .getDefaultEmbed()
+                .getBuilder();
+        defaultEmbedModifier.accept(builder);
+        return sendMessage(builder.build());
+    }
+
+    @Override
+    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
+        if (checkPermissions())
+            return FutureHelper.failedFuture(new DiscordPermissionException("Sending Message to Text Channel [" + id + "])",
+                    Permission.SEND_MESSAGES));
+        return CoreDelegate.webRequest(Message.class, discord)
+                .setMethod(HttpMethod.POST)
+                .setUri(DiscordEndpoint.MESSAGE.createUri(this))
+                .setNode(objectNode("content",
+                        "",
+                        "embed",
+                        ((EmbedDraftInternal) embedDraft)
+                                .toJsonNode(
+                                        objectNode()),
+                        "file",
+                        "content"))
+                .executeAs(
+                        node -> {
+                            Message message = discord.getMessageCache()
+                                    .getOrCreate(discord, node);
+                            messages.put(message.getId(), message);
+                            return message;
+                        });
+    }
+
+    private boolean checkPermissions() {
+        return (!isPrivate && !hasPermission(discord.getSelf(), Permission.SEND_MESSAGES));
+    }
+
+    @Override
     public Collection<Message> getPinnedMessages() {
         return pinned.entrySet()
                 .stream()
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
-    }
-
-    private boolean checkPermissions() {
-        return (!isPrivate && !hasPermission(discord.getSelf(), Permission.SEND_MESSAGES));
     }
 
     public void updatePinned(Message message) {

@@ -9,7 +9,11 @@ import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.crystalshard.main.items.channel.*;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
@@ -25,7 +29,6 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -35,38 +38,6 @@ import java.util.concurrent.CompletableFuture;
  * This interface represents a normal Discord message.
  */
 public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair> {
-    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalThreadException {
-        Discord discord = ThreadPool.getThreadDiscord();
-        return InternalDelegate.newInstance(BulkDelete.class, discord)
-                .setChannel(channelId)
-                .addIds(messageIds)
-                .deleteAll();
-    }
-
-    static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
-        return InternalDelegate.newInstance(BulkDelete.class, messages[0].getDiscord())
-                .setChannel(messages[0].getChannel()
-                        .getId())
-                .addMessages(messages)
-                .deleteAll();
-    }
-
-    static Message getFromId(Discord discord, long id) {
-        return discord.getMessageCache()
-                .get(id);
-    }
-
-    static Message getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
-    }
-
-    /**
-     * Gets the TextChannel that the message has been sent in.
-     *
-     * @return The text channel of the message.
-     */
-    TextChannel getChannel();
-
     /**
      * Gets the user (Author) that sent this message.
      *
@@ -142,13 +113,6 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     boolean mentionsEveryone();
 
     /**
-     * Gets whether the message is currently pinned in its channel.
-     *
-     * @return Whether the message is currently pinned.
-     */
-    boolean isPinned();
-
-    /**
      * Gets whether the message was sent in a private context or not.
      *
      * @return Whether the message is private.
@@ -207,14 +171,6 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     List<Attachment> getAttachments();
 
     /**
-     * Gets a list of the embeds within this message. Usually, there is only one embed per message. There may be more than one embed per message if there are
-     * e.g. embedded YouTube Videos. See {@link #getEmbed()} to only get the "main" embed of the message.
-     *
-     * @return A list of embeds.
-     */
-    List<SentEmbed> getEmbeds();
-
-    /**
      * Gets a list of all reactions on this message.
      *
      * @return A list with this messages reactions.
@@ -271,28 +227,6 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Message> edit(EmbedDraft embedDraft);
 
     /**
-     * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method requires the bot to have the {@link
-     * Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the
-     * bot does not have the permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical
-     * permissions to close other peoples messages within a private chat.
-     *
-     * @param reason The reason to close the message for.
-     * @return A future that completes when the message has been deleted.
-     */
-    CompletableFuture<Void> delete(String reason);
-
-    /**
-     * Adds a reaction with the given emoji-printable to the message. Emoji printables of UnicodeEmojis are the actual UnicodeEmoji, the printable of a
-     * CustomEmojis is its mention tag. See {@link Emoji#toDiscordPrintable()}. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within
-     * the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission
-     * required to add reactions.
-     *
-     * @param emojiPrintable The emojis to add as a reaction.
-     * @return A future that completes when the reaction has been added.
-     */
-    CompletableFuture<Void> addReaction(String emojiPrintable);
-
-    /**
      * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The
      * returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission required to remove all
      * reactions. This will also occur on Private chats, as you can not have the theoretical permission to remove reactions in a private chat.
@@ -320,16 +254,23 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      */
     CompletableFuture<Void> removeReactionsByUser(@NotContainNull User... users);
 
-    CompletableFuture<Message> pin();
-
-    CompletableFuture<Message> unpin();
-
     BulkDelete getBulkDelete();
 
     default CompletableFuture<Message> togglePinned() {
         if (isPinned()) return unpin();
         else return pin();
     }
+
+    /**
+     * Gets whether the message is currently pinned in its channel.
+     *
+     * @return Whether the message is currently pinned.
+     */
+    boolean isPinned();
+
+    CompletableFuture<Message> pin();
+
+    CompletableFuture<Message> unpin();
 
     /**
      * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within the current
@@ -342,6 +283,17 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     default CompletableFuture<Void> addReaction(Emoji emoji) {
         return addReaction(emoji.toDiscordPrintable());
     }
+
+    /**
+     * Adds a reaction with the given emoji-printable to the message. Emoji printables of UnicodeEmojis are the actual UnicodeEmoji, the printable of a
+     * CustomEmojis is its mention tag. See {@link Emoji#toDiscordPrintable()}. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within
+     * the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission
+     * required to add reactions.
+     *
+     * @param emojiPrintable The emojis to add as a reaction.
+     * @return A future that completes when the reaction has been added.
+     */
+    CompletableFuture<Void> addReaction(String emojiPrintable);
 
     /**
      * Gets the TextChannel as a ServerTextChannel.
@@ -381,6 +333,14 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     }
 
     /**
+     * Gets a list of the embeds within this message. Usually, there is only one embed per message. There may be more than one embed per message if there are
+     * e.g. embedded YouTube Videos. See {@link #getEmbed()} to only get the "main" embed of the message.
+     *
+     * @return A list of embeds.
+     */
+    List<SentEmbed> getEmbeds();
+
+    /**
      * Deletes the current message. If the bot is not the owner of the message, this method requires the bot to have the {@link Permission#MANAGE_MESSAGES}
      * within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the
      * permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical permissions to close other
@@ -392,10 +352,53 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
         return delete(null);
     }
 
+    /**
+     * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method requires the bot to have the {@link
+     * Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the
+     * bot does not have the permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical
+     * permissions to close other peoples messages within a private chat.
+     *
+     * @param reason The reason to close the message for.
+     * @return A future that completes when the message has been deleted.
+     */
+    CompletableFuture<Void> delete(String reason);
+
     default CompletableFuture<Void> addReaction(String... emojis) {
         CompletableFuture[] cfs = new CompletableFuture[emojis.length];
         for (int i = 0; i < emojis.length; i++) cfs[i] = addReaction(emojis[i]);
         return CompletableFuture.allOf(cfs);
+    }
+
+    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalThreadException {
+        Discord discord = ThreadPool.getThreadDiscord();
+        return InternalDelegate.newInstance(BulkDelete.class, discord)
+                .setChannel(channelId)
+                .addIds(messageIds)
+                .deleteAll();
+    }
+
+    static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
+        return InternalDelegate.newInstance(BulkDelete.class, messages[0].getDiscord())
+                .setChannel(messages[0].getChannel()
+                        .getId())
+                .addMessages(messages)
+                .deleteAll();
+    }
+
+    /**
+     * Gets the TextChannel that the message has been sent in.
+     *
+     * @return The text channel of the message.
+     */
+    TextChannel getChannel();
+
+    static Message getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
+
+    static Message getFromId(Discord discord, long id) {
+        return discord.getMessageCache()
+                .get(id);
     }
 
     interface BulkDelete {

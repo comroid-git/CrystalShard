@@ -11,7 +11,6 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 

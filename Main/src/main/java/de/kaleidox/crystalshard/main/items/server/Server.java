@@ -23,7 +23,6 @@ import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.util.annotations.Range;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
@@ -33,15 +32,6 @@ import java.util.concurrent.CompletableFuture;
 public interface Server
         extends DiscordItem, Nameable, UserContainer, ChannelContainer, ListenerAttachable<ServerAttachableListener>, Cacheable<Server, Long, Long>,
         PermissionApplyable {
-    static Server getFromId(Discord discord, long id) {
-        return discord.getServerCache()
-                .get(id);
-    }
-
-    static Server getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
-    }
-
     Optional<URL> getIconUrl();
 
     Optional<URL> getSplashUrl();
@@ -100,8 +90,6 @@ public interface Server
 
     Optional<User> getUserById(long id);
 
-    Optional<ServerMember> getServerMember(User ofUser);
-
     CompletableFuture<Void> delete();
 
     CompletableFuture<Void> prune(@Range(min = 1, max = 365) int days);
@@ -110,12 +98,23 @@ public interface Server
 
     CompletableFuture<URL> getVanityUrl();
 
-    ServerMember.Updater getMemberUpdater(ServerMember member);
-
     default Optional<ServerMember.Updater> getMemberUpdater(User user) {
         if (user instanceof ServerMember) return Optional.of(getMemberUpdater((ServerMember) user));
         else if (getServerMember(user).isPresent()) return Optional.of(getMemberUpdater(getServerMember(user).get()));
         return Optional.empty();
+    }
+
+    Optional<ServerMember> getServerMember(User ofUser);
+
+    ServerMember.Updater getMemberUpdater(ServerMember member);
+
+    static Server getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
+
+    static Server getFromId(Discord discord, long id) {
+        return discord.getServerCache()
+                .get(id);
     }
 
     interface Builder {

@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.user.presence;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.util.objects.markers.BiTimestamp;
-
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -44,15 +43,15 @@ public interface UserActivity extends Nameable {
             this.value = value;
         }
 
+        public int getValue() {
+            return value;
+        }
+
         public static Flag getFromValue(int value) {
             return Stream.of(values())
                     .filter(flag -> flag.value == value)
                     .findAny()
                     .orElse(UNKNOWN);
-        }
-
-        public int getValue() {
-            return value;
         }
     }
 
@@ -69,13 +68,6 @@ public interface UserActivity extends Nameable {
             this.pattern = pattern;
         }
 
-        public static Type getFromId(int id) {
-            return Stream.of(Type.values())
-                    .filter(type -> type.id == id)
-                    .findAny()
-                    .orElse(UNKNOWN);
-        }
-
         public int getId() {
             return id;
         }
@@ -86,6 +78,13 @@ public interface UserActivity extends Nameable {
 
         public String format(String... param) {
             return String.format(pattern, (Object[]) param);
+        }
+
+        public static Type getFromId(int id) {
+            return Stream.of(Type.values())
+                    .filter(type -> type.id == id)
+                    .findAny()
+                    .orElse(UNKNOWN);
         }
     }
 

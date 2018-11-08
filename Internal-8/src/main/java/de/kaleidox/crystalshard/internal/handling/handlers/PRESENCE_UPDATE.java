@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-
 import java.util.Collection;
 import java.util.Collections;
 

@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.util.Collection;
 
 public class RoleContainer implements ListenerAttachable<RoleAttachableListener> {

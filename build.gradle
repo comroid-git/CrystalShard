@@ -80,18 +80,18 @@ project(":Tests") {
 
     sourceCompatibility = 10
     targetCompatibility = 10
-    
+
     dependencies {
         testImplementation project(':Main')
         testImplementation project(':Internal-8')
         testImplementation project(':Core-8')
         testImplementation project(':Core-11')
         testImplementation project(':ExtensiveUtils')
-        
+
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.reflections:reflections:0.9.11'
     }
-    
+
     sourceSets {
         test {
             java {
@@ -102,9 +102,9 @@ project(":Tests") {
             }
         }
     }
-    
+
     test {
-        test.outputs.upToDateWhen {false}
+        test.outputs.upToDateWhen { false }
     }
 }
 
@@ -120,7 +120,7 @@ project(":ExtensiveUtils") {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-    
+
     dependencies {
         implementation project(':Main')
         implementation project(':Internal-8')

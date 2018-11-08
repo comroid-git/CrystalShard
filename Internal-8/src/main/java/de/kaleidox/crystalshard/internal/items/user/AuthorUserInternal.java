@@ -7,7 +7,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
-
 import java.util.Optional;
 
 public class AuthorUserInternal extends UserInternal implements Author, AuthorUser {
@@ -25,12 +24,12 @@ public class AuthorUserInternal extends UserInternal implements Author, AuthorUs
     }
 
     @Override
-    public Optional<AuthorWebhook> toAuthorWebhook() {
-        return Optional.empty();
+    public Optional<AuthorUser> toAuthorUser() {
+        return Optional.of(this);
     }
 
     @Override
-    public Optional<AuthorUser> toAuthorUser() {
-        return Optional.of(this);
+    public Optional<AuthorWebhook> toAuthorWebhook() {
+        return Optional.empty();
     }
 }

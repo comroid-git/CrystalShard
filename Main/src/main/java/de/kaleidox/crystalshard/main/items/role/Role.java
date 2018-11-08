@@ -13,22 +13,12 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
 import de.kaleidox.util.objects.markers.IDPair;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 
 public interface Role
         extends DiscordItem, Nameable, Mentionable, PermissionOverwritable, ListenerAttachable<RoleAttachableListener>, Cacheable<Role, Long, IDPair>,
         Comparable<Role> {
-    static Role getFromId(Discord discord, long id) {
-        return discord.getRoleCache()
-                .get(id);
-    }
-
-    static Role getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
-    }
-
     Color getColor();
 
     boolean isGrouping();
@@ -42,6 +32,15 @@ public interface Role
     PermissionList getPermissions();
 
     CompletableFuture<Void> delete();
+
+    static Role getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
+
+    static Role getFromId(Discord discord, long id) {
+        return discord.getRoleCache()
+                .get(id);
+    }
 
     interface Builder {
         Builder setName(String name);

@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.objects.CompletableFutureExtended;
-
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,19 +45,6 @@ public abstract class Base<T> {
         this(parent, embedModifier, usr -> true, name, time, unit, defaultValue, true);
     }
 
-    protected Base(MessageReciever parent, User user, String name, T defaultValue) {
-        this(parent, builder -> builder.addField(name.toUpperCase(), "Please enter a value for ```" + name + "```:"), user, name, defaultValue);
-    }
-
-    protected Base(MessageReciever parent, Consumer<Embed.Builder> embedModifier, User user, String name, T defaultValue) {
-        this(parent, embedModifier, user, name, 5, TimeUnit.MINUTES, defaultValue);
-    }
-
-    protected Base(MessageReciever parent, Consumer<Embed.Builder> embedModifier, User user, String name, long time, TimeUnit unit, T defaultValue) {
-        this(parent, embedModifier, user::equals, name, time, unit, defaultValue, true);
-        this.constructedForSpecified = user;
-    }
-
     protected Base(MessageReciever parent,
                    Consumer<Embed.Builder> embedModifier,
                    Predicate<User> participantTester,
@@ -77,6 +63,19 @@ public abstract class Base<T> {
         this.deleteWhenDone = deleteWhenDone;
 
         affiliates = new ArrayList<>();
+    }
+
+    protected Base(MessageReciever parent, User user, String name, T defaultValue) {
+        this(parent, builder -> builder.addField(name.toUpperCase(), "Please enter a value for ```" + name + "```:"), user, name, defaultValue);
+    }
+
+    protected Base(MessageReciever parent, Consumer<Embed.Builder> embedModifier, User user, String name, T defaultValue) {
+        this(parent, embedModifier, user, name, 5, TimeUnit.MINUTES, defaultValue);
+    }
+
+    protected Base(MessageReciever parent, Consumer<Embed.Builder> embedModifier, User user, String name, long time, TimeUnit unit, T defaultValue) {
+        this(parent, embedModifier, user::equals, name, time, unit, defaultValue, true);
+        this.constructedForSpecified = user;
     }
 
     public abstract CompletableFuture<T> build();

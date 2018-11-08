@@ -8,11 +8,14 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class InfoReaction {
+    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
+        add(msgFut.join(), emoji, deleteAfterSend, infoEmbed);
+    }
+
     // Static members
     // Static membe
     public static void add(Message message, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
@@ -67,10 +70,6 @@ public class InfoReaction {
 
         message.attachListener((ReactionAddListener) addListener);
         message.attachListener((ReactionRemoveListener) removeListener);
-    }
-
-    public static void add(CompletableFuture<Message> msgFut, Emoji emoji, Boolean deleteAfterSend, Embed.Builder infoEmbed) {
-        add(msgFut.join(), emoji, deleteAfterSend, infoEmbed);
     }
 
     public static void add(Message message, Embed.Builder infoEmbed) {

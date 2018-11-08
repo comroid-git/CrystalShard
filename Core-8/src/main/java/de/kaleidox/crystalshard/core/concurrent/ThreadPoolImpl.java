@@ -3,11 +3,16 @@ package de.kaleidox.crystalshard.core.concurrent;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicMarkableReference;
@@ -61,21 +66,25 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         execute(() -> logger.deeptrace("New ThreadPool created: " + name));
     }
 
-    /**
-     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
-     *
-     * @param task The task to check.
-     * @return Whether the task is most likely from an async stage.
-     */
-    private static boolean nonFutureTask(Runnable task) {
-        return !task.toString()
-                .toLowerCase()
-                .contains("future");
+    @Override
+    public void execute(Runnable task, String... description) {
+        synchronized (queue) {
+            if (threads.size() < maxSize || maxSize == -1) {
+                if (busyThreads.get() <= queue.size())
+                    factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
+            }
+            queue.add(new Task(task, description));
+            queue.notify();
+        }
     }
 
     @Override
     public Executor getExecutor() {
         return executor;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 
     public Discord getDiscord() {
@@ -91,22 +100,6 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         scheduler.scheduleAtFixedRate(() -> ((WebSocketClientImpl) discord.getWebSocket()).heartbeat(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
     }
 
-    @Override
-    public void execute(Runnable task, String... description) {
-        synchronized (queue) {
-            if (threads.size() < maxSize || maxSize == -1) {
-                if (busyThreads.get() <= queue.size())
-                    factory.getOrCreateWorker(); // Ensure there is a worker available, if the limit is not hit.
-            }
-            queue.add(new Task(task, description));
-            queue.notify();
-        }
-    }
-
-    public ScheduledExecutorService getScheduler() {
-        return scheduler;
-    }
-
     /**
      * Removes terminated Threads from the {@code factoriedThreads} list, and decrements the name counter for each thread.
      */
@@ -117,6 +110,18 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
                 .peek(worker -> factory.nameCounter.decrementAndGet()) // decrement the id counter by one
                 // each thread
                 .forEach(factoriedThreads::remove); // remove the thread from the list
+    }
+
+    /**
+     * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
+     *
+     * @param task The task to check.
+     * @return Whether the task is most likely from an async stage.
+     */
+    private static boolean nonFutureTask(Runnable task) {
+        return !task.toString()
+                .toLowerCase()
+                .contains("future");
     }
 
     public class Factory implements ThreadFactory {
@@ -249,6 +254,16 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
             }
         }
 
+        private void busy() {
+            isBusy.set(true);
+            busyThreads.incrementAndGet();
+        }
+
+        private void unbusy() {
+            isBusy.set(false);
+            busyThreads.decrementAndGet();
+        }
+
         /**
          * Attaches a new Runnable to this worker. This method should not be used for chaining tasks, but for attaching runnables to worker threads in the
          * {@code java.lang.Thread.State.RUNNABLE} state. For chaining tasks, use {@link #execute(Runnable, String...)} instead.
@@ -275,16 +290,6 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
          */
         public Discord getDiscord() {
             return discord;
-        }
-
-        private void busy() {
-            isBusy.set(true);
-            busyThreads.incrementAndGet();
-        }
-
-        private void unbusy() {
-            isBusy.set(false);
-            busyThreads.decrementAndGet();
         }
     }
 

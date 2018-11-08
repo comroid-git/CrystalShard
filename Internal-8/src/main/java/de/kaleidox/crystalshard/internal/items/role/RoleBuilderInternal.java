@@ -9,11 +9,10 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public class RoleBuilderInternal implements Role.Builder {
     private final Discord discord;

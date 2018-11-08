@@ -22,8 +22,12 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.OptionalHelper;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -113,21 +117,6 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public int getPosition() {
-        return 0; // todo
-    }
-
-    @Override
-    public String getTopic() {
-        return topic;
-    }
-
-    @Override
     public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
         if (!hasPermission(discord, Permission.MANAGE_CHANNELS))
             return FutureHelper.failedFuture(new DiscordPermissionException(
@@ -146,6 +135,21 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
     @Override
     public InviteBuilder getInviteBuilder() {
         return new ChannelBuilderInternal.ChannelInviteBuilder(this);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public int getPosition() {
+        return 0; // todo
+    }
+
+    @Override
+    public String getTopic() {
+        return topic;
     }
 
     @Override

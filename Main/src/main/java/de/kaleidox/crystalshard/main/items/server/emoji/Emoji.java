@@ -9,27 +9,9 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.annotations.Nullable;
-
 import java.util.Optional;
 
 public interface Emoji extends Mentionable, Castable<Emoji> {
-    static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
-        if (data.get("id")
-                .isNull()) {
-            return InternalDelegate.newInstance(UnicodeEmoji.class, discord, data, true);
-        } else {
-            return discord.getEmojiCache()
-                    .getOrCreate(discord, server, data, true);
-        }
-    }
-
-    /**
-     * Gets the alias or name of this emoji.
-     *
-     * @return The alias of the emoji.
-     */
-    String toAlias();
-
     /**
      * Returns a String for a {@link Message} that will get replaced by Discord with a visual of this emoji. This method is analogous to {@link
      * Mentionable#getMentionTag()}.
@@ -38,6 +20,9 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      */
     String toDiscordPrintable();
 
+    @Override
+    boolean equals(Object obj);
+
     /**
      * Gets the universal replacement of this emoji.
      *
@@ -45,9 +30,6 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
      */
     @Override
     String toString();
-
-    @Override
-    boolean equals(Object obj);
 
     /**
      * Gets the name of this emoji.
@@ -58,11 +40,28 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
         return this.toAlias();
     }
 
+    /**
+     * Gets the alias or name of this emoji.
+     *
+     * @return The alias of the emoji.
+     */
+    String toAlias();
+
     default Optional<UnicodeEmoji> toUnicodeEmoji() {
         return castTo(UnicodeEmoji.class);
     }
 
     default Optional<CustomEmoji> toCustomEmoji() {
         return castTo(CustomEmoji.class);
+    }
+
+    static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
+        if (data.get("id")
+                .isNull()) {
+            return InternalDelegate.newInstance(UnicodeEmoji.class, discord, data, true);
+        } else {
+            return discord.getEmojiCache()
+                    .getOrCreate(discord, server, data, true);
+        }
     }
 }

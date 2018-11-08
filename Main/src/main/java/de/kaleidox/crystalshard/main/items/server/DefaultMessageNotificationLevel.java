@@ -12,6 +12,10 @@ public enum DefaultMessageNotificationLevel {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     // Static members
     // Static membe
     public static DefaultMessageNotificationLevel getFromId(int id) {
@@ -19,9 +23,5 @@ public enum DefaultMessageNotificationLevel {
                 .filter(level -> level.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
-    }
-
-    public int getId() {
-        return id;
     }
 }

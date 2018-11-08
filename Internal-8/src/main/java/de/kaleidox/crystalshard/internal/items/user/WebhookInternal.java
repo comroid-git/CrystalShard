@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.Webhook;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
@@ -49,13 +48,13 @@ public class WebhookInternal implements Webhook {
     }
 
     @Override
-    public long getId() {
-        return id;
+    public Discord getDiscord() {
+        return discord;
     }
 
     @Override
-    public Discord getDiscord() {
-        return discord;
+    public long getId() {
+        return id;
     }
 
     @Override

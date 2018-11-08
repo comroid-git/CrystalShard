@@ -16,13 +16,18 @@ import de.kaleidox.crystalshard.util.embeds.PagedEmbed;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.SetHelper;
 import de.kaleidox.util.objects.functional.Switch;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,75 +64,17 @@ public class CommandFrameworkImpl implements CommandFramework {
     }
 
     /**
-     * This method describes the default help command. This command is being enabled by passing {@code TRUE} as third argument when initializing the Command
-     * Framework.
+     * Tries to register all {@link Command} annotated methods of the given class as commands.
      *
-     * @param discord A discord.
-     * @param server  A server.
-     * @param author  An author.
-     * @param channel A channel.
+     * @param commandClass The class to register command methods in.
+     * @throws IllegalArgumentException  If a duplicate alias was found.
+     * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
+     * @throws IllegalStateException     If a Command-Method is not {@link Modifier#STATIC}.
      */
-    @Command(aliases = "help", description = "Shows a list of all commands.")
-    public static void defaultHelp(Discord discord, Server server, Author author, TextChannel channel) {
-        CommandFrameworkImpl framework = (CommandFrameworkImpl) discord.getUtilities()
-                .getCommandFramework();
-        PagedEmbed embed = new PagedEmbed(channel, () -> {
-            Embed.Builder builder = Embed.BUILDER();
-            Self self = discord.getSelf();
-
-            self.getAvatarUrl()
-                    .map(URL::toExternalForm)
-                    .ifPresent(builder::setThumbnail);
-            builder.setTitle(self.getDisplayName(server) + "'s Commands");
-            author.toAuthorUser()
-                    .ifPresent(user -> {
-                        Optional<String> opt = user.getAvatarUrl()
-                                .map(URL::toExternalForm);
-
-                        if (opt.isPresent())
-                            builder.setFooter("Requested by " + user.getDisplayName(server), opt.get());
-                        else builder.setFooter("Requested by " + user.getDisplayName(server));
-                    });
-
-            return builder;
-        });
-        framework.commands.stream()
-                .map(instance -> instance.annotation)
-                .forEach(annotation -> {
-                    if (annotation.shownInDefaultHelp()) {
-                        StringBuilder sb = new StringBuilder();
-                        String description = annotation.description();
-
-                        sb.append(description)
-                                .append("\n\n")
-                                .append(annotation.enableServerChat() ? "✅" : "❌")
-                                .append(" Server Chat | ")
-                                .append(annotation.enablePrivateChat() ? "✅" : "❌")
-                                .append(" Private Chat")
-                                .append("\n")
-                                .append("Required Discord Permission: ")
-                                .append(annotation.requiredDiscordPermission()
-                                        .name())
-                                .append("\n")
-                                .append(annotation.requireChannelMentions() == 0 ? "" : "Required Channel mentions: " + annotation.requireChannelMentions())
-                                .append("\n")
-                                .append(annotation.requireUserMentions() == 0 ? "" : "Required User mentions: " + annotation.requireUserMentions())
-                                .append("\n")
-                                .append(annotation.requireRoleMentions() == 0 ? "" : "Required Role mentions: " + annotation.requireRoleMentions());
-
-                        StringBuilder aliases = new StringBuilder(framework.prefix);
-                        Iterator<String> iterator = ListHelper.of(annotation.aliases())
-                                .iterator();
-                        while (iterator.hasNext()) {
-                            String next = iterator.next();
-                            aliases.append(next);
-                            if (iterator.hasNext()) aliases.append(" | ");
-                        }
-
-                        embed.addField(aliases.toString(), sb.toString());
-                    }
-                });
-        embed.build();
+    public void registerCommands(Class commandClass) throws IllegalArgumentException, IllegalStateException {
+        Stream.of(commandClass.getMethods())
+                .filter(method -> method.isAnnotationPresent(Command.class))
+                .forEach(this::registerCommandMethod);
     }
 
     /**
@@ -287,20 +234,6 @@ public class CommandFrameworkImpl implements CommandFramework {
     }
 
     /**
-     * Tries to register all {@link Command} annotated methods of the given class as commands.
-     *
-     * @param commandClass The class to register command methods in.
-     * @throws IllegalArgumentException  If a duplicate alias was found.
-     * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
-     * @throws IllegalStateException     If a Command-Method is not {@link Modifier#STATIC}.
-     */
-    public void registerCommands(Class commandClass) throws IllegalArgumentException, IllegalStateException {
-        Stream.of(commandClass.getMethods())
-                .filter(method -> method.isAnnotationPresent(Command.class))
-                .forEach(this::registerCommandMethod);
-    }
-
-    /**
      * Registers a {@link Command} annotated method as a command.
      *
      * @param commandMethod The method to register.
@@ -310,20 +243,6 @@ public class CommandFrameworkImpl implements CommandFramework {
      */
     public void registerCommands(Method commandMethod) throws IllegalArgumentException, IllegalStateException {
         registerCommandMethod(commandMethod);
-    }
-
-    /**
-     * Tries to unregister a {@link Command} annotated method.
-     *
-     * @param commandMethod The method to unregister.
-     * @return Whether the command could be unregistered.
-     */
-    public boolean unregisterCommand(Method commandMethod) {
-        return commands.stream()
-                .filter(instance -> instance.method == commandMethod)
-                .findAny()
-                .map(commands::remove)
-                .orElse(false);
     }
 
     private void registerCommandMethod(Method method) throws IllegalArgumentException, IllegalStateException {
@@ -348,6 +267,92 @@ public class CommandFrameworkImpl implements CommandFramework {
                 .flatMap(cmd -> Stream.of(cmd.annotation.aliases()))
                 .anyMatch(alias -> ListHelper.of(aliases)
                         .contains(alias));
+    }
+
+    /**
+     * Tries to unregister a {@link Command} annotated method.
+     *
+     * @param commandMethod The method to unregister.
+     * @return Whether the command could be unregistered.
+     */
+    public boolean unregisterCommand(Method commandMethod) {
+        return commands.stream()
+                .filter(instance -> instance.method == commandMethod)
+                .findAny()
+                .map(commands::remove)
+                .orElse(false);
+    }
+
+    /**
+     * This method describes the default help command. This command is being enabled by passing {@code TRUE} as third argument when initializing the Command
+     * Framework.
+     *
+     * @param discord A discord.
+     * @param server  A server.
+     * @param author  An author.
+     * @param channel A channel.
+     */
+    @Command(aliases = "help", description = "Shows a list of all commands.")
+    public static void defaultHelp(Discord discord, Server server, Author author, TextChannel channel) {
+        CommandFrameworkImpl framework = (CommandFrameworkImpl) discord.getUtilities()
+                .getCommandFramework();
+        PagedEmbed embed = new PagedEmbed(channel, () -> {
+            Embed.Builder builder = Embed.BUILDER();
+            Self self = discord.getSelf();
+
+            self.getAvatarUrl()
+                    .map(URL::toExternalForm)
+                    .ifPresent(builder::setThumbnail);
+            builder.setTitle(self.getDisplayName(server) + "'s Commands");
+            author.toAuthorUser()
+                    .ifPresent(user -> {
+                        Optional<String> opt = user.getAvatarUrl()
+                                .map(URL::toExternalForm);
+
+                        if (opt.isPresent())
+                            builder.setFooter("Requested by " + user.getDisplayName(server), opt.get());
+                        else builder.setFooter("Requested by " + user.getDisplayName(server));
+                    });
+
+            return builder;
+        });
+        framework.commands.stream()
+                .map(instance -> instance.annotation)
+                .forEach(annotation -> {
+                    if (annotation.shownInDefaultHelp()) {
+                        StringBuilder sb = new StringBuilder();
+                        String description = annotation.description();
+
+                        sb.append(description)
+                                .append("\n\n")
+                                .append(annotation.enableServerChat() ? "✅" : "❌")
+                                .append(" Server Chat | ")
+                                .append(annotation.enablePrivateChat() ? "✅" : "❌")
+                                .append(" Private Chat")
+                                .append("\n")
+                                .append("Required Discord Permission: ")
+                                .append(annotation.requiredDiscordPermission()
+                                        .name())
+                                .append("\n")
+                                .append(annotation.requireChannelMentions() == 0 ? "" : "Required Channel mentions: " + annotation.requireChannelMentions())
+                                .append("\n")
+                                .append(annotation.requireUserMentions() == 0 ? "" : "Required User mentions: " + annotation.requireUserMentions())
+                                .append("\n")
+                                .append(annotation.requireRoleMentions() == 0 ? "" : "Required Role mentions: " + annotation.requireRoleMentions());
+
+                        StringBuilder aliases = new StringBuilder(framework.prefix);
+                        Iterator<String> iterator = ListHelper.of(annotation.aliases())
+                                .iterator();
+                        while (iterator.hasNext()) {
+                            String next = iterator.next();
+                            aliases.append(next);
+                            if (iterator.hasNext()) aliases.append(" | ");
+                        }
+
+                        embed.addField(aliases.toString(), sb.toString());
+                    }
+                });
+        embed.build();
     }
 
     // Static members

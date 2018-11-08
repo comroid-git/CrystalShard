@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueBranch;
 import de.kaleidox.util.objects.markers.NamedItem;
-
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,29 +37,8 @@ public abstract class ResponseElement<ResultType> {
         this.affiliateMessages = new ArrayList<>();
     }
 
-    // Static membe
-    public static Predicate<User> sameUserPredicate(User user) {
-        return usr -> usr.equals(user);
-    }
-
-    public abstract CompletableFuture<NamedItem<ResultType>> build();
-
     public ResponseElement<ResultType> setParentBranch(DialogueBranch parentBranch) {
         this.parentBranch = parentBranch;
-        return this;
-    }
-
-    /**
-     * Sets how long it will take for the ResponseElement to end.
-     *
-     * @param duration The duration that the vote is active for.
-     * @param timeUnit The time unit the duration is measured in.
-     * @return The instance of the ResponseElement for chaining methods.
-     */
-    public ResponseElement<ResultType> setTimeout(long duration, TimeUnit timeUnit) {
-        this.duration = duration;
-        this.timeUnit = timeUnit;
-
         return this;
     }
 
@@ -96,7 +74,28 @@ public abstract class ResponseElement<ResultType> {
         return CompletableFuture.supplyAsync(build().join()::getItem);
     }
 
+    public abstract CompletableFuture<NamedItem<ResultType>> build();
+
+    /**
+     * Sets how long it will take for the ResponseElement to end.
+     *
+     * @param duration The duration that the vote is active for.
+     * @param timeUnit The time unit the duration is measured in.
+     * @return The instance of the ResponseElement for chaining methods.
+     */
+    public ResponseElement<ResultType> setTimeout(long duration, TimeUnit timeUnit) {
+        this.duration = duration;
+        this.timeUnit = timeUnit;
+
+        return this;
+    }
+
     public String getName() {
         return name;
+    }
+
+    // Static membe
+    public static Predicate<User> sameUserPredicate(User user) {
+        return usr -> usr.equals(user);
     }
 }

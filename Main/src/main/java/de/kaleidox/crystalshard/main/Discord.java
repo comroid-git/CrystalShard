@@ -17,7 +17,6 @@ import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.util.objects.markers.IDPair;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -43,8 +42,6 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     Optional<Server> getServerById(long id);
 
     Executor getExecutor();
-
-    ThreadPool getThreadPool();
 
     WebSocketClient getWebSocket();
 
@@ -73,4 +70,6 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     default ScheduledExecutorService getScheduler() {
         return getThreadPool().getScheduler();
     }
+
+    ThreadPool getThreadPool();
 }

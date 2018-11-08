@@ -31,10 +31,9 @@ class CacheReference<T extends Cacheable, R> {
         this.cached = new AtomicBoolean(reference != null);
     }
 
-    // Override Methods
     @Override
-    public String toString() {
-        return "CacheReference{" + (refString == null ? "undefined reference" : refString) + "}";
+    public int hashCode() {
+        return reference == null ? super.hashCode() : reference.hashCode();
     }
 
     @Override
@@ -43,13 +42,14 @@ class CacheReference<T extends Cacheable, R> {
     }
 
     @Override
-    public int hashCode() {
-        return reference == null ? super.hashCode() : reference.hashCode();
-    }
-
-    @Override
     protected Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException("Cannot clone CacheReferences!");
+    }
+
+    // Override Methods
+    @Override
+    public String toString() {
+        return "CacheReference{" + (refString == null ? "undefined reference" : refString) + "}";
     }
 
     public void close() {
@@ -91,6 +91,10 @@ class CacheReference<T extends Cacheable, R> {
         if (Objects.nonNull(reference)) this.refString = reference.toString();
     }
 
+    public synchronized void accessed() {
+        lastAccess.set(System.currentTimeMillis());
+    }
+
     public synchronized void uncache() {
         reference = null;
         cached.set(false);
@@ -98,9 +102,5 @@ class CacheReference<T extends Cacheable, R> {
 
     public boolean canBeUncached() {
         return (lastAccess.get() + keepAlive) < System.currentTimeMillis();
-    }
-
-    public synchronized void accessed() {
-        lastAccess.set(System.currentTimeMillis());
     }
 }

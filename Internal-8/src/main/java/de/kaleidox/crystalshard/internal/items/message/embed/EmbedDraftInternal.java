@@ -10,8 +10,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.util.FileContainer;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-
-import java.awt.*;
+import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -55,11 +54,6 @@ public class EmbedDraftInternal implements EmbedDraft {
     }
 
     @Override
-    public Optional<SentEmbed> toSentEmbed() {
-        return Optional.empty();
-    }
-
-    @Override
     public Builder toBuilder() {
         Builder builder = Embed.BUILDER()
                 .setTitle(title)
@@ -73,6 +67,11 @@ public class EmbedDraftInternal implements EmbedDraft {
                 .setAuthor(author);
         fields.forEach(builder::addField);
         return builder;
+    }
+
+    @Override
+    public Optional<SentEmbed> toSentEmbed() {
+        return Optional.empty();
     }
 
     @Override

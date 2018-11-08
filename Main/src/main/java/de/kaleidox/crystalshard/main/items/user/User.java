@@ -16,7 +16,6 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
 import de.kaleidox.util.annotations.Nullable;
-
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
@@ -24,15 +23,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface User
         extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>, ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long> {
-    static User getFromId(Discord discord, long id) {
-        return discord.getUserCache()
-                .get(id);
-    }
-
-    static User getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
-    }
-
     String getDiscriminatedName();
 
     String getDiscriminator();
@@ -68,4 +58,13 @@ public interface User
     }
 
     Optional<ServerMember> toServerMember(Server server);
+
+    static User getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
+
+    static User getFromId(Discord discord, long id) {
+        return discord.getUserCache()
+                .get(id);
+    }
 }

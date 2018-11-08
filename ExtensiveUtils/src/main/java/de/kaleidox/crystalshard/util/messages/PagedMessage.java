@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,61 +34,6 @@ public class PagedMessage {
         this.page = 0;
 
         resend();
-    }
-
-    // Static members
-    // Static membe
-    public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
-        if (selfMap.containsKey(forParent)) {
-            PagedMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return val;
-        } else {
-            return selfMap.put(forParent, new PagedMessage(forParent, defaultHead, defaultBody));
-        }
-    }
-
-    public final static Optional<PagedMessage> get(MessageReciever forParent) {
-        if (selfMap.containsKey(forParent)) {
-            PagedMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return Optional.of(val);
-        } else return Optional.empty();
-    }
-
-    private void onPageClick(ReactionEvent event) {
-        if (!event.getUser()
-                .isYourself()) {
-            Emoji emoji = event.getEmoji();
-            switch (emoji.getMentionTag()) {
-                case PREV_PAGE_EMOJI:
-                    if (page > 0) page--;
-
-                    this.refreshPage();
-                    break;
-                case NEXT_PAGE_EMOJI:
-                    if (page < pages.size() - 1) page++;
-
-                    this.refreshPage();
-                    break;
-            }
-        }
-    }
-
-    public void refresh() {
-        page = 0;
-
-        refreshPage();
-    }
-
-    public void refreshPage() {
-        refreshPages();
-
-        if (lastMessage != null) {
-            lastMessage.edit(getPageContent());
-        }
     }
 
     public void resend() {
@@ -139,5 +83,60 @@ public class PagedMessage {
                 }
             }
         }
+    }
+
+    private void onPageClick(ReactionEvent event) {
+        if (!event.getUser()
+                .isYourself()) {
+            Emoji emoji = event.getEmoji();
+            switch (emoji.getMentionTag()) {
+                case PREV_PAGE_EMOJI:
+                    if (page > 0) page--;
+
+                    this.refreshPage();
+                    break;
+                case NEXT_PAGE_EMOJI:
+                    if (page < pages.size() - 1) page++;
+
+                    this.refreshPage();
+                    break;
+            }
+        }
+    }
+
+    public void refreshPage() {
+        refreshPages();
+
+        if (lastMessage != null) {
+            lastMessage.edit(getPageContent());
+        }
+    }
+
+    public void refresh() {
+        page = 0;
+
+        refreshPage();
+    }
+
+    // Static members
+    // Static membe
+    public final static PagedMessage get(MessageReciever forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
+        if (selfMap.containsKey(forParent)) {
+            PagedMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return val;
+        } else {
+            return selfMap.put(forParent, new PagedMessage(forParent, defaultHead, defaultBody));
+        }
+    }
+
+    public final static Optional<PagedMessage> get(MessageReciever forParent) {
+        if (selfMap.containsKey(forParent)) {
+            PagedMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return Optional.of(val);
+        } else return Optional.empty();
     }
 }

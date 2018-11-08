@@ -12,6 +12,10 @@ public enum MFALevel {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     // Static members
     // Static membe
     public static MFALevel getFromId(int id) {
@@ -19,9 +23,5 @@ public enum MFALevel {
                 .filter(level -> level.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
-    }
-
-    public int getId() {
-        return id;
     }
 }

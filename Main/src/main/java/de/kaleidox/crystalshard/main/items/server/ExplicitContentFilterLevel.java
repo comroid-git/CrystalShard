@@ -13,6 +13,10 @@ public enum ExplicitContentFilterLevel {
         this.id = id;
     }
 
+    public int getId() {
+        return id;
+    }
+
     // Static members
     // Static membe
     public static ExplicitContentFilterLevel getFromId(int id) {
@@ -20,9 +24,5 @@ public enum ExplicitContentFilterLevel {
                 .filter(level -> level.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
-    }
-
-    public int getId() {
-        return id;
     }
 }

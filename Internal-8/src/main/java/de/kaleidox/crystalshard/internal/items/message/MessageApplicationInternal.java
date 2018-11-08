@@ -30,11 +30,6 @@ public class MessageApplicationInternal implements MessageApplication {
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
     public String getDescription() {
         return description;
     }
@@ -47,5 +42,10 @@ public class MessageApplicationInternal implements MessageApplication {
     @Override
     public String getIconId() {
         return iconId;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

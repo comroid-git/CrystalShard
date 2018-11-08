@@ -7,8 +7,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.util.InfoReaction;
 import de.kaleidox.util.helpers.StringHelper;
-
-import java.awt.*;
+import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -84,6 +83,14 @@ public class NumberInput extends Base<Long> {
         this.max = max;
     }
 
+    public CompletableFuture<Integer> buildInteger() {
+        return build().thenApply(lng -> {
+            if (lng <= Integer.MAX_VALUE && lng >= Integer.MIN_VALUE) return lng.intValue();
+            else
+                throw new IndexOutOfBoundsException("The value is too " + (lng > Integer.MAX_VALUE ? "large" : "small") + "!");
+        });
+    }
+
     @Override
     public CompletableFuture<Long> build() {
         CompletableFuture<Long> future = createFuture();
@@ -130,13 +137,5 @@ public class NumberInput extends Base<Long> {
                 });
 
         return future;
-    }
-
-    public CompletableFuture<Integer> buildInteger() {
-        return build().thenApply(lng -> {
-            if (lng <= Integer.MAX_VALUE && lng >= Integer.MIN_VALUE) return lng.intValue();
-            else
-                throw new IndexOutOfBoundsException("The value is too " + (lng > Integer.MAX_VALUE ? "large" : "small") + "!");
-        });
     }
 }

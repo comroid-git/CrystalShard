@@ -22,8 +22,12 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.OptionalHelper;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,9 +37,9 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     final static ConcurrentHashMap<Long, ServerVoiceChannel> instances = new ConcurrentHashMap<>();
     final List<PermissionOverride> overrides;
     final Server server;
+    private int position;
     String name;
     ChannelCategory category;
-    private int position;
 
     public ServerVoiceChannelInternal(Discord discord, Server server, JsonNode data) {
         super(discord, data);
@@ -110,6 +114,27 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
     }
 
     @Override
+    public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
+        if (!hasPermission(discord, Permission.MANAGE_CHANNELS))
+            return FutureHelper.failedFuture(new DiscordPermissionException(
+                    "Cannot get channel invite!",
+                    Permission.MANAGE_CHANNELS));
+        WebRequest<Collection<MetaInvite>> request = CoreDelegate.webRequest(discord);
+        return request.setMethod(HttpMethod.GET)
+                .setUri(DiscordEndpoint.CHANNEL_INVITE.createUri(id))
+                .executeAs(data -> {
+                    List<MetaInvite> list = new ArrayList<>();
+                    data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
+                    return list;
+                });
+    }
+
+    @Override
+    public InviteBuilder getInviteBuilder() {
+        return new ChannelBuilderInternal.ChannelInviteBuilder(this);
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -141,27 +166,6 @@ public class ServerVoiceChannelInternal extends VoiceChannelInternal implements 
                         .getEveryoneRole()
                         .getPermissions()
                         .contains(Permission.SEND_MESSAGES));
-    }
-
-    @Override
-    public CompletableFuture<Collection<MetaInvite>> getChannelInvites() {
-        if (!hasPermission(discord, Permission.MANAGE_CHANNELS))
-            return FutureHelper.failedFuture(new DiscordPermissionException(
-                    "Cannot get channel invite!",
-                    Permission.MANAGE_CHANNELS));
-        WebRequest<Collection<MetaInvite>> request = CoreDelegate.webRequest(discord);
-        return request.setMethod(HttpMethod.GET)
-                .setUri(DiscordEndpoint.CHANNEL_INVITE.createUri(id))
-                .executeAs(data -> {
-                    List<MetaInvite> list = new ArrayList<>();
-                    data.forEach(invite -> list.add(new InviteInternal.Meta(discord, invite)));
-                    return list;
-                });
-    }
-
-    @Override
-    public InviteBuilder getInviteBuilder() {
-        return new ChannelBuilderInternal.ChannelInviteBuilder(this);
     }
 
     @Override

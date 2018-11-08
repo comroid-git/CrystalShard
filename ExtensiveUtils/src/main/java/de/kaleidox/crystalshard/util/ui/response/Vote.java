@@ -13,7 +13,6 @@ import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueEndpoint;
 import de.kaleidox.util.objects.markers.NamedItem;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -98,6 +97,19 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
         }
     }
 
+    private Embed.Builder populateResultEmbed(Embed.Builder embed) {
+        rankingMap.entrySet()
+                .stream()
+                .sorted(Comparator.comparingInt(optionIntegerEntry -> optionIntegerEntry.getValue() * -1))
+                .forEachOrdered(entry -> {
+                    Option option = entry.getKey();
+                    embed.setDescription("Results are:");
+                    embed.addField(option.getEmoji() + " -> " + entry.getValue() + " Votes:", "**" + option.getName() + ":**\n" + option.getDescription());
+                });
+
+        return embed;
+    }
+
     /**
      * Adds a new option to the Vote.
      *
@@ -162,19 +174,6 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
         }
 
         return this;
-    }
-
-    private Embed.Builder populateResultEmbed(Embed.Builder embed) {
-        rankingMap.entrySet()
-                .stream()
-                .sorted(Comparator.comparingInt(optionIntegerEntry -> optionIntegerEntry.getValue() * -1))
-                .forEachOrdered(entry -> {
-                    Option option = entry.getKey();
-                    embed.setDescription("Results are:");
-                    embed.addField(option.getEmoji() + " -> " + entry.getValue() + " Votes:", "**" + option.getName() + ":**\n" + option.getDescription());
-                });
-
-        return embed;
     }
 
     @SuppressWarnings("unchecked")

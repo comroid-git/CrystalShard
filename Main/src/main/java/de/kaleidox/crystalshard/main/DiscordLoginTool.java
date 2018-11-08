@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,15 +35,6 @@ public class DiscordLoginTool {
     }
 
     /**
-     * Creates a new instance.
-     *
-     * @return The tool.
-     */
-    public static DiscordLoginTool get() {
-        return new DiscordLoginTool();
-    }
-
-    /**
      * Sets the token for this tool.
      *
      * @param token The token to set.
@@ -57,11 +47,6 @@ public class DiscordLoginTool {
 
     public DiscordLoginTool setAccountType(AccountType type) {
         this.type = type;
-        return this;
-    }
-
-    public DiscordLoginTool setShardCount(int count) {
-        this.shardCount = count;
         return this;
     }
 
@@ -89,6 +74,11 @@ public class DiscordLoginTool {
                 .join();
     }
 
+    public DiscordLoginTool setShardCount(int count) {
+        this.shardCount = count;
+        return this;
+    }
+
     public Discord login() {
         return InternalDelegate.newInstance(Discord.class, token, type, shard, shardCount);
     }
@@ -112,5 +102,14 @@ public class DiscordLoginTool {
             loggedIn.add(InternalDelegate.newInstance(Discord.class, token, type, i, shardCount));
         }
         return new MultiShard(loggedIn);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @return The tool.
+     */
+    public static DiscordLoginTool get() {
+        return new DiscordLoginTool();
     }
 }

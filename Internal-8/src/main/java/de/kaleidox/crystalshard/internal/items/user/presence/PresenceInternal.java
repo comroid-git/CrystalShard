@@ -8,7 +8,6 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
-
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,20 +32,6 @@ public class PresenceInternal implements Presence {
         instances.put(server.getId() + "/" + user.getId(), this);
     }
 
-    // Static membe
-    public static Presence getInstance(Discord discord, JsonNode data) {
-        long id = data.get("user")
-                .get("id")
-                .asLong(-1);
-        assert id != -1 : "No valid ID found.";
-        long serverId = data.get("guild_id")
-                .asLong();
-        Server server = discord.getServerCache()
-                .getOrRequest(serverId, serverId);
-        return instances.getOrDefault(server.getId() + "/" + id, new PresenceInternal(discord, server, data))
-                .updateData(data);
-    }
-
     // Override Methods
     @Override
     public ServerMember getUser() {
@@ -66,6 +51,20 @@ public class PresenceInternal implements Presence {
     @Override
     public Status getStatus() {
         return status;
+    }
+
+    // Static membe
+    public static Presence getInstance(Discord discord, JsonNode data) {
+        long id = data.get("user")
+                .get("id")
+                .asLong(-1);
+        assert id != -1 : "No valid ID found.";
+        long serverId = data.get("guild_id")
+                .asLong();
+        Server server = discord.getServerCache()
+                .getOrRequest(serverId, serverId);
+        return instances.getOrDefault(server.getId() + "/" + id, new PresenceInternal(discord, server, data))
+                .updateData(data);
     }
 
     private Presence updateData(JsonNode data) {

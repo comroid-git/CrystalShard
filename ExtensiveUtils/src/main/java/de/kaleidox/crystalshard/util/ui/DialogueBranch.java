@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.util.ui;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.ui.response.ResponseElement;
 import de.kaleidox.util.objects.markers.NamedItem;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -20,9 +19,9 @@ import java.util.function.Predicate;
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess", "unused"})
 public class DialogueBranch<A> extends Dialogue {
+    private final Dialogue previousBranch;
     final ResponseElement<A> questionElement;
     final ArrayList<Option> options;
-    private final Dialogue previousBranch;
 
     /**
      * Creates a new DialogueBranch without a parent branch.

@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.main.handling.listener.server.ServerEmojiEditLis
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.objects.Difference;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

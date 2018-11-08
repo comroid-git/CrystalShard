@@ -14,7 +14,6 @@ import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;

@@ -30,13 +30,13 @@ public class ReactionAddEventInternal extends EventBase implements ReactionAddEv
     }
 
     @Override
-    public User getUser() {
-        return reaction.getUser();
+    public int getCount() {
+        return reaction.getCount();
     }
 
     @Override
-    public int getCount() {
-        return reaction.getCount();
+    public User getUser() {
+        return reaction.getUser();
     }
 
     @Override

@@ -17,6 +17,14 @@ public enum VerificationLevel {
         this.description = description;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     // Static members
     // Static membe
     public static VerificationLevel getFromId(int id) {
@@ -24,13 +32,5 @@ public enum VerificationLevel {
                 .filter(level -> level.id == id)
                 .findAny()
                 .orElse(UNKNOWN);
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

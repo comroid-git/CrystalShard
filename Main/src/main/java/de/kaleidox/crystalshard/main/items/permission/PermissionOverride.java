@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.main.items.permission;
 
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.Server;
-
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -38,6 +37,10 @@ public interface PermissionOverride extends Map<Permission, OverrideState> {
             this.key = key;
         }
 
+        public String getKey() {
+            return key;
+        }
+
         // Static members
         // Static membe
         public static Type getByKey(String key) {
@@ -45,10 +48,6 @@ public interface PermissionOverride extends Map<Permission, OverrideState> {
                     .filter(type -> type.key.equalsIgnoreCase(key))
                     .findAny()
                     .orElse(UNKNOWN);
-        }
-
-        public String getKey() {
-            return key;
         }
     }
 }

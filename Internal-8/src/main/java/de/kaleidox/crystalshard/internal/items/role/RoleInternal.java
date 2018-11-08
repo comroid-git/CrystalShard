@@ -21,10 +21,12 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.markers.IDPair;
-
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -118,13 +120,13 @@ public class RoleInternal implements Role {
     }
 
     @Override
-    public long getId() {
-        return id;
+    public Discord getDiscord() {
+        return discord;
     }
 
     @Override
-    public Discord getDiscord() {
-        return discord;
+    public long getId() {
+        return id;
     }
 
     /**
@@ -156,13 +158,13 @@ public class RoleInternal implements Role {
     }
 
     @Override
-    public Collection<RoleAttachableListener> getAttachedListeners() {
-        return null;
+    public Collection<ListenerManager<? extends RoleAttachableListener>> getListenerManagers() {
+        return listenerManangers;
     }
 
     @Override
-    public Collection<ListenerManager<? extends RoleAttachableListener>> getListenerManagers() {
-        return listenerManangers;
+    public Collection<RoleAttachableListener> getAttachedListeners() {
+        return null;
     }
 
     @Override

@@ -25,15 +25,20 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
-import static de.kaleidox.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
@@ -43,13 +48,13 @@ public class UserInternal implements User {
     private final boolean bot;
     private final Discord discord;
     private final List<ListenerManager<? extends UserAttachableListener>> listenerManagers;
-    String discriminator;
     private String name;
     private URL avatarUrl;
     private boolean mfa;
     private boolean verified;
     private String locale;
     private String email;
+    String discriminator;
 
     UserInternal(User user) {
         this.id = user.getId();
@@ -161,6 +166,12 @@ public class UserInternal implements User {
     }
 
     @Override
+    public ServerMember toServerMember(Server server, JsonNode data) {
+        if (this instanceof ServerMember) return (ServerMember) this;
+        return ServerMemberInternal.getInstance(this, server, data);
+    }
+
+    @Override
     public Collection<Role> getRoles(Server server) {
         return Collections.emptyList();
     }
@@ -188,8 +199,8 @@ public class UserInternal implements User {
     }
 
     @Override
-    public long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -198,8 +209,8 @@ public class UserInternal implements User {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public long getId() {
+        return id;
     }
 
     @Override
@@ -209,16 +220,6 @@ public class UserInternal implements User {
 
     @Override
     public CompletableFuture<Message> sendMessage(Sendable content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
         return null;
     }
 
@@ -249,6 +250,16 @@ public class UserInternal implements User {
     }
 
     @Override
+    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
+        return null;
+    }
+
+    @Override
+    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return "User with ID [" + id + "]";
     }
@@ -266,19 +277,13 @@ public class UserInternal implements User {
     }
 
     @Override
-    public Collection<UserAttachableListener> getAttachedListeners() {
-        return null;
-    }
-
-    @Override
     public Collection<ListenerManager<? extends UserAttachableListener>> getListenerManagers() {
         return listenerManagers;
     }
 
     @Override
-    public ServerMember toServerMember(Server server, JsonNode data) {
-        if (this instanceof ServerMember) return (ServerMember) this;
-        return ServerMemberInternal.getInstance(this, server, data);
+    public Collection<UserAttachableListener> getAttachedListeners() {
+        return null;
     }
 
     @Override

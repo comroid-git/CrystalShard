@@ -5,7 +5,6 @@ import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.event.channel.generic.ChannelEditEvent;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
-
 import java.util.Set;
 
 public class ChannelEditEventInternal extends EventBase implements ChannelEditEvent {

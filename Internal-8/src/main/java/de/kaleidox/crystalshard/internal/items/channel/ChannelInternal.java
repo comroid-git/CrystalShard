@@ -17,7 +17,6 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +50,11 @@ public abstract class ChannelInternal implements Channel {
     }
 
     @Override
+    public long getId() {
+        return id;
+    }
+
+    @Override
     public <C extends ChannelAttachableListener> ListenerManager<C> attachListener(C listener) {
         ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance((DiscordInternal) discord, listener);
         listenerManagers.add(manager);
@@ -64,15 +68,15 @@ public abstract class ChannelInternal implements Channel {
     }
 
     @Override
+    public Collection<ListenerManager<? extends ChannelAttachableListener>> getListenerManagers() {
+        return listenerManagers;
+    }
+
+    @Override
     public Collection<ChannelAttachableListener> getAttachedListeners() {
         return listenerManagers.stream()
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<ListenerManager<? extends ChannelAttachableListener>> getListenerManagers() {
-        return listenerManagers;
     }
 
     @Override
@@ -90,11 +94,6 @@ public abstract class ChannelInternal implements Channel {
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.CHANNEL.createUri(id))
                 .executeAsVoid();
-    }
-
-    @Override
-    public long getId() {
-        return id;
     }
 
     @Override
