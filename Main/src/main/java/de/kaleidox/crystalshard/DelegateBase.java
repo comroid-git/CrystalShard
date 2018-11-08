@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class DelegateBase {
@@ -31,19 +32,17 @@ public abstract class DelegateBase {
     protected <T> T makeInstance(Class<T> tClass, Object... args) {
         final Class[] triedClass = {null};
         try {
-            Constructor<T> tConstructor = extractConstructor(((Constructor<T>[]) implementations.entrySet()
+            Constructor<T> tConstructor = extractConstructor((Constructor<T>[]) implementations.entrySet()
                     .stream()
                     .filter(entry -> entry.getKey()
                             .getName()
                             .equalsIgnoreCase(tClass.getName()))
+                    .map(Map.Entry::getValue)
+                    .limit(1)
+                    .peek(cls -> triedClass[0] = cls)
                     .findAny()
-                    .map(entry -> {
-                        triedClass[0] = entry.getValue();
-                        return entry;
-                    })
                     .orElseThrow(() -> new IllegalStateException("No override found for class: " + tClass.getName()))
-                    .getValue()
-                    .getConstructors()), args);
+                    .getConstructors(), args);
             return tConstructor.newInstance(args);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("A construction exception occured:", e);
