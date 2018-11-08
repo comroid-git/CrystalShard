@@ -54,11 +54,13 @@ allprojects {
 
     repositories {
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
 
     dependencies {
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
         implementation 'com.vdurmont:emoji-java:4.0.0'
+        implementation 'com.github.burdoto:KalUtils:c20c411dde'
     }
 
     sourceSets {
