@@ -15,7 +15,7 @@ import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.FutureHelper;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public abstract class TextChannelInternal extends ChannelInternal implements TextChannel {
     final ConcurrentHashMap<Long, Message> messages;

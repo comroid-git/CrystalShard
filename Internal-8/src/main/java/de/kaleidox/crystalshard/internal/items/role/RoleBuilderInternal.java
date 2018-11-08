@@ -13,7 +13,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public class RoleBuilderInternal implements Role.Builder {
     private final Discord discord;

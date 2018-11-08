@@ -13,9 +13,9 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.discord.DiscordUtils;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import de.kaleidox.crystalshard.util.DiscordUtils;
+import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.objects.markers.IDPair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class MultiShard extends ArrayList<Discord> implements Discord {
     @Override
     public DiscordUtils getUtilities() {
         return null;
-    }
+    } // TODO: 08.11.2018 Create interface
 
     @Override
     public Optional<Channel> getChannelById(long id) {

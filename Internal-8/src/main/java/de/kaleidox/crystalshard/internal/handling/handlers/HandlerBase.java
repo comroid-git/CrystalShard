@@ -8,8 +8,8 @@ import de.kaleidox.crystalshard.main.handling.listener.Listener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.util.annotations.MayContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
+import de.kaleidox.util.annotations.MayContainNull;
+import de.kaleidox.util.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;

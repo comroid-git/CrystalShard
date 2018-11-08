@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.core.cache;
 
 import de.kaleidox.crystalshard.core.CoreDelegate;
-import de.kaleidox.crystalshard.util.annotations.NotContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
-import de.kaleidox.crystalshard.util.annotations.Nullable;
+import de.kaleidox.util.annotations.NotContainNull;
+import de.kaleidox.util.annotations.NotNull;
+import de.kaleidox.util.annotations.Nullable;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,7 +28,7 @@ public interface Cache<T, I, R> {
      * Request the parameters required to create a new instance after the given {@code requestIdent} object. This method must never return {@code null}.
      *
      * @param requestIdent The ident object to request parameters for.
-     * @return A future that completes with an array of objects. This array is required to test {@code TRUE} on {@link #matchingParams(Object...)}.
+     * @return A future that completes with an array of objects.
      */
     @NotNull
     // FIXME: 30.09.2018 Seems to not complete properly; thus blocking all #getOrRequest calls.

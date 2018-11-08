@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.util;
 
 import de.kaleidox.crystalshard.main.util.FileContainer;
-import de.kaleidox.crystalshard.util.FileType;
+import de.kaleidox.util.FileType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

@@ -86,6 +86,7 @@ project(":Tests") {
         testImplementation project(':Internal-8')
         testImplementation project(':Core-8')
         testImplementation project(':Core-11')
+        testImplementation project(':ExtensiveUtils')
         
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.reflections:reflections:0.9.11'

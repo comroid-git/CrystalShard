@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.core.net.socket;
 
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;

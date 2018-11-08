@@ -18,9 +18,9 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.objects.markers.IDPair;
 
 import java.awt.*;
 import java.util.*;

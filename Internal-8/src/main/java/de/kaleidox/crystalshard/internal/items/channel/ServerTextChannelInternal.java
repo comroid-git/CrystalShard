@@ -19,9 +19,9 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-import de.kaleidox.crystalshard.util.helpers.ListHelper;
-import de.kaleidox.crystalshard.util.helpers.OptionalHelper;
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.ListHelper;
+import de.kaleidox.util.helpers.OptionalHelper;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;

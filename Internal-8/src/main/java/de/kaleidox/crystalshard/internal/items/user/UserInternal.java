@@ -22,9 +22,9 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.NullHelper;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
+import de.kaleidox.util.helpers.NullHelper;
+import de.kaleidox.util.helpers.UrlHelper;
+import de.kaleidox.util.objects.functional.Evaluation;
 
 import java.net.URL;
 import java.util.*;
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {

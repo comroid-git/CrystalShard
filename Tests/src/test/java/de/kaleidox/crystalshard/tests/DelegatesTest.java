@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.DelegateBase;
 import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.util.UtilDelegate;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 import org.junit.Test;
@@ -17,6 +18,7 @@ public class DelegatesTest {
         logger = new Logger(DelegatesTest.class);
         runTestOn(new Reflections(InternalDelegate.class.getPackageName()), InternalDelegate.class);
         runTestOn(new Reflections(CoreDelegate.class.getPackageName()), CoreDelegate.class);
+        runTestOn(new Reflections(UtilDelegate.class.getPackageName()), UtilDelegate.class);
     }
 
     private <T extends DelegateBase> void runTestOn(Reflections reflections, Class<T> delegateClass) {

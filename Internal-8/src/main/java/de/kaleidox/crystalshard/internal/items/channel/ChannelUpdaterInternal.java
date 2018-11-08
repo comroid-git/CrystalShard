@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.channel.*;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.FutureHelper;
 
 import java.util.ArrayList;
 import java.util.List;

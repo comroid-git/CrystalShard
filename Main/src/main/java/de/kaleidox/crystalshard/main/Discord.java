@@ -15,8 +15,8 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
-import de.kaleidox.crystalshard.util.discord.DiscordUtils;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import de.kaleidox.crystalshard.util.DiscordUtils;
+import de.kaleidox.util.objects.markers.IDPair;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -32,7 +32,7 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
 
     int getShards();
 
-    DiscordUtils getUtilities();
+    DiscordUtils getUtilities(); // TODO: 08.11.2018 Create interface
 
     Optional<Channel> getChannelById(long id);
 

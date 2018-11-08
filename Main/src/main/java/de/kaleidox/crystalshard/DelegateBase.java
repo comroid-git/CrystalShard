@@ -18,6 +18,12 @@ public abstract class DelegateBase {
         this.mustOverride = mustOverride;
     }
 
+    /**
+     * Used to determine what delegate to use if there are several implementations.
+     * Old semantics like {@code 1.8} will return just {@code 8}.
+     *
+     * @return The numeric version for the JDK that the delegate was made for.
+     */
     public abstract int getJdkVersion();
 
     public Hashtable<Class, Class> implementations() {

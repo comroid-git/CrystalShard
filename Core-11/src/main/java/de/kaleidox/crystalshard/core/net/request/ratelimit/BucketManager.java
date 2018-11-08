@@ -5,9 +5,9 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.MapHelper;
-import de.kaleidox.crystalshard.util.helpers.QueueHelper;
-import de.kaleidox.crystalshard.util.objects.functional.LivingInt;
+import de.kaleidox.util.helpers.MapHelper;
+import de.kaleidox.util.helpers.QueueHelper;
+import de.kaleidox.util.objects.functional.LivingInt;
 
 import javax.naming.LimitExceededException;
 import java.time.Instant;

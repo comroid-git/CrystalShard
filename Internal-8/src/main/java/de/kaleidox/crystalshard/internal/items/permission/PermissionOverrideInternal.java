@@ -6,8 +6,8 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.permission.*;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.util.objects.markers.IDPair;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;

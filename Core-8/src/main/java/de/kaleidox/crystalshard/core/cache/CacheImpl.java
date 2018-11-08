@@ -1,16 +1,16 @@
 package de.kaleidox.crystalshard.core.cache;
 
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.util.annotations.NotContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
-import de.kaleidox.crystalshard.util.annotations.Nullable;
+import de.kaleidox.util.annotations.NotContainNull;
+import de.kaleidox.util.annotations.NotNull;
+import de.kaleidox.util.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
-import static de.kaleidox.crystalshard.util.helpers.MapHelper.containsKey;
-import static de.kaleidox.crystalshard.util.helpers.MapHelper.getEquals;
+import static de.kaleidox.util.helpers.MapHelper.containsKey;
+import static de.kaleidox.util.helpers.MapHelper.getEquals;
 
 /**
  * This class is the basic implementation of a cache.

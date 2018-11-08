@@ -3,8 +3,8 @@ package de.kaleidox.crystalshard.main.items.message;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.util.annotations.Range;
-import de.kaleidox.crystalshard.util.discord.DefaultEmbed;
+import de.kaleidox.crystalshard.util.DefaultEmbed;
+import de.kaleidox.util.annotations.Range;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +26,6 @@ public interface MessageReciever extends DiscordItem {
     }
 
     default CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return sendMessage(DefaultEmbed.getStatic(defaultEmbedModifier));
+        return sendMessage(DefaultEmbed.getStatic(defaultEmbedModifier)); // TODO: 08.11.2018 Create interface
     }
 }

@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.*;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
+import de.kaleidox.util.annotations.NotNull;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;

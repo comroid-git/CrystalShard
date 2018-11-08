@@ -10,7 +10,7 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.*;
-import de.kaleidox.crystalshard.util.FileType;
+import de.kaleidox.util.FileType;
 
 import java.awt.*;
 import java.io.File;
