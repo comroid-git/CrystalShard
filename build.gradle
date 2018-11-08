@@ -7,6 +7,8 @@ def impl8V = '0.10'
 def core8V = '0.10'
 def core11V = '0.10'
 
+def extUtilV = '1.0'
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.10.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
@@ -108,6 +110,18 @@ project(":Main") {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+}
+
+project(":ExtensiveUtils") {
+    version = (extUtilV == null ? project.version : extUtilV)
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    
+    dependencies {
+        implementation project(':Main')
+        implementation project(':Internal-8')
+    }
 }
 
 project(":Internal-8") {
