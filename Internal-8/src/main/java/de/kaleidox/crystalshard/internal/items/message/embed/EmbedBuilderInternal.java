@@ -20,17 +20,18 @@ import java.util.function.Predicate;
 @SuppressWarnings("unused")
 public class EmbedBuilderInternal implements Embed.Builder {
     private final static Logger logger = new Logger(EmbedBuilderInternal.class);
-    private String title;
-    private String description;
-    private URL url;
-    private Instant timestamp;
-    private Color color;
-    private EmbedDraft.Footer footer;
-    private EmbedDraft.Image image;
-    private EmbedDraft.Thumbnail thumbnail;
-    private EmbedDraft.Author author;
-    private ArrayList<EmbedDraft.Field> fields = new ArrayList<>();
+    protected String title;
+    protected String description;
+    protected URL url;
+    protected Instant timestamp;
+    protected Color color;
+    protected EmbedDraft.Footer footer;
+    protected EmbedDraft.Image image;
+    protected EmbedDraft.Thumbnail thumbnail;
+    protected EmbedDraft.Author author;
+    protected ArrayList<EmbedDraft.Field> fields = new ArrayList<>();
     private int charCounter = 0;
+    protected boolean ignoreFieldCount = false;
 
     // Override Methods
     @Override
@@ -79,7 +80,7 @@ public class EmbedBuilderInternal implements Embed.Builder {
                 .length() + field.getTitle()
                 .length();
         testCharCounter();
-        if (fields.size() >= Embed.Boundaries.FIELD_COUNT) {
+        if (ignoreFieldCount || fields.size() >= Embed.Boundaries.FIELD_COUNT) {
             throw new IllegalArgumentException("Field amount must not exceed " + Embed.Boundaries.FIELD_COUNT + "!");
         }
         if (field.getTitle()

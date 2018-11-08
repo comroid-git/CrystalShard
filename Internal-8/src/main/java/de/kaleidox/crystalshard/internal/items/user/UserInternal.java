@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.kaleidox.util.tunnel.TunnelAccepting;
 import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -22,6 +23,8 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.util.UtilDelegate;
+import de.kaleidox.crystalshard.util.embeds.PagedEmbedBuilt;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
@@ -256,7 +259,11 @@ public class UserInternal implements User {
 
     @Override
     public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        return null;
+        CompletableFuture<Message> future = new CompletableFuture<>();
+        if (embedDraft instanceof PagedEmbedBuilt)
+            TunnelAccepting.startTunneling(UtilDelegate.delegate,
+                    (PagedEmbedBuilt) embedDraft, future, PagedEmbedBuilt.Tunnel.class);
+        return null; // TODO: 08.11.2018
     }
 
     @Override

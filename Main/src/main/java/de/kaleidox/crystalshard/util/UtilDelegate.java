@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.util;
 
 import de.kaleidox.crystalshard.DelegateBase;
+import de.kaleidox.util.tunnel.TunnelAccepting;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-public abstract class UtilDelegate extends DelegateBase {
+public abstract class UtilDelegate extends DelegateBase implements TunnelAccepting {
     public final static UtilDelegate delegate;
     private final static Set<Class> mustOverride;
 
