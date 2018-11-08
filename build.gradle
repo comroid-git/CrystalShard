@@ -44,8 +44,10 @@ allprojects {
     }
 
     jar {
-        archiveName = "CrystalShard-${project.name}.jar"
-        destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+        if (!System.getenv().containsKey("TRAVIS")) {
+            archiveName = "CrystalShard-${project.name}.jar"
+            destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+        }
     }
 
     repositories {

@@ -5,6 +5,7 @@ jdk:
   - oraclejdk11
 
 script:
+  - ./gradlew -v
   - ./gradlew clean test
 
 jobs:
