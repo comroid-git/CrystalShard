@@ -17,6 +17,6 @@ public class UtilDelegateExtensiveImpl extends UtilDelegate {
 
     @Override
     public int getJdkVersion() {
-        return 8;
+        return 9;
     }
 }
