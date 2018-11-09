@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
+import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -16,17 +16,16 @@ public class RefreshableMessage {
     private final static ConcurrentHashMap<MessageReciever, RefreshableMessage> selfMap = new ConcurrentHashMap<>();
     private final static String REFRESH_EMOJI = "\uD83D\uDD04";
     private MessageReciever parent;
-    private Supplier<Object> refresher;
+    private Supplier<EmbedDraft> refresher;
     private Message lastMessage = null;
 
-    private RefreshableMessage(MessageReciever inParent, Supplier<Object> refresher) {
+    private RefreshableMessage(MessageReciever inParent, Supplier<EmbedDraft> refresher) {
         this.parent = inParent;
         this.refresher = refresher;
 
         Object item = refresher.get();
-        Sendable sendable = Sendable.of(item);
 
-        CompletableFuture<Message> sent = parent.sendMessage(sendable);
+        CompletableFuture<Message> sent = parent.sendMessage(refresher.get());
 
         if (sent != null) {
             sent.thenAcceptAsync(msg -> {
@@ -51,14 +50,11 @@ public class RefreshableMessage {
 
     public void refresh() {
         if (lastMessage != null) {
-            Sendable of = Sendable.of(refresher.get());
-            lastMessage.edit(of);
+            lastMessage.edit(refresher.get());
         }
     }
 
-    // Static members
-    // Static membe
-    public final static RefreshableMessage get(MessageReciever forParent, Supplier<Object> defaultRefresher) {
+    public static RefreshableMessage get(MessageReciever forParent, Supplier<EmbedDraft> defaultRefresher) {
         if (selfMap.containsKey(forParent)) {
             RefreshableMessage val = selfMap.get(forParent);
             val.resend();
@@ -70,7 +66,6 @@ public class RefreshableMessage {
     }
 
     public void resend() {
-        Sendable of = Sendable.of(refresher.get());
         CompletableFuture<Message> sent = null;
 
         if (lastMessage != null) {

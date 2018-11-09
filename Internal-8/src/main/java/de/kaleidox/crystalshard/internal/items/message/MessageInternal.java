@@ -26,7 +26,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageActivity;
 import de.kaleidox.crystalshard.main.items.message.MessageApplication;
 import de.kaleidox.crystalshard.main.items.message.MessageType;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
@@ -274,11 +273,6 @@ public class MessageInternal implements Message {
 
     @Override
     public CompletableFuture<Message> edit(String newContent) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> edit(Sendable newContent) {
         return null;
     }
 

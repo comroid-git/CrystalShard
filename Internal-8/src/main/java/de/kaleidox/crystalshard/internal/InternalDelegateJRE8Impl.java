@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
 import de.kaleidox.crystalshard.internal.items.message.MessageModifier;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
-import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
@@ -28,7 +27,6 @@ import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
@@ -68,7 +66,6 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
         implementations.put(EmbedDraft.Field.class, EmbedDraftInternal.Field.class);
         implementations.put(EmbedDraft.EditableField.class, EmbedDraftInternal.EditableField.class);
         implementations.put(Message.BulkDelete.class, MessageInternal.BulkDeleteInternal.class);
-        implementations.put(Sendable.class, SendableInternal.class);
         implementations.put(PermissionList.class, PermissionListInternal.class);
         implementations.put(UnicodeEmoji.class, UnicodeEmojiInternal.class);
         implementations.put(Invite.class, InviteInternal.class);

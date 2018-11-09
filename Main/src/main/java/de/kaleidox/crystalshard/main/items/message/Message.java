@@ -214,15 +214,6 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
      * author of this message, as you may never edit other people's messages.
      *
-     * @param newContent The new content to set.
-     * @return A future that completes with this message when it has been modified.
-     */
-    CompletableFuture<Message> edit(Sendable newContent);
-
-    /**
-     * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
-     * author of this message, as you may never edit other people's messages.
-     *
      * @param embedDraft The new Embed to set.
      * @return A future that completes with this message when it has been modified.
      */
