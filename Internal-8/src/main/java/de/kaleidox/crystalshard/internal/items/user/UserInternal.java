@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.util.tunnel.TunnelAccepting;
 import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -23,8 +22,6 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.UtilDelegate;
-import de.kaleidox.crystalshard.util.embeds.PagedEmbedBuilt;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
@@ -184,9 +181,7 @@ public class UserInternal implements User {
         return CoreDelegate.webRequest(PrivateTextChannel.class, discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.SELF_CHANNELS.createUri())
-                .setNode(objectNode(
-                        "recipient_id",
-                        id))
+                .setNode(objectNode("recipient_id", id))
                 .executeAs(node -> discord.getChannelCache()
                         .getOrCreate(discord, node)
                         .toPrivateTextChannel()
@@ -219,51 +214,6 @@ public class UserInternal implements User {
     @Override
     public String getMentionTag() {
         return "<@" + id + ">";
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Sendable content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(String content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> typing() {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Collection<Message>> getMessages(int limit) {
-        if (limit < 1 || limit > 100)
-            throw new IllegalArgumentException("Parameter 'limit' is not within its bounds! [1, 100]");
-        WebRequest<Collection<Message>> request = CoreDelegate.webRequest(discord);
-        return openPrivateChannel().thenCompose(ptc -> request.setMethod(HttpMethod.GET)
-                .setUri(DiscordEndpoint.MESSAGE.createUri(ptc))
-                .setNode(objectNode("limit", limit))
-                .executeAs(data -> {
-                    List<Message> list = new ArrayList<>();
-                    data.forEach(msg -> list.add(discord.getMessageCache()
-                            .getOrCreate(discord, msg)));
-                    return list;
-                }));
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        CompletableFuture<Message> future = new CompletableFuture<>();
-        if (embedDraft instanceof PagedEmbedBuilt)
-            TunnelAccepting.startTunneling(UtilDelegate.delegate,
-                    (PagedEmbedBuilt) embedDraft, future, PagedEmbedBuilt.Tunnel.class);
-        return null; // TODO: 08.11.2018
     }
 
     @Override

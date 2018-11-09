@@ -8,6 +8,7 @@ import de.kaleidox.crystalshard.internal.items.channel.GroupChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
+import de.kaleidox.crystalshard.internal.items.message.MessageModifier;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
 import de.kaleidox.crystalshard.internal.items.message.SendableInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
@@ -72,6 +73,7 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
         implementations.put(UnicodeEmoji.class, UnicodeEmojiInternal.class);
         implementations.put(Invite.class, InviteInternal.class);
         implementations.put(SentEmbed.class, SentEmbedInternal.class);
+        implementations.put(Message.Builder.class, MessageModifier.Builder.class);
     }
 
     public InternalDelegateJRE8Impl() {

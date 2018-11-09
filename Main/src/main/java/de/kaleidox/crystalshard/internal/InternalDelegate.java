@@ -77,7 +77,9 @@ public abstract class InternalDelegate extends DelegateBase {
                 EmbedDraft.Author.class,
                 EmbedDraft.Thumbnail.class,
                 EmbedDraft.Field.class,
-                EmbedDraft.EditableField.class));
+                EmbedDraft.EditableField.class,
+                Message.Builder.class
+        ));
     }
 
     public InternalDelegate(Hashtable<Class, Class> implementations) {

@@ -35,31 +35,6 @@ public class SelfInternal extends UserInternal implements Self {
     }
 
     @Override
-    public CompletableFuture<Message> sendMessage(Sendable content) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(String content) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Void> typing() {
-        throw new AbstractMethodError("Cannot type to yourself!");
-    }
-
-    @Override
     public CompletableFuture<Void> setName(String name) {
         return CoreDelegate.webRequest(this.getDiscord())
                 .setMethod(HttpMethod.PATCH)

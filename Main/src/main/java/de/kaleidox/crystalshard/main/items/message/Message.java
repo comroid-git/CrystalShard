@@ -9,11 +9,13 @@ import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
+import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
+import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
@@ -392,13 +394,68 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      */
     TextChannel getChannel();
 
-    static Message getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
+    static Builder builder() {
+        return InternalDelegate.newInstance(Builder.class);
     }
 
-    static Message getFromId(Discord discord, long id) {
-        return discord.getMessageCache()
-                .get(id);
+    static Builder builder(Message ofMessage) {
+        return InternalDelegate.newInstance(Builder.class, ofMessage);
+    }
+
+    interface Builder {
+        /**
+         * Appends the provided text as plain string to the message.
+         *
+         * @param text The text to append.
+         * @return The instance of the builder.
+         */
+        Builder addText(String text);
+
+        /**
+         * Adds a mention to the provided mentionable as text to the message.
+         *
+         * @param mentionable The mentionable to mention.
+         * @return The instance of the builder.
+         */
+        Builder addMention(Mentionable mentionable);
+
+        /**
+         * Adds an emoji to the message as text.
+         *
+         * @param emoji The emoji to add.
+         * @return The instance of the builder.
+         */
+        Builder addEmoji(Emoji emoji);
+
+        /**
+         * Sets the embed for the message.
+         *
+         * @param embed The embed to set.
+         * @return The instance of the builder.
+         * @see #setEmbed(Embed.Builder)
+         */
+        Builder setEmbed(EmbedDraft embed);
+
+        /**
+         * Builds and sends the message to the given target reciever.
+         * The returned future will complete with a {@link DiscordPermissionException}
+         * if you are not allowed to send messages to the provided target.
+         *
+         * @param target The reciever to send the message to.
+         * @return A future to contain the sent message.
+         */
+        CompletableFuture<Message> send(MessageReciever target);
+
+        /**
+         * Sets an embed for the message.
+         *
+         * @param embedBuilder The embed to build and then set.
+         * @return The instance of the builder.
+         * @see #setEmbed(EmbedDraft)
+         */
+        default Builder setEmbed(Embed.Builder embedBuilder) {
+            return setEmbed(embedBuilder.build());
+        }
     }
 
     interface BulkDelete {
