@@ -23,6 +23,7 @@ import de.kaleidox.crystalshard.util.UtilDelegate;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.functional.LivingInt;
 import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.tunnel.TunnelFramework;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +55,7 @@ public class DiscordInternal implements Discord {
     private CompletableFuture<Self> selfFuture;
     private boolean init = false;
     private LivingInt serversInit;
+    private final TunnelFramework tunnelFramework;
 
     public DiscordInternal(String token, AccountType type, Integer thisShard, Integer ShardCount) {
         this.serverCache = CoreDelegate.serverCache(this);
@@ -62,9 +64,10 @@ public class DiscordInternal implements Discord {
         this.channelCache = CoreDelegate.channelCache(this);
         this.messageCache = CoreDelegate.messageCache(this);
         this.emojiCache = CoreDelegate.emojiCache(this);
-        selfFuture = new CompletableFuture<>();
-        serversInit = new LivingInt(5, 0, -1, 1, TimeUnit.SECONDS);
-        serversInit.onStopHit(() -> init = true);
+        this.selfFuture = new CompletableFuture<>();
+        this.tunnelFramework = new TunnelFramework();
+        this.serversInit = new LivingInt(5, 0, -1, 1, TimeUnit.SECONDS);
+        this.serversInit.onStopHit(() -> init = true);
         this.thisShard = thisShard;
         this.shardCount = ShardCount;
         this.pool = CoreDelegate.newInstance(ThreadPool.class, this);
@@ -99,6 +102,7 @@ public class DiscordInternal implements Discord {
         this.channelCache = null;
         this.messageCache = null;
         this.emojiCache = null;
+        this.tunnelFramework = null;
     }
 
     @Override
@@ -219,6 +223,11 @@ public class DiscordInternal implements Discord {
     @Override
     public ThreadPool getThreadPool() {
         return pool;
+    }
+
+    @Override
+    public TunnelFramework getTunnelFramework() {
+        return tunnelFramework;
     }
 
     @Override

@@ -12,7 +12,6 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.Self;
-import de.kaleidox.crystalshard.util.embeds.OldPagedEmbed;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.SetHelper;
 import de.kaleidox.util.objects.functional.Switch;
@@ -296,6 +295,8 @@ public class CommandFrameworkImpl implements CommandFramework {
     public static void defaultHelp(Discord discord, Server server, Author author, TextChannel channel) {
         CommandFrameworkImpl framework = (CommandFrameworkImpl) discord.getUtilities()
                 .getCommandFramework();
+        // TODO: 09.11.2018
+        /*
         OldPagedEmbed embed = new OldPagedEmbed(channel, () -> {
             Embed.Builder builder = Embed.BUILDER();
             Self self = discord.getSelf();
@@ -352,12 +353,8 @@ public class CommandFrameworkImpl implements CommandFramework {
                         embed.addField(aliases.toString(), sb.toString());
                     }
                 });
-        embed.build();
+        embed.build();*/
     }
-
-    // Static members
-
-// Static membe
 
     private class Instance {
         private final Method method;

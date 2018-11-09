@@ -17,6 +17,7 @@ import de.kaleidox.crystalshard.main.util.ChannelContainer;
 import de.kaleidox.crystalshard.main.util.UserContainer;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.tunnel.TunnelFramework;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -72,4 +73,6 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
     }
 
     ThreadPool getThreadPool();
+
+    TunnelFramework getTunnelFramework();
 }

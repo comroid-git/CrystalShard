@@ -96,14 +96,6 @@ public class DiscordLoginTool {
         });
     }
 
-    public MultiShard loginMultiShard() {
-        List<Discord> loggedIn = new ArrayList<>();
-        for (int i = 0; i < shardCount; i++) {
-            loggedIn.add(InternalDelegate.newInstance(Discord.class, token, type, i, shardCount));
-        }
-        return new MultiShard(loggedIn);
-    }
-
     /**
      * Creates a new instance.
      *
