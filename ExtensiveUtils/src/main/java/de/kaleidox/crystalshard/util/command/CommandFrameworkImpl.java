@@ -30,6 +30,9 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.util.ConfigurationBuilder;
 
 /**
  * This class represents the CommandFramework. Commands can be created using the {@link Command} annotation.
@@ -57,9 +60,29 @@ public class CommandFrameworkImpl implements CommandFramework {
 
         enabled.set(true);
 
+        if (!enableBuiltInHelpCommand) {
+            Method helpMethod = null;
+            for (Method method : CommandFrameworkImpl.class.getMethods()) {
+                if (method.getName().equals("defaultHelp")) {
+                    helpMethod = method;
+                    break;
+                }
+            }
+            assert helpMethod != null;
+            unregisterCommand(helpMethod);
+        }
+        commandRegistry();
         discord.attachListener((MessageCreateListener) this::handle);
+    }
 
-        if (enableBuiltInHelpCommand) registerCommands(CommandFrameworkImpl.class);
+    private void commandRegistry() {
+        Package[] packages = ClassLoader.getSystemClassLoader().getDefinedPackages();
+        String[] packageNames = new String[packages.length];
+        for (int i = 0; i < packages.length; i++) packageNames[i] = packages[i].getName();
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .addScanners(new MethodAnnotationsScanner())
+                .forPackages(packageNames));
+        reflections.getMethodsAnnotatedWith(Command.class).forEach(this::registerCommands);
     }
 
     /**
