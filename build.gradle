@@ -1,39 +1,149 @@
-apply plugin: 'maven-publish'
 apply plugin: 'java-library'
+apply plugin: 'maven-publish'
 
-project.version = 0.10
-def mainV = '0.10'
-def impl8V = '0.10'
+project.version = "0.10-SNAPSHOT"
+def mainV = '0.11'
+def impl8V = '0.11'
 def core8V = '0.10'
 def core11V = '0.10'
+def extUtilV = '1.1'
 
-def extUtilV = '1.0'
+version = "${project.version}"
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.10.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-task myJavadocs(type: Javadoc) {
+task javadocs(type: Javadoc) {
     source = sourceSets.main.allJava
     options.encoding = 'UTF-8'
 }
 
-javadoc {
-    options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+sourceSets {
+    main {
+        java {
+            srcDirs = ["Main\\src\\main\\java"]
+        }
+    }
+    impl8 {
+        java {
+            srcDirs = ["Internal-8\\src\\main\\java"]
+        }
+    }
+    core8 {
+        java {
+            srcDirs = ["Core-8\\src\\main\\java"]
+        }
+    }
+    core11 {
+        java {
+            srcDirs = ["Core-11\\src\\main\\java"]
+        }
+    }
+    utils {
+        java {
+            srcDirs = ["ExtensiveUtils\\src\\main\\java"]
         }
     }
 }
 
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html4', true)
+    }
+    options.encoding = 'UTF-8'
+    options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
+}
+
 jar {
     test
+}
+
+task mainJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+task implementationJar(type: Jar) {
+    from sourceSets.impl8.allJava
+}
+
+task coreEightJar(type: Jar) {
+    from sourceSets.core8.allJava
+}
+
+task coreElevenJar(type: Jar) {
+    from sourceSets.core11.allJava
+}
+
+task utilsJar(type: Jar) {
+    from sourceSets.utils.allJava
+}
+
+publishing {
+    repositories {
+        maven {
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            url = project.version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+            name = "Sonatype"
+
+            credentials {
+                def uName = ""
+                def passwd = ""
+                int r
+                def stream = new FileInputStream(new File("../sonatype-username.txt"))
+                while ((r = stream.read()) != -1) uName = (uName + (char)r)
+                stream = new FileInputStream(new File("../sonatype-password.txt"))
+                while ((r = stream.read()) != -1) passwd = (passwd + (char)r)
+
+                username uName
+                password passwd
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'crystalshard'
+            from components.java
+
+            artifacts {
+                mainJar
+                implementationJar
+                coreEightJar
+                coreElevenJar
+                utilsJar
+            }
+
+            pom {
+                name = "CrystalShard"
+                description = "Modular Java Discord library!"
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "burdoto"
+                        name = "Tobias Burdow"
+                        email = "burdoto@outlook.com"
+                    }
+                }
+            }
+        }
+    }
+}
+
+if (project.hasProperty("signing.keyId")) {
+    apply plugin: 'signing'
+    signing {
+        sign publishing.publications.mavenJava
+    }
 }
 
 allprojects {
@@ -124,7 +234,7 @@ project(":ExtensiveUtils") {
     dependencies {
         implementation project(':Main')
         implementation project(':Internal-8')
-        
+
         implementation 'org.reflections:reflections:0.9.11'
     }
 }
