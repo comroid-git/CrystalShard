@@ -33,7 +33,7 @@ jar {
 }
 
 
-if (!System.getenv().containsKey("TRAVIS")) {
+if (!isTravis()) {
     apply from: 'gradle/publishing.gradle'
 }
 
@@ -47,7 +47,7 @@ allprojects {
     }
 
     jar {
-        if (!System.getenv().containsKey("TRAVIS")) {
+        if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
             destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
         }
@@ -174,4 +174,8 @@ project(":Core-11") {
     dependencies {
         implementation project(":Main")
     }
+}
+
+static boolean isTravis() {
+    return System.getenv().containsKey("TRAVIS")
 }
