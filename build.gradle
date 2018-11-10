@@ -77,11 +77,11 @@ allprojects {
     }
 }
 
-project(":Tests") {
-    version = 1
+project(":Main") {
+    version = (mainV == null ? project.version : mainV)
 
-    sourceCompatibility = 10
-    targetCompatibility = 10
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     dependencies {
         testImplementation project(':Main')
@@ -108,13 +108,6 @@ project(":Tests") {
     test {
         test.outputs.upToDateWhen { false }
     }
-}
-
-project(":Main") {
-    version = (mainV == null ? project.version : mainV)
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 }
 
 project(":ExtensiveUtils") {

@@ -6,5 +6,3 @@ include ':Core-8'
 include ':Core-11'
 
 include ':ExtensiveUtils'
-
-include ':Tests'
