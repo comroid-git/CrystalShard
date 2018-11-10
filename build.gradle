@@ -1,7 +1,7 @@
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
-project.version = "0.10-SNAPSHOT"
+project.version = "0.10.2-SNAPSHOT"
 def mainV = '0.11'
 def impl8V = '0.11'
 def core8V = '0.10'
@@ -50,6 +50,7 @@ allprojects {
         if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
             destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+            classifier "sources-${project.name}".toLowerCase()
         }
     }
 

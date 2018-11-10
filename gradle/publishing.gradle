@@ -1,50 +1,4 @@
-sourceSets {
-    main {
-        java {
-            srcDirs = ["Main\\src\\main\\java"]
-        }
-    }
-    impl8 {
-        java {
-            srcDirs = ["Internal-8\\src\\main\\java"]
-        }
-    }
-    core8 {
-        java {
-            srcDirs = ["Core-8\\src\\main\\java"]
-        }
-    }
-    core11 {
-        java {
-            srcDirs = ["Core-11\\src\\main\\java"]
-        }
-    }
-    utils {
-        java {
-            srcDirs = ["ExtensiveUtils\\src\\main\\java"]
-        }
-    }
-}
-
-task mainJar(type: Jar) {
-    from sourceSets.main.allJava
-}
-
-task implementationJar(type: Jar) {
-    from sourceSets.impl8.allJava
-}
-
-task coreEightJar(type: Jar) {
-    from sourceSets.core8.allJava
-}
-
-task coreElevenJar(type: Jar) {
-    from sourceSets.core11.allJava
-}
-
-task utilsJar(type: Jar) {
-    from sourceSets.utils.allJava
-}
+import java.util.function.BiConsumer
 
 publishing {
     repositories {
@@ -74,17 +28,21 @@ publishing {
             artifactId = 'crystalshard'
             from components.java
 
-            artifacts {
-                mainJar
-                implementationJar
-                coreEightJar
-                coreElevenJar
-                utilsJar
-            }
+            gradle.rootProject.getChildProjects().forEach(new BiConsumer<? super String, ? super Project>(){
+                @Override
+                void accept(Object o1, Object o2) {
+                    final String name = (String) o1
+                    final Project proj = (Project) o2
+                    if (!name.equals("CrystalShard") && !name.equals("Tests")) {
+                        gradle.rootProject.publishing.publications.mavenJava.artifact proj.jar
+                    }
+                }
+            })
 
             pom {
                 name = "CrystalShard"
                 description = "Modular Java Discord library!"
+                inceptionYear = '2018'
 
                 licenses {
                     license {
@@ -99,6 +57,25 @@ publishing {
                         name = "Tobias Burdow"
                         email = "burdoto@outlook.com"
                     }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/CrystalShardDiscord/CrystalShard.git'
+                    developerConnection = 'scm:git:git@github.com:CrystalShardDiscord/CrystalShard.git'
+                    url = 'https://github.com/CrystalShardDiscord/CrystalShard'
+                }
+
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/CrystalShardDiscord/CrystalShard/issues'
+                }
+
+                withXml {
+                    def xml = asNode()
+                    def repos = xml.appendNode("repositories")
+                    def repo = repos.appendNode("repository")
+                    repo.appendNode("id", "jitpack.io")
+                    repo.appendNode("url", "https://jitpack.io")
                 }
             }
         }
