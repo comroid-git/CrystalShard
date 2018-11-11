@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.main.items.message.embed;
 
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.user.User;
@@ -23,7 +23,7 @@ public interface Embed extends Castable<Embed> {
     Optional<SentEmbed> toSentEmbed();
 
     static Builder BUILDER() {
-        return InternalDelegate.newInstance(Embed.Builder.class);
+        return InternalInjector.newInstance(Embed.Builder.class);
     }
 
     interface Builder {

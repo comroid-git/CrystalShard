@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.message.Message;
@@ -58,7 +58,7 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
     static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
         if (data.get("id")
                 .isNull()) {
-            return InternalDelegate.newInstance(UnicodeEmoji.class, discord, data, true);
+            return InternalInjector.newInstance(UnicodeEmoji.class, discord, data, true);
         } else {
             return discord.getEmojiCache()
                     .getOrCreate(discord, server, data, true);

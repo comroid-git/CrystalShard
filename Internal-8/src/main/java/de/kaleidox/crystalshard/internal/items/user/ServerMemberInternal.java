@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.main.Discord;
@@ -103,7 +103,7 @@ public class ServerMemberInternal extends UserInternal implements ServerMember {
         return instances.get(user.getId())
                 .containsKey(server.getId()) ? instances.get(user.getId())
                 .get(server.getId()) :
-                CoreDelegate.webRequest(ServerMember.class, user.getDiscord())
+                CoreInjector.webRequest(ServerMember.class, user.getDiscord())
                         .setMethod(HttpMethod.GET)
                         .setUri(DiscordEndpoint.GUILD_MEMBER.createUri(server.getId(),
                                 user.getId()))

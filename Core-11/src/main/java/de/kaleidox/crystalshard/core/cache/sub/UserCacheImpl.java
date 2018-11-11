@@ -1,12 +1,12 @@
 package de.kaleidox.crystalshard.core.cache.sub;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.CacheImpl;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.annotations.NotNull;
@@ -25,7 +25,7 @@ public class UserCacheImpl extends CacheImpl<User, Long, Long> {
     @NotNull
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(Long requestIdent) {
-        WebRequest<Object[]> request = CoreDelegate.webRequest(discordInternal);
+        WebRequest<Object[]> request = CoreInjector.webRequest(discordInternal);
         return request.setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.USER.createUri(requestIdent))
                 .executeAs(node -> new Object[]{discordInternal, node});
@@ -34,6 +34,6 @@ public class UserCacheImpl extends CacheImpl<User, Long, Long> {
     @NotNull
     @Override
     public User construct(Object... param) {
-        return InternalDelegate.newInstance(User.class, param);
+        return InternalInjector.newInstance(User.class, param);
     }
 }

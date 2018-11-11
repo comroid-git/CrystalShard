@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -453,7 +453,7 @@ public class ServerInternal implements Server {
     public CompletableFuture<Void> delete() {
         if (!getOwner().equals(discord.getSelf()))
             return FutureHelper.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.SELF_GUILD.createUri(this))
                 .executeAsVoid();
@@ -466,7 +466,7 @@ public class ServerInternal implements Server {
         if (!hasPermission(discord, Permission.KICK_MEMBERS))
             return FutureHelper.failedFuture(new DiscordPermissionException("Cannot prune!",
                     Permission.KICK_MEMBERS));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.GUILD_PRUNE.createUri(id))
                 .setNode("days", days)
@@ -479,7 +479,7 @@ public class ServerInternal implements Server {
             return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot get guild integrations!",
                     Permission.MANAGE_GUILD));
-        WebRequest<Collection<Integration>> request = CoreDelegate.webRequest(discord);
+        WebRequest<Collection<Integration>> request = CoreInjector.webRequest(discord);
         return request.setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.GUILD_INTEGRATIONS.createUri(id))
                 .executeAs(node -> {
@@ -496,7 +496,7 @@ public class ServerInternal implements Server {
         if (!hasPermission(discord, Permission.MANAGE_GUILD))
             return FutureHelper.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!",
                     Permission.MANAGE_GUILD));
-        return CoreDelegate.webRequest(URL.class, discord)
+        return CoreInjector.webRequest(URL.class, discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.GUILD_VANITY_INVITE.createUri(id))
                 .executeAs(node -> {

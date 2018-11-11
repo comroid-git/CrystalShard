@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.core.net.socket;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 
@@ -23,7 +23,7 @@ public class DiscordEventDispatch {
                             ((ThreadPoolImpl) discord.getThreadPool()).startHeartbeat(heartbeat_interval);
                             break;
                         case DISPATCH:
-                            InternalDelegate.tryHandle(discord, data);
+                            InternalInjector.tryHandle(discord, data);
                             break;
                         case HEARTBEAT:
                             webSocket.heartbeat();

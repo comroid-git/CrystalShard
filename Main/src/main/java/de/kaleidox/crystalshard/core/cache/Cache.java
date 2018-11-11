@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.core.cache;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.NotNull;
 import de.kaleidox.util.annotations.Nullable;
@@ -118,6 +118,6 @@ public interface Cache<T, I, R> {
      * @throws NoSuchElementException If no cache fitting the parameters was found.
      */
     static <T extends Cacheable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
-        return CoreDelegate.getCacheInstance(typeClass, ident);
+        return CoreInjector.getCacheInstance(typeClass, ident);
     }
 }

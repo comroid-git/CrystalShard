@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.main.items.server.interactive;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
@@ -35,10 +35,10 @@ public interface Invite extends Castable<Invite> {
 
     static CompletableFuture<Invite> get(String code) throws IllegalThreadException {
         Discord discord = ThreadPool.getThreadDiscord();
-        return CoreDelegate.webRequest(Invite.class, discord)
+        return CoreInjector.webRequest(Invite.class, discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.INVITE.createUri(code))
                 .setNode("with_counts", true)
-                .executeAs(node -> InternalDelegate.newInstance(Invite.class, discord, node));
+                .executeAs(node -> InternalInjector.newInstance(Invite.class, discord, node));
     }
 }

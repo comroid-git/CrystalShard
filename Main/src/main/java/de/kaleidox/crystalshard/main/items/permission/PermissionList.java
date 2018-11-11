@@ -1,12 +1,12 @@
 package de.kaleidox.crystalshard.main.items.permission;
 
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface PermissionList extends Set<Permission> {
-    PermissionList EMPTY_LIST = InternalDelegate.newInstance(PermissionList.class, null, 0);
+    PermissionList EMPTY_LIST = InternalInjector.newInstance(PermissionList.class, null, 0);
 
     Optional<PermissionOverwritable> getParent();
 
@@ -27,15 +27,15 @@ public interface PermissionList extends Set<Permission> {
     boolean remove(Object o);
 
     static PermissionList emptyListOf(PermissionOverwritable parent) {
-        return InternalDelegate.newInstance(PermissionList.class, parent, 0);
+        return InternalInjector.newInstance(PermissionList.class, parent, 0);
     }
 
     static PermissionList create(PermissionOverwritable parent) {
-        return InternalDelegate.newInstance(PermissionList.class, parent);
+        return InternalInjector.newInstance(PermissionList.class, parent);
     }
 
     static PermissionList create(List<Permission> lackingPermission) {
-        PermissionList permissions = InternalDelegate.newInstance(PermissionList.class, null, 0);
+        PermissionList permissions = InternalInjector.newInstance(PermissionList.class, null, 0);
         permissions.addAll(lackingPermission);
         return permissions;
     }

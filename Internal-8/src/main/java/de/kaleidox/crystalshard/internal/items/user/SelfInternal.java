@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.net.socket.OpCode;
@@ -31,7 +31,7 @@ public class SelfInternal extends UserInternal implements Self {
 
     @Override
     public CompletableFuture<Void> setName(String name) {
-        return CoreDelegate.webRequest(this.getDiscord())
+        return CoreInjector.webRequest(this.getDiscord())
                 .setMethod(HttpMethod.PATCH)
                 .setUri(DiscordEndpoint.SELF_INFO.createUri())
                 .setNode(objectNode().set("username",
@@ -47,7 +47,7 @@ public class SelfInternal extends UserInternal implements Self {
 
     @Override
     public CompletableFuture<Void> setNickname(String nickname, Server inServer) {
-        return CoreDelegate.webRequest(getDiscord())
+        return CoreInjector.webRequest(getDiscord())
                 .setMethod(HttpMethod.PATCH)
                 .setUri(DiscordEndpoint.SELF_NICKNAME.createUri(inServer))
                 .setNode(objectNode("nick",

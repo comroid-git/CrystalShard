@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
 import com.vdurmont.emoji.EmojiParser;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 
 public interface UnicodeEmoji extends Emoji {
@@ -13,6 +13,6 @@ public interface UnicodeEmoji extends Emoji {
         if (aliases.equalsIgnoreCase(emojiOrAlias) && unicode.equalsIgnoreCase(emojiOrAlias))
             throw new IllegalArgumentException(
                     "The provided Emoji String is not a valid unicode emoji.");
-        else return InternalDelegate.newInstance(UnicodeEmoji.class, discord, aliases, unicode);
+        else return InternalInjector.newInstance(UnicodeEmoji.class, discord, aliases, unicode);
     }
 }

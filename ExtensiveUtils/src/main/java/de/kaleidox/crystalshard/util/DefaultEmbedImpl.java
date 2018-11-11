@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.Worker;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
@@ -31,7 +31,7 @@ public class DefaultEmbedImpl implements DefaultEmbed {
         this.discord = discord;
         this.modifiers = new ArrayList<>();
 
-        EMPTY_BUILDER = data.isNull() ? Embed::BUILDER : () -> InternalDelegate.newInstance(SentEmbed.class, null, data)
+        EMPTY_BUILDER = data.isNull() ? Embed::BUILDER : () -> InternalInjector.newInstance(SentEmbed.class, null, data)
                 .toBuilder();
         EMPTY_SUPPLIER = () -> EMPTY_BUILDER.get()
                 .build();

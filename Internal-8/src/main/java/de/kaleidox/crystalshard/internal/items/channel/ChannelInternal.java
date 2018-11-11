@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -90,7 +90,7 @@ public abstract class ChannelInternal implements Channel {
             return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot delete channel!",
                     Permission.MANAGE_CHANNELS));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.CHANNEL.createUri(id))
                 .executeAsVoid();

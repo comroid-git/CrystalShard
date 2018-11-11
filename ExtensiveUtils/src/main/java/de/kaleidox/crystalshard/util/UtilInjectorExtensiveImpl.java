@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.util;
 
 import java.util.Hashtable;
 
-public class UtilDelegateExtensiveImpl extends UtilDelegate {
+public class UtilInjectorExtensiveImpl extends UtilInjector {
     private final static Hashtable<Class, Class> implementations;
 
     static {
@@ -11,7 +11,7 @@ public class UtilDelegateExtensiveImpl extends UtilDelegate {
         implementations.put(DefaultEmbed.class, DefaultEmbedImpl.class);
     }
 
-    public UtilDelegateExtensiveImpl() {
+    public UtilInjectorExtensiveImpl() {
         super(implementations);
     }
 

@@ -23,7 +23,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class CoreDelegateJRE8Impl extends CoreDelegate {
+public class CoreInjectorJRE11Impl extends CoreInjector {
     private final static Hashtable<Class, Class> implementations;
 
     static {
@@ -35,7 +35,7 @@ public class CoreDelegateJRE8Impl extends CoreDelegate {
         implementations.put(WebSocketClient.class, WebSocketClientImpl.class);
     }
 
-    public CoreDelegateJRE8Impl() {
+    public CoreInjectorJRE11Impl() {
         super(implementations);
     }
 
@@ -71,7 +71,7 @@ public class CoreDelegateJRE8Impl extends CoreDelegate {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident) {
+    protected <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceinjector(Class<T> typeClass, I ident) {
         return CacheImpl.cacheInstances.entrySet()
                 .stream()
                 .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
@@ -96,6 +96,6 @@ public class CoreDelegateJRE8Impl extends CoreDelegate {
 
     @Override
     public int getJdkVersion() {
-        return 8;
+        return 11;
     }
 }

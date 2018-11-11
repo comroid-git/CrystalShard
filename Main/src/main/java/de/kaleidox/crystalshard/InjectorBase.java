@@ -8,21 +8,21 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class DelegateBase {
-    protected final static Logger logger = new Logger(DelegateBase.class);
+public abstract class InjectorBase {
+    protected final static Logger logger = new Logger(InjectorBase.class);
     private final Hashtable<Class, Class> implementations;
     private final Set<Class> mustOverride;
 
-    public DelegateBase(Hashtable<Class, Class> implementations, Set<Class> mustOverride) {
+    public InjectorBase(Hashtable<Class, Class> implementations, Set<Class> mustOverride) {
         this.implementations = implementations;
         this.mustOverride = mustOverride;
     }
 
     /**
-     * Used to determine what delegate to use if there are several implementations.
+     * Used to determine what injector to use if there are several implementations.
      * Old semantics like {@code 1.8} will return just {@code 8}.
      *
-     * @return The numeric version for the JDK that the delegate was made for.
+     * @return The numeric version for the JDK that the injector was made for.
      */
     public abstract int getJdkVersion();
 

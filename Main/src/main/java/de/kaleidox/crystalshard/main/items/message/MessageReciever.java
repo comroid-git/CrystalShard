@@ -1,11 +1,11 @@
 package de.kaleidox.crystalshard.main.items.message;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
@@ -49,7 +49,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Message> sendMessage(String content) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return InternalDelegate.newInstance(Message.Builder.class)
+        return InternalInjector.newInstance(Message.Builder.class)
                 .addText(content)
                 .send(this);
     }
@@ -66,7 +66,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Message> sendMessage(Embed.Builder embedBuilder) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return InternalDelegate.newInstance(Message.Builder.class)
+        return InternalInjector.newInstance(Message.Builder.class)
                 .setEmbed(embedBuilder)
                 .send(this);
     }
@@ -83,7 +83,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return InternalDelegate.newInstance(Message.Builder.class)
+        return InternalInjector.newInstance(Message.Builder.class)
                 .setEmbed(embedDraft)
                 .send(this);
     }
@@ -115,7 +115,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Void> typing() throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot type to yourself!");
-        return CoreDelegate.webRequest(Void.class, getDiscord())
+        return CoreInjector.webRequest(Void.class, getDiscord())
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.CHANNEL_TYPING.createUri(getId()))
                 .executeAsVoid();
@@ -147,7 +147,7 @@ public interface MessageReciever extends DiscordItem {
             if (!target.hasPermission(getDiscord(), Permission.READ_MESSAGE_HISTORY))
                 return CompletableFuture.completedFuture(Collections.emptyList());
         }
-        WebRequest<Collection<Message>> request = CoreDelegate.webRequest(getDiscord());
+        WebRequest<Collection<Message>> request = CoreInjector.webRequest(getDiscord());
         return request.setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.MESSAGE.createUri(this instanceof User ?
                         ((User) this).openPrivateChannel().thenApply(PrivateChannel::getId).join() : getId()))

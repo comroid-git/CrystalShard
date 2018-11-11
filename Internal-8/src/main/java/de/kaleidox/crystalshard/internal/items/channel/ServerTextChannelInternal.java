@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -122,7 +122,7 @@ public class ServerTextChannelInternal extends TextChannelInternal implements Se
             return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot get channel invite!",
                     Permission.MANAGE_CHANNELS));
-        WebRequest<Collection<MetaInvite>> request = CoreDelegate.webRequest(discord);
+        WebRequest<Collection<MetaInvite>> request = CoreInjector.webRequest(discord);
         return request.setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.CHANNEL_INVITE.createUri(id))
                 .executeAs(data -> {

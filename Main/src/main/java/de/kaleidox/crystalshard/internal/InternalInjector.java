@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.DelegateBase;
+import de.kaleidox.crystalshard.InjectorBase;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
 import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
@@ -29,26 +29,26 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-public abstract class InternalDelegate extends DelegateBase {
-    public final static InternalDelegate delegate;
+public abstract class InternalInjector extends InjectorBase {
+    public final static InternalInjector injector;
     private final static Set<Class> mustOverride;
 
     static {
-        InternalDelegate using;
-        ServiceLoader<InternalDelegate> load = ServiceLoader.load(InternalDelegate.class);
-        Iterator<InternalDelegate> iterator = load.iterator();
+        InternalInjector using;
+        ServiceLoader<InternalInjector> load = ServiceLoader.load(InternalInjector.class);
+        Iterator<InternalInjector> iterator = load.iterator();
         if (iterator.hasNext()) using = iterator.next();
-        else throw new IllegalStateException("No implementation for " + InternalDelegate.class.getName() + " found!");
+        else throw new IllegalStateException("No implementation for " + InternalInjector.class.getName() + " found!");
         if (iterator.hasNext()) {
-            List<InternalDelegate> allImplementations = new ArrayList<>();
+            List<InternalInjector> allImplementations = new ArrayList<>();
             allImplementations.add(using);
             iterator.forEachRemaining(allImplementations::add);
-            allImplementations.sort(Comparator.comparingInt(delegate -> delegate.getJdkVersion() * -1));
+            allImplementations.sort(Comparator.comparingInt(injector -> injector.getJdkVersion() * -1));
             using = allImplementations.get(0);
-            logger.warn("More than one implementation for " + InternalDelegate.class.getSimpleName() +
+            logger.warn("More than one implementation for " + InternalInjector.class.getSimpleName() +
                     " found! Using " + using.getClass().getName());
         }
-        delegate = using;
+        injector = using;
         mustOverride = new HashSet<>();
         mustOverride.addAll(Arrays.asList(ServerTextChannel.class,
                 PrivateTextChannel.class,
@@ -80,17 +80,17 @@ public abstract class InternalDelegate extends DelegateBase {
         ));
     }
 
-    public InternalDelegate(Hashtable<Class, Class> implementations) {
+    public InternalInjector(Hashtable<Class, Class> implementations) {
         super(implementations, mustOverride);
     }
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
-        return delegate.makeInstance(tClass, args);
+        return injector.makeInstance(tClass, args);
     }
 
     public static void tryHandle(Discord discord, JsonNode data) {
-        delegate.tryHandleDelegate(discord, data);
+        injector.tryHandleinjector(discord, data);
     }
 
-    protected abstract void tryHandleDelegate(Discord discord, JsonNode data);
+    protected abstract void tryHandleinjector(Discord discord, JsonNode data);
 }

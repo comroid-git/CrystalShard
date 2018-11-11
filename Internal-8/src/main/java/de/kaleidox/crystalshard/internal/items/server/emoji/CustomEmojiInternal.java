@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -81,7 +81,7 @@ public class CustomEmojiInternal implements CustomEmoji {
 
     @Override
     public CompletableFuture<Void> requestAllData() {
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC.createUri(serverId, id))
                 .executeAsNode()
@@ -128,7 +128,7 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public CompletableFuture<User> requestCreator() {
         if (Objects.nonNull(creator)) return CompletableFuture.completedFuture(creator);
-        return CoreDelegate.webRequest(User.class, discord)
+        return CoreInjector.webRequest(User.class, discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC.createUri(serverId, id))
                 .executeAs(node -> discord.getUserCache()
@@ -138,7 +138,7 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public CompletableFuture<Boolean> requestIsAnimated() {
         if (Objects.nonNull(animated)) return CompletableFuture.completedFuture(animated);
-        return CoreDelegate.webRequest(Boolean.class, discord)
+        return CoreInjector.webRequest(Boolean.class, discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC.createUri(serverId, id))
                 .executeAs(node -> {
@@ -151,7 +151,7 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public CompletableFuture<Boolean> requestIsManaged() {
         if (Objects.nonNull(managed)) return CompletableFuture.completedFuture(managed);
-        return CoreDelegate.webRequest(Boolean.class, discord)
+        return CoreInjector.webRequest(Boolean.class, discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC.createUri(serverId, id))
                 .executeAs(node -> {
@@ -164,7 +164,7 @@ public class CustomEmojiInternal implements CustomEmoji {
     @Override
     public CompletableFuture<Boolean> requestRequireColons() {
         if (Objects.nonNull(requireColons)) return CompletableFuture.completedFuture(requireColons);
-        return CoreDelegate.webRequest(Boolean.class, discord)
+        return CoreInjector.webRequest(Boolean.class, discord)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC.createUri(serverId, id))
                 .executeAs(node -> {

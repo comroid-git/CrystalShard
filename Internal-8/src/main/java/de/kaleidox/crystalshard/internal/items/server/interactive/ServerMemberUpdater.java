@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.server.interactive;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.main.Discord;
@@ -90,7 +90,7 @@ public class ServerMemberUpdater implements ServerMember.Updater {
 
     @Override
     public CompletableFuture<Void> update() {
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.PATCH)
                 .setUri(DiscordEndpoint.GUILD_MEMBER.createUri(server, member))
                 .setNode((nickname != null ? new Object[]{"nick",
