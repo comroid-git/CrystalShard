@@ -12,7 +12,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 public abstract class UtilInjector extends InjectorBase {
-    public final static UtilInjector delegate;
+    public final static UtilInjector injector;
     private final static Set<Class> mustOverride;
 
     static {
@@ -21,16 +21,16 @@ public abstract class UtilInjector extends InjectorBase {
         Iterator<UtilInjector> iterator = load.iterator();
         if (iterator.hasNext()) using = iterator.next();
         else using = null;
-        if (iterator.hasNext()) { // if no util delegate available, this if wont run
+        if (iterator.hasNext()) { // if no util injector available, this if wont run
             List<UtilInjector> allImplementations = new ArrayList<>();
             allImplementations.add(using);
             iterator.forEachRemaining(allImplementations::add);
-            allImplementations.sort(Comparator.comparingInt(delegate -> delegate.getJdkVersion() * -1));
+            allImplementations.sort(Comparator.comparingInt(injector -> injector.getJdkVersion() * -1));
             using = allImplementations.get(0);
             logger.warn("More than one implementation for " + UtilInjector.class.getSimpleName() +
                     " found! Using " + using.getClass().getName());
         }
-        delegate = using;
+        injector = using;
         mustOverride = new HashSet<>();
         mustOverride.addAll(Arrays.asList(
                 DiscordUtils.class,
@@ -43,9 +43,9 @@ public abstract class UtilInjector extends InjectorBase {
     }
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
-        if (delegate == null)
-            throw new IllegalStateException("No Util delegate found. Please " +
+        if (injector == null)
+            throw new IllegalStateException("No Util injector found. Please " +
                     "make sure you have any utilities implementation present.");
-        return delegate.makeInstance(tClass, args);
+        return injector.makeInstance(tClass, args);
     }
 }

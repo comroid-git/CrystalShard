@@ -78,7 +78,7 @@ public class InternalInjectorJRE8Impl extends InternalInjector {
     }
 
     @Override
-    protected void tryHandleDelegate(Discord discord, JsonNode data) {
+    protected void tryHandleinjector(Discord discord, JsonNode data) {
         HandlerBase.tryHandle((DiscordInternal) discord, data);
     }
 

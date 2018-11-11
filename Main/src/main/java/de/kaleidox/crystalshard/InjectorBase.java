@@ -19,10 +19,10 @@ public abstract class InjectorBase {
     }
 
     /**
-     * Used to determine what delegate to use if there are several implementations.
+     * Used to determine what injector to use if there are several implementations.
      * Old semantics like {@code 1.8} will return just {@code 8}.
      *
-     * @return The numeric version for the JDK that the delegate was made for.
+     * @return The numeric version for the JDK that the injector was made for.
      */
     public abstract int getJdkVersion();
 

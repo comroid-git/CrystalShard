@@ -30,7 +30,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 public abstract class InternalInjector extends InjectorBase {
-    public final static InternalInjector delegate;
+    public final static InternalInjector injector;
     private final static Set<Class> mustOverride;
 
     static {
@@ -43,12 +43,12 @@ public abstract class InternalInjector extends InjectorBase {
             List<InternalInjector> allImplementations = new ArrayList<>();
             allImplementations.add(using);
             iterator.forEachRemaining(allImplementations::add);
-            allImplementations.sort(Comparator.comparingInt(delegate -> delegate.getJdkVersion() * -1));
+            allImplementations.sort(Comparator.comparingInt(injector -> injector.getJdkVersion() * -1));
             using = allImplementations.get(0);
             logger.warn("More than one implementation for " + InternalInjector.class.getSimpleName() +
                     " found! Using " + using.getClass().getName());
         }
-        delegate = using;
+        injector = using;
         mustOverride = new HashSet<>();
         mustOverride.addAll(Arrays.asList(ServerTextChannel.class,
                 PrivateTextChannel.class,
@@ -85,12 +85,12 @@ public abstract class InternalInjector extends InjectorBase {
     }
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
-        return delegate.makeInstance(tClass, args);
+        return injector.makeInstance(tClass, args);
     }
 
     public static void tryHandle(Discord discord, JsonNode data) {
-        delegate.tryHandleDelegate(discord, data);
+        injector.tryHandleinjector(discord, data);
     }
 
-    protected abstract void tryHandleDelegate(Discord discord, JsonNode data);
+    protected abstract void tryHandleinjector(Discord discord, JsonNode data);
 }

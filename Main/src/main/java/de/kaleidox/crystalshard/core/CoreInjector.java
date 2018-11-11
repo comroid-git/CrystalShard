@@ -27,7 +27,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 public abstract class CoreInjector extends InjectorBase {
-    public final static CoreInjector delegate;
+    public final static CoreInjector injector;
     private final static Set<Class> mustOverride;
 
     static {
@@ -40,12 +40,12 @@ public abstract class CoreInjector extends InjectorBase {
             List<CoreInjector> allImplementations = new ArrayList<>();
             allImplementations.add(using);
             iterator.forEachRemaining(allImplementations::add);
-            allImplementations.sort(Comparator.comparingInt(delegate -> delegate.getJdkVersion() * -1));
+            allImplementations.sort(Comparator.comparingInt(injector -> injector.getJdkVersion() * -1));
             using = allImplementations.get(0);
             logger.warn("More than one implementation for " + CoreInjector.class.getSimpleName() +
                     " found! Using " + using.getClass().getName());
         }
-        delegate = using;
+        injector = using;
         mustOverride = new HashSet<>();
         mustOverride.addAll(Arrays.asList(
                 Cache.class,
@@ -60,43 +60,43 @@ public abstract class CoreInjector extends InjectorBase {
     }
 
     public static Cache<Channel, Long, Long> channelCache(Discord discord) {
-        return delegate.makeChannelCache(discord);
+        return injector.makeChannelCache(discord);
     }
 
     protected abstract Cache<Channel, Long, Long> makeChannelCache(Discord discord);
 
     public static Cache<CustomEmoji, Long, IDPair> emojiCache(Discord discord) {
-        return delegate.makeEmojiCache(discord);
+        return injector.makeEmojiCache(discord);
     }
 
     protected abstract Cache<CustomEmoji, Long, IDPair> makeEmojiCache(Discord discord);
 
     public static Cache<Message, Long, IDPair> messageCache(Discord discord) {
-        return delegate.makeMessageCache(discord);
+        return injector.makeMessageCache(discord);
     }
 
     protected abstract Cache<Message, Long, IDPair> makeMessageCache(Discord discord);
 
     public static Cache<Role, Long, IDPair> roleCache(Discord discord) {
-        return delegate.makeRoleCache(discord);
+        return injector.makeRoleCache(discord);
     }
 
     protected abstract Cache<Role, Long, IDPair> makeRoleCache(Discord discord);
 
     public static Cache<Server, Long, Long> serverCache(Discord discord) {
-        return delegate.makeServerCache(discord);
+        return injector.makeServerCache(discord);
     }
 
     protected abstract Cache<Server, Long, Long> makeServerCache(Discord discord);
 
     public static Cache<User, Long, Long> userCache(Discord discord) {
-        return delegate.makeUserCache(discord);
+        return injector.makeUserCache(discord);
     }
 
     protected abstract Cache<User, Long, Long> makeUserCache(Discord discord);
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
-        return delegate.makeInstance(tClass, args);
+        return injector.makeInstance(tClass, args);
     }
 
     /**
@@ -111,10 +111,10 @@ public abstract class CoreInjector extends InjectorBase {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Cacheable, I> Cache<T, I, ?> getCacheInstance(Class<T> typeClass, I ident) throws NoSuchElementException {
-        return delegate.getCacheInstanceDelegate(typeClass, ident);
+        return injector.getCacheInstanceinjector(typeClass, ident);
     }
 
-    protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident);
+    protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceinjector(Class<T> typeClass, I ident);
 
     public static <T> WebRequest<T> webRequest(Class<T> tClass, Discord discord) {
         WebRequest<T> request = webRequest(discord);
@@ -122,7 +122,7 @@ public abstract class CoreInjector extends InjectorBase {
     }
 
     public static <T> WebRequest<T> webRequest(Discord discord) {
-        return delegate.makeWebRequest(discord);
+        return injector.makeWebRequest(discord);
     }
 
     protected abstract <T> WebRequest<T> makeWebRequest(Discord discord);

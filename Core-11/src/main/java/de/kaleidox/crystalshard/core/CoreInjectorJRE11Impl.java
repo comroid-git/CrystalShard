@@ -71,7 +71,7 @@ public class CoreInjectorJRE11Impl extends CoreInjector {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident) {
+    protected <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceinjector(Class<T> typeClass, I ident) {
         return CacheImpl.cacheInstances.entrySet()
                 .stream()
                 .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
