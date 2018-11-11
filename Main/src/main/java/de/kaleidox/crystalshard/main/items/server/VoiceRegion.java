@@ -41,16 +41,6 @@ public enum VoiceRegion {
         this.vip = vip;
     }
 
-    // Static members
-    // Static membe
-    public static VoiceRegion getFromRegionKey(String regionKey) {
-        if (regionKey == null) return UNKNOWN;
-        return Stream.of(values())
-                .filter(region -> region.regionKey.equals(regionKey))
-                .findAny()
-                .orElse(UNKNOWN);
-    }
-
     public String getRegionKey() {
         return regionKey;
     }
@@ -61,5 +51,15 @@ public enum VoiceRegion {
 
     public boolean isVip() {
         return vip;
+    }
+
+    // Static members
+    // Static membe
+    public static VoiceRegion getFromRegionKey(String regionKey) {
+        if (regionKey == null) return UNKNOWN;
+        return Stream.of(values())
+                .filter(region -> region.regionKey.equals(regionKey))
+                .findAny()
+                .orElse(UNKNOWN);
     }
 }

@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +11,15 @@ import java.util.stream.Stream;
 
 public class PermissionListInternal extends HashSet<Permission> implements PermissionList {
     private final PermissionOverwritable parent;
+
+    public PermissionListInternal(PermissionOverwritable parent) {
+        super();
+        this.parent = parent;
+    }
+
+    public PermissionListInternal(int permissionInteger) {
+        this(null, permissionInteger);
+    }
 
     public PermissionListInternal(PermissionOverwritable parent, int permissionInteger) {
         super(Stream.of(Permission.values())
@@ -21,13 +29,9 @@ public class PermissionListInternal extends HashSet<Permission> implements Permi
         this.parent = parent;
     }
 
-    public PermissionListInternal(PermissionOverwritable parent) {
-        super();
-        this.parent = parent;
-    }
-
-    public PermissionListInternal(int permissionInteger) {
-        this(null, permissionInteger);
+    @Override
+    public Optional<PermissionOverwritable> getParent() {
+        return Optional.ofNullable(parent);
     }
 
     // Override Methods
@@ -44,11 +48,6 @@ public class PermissionListInternal extends HashSet<Permission> implements Permi
     public PermissionOverride toOverride() {
         if (parent == null) throw new NullPointerException("No parent is defined!");
         return new PermissionOverrideInternal(parent.getDiscord(), parent.getServer(), parent, this);
-    }
-
-    @Override
-    public Optional<PermissionOverwritable> getParent() {
-        return Optional.ofNullable(parent);
     }
 
     @Override

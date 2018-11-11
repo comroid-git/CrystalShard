@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
@@ -60,7 +59,6 @@ public abstract class InternalDelegate extends DelegateBase {
                 Invite.class,
                 UnicodeEmoji.class,
                 PermissionList.class,
-                Sendable.class,
                 Message.BulkDelete.class,
                 CustomEmoji.class,
                 Message.class,
@@ -77,7 +75,9 @@ public abstract class InternalDelegate extends DelegateBase {
                 EmbedDraft.Author.class,
                 EmbedDraft.Thumbnail.class,
                 EmbedDraft.Field.class,
-                EmbedDraft.EditableField.class));
+                EmbedDraft.EditableField.class,
+                Message.Builder.class
+        ));
     }
 
     public InternalDelegate(Hashtable<Class, Class> implementations) {

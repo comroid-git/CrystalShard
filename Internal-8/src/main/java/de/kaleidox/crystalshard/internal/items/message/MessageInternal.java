@@ -21,7 +21,11 @@ import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachable
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.message.*;
+import de.kaleidox.crystalshard.main.items.message.Attachment;
+import de.kaleidox.crystalshard.main.items.message.Message;
+import de.kaleidox.crystalshard.main.items.message.MessageActivity;
+import de.kaleidox.crystalshard.main.items.message.MessageApplication;
+import de.kaleidox.crystalshard.main.items.message.MessageType;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
@@ -35,18 +39,23 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
-
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.objects.markers.IDPair;
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {
@@ -152,12 +161,6 @@ public class MessageInternal implements Message {
         instances.put(id, this);
     }
 
-    // Override Methods
-    @Override
-    public TextChannel getChannel() {
-        return channel;
-    }
-
     @Override
     public Author getAuthor() {
         return author;
@@ -209,11 +212,6 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public boolean isPinned() {
-        return pinned;
-    }
-
-    @Override
     public boolean isPrivate() {
         return server != null;
     }
@@ -254,11 +252,6 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public List<SentEmbed> getEmbeds() {
-        return Collections.unmodifiableList(embeds);
-    }
-
-    @Override
     public List<Reaction> getReactions() {
         return Collections.unmodifiableList(reactions);
     }
@@ -284,45 +277,8 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public CompletableFuture<Message> edit(Sendable newContent) {
-        return null;
-    }
-
-    @Override
     public CompletableFuture<Message> edit(EmbedDraft embedDraft) {
         return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> delete(String reason) {
-        if (channel.toServerChannel()
-                .isPresent() && !author.isYourself() && !channel.hasPermission(discord, Permission.MANAGE_MESSAGES))
-            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.",
-                    Permission.MANAGE_MESSAGES));
-        return CoreDelegate.webRequest(discord)
-                .setMethod(HttpMethod.DELETE)
-                .setUri(DiscordEndpoint.MESSAGE_SPECIFIC.createUri(channelId, id))
-                .executeAsVoid();
-    }
-
-    @Override
-    public CompletableFuture<Void> addReaction(String emojiPrintable) {
-        if (!channel.hasPermission(discord, Permission.READ_MESSAGE_HISTORY))
-            return FutureHelper.failedFuture(new DiscordPermissionException(
-                    "Cannot read message history!",
-                    Permission.READ_MESSAGE_HISTORY));
-        if (getReactions().stream()
-                .map(Reaction::getEmoji)
-                .map(Emoji::toDiscordPrintable)
-                .noneMatch(emojiPrintable::equalsIgnoreCase) &&
-                !channel.hasPermission(discord, Permission.ADD_REACTIONS))
-            return FutureHelper.failedFuture(new DiscordPermissionException(
-                    "Cannot add new reactions!",
-                    Permission.ADD_REACTIONS));
-        return CoreDelegate.webRequest(discord)
-                .setMethod(HttpMethod.PUT)
-                .setUri(DiscordEndpoint.REACTION_OWN.createUri(channelId, id, emojiPrintable))
-                .executeAsVoid();
     }
 
     @Override
@@ -386,6 +342,16 @@ public class MessageInternal implements Message {
     }
 
     @Override
+    public BulkDelete getBulkDelete() {
+        return new BulkDeleteInternal(discord).addMessage(this);
+    }
+
+    @Override
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    @Override
     public CompletableFuture<Message> pin() {
         return CoreDelegate.webRequest(Message.class, discord)
                 .setMethod(HttpMethod.PUT)
@@ -402,8 +368,51 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public BulkDelete getBulkDelete() {
-        return new BulkDeleteInternal(discord).addMessage(this);
+    public CompletableFuture<Void> addReaction(String emojiPrintable) {
+        if (!channel.hasPermission(discord, Permission.READ_MESSAGE_HISTORY))
+            return FutureHelper.failedFuture(new DiscordPermissionException(
+                    "Cannot read message history!",
+                    Permission.READ_MESSAGE_HISTORY));
+        if (getReactions().stream()
+                .map(Reaction::getEmoji)
+                .map(Emoji::toDiscordPrintable)
+                .noneMatch(emojiPrintable::equalsIgnoreCase) &&
+                !channel.hasPermission(discord, Permission.ADD_REACTIONS))
+            return FutureHelper.failedFuture(new DiscordPermissionException(
+                    "Cannot add new reactions!",
+                    Permission.ADD_REACTIONS));
+        return CoreDelegate.webRequest(discord)
+                .setMethod(HttpMethod.PUT)
+                .setUri(DiscordEndpoint.REACTION_OWN.createUri(channelId, id, emojiPrintable))
+                .executeAsVoid();
+    }
+
+    @Override
+    public List<SentEmbed> getEmbeds() {
+        return Collections.unmodifiableList(embeds);
+    }
+
+    @Override
+    public CompletableFuture<Void> delete(String reason) {
+        if (channel.toServerChannel()
+                .isPresent() && !author.isYourself() && !channel.hasPermission(discord, Permission.MANAGE_MESSAGES))
+            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.",
+                    Permission.MANAGE_MESSAGES));
+        return CoreDelegate.webRequest(discord)
+                .setMethod(HttpMethod.DELETE)
+                .setUri(DiscordEndpoint.MESSAGE_SPECIFIC.createUri(channelId, id))
+                .executeAsVoid();
+    }
+
+    // Override Methods
+    @Override
+    public TextChannel getChannel() {
+        return channel;
+    }
+
+    @Override
+    public String toString() {
+        return "Message with ID [" + id + "]";
     }
 
     @Override
@@ -419,18 +428,13 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public Collection<MessageAttachableListener> getAttachedListeners() {
-        return null;
-    }
-
-    @Override
     public Collection<ListenerManager<? extends MessageAttachableListener>> getListenerManagers() {
         return listenerManagers;
     }
 
     @Override
-    public long getId() {
-        return 0;
+    public Collection<MessageAttachableListener> getAttachedListeners() {
+        return null;
     }
 
     @Override
@@ -439,8 +443,8 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public String toString() {
-        return "Message with ID [" + id + "]";
+    public long getId() {
+        return 0;
     }
 
     @Override
@@ -470,23 +474,15 @@ public class MessageInternal implements Message {
         }
 
         @Override
-        public BulkDelete addMessages(Message... messages) {
-            for (Message message : messages) {
-                addMessage(message);
-            }
-            return this;
-        }
-
-        @Override
         public BulkDelete addMessage(Message message) {
             addId(message.getId());
             return this;
         }
 
         @Override
-        public BulkDelete addIds(long... ids) {
-            for (long id : ids) {
-                addId(id);
+        public BulkDelete addMessages(Message... messages) {
+            for (Message message : messages) {
+                addMessage(message);
             }
             return this;
         }
@@ -496,6 +492,14 @@ public class MessageInternal implements Message {
             if (ids.size() >= 100)
                 throw new IllegalArgumentException("BulkDelete only allowed with up to 100 Messages!");
             ids.add(id);
+            return this;
+        }
+
+        @Override
+        public BulkDelete addIds(long... ids) {
+            for (long id : ids) {
+                addId(id);
+            }
             return this;
         }
 

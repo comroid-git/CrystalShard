@@ -6,12 +6,12 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public interface ServerBanEvent extends ServerEvent {
-    Ban getBan();
-
     // Override Methods
     default Server getServer() {
         return getBan().getServer();
     }
+
+    Ban getBan();
 
     default ServerMember getBannedUser() {
         return getBan().getUser();

@@ -1,19 +1,22 @@
 package de.kaleidox.crystalshard.internal.util;
 
 import de.kaleidox.crystalshard.main.util.FileContainer;
-import de.kaleidox.crystalshard.util.FileType;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import de.kaleidox.util.FileType;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import javax.imageio.ImageIO;
 
 public class Container implements FileContainer {
     public Container(File file) {
+    }
+
+    public String getFullName() {
+        return null;
     }
 
     public static String encodeBase64(File image, FileType type, Dimension res) {
@@ -42,9 +45,5 @@ public class Container implements FileContainer {
             throw new NullPointerException("Error encoding file; " + e.getMessage());
         }
         return encodedFile;
-    }
-
-    public String getFullName() {
-        return null;
     }
 }

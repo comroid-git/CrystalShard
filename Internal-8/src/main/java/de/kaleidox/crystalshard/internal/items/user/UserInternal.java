@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.CoreDelegate;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
@@ -14,26 +13,26 @@ import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.NullHelper;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-
+import de.kaleidox.util.helpers.NullHelper;
+import de.kaleidox.util.helpers.UrlHelper;
+import de.kaleidox.util.objects.functional.Evaluation;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {
@@ -43,13 +42,13 @@ public class UserInternal implements User {
     private final boolean bot;
     private final Discord discord;
     private final List<ListenerManager<? extends UserAttachableListener>> listenerManagers;
-    String discriminator;
     private String name;
     private URL avatarUrl;
     private boolean mfa;
     private boolean verified;
     private String locale;
     private String email;
+    String discriminator;
 
     UserInternal(User user) {
         this.id = user.getId();
@@ -161,6 +160,12 @@ public class UserInternal implements User {
     }
 
     @Override
+    public ServerMember toServerMember(Server server, JsonNode data) {
+        if (this instanceof ServerMember) return (ServerMember) this;
+        return ServerMemberInternal.getInstance(this, server, data);
+    }
+
+    @Override
     public Collection<Role> getRoles(Server server) {
         return Collections.emptyList();
     }
@@ -170,9 +175,7 @@ public class UserInternal implements User {
         return CoreDelegate.webRequest(PrivateTextChannel.class, discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.SELF_CHANNELS.createUri())
-                .setNode(objectNode(
-                        "recipient_id",
-                        id))
+                .setNode(objectNode("recipient_id", id))
                 .executeAs(node -> discord.getChannelCache()
                         .getOrCreate(discord, node)
                         .toPrivateTextChannel()
@@ -188,8 +191,8 @@ public class UserInternal implements User {
     }
 
     @Override
-    public long getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -198,54 +201,13 @@ public class UserInternal implements User {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public long getId() {
+        return id;
     }
 
     @Override
     public String getMentionTag() {
         return "<@" + id + ">";
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Sendable content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(String content) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Void> typing() {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Collection<Message>> getMessages(int limit) {
-        if (limit < 1 || limit > 100)
-            throw new IllegalArgumentException("Parameter 'limit' is not within its bounds! [1, 100]");
-        WebRequest<Collection<Message>> request = CoreDelegate.webRequest(discord);
-        return openPrivateChannel().thenCompose(ptc -> request.setMethod(HttpMethod.GET)
-                .setUri(DiscordEndpoint.MESSAGE.createUri(ptc))
-                .setNode(objectNode("limit", limit))
-                .executeAs(data -> {
-                    List<Message> list = new ArrayList<>();
-                    data.forEach(msg -> list.add(discord.getMessageCache()
-                            .getOrCreate(discord, msg)));
-                    return list;
-                }));
     }
 
     @Override
@@ -266,19 +228,13 @@ public class UserInternal implements User {
     }
 
     @Override
-    public Collection<UserAttachableListener> getAttachedListeners() {
-        return null;
-    }
-
-    @Override
     public Collection<ListenerManager<? extends UserAttachableListener>> getListenerManagers() {
         return listenerManagers;
     }
 
     @Override
-    public ServerMember toServerMember(Server server, JsonNode data) {
-        if (this instanceof ServerMember) return (ServerMember) this;
-        return ServerMemberInternal.getInstance(this, server, data);
+    public Collection<UserAttachableListener> getAttachedListeners() {
+        return null;
     }
 
     @Override

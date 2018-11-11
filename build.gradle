@@ -1,37 +1,40 @@
-apply plugin: 'maven-publish'
 apply plugin: 'java-library'
+apply plugin: 'maven-publish'
 
-project.version = 0.10
-def mainV = '0.10'
-def impl8V = '0.10'
+project.version = "0.10.2-SNAPSHOT"
+def mainV = '0.11'
+def impl8V = '0.11'
 def core8V = '0.10'
 def core11V = '0.10'
+def extUtilV = '1.1'
+
+version = "${project.version}"
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.10.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-task myJavadocs(type: Javadoc) {
+task javadocs(type: Javadoc) {
     source = sourceSets.main.allJava
     options.encoding = 'UTF-8'
 }
 
 javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html4', true)
+    }
     options.encoding = 'UTF-8'
     options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
 jar {
     test
+}
+
+
+if (!isTravis()) {
+    apply from: 'gradle/publishing.gradle'
 }
 
 allprojects {
@@ -44,19 +47,22 @@ allprojects {
     }
 
     jar {
-        if (!System.getenv().containsKey("TRAVIS")) {
+        if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
             destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+            classifier "sources-${project.name}".toLowerCase()
         }
     }
 
     repositories {
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
 
     dependencies {
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
         implementation 'com.vdurmont:emoji-java:4.0.0'
+        implementation 'com.github.burdoto:KalUtils:b5ea2a7'
     }
 
     sourceSets {
@@ -71,22 +77,23 @@ allprojects {
     }
 }
 
-project(":Tests") {
-    version = 1
+project(":Main") {
+    version = (mainV == null ? project.version : mainV)
 
-    sourceCompatibility = 10
-    targetCompatibility = 10
-    
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
     dependencies {
         testImplementation project(':Main')
         testImplementation project(':Internal-8')
         testImplementation project(':Core-8')
         testImplementation project(':Core-11')
-        
+        testImplementation project(':ExtensiveUtils')
+
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.reflections:reflections:0.9.11'
     }
-    
+
     sourceSets {
         test {
             java {
@@ -97,17 +104,24 @@ project(":Tests") {
             }
         }
     }
-    
+
     test {
-        test.outputs.upToDateWhen {false}
+        test.outputs.upToDateWhen { false }
     }
 }
 
-project(":Main") {
-    version = (mainV == null ? project.version : mainV)
+project(":ExtensiveUtils") {
+    version = (extUtilV == null ? project.version : extUtilV)
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 9
+    targetCompatibility = 9
+
+    dependencies {
+        implementation project(':Main')
+        implementation project(':Internal-8')
+
+        implementation 'org.reflections:reflections:0.9.11'
+    }
 }
 
 project(":Internal-8") {
@@ -154,4 +168,8 @@ project(":Core-11") {
     dependencies {
         implementation project(":Main")
     }
+}
+
+static boolean isTravis() {
+    return System.getenv().containsKey("TRAVIS")
 }

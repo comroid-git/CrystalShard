@@ -3,8 +3,7 @@ package de.kaleidox.crystalshard.core.net.socket;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-
+import de.kaleidox.util.helpers.JsonHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,21 +13,6 @@ public class Payload {
     private JsonNode node;
     private long lastSeq;
     private boolean last = true;
-
-    public static Payload create(OpCode code, JsonNode node) {
-        return new Payload().opcode(code)
-                .node(node);
-    }
-
-    Payload opcode(OpCode code) {
-        this.code = code;
-        return this;
-    }
-
-    Payload node(JsonNode node) {
-        this.node = node;
-        return this;
-    }
 
     OpCode getCode() {
         return code;
@@ -70,5 +54,20 @@ public class Payload {
         ObjectNode node = this.node.isNull() ? JsonHelper.objectNode() : this.node.deepCopy();
         node.set(name, nodeOf);
         this.node = node;
+    }
+
+    public static Payload create(OpCode code, JsonNode node) {
+        return new Payload().opcode(code)
+                .node(node);
+    }
+
+    Payload opcode(OpCode code) {
+        this.code = code;
+        return this;
+    }
+
+    Payload node(JsonNode node) {
+        this.node = node;
+        return this;
     }
 }

@@ -6,24 +6,17 @@ import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.crystalshard.core.net.socket.Payload;
-import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.Sendable;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-
+import de.kaleidox.util.helpers.JsonHelper;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public class SelfInternal extends UserInternal implements Self {
     private final static Logger logger = new Logger(SelfInternal.class);
@@ -34,31 +27,6 @@ public class SelfInternal extends UserInternal implements Self {
 
     public SelfInternal(Discord discord, JsonNode data) {
         super(discord, data);
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Sendable content) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Message> sendMessage(String content) {
-        throw new AbstractMethodError("Cannot message yourself!");
-    }
-
-    @Override
-    public CompletableFuture<Void> typing() {
-        throw new AbstractMethodError("Cannot type to yourself!");
     }
 
     @Override

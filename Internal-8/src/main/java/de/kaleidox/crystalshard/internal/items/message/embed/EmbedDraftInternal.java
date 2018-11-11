@@ -3,15 +3,15 @@ package de.kaleidox.crystalshard.internal.items.message.embed;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.internal.util.Container;
+import de.kaleidox.util.interfaces.JsonNodeable;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.util.FileContainer;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
-
-import java.awt.*;
+import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.util.helpers.UrlHelper;
+import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class EmbedDraftInternal implements EmbedDraft {
+public class EmbedDraftInternal implements EmbedDraft, JsonNodeable {
     private final static Logger logger = new Logger(EmbedDraftInternal.class);
     private final String title;
     private final String description;
@@ -48,15 +48,9 @@ public class EmbedDraftInternal implements EmbedDraft {
         this.fields = fields;
     }
 
-    // Override Methods
     @Override
     public EmbedDraft toEmbedDraft() {
         return this;
-    }
-
-    @Override
-    public Optional<SentEmbed> toSentEmbed() {
-        return Optional.empty();
     }
 
     @Override
@@ -73,6 +67,11 @@ public class EmbedDraftInternal implements EmbedDraft {
                 .setAuthor(author);
         fields.forEach(builder::addField);
         return builder;
+    }
+
+    @Override
+    public Optional<SentEmbed> toSentEmbed() {
+        return Optional.empty();
     }
 
     @Override
@@ -125,6 +124,7 @@ public class EmbedDraftInternal implements EmbedDraft {
         return Collections.unmodifiableList(fields);
     }
 
+    @Override
     public ObjectNode toJsonNode(ObjectNode object) {
         String footerText = null;
         String footerIconUrl = null;

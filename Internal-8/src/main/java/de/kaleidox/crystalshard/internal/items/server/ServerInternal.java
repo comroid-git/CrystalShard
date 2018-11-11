@@ -27,20 +27,32 @@ import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.*;
+import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
+import de.kaleidox.crystalshard.main.items.server.ExplicitContentFilterLevel;
+import de.kaleidox.crystalshard.main.items.server.MFALevel;
+import de.kaleidox.crystalshard.main.items.server.Server;
+import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
+import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
+import de.kaleidox.crystalshard.main.items.server.VoiceState;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-import de.kaleidox.crystalshard.util.helpers.UrlHelper;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.UrlHelper;
+import de.kaleidox.util.objects.functional.Evaluation;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -126,307 +138,14 @@ public class ServerInternal implements Server {
         instances.put(id, this);
     }
 
-    // Override Methods
-    @Override
-    public Optional<URL> getIconUrl() {
-        return Optional.ofNullable(iconUrl);
-    }
-
-    @Override
-    public Optional<URL> getSplashUrl() {
-        return Optional.ofNullable(splashUrl);
-    }
-
-    @Override
-    public ServerMember getOwner() {
-        return ServerMemberInternal.getInstance(owner, this);
-    }
-
-    @Override
-    public PermissionList getOwnPermissions() {
-        return ownPermissions;
-    }
-
-    @Override
-    public VoiceRegion getVoiceRegion() {
-        return voiceRegion;
-    }
-
-    @Override
-    public Optional<ServerVoiceChannel> getAfkChannel() {
-        return Optional.ofNullable(afkChannel);
-    }
-
-    @Override
-    public int getAfkTimeout() {
-        return afkTimeout;
-    }
-
-    @Override
-    public boolean isEmbeddable() {
-        return embedEnabled;
-    }
-
-    @Override
-    public Optional<ServerChannel> getEmbedChannel() {
-        return Optional.ofNullable(embedChannel);
-    }
-
-    @Override
-    public boolean isWidgetable() {
-        return widgetEnabled;
-    }
-
-    @Override
-    public Optional<ServerChannel> getWidgetChannel() {
-        return Optional.ofNullable(widgetChannel);
-    }
-
-    @Override
-    public Optional<ServerTextChannel> getSystemChannel() {
-        return Optional.ofNullable(systemChannel);
-    }
-
-    @Override
-    public VerificationLevel getVerificationLevel() {
-        return verificationLevel;
-    }
-
-    @Override
-    public DefaultMessageNotificationLevel getDefaultMessageNotificationLevel() {
-        return defaultMessageNotificationLevel;
-    }
-
-    @Override
-    public ExplicitContentFilterLevel getExplicitContentFilterLevel() {
-        return explicitContentFilterLevel;
-    }
-
-    @Override
-    public List<Role> getRoles() {
-        return Collections.unmodifiableList(roles);
-    }
-
-    @Override
-    public List<CustomEmoji> getCustomEmojis() {
-        return Collections.unmodifiableList(emojis);
-    }
-
-    @Override
-    public List<String> getFeatures() {
-        return Collections.unmodifiableList(features);
-    }
-
-    @Override
-    public MFALevel getMFALevel() {
-        return mfaLevel;
-    }
-
-    @Override
-    public boolean isLarge() {
-        return large;
-    }
-
-    @Override
-    public boolean isUnavailable() {
-        return unavailable;
-    }
-
-    @Override
-    public int getMemberCount() {
-        return memberCount;
-    }
-
-    @Override
-    public Role getEveryoneRole() {
-        return everyoneRole;
-    }
-
-    @Override
-    public List<VoiceState> getVoiceStates() {
-        return Collections.unmodifiableList(voiceStates);
-    }
-
-    @Override
-    public List<ServerMember> getMembers() {
-        return members.stream()
-                .map(user -> ServerMemberInternal.getInstance(user, this))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ServerChannel> getChannels() {
-        return Collections.unmodifiableList(channels);
-    }
-
-    @Override
-    public ChannelStructure getChannelStructure() {
-        return structure;
-    }
-
-    @Override
-    public List<Presence> getPresenceStates() {
-        return Collections.unmodifiableList(presenceStates);
-    }
-
-    @Override
-    public Optional<User> getUserById(long id) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<ServerMember> getServerMember(User ofUser) {
-        return members.stream()
-                .filter(ofUser::equals)
-                .map(ServerMember.class::cast)
-                .findAny();
-    }
-
-    @Override
-    public CompletableFuture<Void> delete() {
-        if (!getOwner().equals(discord.getSelf()))
-            return FutureHelper.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
-        return CoreDelegate.webRequest(discord)
-                .setMethod(HttpMethod.DELETE)
-                .setUri(DiscordEndpoint.SELF_GUILD.createUri(this))
-                .executeAsVoid();
-    }
-
-    @Override
-    public CompletableFuture<Void> prune(int days) {
-        if (days < 1 || days > 365)
-            throw new IllegalArgumentException("Parameter 'days' is not within its bounds! [1,365]");
-        if (!hasPermission(discord, Permission.KICK_MEMBERS))
-            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot prune!",
-                    Permission.KICK_MEMBERS));
-        return CoreDelegate.webRequest(discord)
-                .setMethod(HttpMethod.POST)
-                .setUri(DiscordEndpoint.GUILD_PRUNE.createUri(id))
-                .setNode("days", days)
-                .executeAsVoid();
-    }
-
-    @Override
-    public CompletableFuture<Collection<Integration>> requestIntegrations() {
-        if (!hasPermission(discord, Permission.MANAGE_GUILD))
-            return FutureHelper.failedFuture(new DiscordPermissionException(
-                    "Cannot get guild integrations!",
-                    Permission.MANAGE_GUILD));
-        WebRequest<Collection<Integration>> request = CoreDelegate.webRequest(discord);
-        return request.setMethod(HttpMethod.GET)
-                .setUri(DiscordEndpoint.GUILD_INTEGRATIONS.createUri(id))
-                .executeAs(node -> {
-                    List<Integration> list = new ArrayList<>();
-                    for (JsonNode data : node) {
-                        list.add(new IntegrationInternal(discord, this, data));
-                    }
-                    return list;
-                });
-    }
-
-    @Override
-    public CompletableFuture<URL> getVanityUrl() {
-        if (!hasPermission(discord, Permission.MANAGE_GUILD))
-            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!",
-                    Permission.MANAGE_GUILD));
-        return CoreDelegate.webRequest(URL.class, discord)
-                .setMethod(HttpMethod.GET)
-                .setUri(DiscordEndpoint.GUILD_VANITY_INVITE.createUri(id))
-                .executeAs(node -> {
-                    if (!node.has("code")) throw new NullPointerException("Guild does not have a vanity URL!");
-                    try {
-                        return new URL(Invite.BASE_INVITE + node.get("code")
-                                .asText());
-                    } catch (MalformedURLException e) {
-                        throw new NullPointerException("Could not create URL: " + e);
-                    }
-                });
-    }
-
-    @Override
-    public ServerMember.Updater getMemberUpdater(ServerMember member) {
-        return new ServerMemberUpdater(member);
-    }
-
-    @Override
-    public long getId() {
-        return id;
-    }
-
     @Override
     public Discord getDiscord() {
         return discord;
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
-        return "Server with ID [" + id + "]";
-    }
-
-    @Override
-    public <C extends ServerAttachableListener> ListenerManager<C> attachListener(C listener) {
-        ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance(discord, listener);
-        listenerManangers.add(manager);
-        return manager;
-    }
-
-    @Override
-    public Evaluation<Boolean> detachListener(ServerAttachableListener listener) {
-        ListenerManagerInternal<ServerAttachableListener> manager = ListenerManagerInternal.getInstance(discord, listener);
-        return Evaluation.of(listenerManangers.remove(manager));
-    }
-
-    @Override
-    public Collection<ServerAttachableListener> getAttachedListeners() {
-        return listenerManangers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Collection<ListenerManager<? extends ServerAttachableListener>> getListenerManagers() {
-        return listenerManangers;
-    }
-
-    @Override
-    public boolean hasPermission(User user, Permission permission) {
-        return members.stream()
-                .filter(user::equals)
-                .map(usr -> usr.toServerMember()
-                        .orElseThrow(AssertionError::new))
-                .flatMap(member -> member.getRoles()
-                        .stream())
-                .sorted()
-                .map(Role::getPermissions)
-                .anyMatch(perm -> perm.contains(permission));
-    }
-
-    @Override
-    public Cache<Server, Long, Long> getCache() {
-        return discord.getServerCache();
-    }
-
-    private User getOwner(JsonNode data) {
-        if (data.has("owner_id")) {
-            //return new UserInternal(discord, data.get("application_id").asLong());
-            long userId = data.get("owner_id")
-                    .asLong();
-            return discord.getUserCache()
-                    .getOrRequest(userId, userId);
-        } else {
-            return null;
-        }
-    }
-
-    public List<ServerAttachableListener> getListeners() {
-        return listenerManangers.stream()
-                .map(ListenerManager::getListener)
-                .collect(Collectors.toList());
+    public long getId() {
+        return id;
     }
 
     public Set<EditTrait<Server>> updateData(JsonNode data) {
@@ -580,6 +299,299 @@ public class ServerInternal implements Server {
             traits.add(OWNER);
         }
         return traits;
+    }
+
+    // Override Methods
+    @Override
+    public Optional<URL> getIconUrl() {
+        return Optional.ofNullable(iconUrl);
+    }
+
+    @Override
+    public Optional<URL> getSplashUrl() {
+        return Optional.ofNullable(splashUrl);
+    }
+
+    @Override
+    public ServerMember getOwner() {
+        return ServerMemberInternal.getInstance(owner, this);
+    }
+
+    @Override
+    public PermissionList getOwnPermissions() {
+        return ownPermissions;
+    }
+
+    @Override
+    public VoiceRegion getVoiceRegion() {
+        return voiceRegion;
+    }
+
+    @Override
+    public Optional<ServerVoiceChannel> getAfkChannel() {
+        return Optional.ofNullable(afkChannel);
+    }
+
+    @Override
+    public int getAfkTimeout() {
+        return afkTimeout;
+    }
+
+    @Override
+    public boolean isEmbeddable() {
+        return embedEnabled;
+    }
+
+    @Override
+    public Optional<ServerChannel> getEmbedChannel() {
+        return Optional.ofNullable(embedChannel);
+    }
+
+    @Override
+    public boolean isWidgetable() {
+        return widgetEnabled;
+    }
+
+    @Override
+    public Optional<ServerChannel> getWidgetChannel() {
+        return Optional.ofNullable(widgetChannel);
+    }
+
+    @Override
+    public Optional<ServerTextChannel> getSystemChannel() {
+        return Optional.ofNullable(systemChannel);
+    }
+
+    @Override
+    public VerificationLevel getVerificationLevel() {
+        return verificationLevel;
+    }
+
+    @Override
+    public DefaultMessageNotificationLevel getDefaultMessageNotificationLevel() {
+        return defaultMessageNotificationLevel;
+    }
+
+    @Override
+    public ExplicitContentFilterLevel getExplicitContentFilterLevel() {
+        return explicitContentFilterLevel;
+    }
+
+    @Override
+    public List<Role> getRoles() {
+        return Collections.unmodifiableList(roles);
+    }
+
+    @Override
+    public List<CustomEmoji> getCustomEmojis() {
+        return Collections.unmodifiableList(emojis);
+    }
+
+    @Override
+    public List<String> getFeatures() {
+        return Collections.unmodifiableList(features);
+    }
+
+    @Override
+    public MFALevel getMFALevel() {
+        return mfaLevel;
+    }
+
+    @Override
+    public boolean isLarge() {
+        return large;
+    }
+
+    @Override
+    public boolean isUnavailable() {
+        return unavailable;
+    }
+
+    @Override
+    public int getMemberCount() {
+        return memberCount;
+    }
+
+    @Override
+    public Role getEveryoneRole() {
+        return everyoneRole;
+    }
+
+    @Override
+    public List<VoiceState> getVoiceStates() {
+        return Collections.unmodifiableList(voiceStates);
+    }
+
+    @Override
+    public List<ServerMember> getMembers() {
+        return members.stream()
+                .map(user -> ServerMemberInternal.getInstance(user, this))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ServerChannel> getChannels() {
+        return Collections.unmodifiableList(channels);
+    }
+
+    @Override
+    public ChannelStructure getChannelStructure() {
+        return structure;
+    }
+
+    @Override
+    public List<Presence> getPresenceStates() {
+        return Collections.unmodifiableList(presenceStates);
+    }
+
+    @Override
+    public Optional<User> getUserById(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public CompletableFuture<Void> delete() {
+        if (!getOwner().equals(discord.getSelf()))
+            return FutureHelper.failedFuture(new DiscordPermissionException("You are not the owner of the guild!"));
+        return CoreDelegate.webRequest(discord)
+                .setMethod(HttpMethod.DELETE)
+                .setUri(DiscordEndpoint.SELF_GUILD.createUri(this))
+                .executeAsVoid();
+    }
+
+    @Override
+    public CompletableFuture<Void> prune(int days) {
+        if (days < 1 || days > 365)
+            throw new IllegalArgumentException("Parameter 'days' is not within its bounds! [1,365]");
+        if (!hasPermission(discord, Permission.KICK_MEMBERS))
+            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot prune!",
+                    Permission.KICK_MEMBERS));
+        return CoreDelegate.webRequest(discord)
+                .setMethod(HttpMethod.POST)
+                .setUri(DiscordEndpoint.GUILD_PRUNE.createUri(id))
+                .setNode("days", days)
+                .executeAsVoid();
+    }
+
+    @Override
+    public CompletableFuture<Collection<Integration>> requestIntegrations() {
+        if (!hasPermission(discord, Permission.MANAGE_GUILD))
+            return FutureHelper.failedFuture(new DiscordPermissionException(
+                    "Cannot get guild integrations!",
+                    Permission.MANAGE_GUILD));
+        WebRequest<Collection<Integration>> request = CoreDelegate.webRequest(discord);
+        return request.setMethod(HttpMethod.GET)
+                .setUri(DiscordEndpoint.GUILD_INTEGRATIONS.createUri(id))
+                .executeAs(node -> {
+                    List<Integration> list = new ArrayList<>();
+                    for (JsonNode data : node) {
+                        list.add(new IntegrationInternal(discord, this, data));
+                    }
+                    return list;
+                });
+    }
+
+    @Override
+    public CompletableFuture<URL> getVanityUrl() {
+        if (!hasPermission(discord, Permission.MANAGE_GUILD))
+            return FutureHelper.failedFuture(new DiscordPermissionException("Cannot get the vanity URL!",
+                    Permission.MANAGE_GUILD));
+        return CoreDelegate.webRequest(URL.class, discord)
+                .setMethod(HttpMethod.GET)
+                .setUri(DiscordEndpoint.GUILD_VANITY_INVITE.createUri(id))
+                .executeAs(node -> {
+                    if (!node.has("code")) throw new NullPointerException("Guild does not have a vanity URL!");
+                    try {
+                        return new URL(Invite.BASE_INVITE + node.get("code")
+                                .asText());
+                    } catch (MalformedURLException e) {
+                        throw new NullPointerException("Could not create URL: " + e);
+                    }
+                });
+    }
+
+    @Override
+    public Optional<ServerMember> getServerMember(User ofUser) {
+        return members.stream()
+                .filter(ofUser::equals)
+                .map(ServerMember.class::cast)
+                .findAny();
+    }
+
+    @Override
+    public ServerMember.Updater getMemberUpdater(ServerMember member) {
+        return new ServerMemberUpdater(member);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Server with ID [" + id + "]";
+    }
+
+    @Override
+    public <C extends ServerAttachableListener> ListenerManager<C> attachListener(C listener) {
+        ListenerManagerInternal<C> manager = ListenerManagerInternal.getInstance(discord, listener);
+        listenerManangers.add(manager);
+        return manager;
+    }
+
+    @Override
+    public Evaluation<Boolean> detachListener(ServerAttachableListener listener) {
+        ListenerManagerInternal<ServerAttachableListener> manager = ListenerManagerInternal.getInstance(discord, listener);
+        return Evaluation.of(listenerManangers.remove(manager));
+    }
+
+    @Override
+    public Collection<ListenerManager<? extends ServerAttachableListener>> getListenerManagers() {
+        return listenerManangers;
+    }
+
+    @Override
+    public Collection<ServerAttachableListener> getAttachedListeners() {
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean hasPermission(User user, Permission permission) {
+        return members.stream()
+                .filter(user::equals)
+                .map(usr -> usr.toServerMember()
+                        .orElseThrow(AssertionError::new))
+                .flatMap(member -> member.getRoles()
+                        .stream())
+                .sorted()
+                .map(Role::getPermissions)
+                .anyMatch(perm -> perm.contains(permission));
+    }
+
+    @Override
+    public Cache<Server, Long, Long> getCache() {
+        return discord.getServerCache();
+    }
+
+    private User getOwner(JsonNode data) {
+        if (data.has("owner_id")) {
+            //return new UserInternal(discord, data.get("application_id").asLong());
+            long userId = data.get("owner_id")
+                    .asLong();
+            return discord.getUserCache()
+                    .getOrRequest(userId, userId);
+        } else {
+            return null;
+        }
+    }
+
+    public List<ServerAttachableListener> getListeners() {
+        return listenerManangers.stream()
+                .map(ListenerManager::getListener)
+                .collect(Collectors.toList());
     }
 
     public void replaceEmojis(List<CustomEmoji> newEmojis) {

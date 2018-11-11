@@ -8,18 +8,17 @@ import de.kaleidox.crystalshard.main.handling.listener.Listener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.util.annotations.MayContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
-
+import de.kaleidox.util.annotations.MayContainNull;
+import de.kaleidox.util.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class HandlerBase {
-    final static Logger baseLogger = new Logger(HandlerBase.class);
     private final static Package handlerPackage = HandlerBase.class.getPackage();
     private final static ConcurrentHashMap<String, HandlerBase> instances = new ConcurrentHashMap<>();
+    final static Logger baseLogger = new Logger(HandlerBase.class);
 
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
@@ -50,6 +49,8 @@ public abstract class HandlerBase {
             }
         }
     }
+
+    public abstract void handle(DiscordInternal discord, JsonNode data);
 
     @SuppressWarnings("unchecked")
     @SafeVarargs
@@ -84,6 +85,4 @@ public abstract class HandlerBase {
 
         return collect;
     }
-
-    public abstract void handle(DiscordInternal discord, JsonNode data);
 }

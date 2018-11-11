@@ -5,11 +5,9 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.MapHelper;
-import de.kaleidox.crystalshard.util.helpers.QueueHelper;
-import de.kaleidox.crystalshard.util.objects.functional.LivingInt;
-
-import javax.naming.LimitExceededException;
+import de.kaleidox.util.helpers.MapHelper;
+import de.kaleidox.util.helpers.QueueHelper;
+import de.kaleidox.util.objects.functional.LivingInt;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import javax.naming.LimitExceededException;
 
 class BucketManager {
     private final static Logger logger = new Logger(BucketManager.class);
@@ -120,6 +119,13 @@ class BucketManager {
             }
         }
 
+        private Runnable[] addToArray(Runnable[] arr, Runnable add) {
+            Runnable[] putArr = new Runnable[arr.length + 1];
+            System.arraycopy(arr, 0, putArr, 0, arr.length);
+            putArr[putArr.length - 1] = add;
+            return putArr;
+        }
+
         void runAll() {
             globalRatelimit.change(requests.size());
             requests.forEach((endpoint, runnables) -> {
@@ -188,13 +194,6 @@ class BucketManager {
                     .filter(entry -> ((DiscordRequestURI) entry.getKey()).sameRatelimit(discordRequestURI))
                     .mapToInt(entry -> entry.getValue().length)
                     .sum();
-        }
-
-        private Runnable[] addToArray(Runnable[] arr, Runnable add) {
-            Runnable[] putArr = new Runnable[arr.length + 1];
-            System.arraycopy(arr, 0, putArr, 0, arr.length);
-            putArr[putArr.length - 1] = add;
-            return putArr;
         }
     }
 }

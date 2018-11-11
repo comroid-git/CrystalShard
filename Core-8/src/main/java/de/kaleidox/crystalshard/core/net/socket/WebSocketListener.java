@@ -2,12 +2,9 @@ package de.kaleidox.crystalshard.core.net.socket;
 
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-
-import java.nio.ByteBuffer;
+import de.kaleidox.util.helpers.JsonHelper;
 import java.nio.charset.Charset;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okio.ByteString;

@@ -7,8 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.LowStackTraceable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-import de.kaleidox.crystalshard.util.helpers.ListHelper;
+import de.kaleidox.util.helpers.ListHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.nodeOf;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 /**
  * This class represents a Logging framework.
@@ -41,6 +40,7 @@ public class Logger {
     private static Logger staticLogger = new Logger(StaticException.class);
     private static List<CustomHandler> customHandlers = new ArrayList<>();
     private static List<CustomExceptionHandler> customExceptionHandlers = new ArrayList<>();
+    private final Class loggingClass;
 
     static {
         JsonNode config = null;
@@ -91,25 +91,6 @@ public class Logger {
         }};
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void writeCurrentConfig() throws IOException {
-        ObjectNode wrt = JsonNodeFactory.instance.objectNode();
-        wrt.set("level", cfg.has("level") ? cfg.get("level") : nodeOf(DEFAULT_LEVEL));
-        wrt.set("ignored", cfg.has("ignored") ? cfg.get("ignored") : nodeOf(DEFAULT_IGNORED));
-        wrt.set("prefix", cfg.has("prefix") ? cfg.get("prefix") : nodeOf(DEFAULT_PREFIX));
-        wrt.set("suffix", cfg.has("suffix") ? cfg.get("suffix") : nodeOf(DEFAULT_SUFFIX));
-        wrt.set("blanked", cfg.has("blanked") ? cfg.get("blanked") : nodeOf(DEFAULT_BLANKED));
-
-        File file = new File(configFile);
-        new File(file.getPath().substring(0, file.getPath().lastIndexOf('\\'))).mkdirs();
-        file.createNewFile();
-        FileOutputStream stream = new FileOutputStream(file);
-        String write = wrt.toString();
-        for (char c : write.toCharArray()) stream.write(c);
-    }
-
-    private final Class loggingClass;
-
     /**
      * Creates a new logger instance for an object, using it's class.
      *
@@ -126,6 +107,95 @@ public class Logger {
      */
     public Logger(Class loggingClass) {
         this.loggingClass = loggingClass;
+    }
+
+    public void traceElseInfo(Object traceMessage, Object infoMessage) {
+        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
+            post(LoggingLevel.TRACE, traceMessage.toString());
+        } else info(infoMessage);
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#INFO}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void info(Object message) {
+        if (level.getSeverity() >= LoggingLevel.INFO.getSeverity()) {
+            post(LoggingLevel.INFO, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#WARN}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void warn(Object message) {
+        if (level.getSeverity() >= LoggingLevel.WARN.getSeverity()) {
+            post(LoggingLevel.WARN, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#DEBUG}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void debug(Object message) {
+        if (level.getSeverity() >= LoggingLevel.DEBUG.getSeverity()) {
+            post(LoggingLevel.DEBUG, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#ERROR}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void error(Object message) {
+        if (level.getSeverity() >= LoggingLevel.ERROR.getSeverity()) {
+            post(LoggingLevel.ERROR, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#TRACE}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void trace(Object message) {
+        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
+            post(LoggingLevel.TRACE, message.toString());
+        }
+    }
+
+    /**
+     * Posts a log message with {@link LoggingLevel#DEEP_TRACE}.
+     *
+     * @param message The message to post. {@link Object#toString()} is invoked on this.
+     */
+    public void deeptrace(Object message) {
+        if (level.getSeverity() >= LoggingLevel.DEEP_TRACE.getSeverity()) {
+            post(LoggingLevel.DEEP_TRACE, message.toString());
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void writeCurrentConfig() throws IOException {
+        ObjectNode wrt = JsonNodeFactory.instance.objectNode();
+        wrt.set("level", cfg.has("level") ? cfg.get("level") : nodeOf(DEFAULT_LEVEL));
+        wrt.set("ignored", cfg.has("ignored") ? cfg.get("ignored") : nodeOf(DEFAULT_IGNORED));
+        wrt.set("prefix", cfg.has("prefix") ? cfg.get("prefix") : nodeOf(DEFAULT_PREFIX));
+        wrt.set("suffix", cfg.has("suffix") ? cfg.get("suffix") : nodeOf(DEFAULT_SUFFIX));
+        wrt.set("blanked", cfg.has("blanked") ? cfg.get("blanked") : nodeOf(DEFAULT_BLANKED));
+
+        File file = new File(configFile);
+        new File(file.getPath().substring(0, file.getPath().lastIndexOf('\\'))).mkdirs();
+        file.createNewFile();
+        FileOutputStream stream = new FileOutputStream(file);
+        String write = wrt.toString();
+        for (char c : write.toCharArray()) stream.write(c);
     }
 
     /**
@@ -179,6 +249,8 @@ public class Logger {
         Logger.prefix = prefix;
     }
 
+// Static membe
+
     /**
      * Sets the suffix of the logger. Changes are not stored and get lost on any restart.
      *
@@ -206,98 +278,6 @@ public class Logger {
     public static <T> T handle(Throwable throwable) {
         staticLogger.exception(throwable);
         return null;
-    }
-
-    private static List<Class> createIgnoredList(JsonNode data) {
-        List<Class> list = new ArrayList<>();
-
-        for (JsonNode clazz : data) {
-            try {
-                list.add(Class.forName(clazz.asText()));
-            } catch (ClassNotFoundException e) {
-                throw new NullPointerException(e.getMessage());
-            }
-        }
-
-        return list;
-    }
-
-    public static void addBlankedWord(String word) {
-        blanked.add(word);
-    }
-
-    public void traceElseInfo(Object traceMessage, Object infoMessage) {
-        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
-            post(LoggingLevel.TRACE, traceMessage.toString());
-        } else info(infoMessage);
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#INFO}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void info(Object message) {
-        if (level.getSeverity() >= LoggingLevel.INFO.getSeverity()) {
-            post(LoggingLevel.INFO, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#WARN}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void warn(Object message) {
-        if (level.getSeverity() >= LoggingLevel.WARN.getSeverity()) {
-            post(LoggingLevel.WARN, message.toString());
-        }
-    }
-
-// Static membe
-
-    /**
-     * Posts a log message with {@link LoggingLevel#DEBUG}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void debug(Object message) {
-        if (level.getSeverity() >= LoggingLevel.DEBUG.getSeverity()) {
-            post(LoggingLevel.DEBUG, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#ERROR}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void error(Object message) {
-        if (level.getSeverity() >= LoggingLevel.ERROR.getSeverity()) {
-            post(LoggingLevel.ERROR, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#TRACE}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void trace(Object message) {
-        if (level.getSeverity() >= LoggingLevel.TRACE.getSeverity()) {
-            post(LoggingLevel.TRACE, message.toString());
-        }
-    }
-
-    /**
-     * Posts a log message with {@link LoggingLevel#DEEP_TRACE}.
-     *
-     * @param message The message to post. {@link Object#toString()} is invoked on this.
-     */
-    public void deeptrace(Object message) {
-        if (level.getSeverity() >= LoggingLevel.DEEP_TRACE.getSeverity()) {
-            post(LoggingLevel.DEEP_TRACE, message.toString());
-        }
     }
 
     /**
@@ -386,5 +366,23 @@ public class Logger {
                 .getName());
 
         return fix.equals("null") ? "" : fix;
+    }
+
+    private static List<Class> createIgnoredList(JsonNode data) {
+        List<Class> list = new ArrayList<>();
+
+        for (JsonNode clazz : data) {
+            try {
+                list.add(Class.forName(clazz.asText()));
+            } catch (ClassNotFoundException e) {
+                throw new NullPointerException(e.getMessage());
+            }
+        }
+
+        return list;
+    }
+
+    public static void addBlankedWord(String word) {
+        blanked.add(word);
     }
 }

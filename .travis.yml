@@ -2,11 +2,11 @@ language: java
 sudo: true
 
 jdk:
-  - oraclejdk11
+- oraclejdk11
 
 script:
-  - ./gradlew -v
-  - ./gradlew clean test
+- ./gradlew -v
+- ./gradlew clean test
 
 jobs:
   include:

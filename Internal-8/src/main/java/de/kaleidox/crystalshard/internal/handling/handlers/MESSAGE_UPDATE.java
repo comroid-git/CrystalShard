@@ -15,7 +15,6 @@ import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

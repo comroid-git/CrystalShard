@@ -11,22 +11,12 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public interface Channel
         extends DiscordItem, PermissionApplyable, Castable<Channel>, ListenerAttachable<ChannelAttachableListener>, Cacheable<Channel, Long, Long> {
-    static Channel getFromId(Discord discord, long id) {
-        return discord.getChannelCache()
-                .get(id);
-    }
-
-    static Channel getFromId(long id) throws IllegalThreadException {
-        return getFromId(ThreadPool.getThreadDiscord(), id);
-    }
-
     ChannelType getType();
 
     String getName();
@@ -39,12 +29,12 @@ public interface Channel
         return !toServerChannel().isPresent();
     }
 
-    default Optional<ChannelCategory> toChannelCategory() {
-        return castTo(ChannelCategory.class);
-    }
-
     default Optional<ServerChannel> toServerChannel() {
         return castTo(ServerChannel.class);
+    }
+
+    default Optional<ChannelCategory> toChannelCategory() {
+        return castTo(ChannelCategory.class);
     }
 
     default Optional<PrivateChannel> toPrivateChannel() {
@@ -77,6 +67,15 @@ public interface Channel
 
     default Optional<Server> getServerOfChannel() {
         return toServerChannel().map(ServerChannel::getServer);
+    }
+
+    static Channel getFromId(long id) throws IllegalThreadException {
+        return getFromId(ThreadPool.getThreadDiscord(), id);
+    }
+
+    static Channel getFromId(Discord discord, long id) {
+        return discord.getChannelCache()
+                .get(id);
     }
 
     interface Updater<T, R> {

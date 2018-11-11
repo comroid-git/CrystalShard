@@ -1,16 +1,23 @@
 package de.kaleidox.crystalshard.core.cache;
 
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.util.annotations.NotContainNull;
-import de.kaleidox.crystalshard.util.annotations.NotNull;
-import de.kaleidox.crystalshard.util.annotations.Nullable;
-
-import java.util.*;
-import java.util.concurrent.*;
+import de.kaleidox.util.annotations.NotContainNull;
+import de.kaleidox.util.annotations.NotNull;
+import de.kaleidox.util.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import static de.kaleidox.crystalshard.util.helpers.MapHelper.containsKey;
-import static de.kaleidox.crystalshard.util.helpers.MapHelper.getEquals;
+import static de.kaleidox.util.helpers.MapHelper.*;
 
 /**
  * This class is the basic implementation of a cache.
@@ -23,6 +30,11 @@ public abstract class CacheImpl<T extends Cacheable, I, R> implements Cache<T, I
     public final static ConcurrentHashMap<Class<?>, CacheImpl<? extends Cacheable, Object, Object>> cacheInstances;
     private final static Logger logger = new Logger(CacheImpl.class);
     private final static ScheduledExecutorService scheduledExecutorService;
+    private final ConcurrentHashMap<I, CacheReference<T, R>> instances;
+    private final Class<? extends T> typeClass;
+    private final Function<Object[], I> mapperToIdentifier;
+    private final long keepaliveMilis;
+    private final Class<?>[] constructorParameter;
 
     static {
         // Initialize variables
@@ -40,12 +52,6 @@ public abstract class CacheImpl<T extends Cacheable, I, R> implements Cache<T, I
                     .forEachOrdered(CacheReference::uncache);
         }, 30, 30, TimeUnit.SECONDS);
     }
-
-    private final ConcurrentHashMap<I, CacheReference<T, R>> instances;
-    private final Class<? extends T> typeClass;
-    private final Function<Object[], I> mapperToIdentifier;
-    private final long keepaliveMilis;
-    private final Class<?>[] constructorParameter;
 
     /**
      * Creates a new CacheImpl instance.

@@ -1,0 +1,90 @@
+import java.util.function.BiConsumer
+
+publishing {
+    repositories {
+        maven {
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            url = project.version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+            name = "Sonatype"
+
+            credentials {
+                def uName = ""
+                def passwd = ""
+                int r
+                def stream = new FileInputStream(new File("../sonatype-username.txt"))
+                while ((r = stream.read()) != -1) uName = (uName + (char)r)
+                stream = new FileInputStream(new File("../sonatype-password.txt"))
+                while ((r = stream.read()) != -1) passwd = (passwd + (char)r)
+
+                username uName
+                password passwd
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'crystalshard'
+            from components.java
+
+            gradle.rootProject.getChildProjects().forEach(new BiConsumer<? super String, ? super Project>(){
+                @Override
+                void accept(Object o1, Object o2) {
+                    final String name = (String) o1
+                    final Project proj = (Project) o2
+                    if (!name.equals("CrystalShard") && !name.equals("Tests")) {
+                        gradle.rootProject.publishing.publications.mavenJava.artifact proj.jar
+                    }
+                }
+            })
+
+            pom {
+                name = "CrystalShard"
+                description = "Modular Java Discord library!"
+                inceptionYear = '2018'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "burdoto"
+                        name = "Tobias Burdow"
+                        email = "burdoto@outlook.com"
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/CrystalShardDiscord/CrystalShard.git'
+                    developerConnection = 'scm:git:git@github.com:CrystalShardDiscord/CrystalShard.git'
+                    url = 'https://github.com/CrystalShardDiscord/CrystalShard'
+                }
+
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/CrystalShardDiscord/CrystalShard/issues'
+                }
+
+                withXml {
+                    def xml = asNode()
+                    def repos = xml.appendNode("repositories")
+                    def repo = repos.appendNode("repository")
+                    repo.appendNode("id", "jitpack.io")
+                    repo.appendNode("url", "https://jitpack.io")
+                }
+            }
+        }
+    }
+}
+
+if (project.hasProperty("signing.keyId")) {
+    apply plugin: 'signing'
+    signing {
+        sign publishing.publications.mavenJava
+    }
+}

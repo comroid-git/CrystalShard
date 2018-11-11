@@ -8,7 +8,6 @@ import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleEditListener;
 import de.kaleidox.crystalshard.main.items.role.Role;
-
 import java.util.HashSet;
 import java.util.Set;
 

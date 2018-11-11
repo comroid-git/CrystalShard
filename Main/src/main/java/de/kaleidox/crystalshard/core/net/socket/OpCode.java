@@ -77,14 +77,6 @@ public enum OpCode {
         this.code = code;
     }
 
-    // Static members
-    // Static membe
-    public static Optional<OpCode> getByCode(int code) {
-        return Stream.of(values())
-                .filter(opCode -> opCode.code == code)
-                .findAny();
-    }
-
     // Override Methods
     @Override
     public String toString() {
@@ -98,5 +90,13 @@ public enum OpCode {
      */
     public int getCode() {
         return code;
+    }
+
+    // Static members
+    // Static membe
+    public static Optional<OpCode> getByCode(int code) {
+        return Stream.of(values())
+                .filter(opCode -> opCode.code == code)
+                .findAny();
     }
 }

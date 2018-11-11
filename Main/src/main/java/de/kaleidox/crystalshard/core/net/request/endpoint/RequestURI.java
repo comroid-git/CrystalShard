@@ -22,17 +22,11 @@ public class RequestURI {
         }
     }
 
-    public static RequestURI create(String base, String appendix, Object... parameters) throws IllegalArgumentException {
-        try {
-            return new RequestURI(base, appendix, parameters);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    @Override
-    public String toString() {
-        return uri.toString();
+    protected int getParameterCount() {
+        int splitted = appendix.split("%s").length - 1;
+        int end = (appendix.substring(appendix.length() - 2)
+                .equalsIgnoreCase("%s") ? 1 : 0);
+        return splitted + end;
     }
 
     @Override
@@ -40,6 +34,11 @@ public class RequestURI {
         if (obj instanceof RequestURI)
             return ((RequestURI) obj).uri.equals(uri);
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return uri.toString();
     }
 
     public String getBase() {
@@ -58,10 +57,11 @@ public class RequestURI {
         return uri;
     }
 
-    protected int getParameterCount() {
-        int splitted = appendix.split("%s").length - 1;
-        int end = (appendix.substring(appendix.length() - 2)
-                .equalsIgnoreCase("%s") ? 1 : 0);
-        return splitted + end;
+    public static RequestURI create(String base, String appendix, Object... parameters) throws IllegalArgumentException {
+        try {
+            return new RequestURI(base, appendix, parameters);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

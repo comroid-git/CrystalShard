@@ -13,16 +13,20 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.helpers.OptionalHelper;
-
-import java.util.*;
+import de.kaleidox.util.helpers.OptionalHelper;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ChannelCategoryInternal extends ChannelInternal implements ChannelCategory {
     final static ConcurrentHashMap<Long, ChannelCategory> instances = new ConcurrentHashMap<>();
-    final Server server;
     private final List<PermissionOverride> overrides;
+    final Server server;
     String name;
 
     public ChannelCategoryInternal(Discord discord, Server server, JsonNode data) {

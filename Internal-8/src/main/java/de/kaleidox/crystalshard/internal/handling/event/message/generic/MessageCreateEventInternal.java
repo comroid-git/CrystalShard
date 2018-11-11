@@ -10,7 +10,6 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
-
 import java.util.Optional;
 
 public class MessageCreateEventInternal extends EventBase implements MessageCreateEvent {

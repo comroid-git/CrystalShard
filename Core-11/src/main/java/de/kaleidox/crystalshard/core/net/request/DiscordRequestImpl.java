@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-import de.kaleidox.crystalshard.util.objects.CompletableFutureExtended;
-
+import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.util.objects.CompletableFutureExtended;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -19,11 +18,6 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
     public DiscordRequestImpl(Discord discord) {
         super();
         this.discord = discord;
-    }
-
-    @Override
-    public String toString() {
-        return "DiscordRequest -> " + uri.toString();
     }
 
     @Override
@@ -86,5 +80,10 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
         });
 
         return future;
+    }
+
+    @Override
+    public String toString() {
+        return "DiscordRequest -> " + uri.toString();
     }
 }

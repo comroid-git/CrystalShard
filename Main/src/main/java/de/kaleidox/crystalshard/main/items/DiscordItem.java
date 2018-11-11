@@ -7,13 +7,6 @@ import de.kaleidox.crystalshard.main.Discord;
  */
 public interface DiscordItem {
     /**
-     * Gets the ID of the item.
-     *
-     * @return The ID of the item.
-     */
-    long getId();
-
-    /**
      * Gets the Discord object of the item.
      *
      * @return The Discord object of the item.
@@ -31,4 +24,11 @@ public interface DiscordItem {
         if (other == null) return false;
         return (this.getId() == other.getId());
     }
+
+    /**
+     * Gets the ID of the item.
+     *
+     * @return The ID of the item.
+     */
+    long getId();
 }

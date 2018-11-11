@@ -4,24 +4,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.core.net.request.WebRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-
+import de.kaleidox.util.helpers.JsonHelper;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.WebSocket;
 
 public class WebSocketClientImpl implements WebSocketClient {
@@ -55,7 +48,7 @@ public class WebSocketClientImpl implements WebSocketClient {
                 .join();
         Request request = new Request.Builder()
                 .url(gatewayUrl)
-                .header("User-Agent", "DiscordBot ("+CrystalShard.URL+", 0.1)")
+                .header("User-Agent", "DiscordBot (" + CrystalShard.URL + ", 0.1)")
                 .header("Content-Type", "application/json")
                 .header("Authorization", discordObject.getPrefixedToken())
                 .build();
@@ -64,6 +57,17 @@ public class WebSocketClientImpl implements WebSocketClient {
         this.webSocket = CLIENT.newWebSocket(request, new WebSocketListener(discordObject));
         identification();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> webSocket.close(1000, "Shutting down!")));
+    }
+
+    private void identification() {
+        ObjectNode data = JsonHelper.objectNode("properties",
+                JsonHelper.objectNode("$os",
+                        JsonHelper.nodeOf(System.getProperty("os.name")),
+                        "$browser",
+                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
+                        "$device",
+                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
+        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
     }
 
     /**
@@ -98,17 +102,6 @@ public class WebSocketClientImpl implements WebSocketClient {
             }
         });
         return new CompletableFuture<>();
-    }
-
-    private void identification() {
-        ObjectNode data = JsonHelper.objectNode("properties",
-                JsonHelper.objectNode("$os",
-                        JsonHelper.nodeOf(System.getProperty("os.name")),
-                        "$browser",
-                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
-                        "$device",
-                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
-        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
     }
 
     public void heartbeat() {

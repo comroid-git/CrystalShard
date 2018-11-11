@@ -8,19 +8,23 @@ import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInte
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.items.channel.*;
+import de.kaleidox.crystalshard.main.items.channel.Channel;
+import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
+import de.kaleidox.crystalshard.main.items.channel.ChannelType;
+import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-
+import de.kaleidox.util.helpers.FutureHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.crystalshard.util.helpers.JsonHelper.objectNode;
+import static de.kaleidox.util.helpers.JsonHelper.*;
 
 public class ChannelBuilderInternal {
     public static class ChannelInviteBuilder implements ServerChannel.InviteBuilder {

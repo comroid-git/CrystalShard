@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.main.items.user;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.items.message.Message;
-
 import java.util.Optional;
 
 /**

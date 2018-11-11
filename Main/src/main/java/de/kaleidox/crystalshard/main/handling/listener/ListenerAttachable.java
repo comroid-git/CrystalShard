@@ -5,8 +5,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachable
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
-import de.kaleidox.crystalshard.util.objects.functional.Evaluation;
-
+import de.kaleidox.util.objects.functional.Evaluation;
 import java.util.Collection;
 
 /**
@@ -39,13 +38,6 @@ public interface ListenerAttachable<T extends Listener> {
     Evaluation<Boolean> detachListener(T listener);
 
     /**
-     * Returns a collection of all listeners that are attached to this object.
-     *
-     * @return A collection with the attached listeners.
-     */
-    Collection<T> getAttachedListeners();
-
-    /**
      * Returns a collection of all ListenerManagers attached to this object.
      *
      * @return A collection with attached ListenerManagers.
@@ -58,4 +50,11 @@ public interface ListenerAttachable<T extends Listener> {
     default void detachAllListeners() {
         getAttachedListeners().forEach(this::detachListener);
     }
+
+    /**
+     * Returns a collection of all listeners that are attached to this object.
+     *
+     * @return A collection with the attached listeners.
+     */
+    Collection<T> getAttachedListeners();
 }

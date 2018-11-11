@@ -3,7 +3,12 @@ package de.kaleidox.crystalshard.core;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.cache.CacheImpl;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
-import de.kaleidox.crystalshard.core.cache.sub.*;
+import de.kaleidox.crystalshard.core.cache.sub.ChannelCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.EmojiCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.MessageCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.RoleCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.ServerCacheImpl;
+import de.kaleidox.crystalshard.core.cache.sub.UserCacheImpl;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
@@ -14,11 +19,6 @@ import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.main.Discord;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -37,31 +37,6 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
 
     public CoreDelegateJRE11Impl() {
         super(implementations);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident) {
-        return CacheImpl.cacheInstances.entrySet()
-                .stream()
-                .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .filter(cache -> {
-                    try {
-                        CacheImpl<T, I, ?> o = (CacheImpl<T, I, ?>) cache;
-                    } catch (Throwable e) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map(cache -> (CacheImpl<T, I, ?>) cache)
-                .findAny()
-                .orElseThrow(NoSuchElementException::new);
-    }
-
-    @Override
-    protected <T> WebRequest<T> makeWebRequest(Discord discord) {
-        return new DiscordRequestImpl<>(discord);
     }
 
     @Override
@@ -92,6 +67,31 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
     @Override
     protected UserCacheImpl makeUserCache(Discord discord) {
         return new UserCacheImpl(discord);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident) {
+        return CacheImpl.cacheInstances.entrySet()
+                .stream()
+                .filter(entry -> typeClass.isAssignableFrom(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .filter(cache -> {
+                    try {
+                        CacheImpl<T, I, ?> o = (CacheImpl<T, I, ?>) cache;
+                    } catch (Throwable e) {
+                        return false;
+                    }
+                    return true;
+                })
+                .map(cache -> (CacheImpl<T, I, ?>) cache)
+                .findAny()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    @Override
+    protected <T> WebRequest<T> makeWebRequest(Discord discord) {
+        return new DiscordRequestImpl<>(discord);
     }
 
     @Override

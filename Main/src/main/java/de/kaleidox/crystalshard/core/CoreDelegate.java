@@ -14,7 +14,7 @@ import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.util.objects.markers.IDPair;
+import de.kaleidox.util.objects.markers.IDPair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -63,25 +63,37 @@ public abstract class CoreDelegate extends DelegateBase {
         return delegate.makeChannelCache(discord);
     }
 
+    protected abstract Cache<Channel, Long, Long> makeChannelCache(Discord discord);
+
     public static Cache<CustomEmoji, Long, IDPair> emojiCache(Discord discord) {
         return delegate.makeEmojiCache(discord);
     }
+
+    protected abstract Cache<CustomEmoji, Long, IDPair> makeEmojiCache(Discord discord);
 
     public static Cache<Message, Long, IDPair> messageCache(Discord discord) {
         return delegate.makeMessageCache(discord);
     }
 
+    protected abstract Cache<Message, Long, IDPair> makeMessageCache(Discord discord);
+
     public static Cache<Role, Long, IDPair> roleCache(Discord discord) {
         return delegate.makeRoleCache(discord);
     }
+
+    protected abstract Cache<Role, Long, IDPair> makeRoleCache(Discord discord);
 
     public static Cache<Server, Long, Long> serverCache(Discord discord) {
         return delegate.makeServerCache(discord);
     }
 
+    protected abstract Cache<Server, Long, Long> makeServerCache(Discord discord);
+
     public static Cache<User, Long, Long> userCache(Discord discord) {
         return delegate.makeUserCache(discord);
     }
+
+    protected abstract Cache<User, Long, Long> makeUserCache(Discord discord);
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
         return delegate.makeInstance(tClass, args);
@@ -102,28 +114,16 @@ public abstract class CoreDelegate extends DelegateBase {
         return delegate.getCacheInstanceDelegate(typeClass, ident);
     }
 
-    public static <T> WebRequest<T> webRequest(Discord discord) {
-        return delegate.makeWebRequest(discord);
-    }
+    protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident);
 
     public static <T> WebRequest<T> webRequest(Class<T> tClass, Discord discord) {
         WebRequest<T> request = webRequest(discord);
         return request;
     }
 
-    protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceDelegate(Class<T> typeClass, I ident);
+    public static <T> WebRequest<T> webRequest(Discord discord) {
+        return delegate.makeWebRequest(discord);
+    }
 
     protected abstract <T> WebRequest<T> makeWebRequest(Discord discord);
-
-    protected abstract Cache<Channel, Long, Long> makeChannelCache(Discord discord);
-
-    protected abstract Cache<CustomEmoji, Long, IDPair> makeEmojiCache(Discord discord);
-
-    protected abstract Cache<Message, Long, IDPair> makeMessageCache(Discord discord);
-
-    protected abstract Cache<Role, Long, IDPair> makeRoleCache(Discord discord);
-
-    protected abstract Cache<Server, Long, Long> makeServerCache(Discord discord);
-
-    protected abstract Cache<User, Long, Long> makeUserCache(Discord discord);
 }

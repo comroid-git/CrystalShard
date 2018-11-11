@@ -8,9 +8,8 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.util.helpers.FutureHelper;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.JsonHelper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -51,6 +50,17 @@ public class WebSocketClientImpl implements WebSocketClient {
                 .addShutdownHook(new Thread(() -> webSocket.sendClose(1000, "Shutting down!")));
     }
 
+    private void identification() {
+        ObjectNode data = JsonHelper.objectNode("properties",
+                JsonHelper.objectNode("$os",
+                        JsonHelper.nodeOf(System.getProperty("os.name")),
+                        "$browser",
+                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
+                        "$device",
+                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
+        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
+    }
+
     public CompletableFuture<Void> sendPayload(Payload payload) {
         assert payload != null : "Payload must not be null!";
         CompletableFuture<WebSocket> future = new CompletableFuture<>();
@@ -82,17 +92,6 @@ public class WebSocketClientImpl implements WebSocketClient {
             }
         });
         return future.thenApply(n -> null);
-    }
-
-    private void identification() {
-        ObjectNode data = JsonHelper.objectNode("properties",
-                JsonHelper.objectNode("$os",
-                        JsonHelper.nodeOf(System.getProperty("os.name")),
-                        "$browser",
-                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
-                        "$device",
-                        JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
-        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
     }
 
     public void heartbeat() {

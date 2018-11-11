@@ -3,8 +3,7 @@ package de.kaleidox.crystalshard.core.net.request;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.util.helpers.JsonHelper;
-
+import de.kaleidox.util.helpers.JsonHelper;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -36,26 +35,8 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     }
 
     @Override
-    public WebRequest<T> setUri(RequestURI uri) {
-        this.uri = uri;
-        return this;
-    }
-
-    @Override
-    public WebRequest<T> setMethod(HttpMethod method) {
-        this.method = method;
-        return this;
-    }
-
-    @Override
     public WebRequest<T> setNode(JsonNode node) {
         this.node = node;
-        return this;
-    }
-
-    @Override
-    public WebRequest<T> setNode(Object... data) {
-        this.node = JsonHelper.objectNode(data);
         return this;
     }
 
@@ -65,13 +46,31 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     }
 
     @Override
+    public WebRequest<T> setUri(RequestURI uri) {
+        this.uri = uri;
+        return this;
+    }
+
+    @Override
     public HttpMethod getMethod() {
         return method;
     }
 
     @Override
+    public WebRequest<T> setMethod(HttpMethod method) {
+        this.method = method;
+        return this;
+    }
+
+    @Override
     public JsonNode getNode() {
         return node;
+    }
+
+    @Override
+    public WebRequest<T> setNode(Object... data) {
+        this.node = JsonHelper.objectNode(data);
+        return this;
     }
 
     @Override

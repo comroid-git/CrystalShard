@@ -5,6 +5,8 @@ import de.kaleidox.crystalshard.internal.InternalDelegate;
 import de.kaleidox.crystalshard.main.Discord;
 
 public interface UnicodeEmoji extends Emoji {
+    Discord getDiscord();
+
     static UnicodeEmoji of(Discord discord, String emojiOrAlias) {
         String aliases = EmojiParser.parseToAliases(emojiOrAlias);
         String unicode = EmojiParser.parseToUnicode(emojiOrAlias);
@@ -13,6 +15,4 @@ public interface UnicodeEmoji extends Emoji {
                     "The provided Emoji String is not a valid unicode emoji.");
         else return InternalDelegate.newInstance(UnicodeEmoji.class, discord, aliases, unicode);
     }
-
-    Discord getDiscord();
 }

@@ -10,22 +10,12 @@ import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface Invite extends Castable<Invite> {
     String BASE_INVITE = "https://discord.gg/";
-
-    static CompletableFuture<Invite> get(String code) throws IllegalThreadException {
-        Discord discord = ThreadPool.getThreadDiscord();
-        return CoreDelegate.webRequest(Invite.class, discord)
-                .setMethod(HttpMethod.GET)
-                .setUri(DiscordEndpoint.INVITE.createUri(code))
-                .setNode("with_counts", true)
-                .executeAs(node -> InternalDelegate.newInstance(Invite.class, discord, node));
-    }
 
     Discord getDiscord();
 
@@ -42,4 +32,13 @@ public interface Invite extends Castable<Invite> {
     URL getUrl();
 
     CompletableFuture<Void> delete();
+
+    static CompletableFuture<Invite> get(String code) throws IllegalThreadException {
+        Discord discord = ThreadPool.getThreadDiscord();
+        return CoreDelegate.webRequest(Invite.class, discord)
+                .setMethod(HttpMethod.GET)
+                .setUri(DiscordEndpoint.INVITE.createUri(code))
+                .setNode("with_counts", true)
+                .executeAs(node -> InternalDelegate.newInstance(Invite.class, discord, node));
+    }
 }

@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.main.handling.listener.Listener;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,13 +22,6 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
         this.discord = discord;
         this.listener = listener;
         instances.putIfAbsent(listener.hashCode(), this);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal, T listener) {
-        if (instances.containsKey(listener.hashCode()))
-            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
-        else return new ListenerManagerInternal<>(discordInternal, listener);
     }
 
     @Override
@@ -89,5 +81,12 @@ public class ListenerManagerInternal<T extends Listener> implements ListenerMana
 
     public <C extends ListenerAttachable<T>> void addAttached(C attached) {
         attachedTo.add(attached);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Listener> ListenerManagerInternal<T> getInstance(DiscordInternal discordInternal, T listener) {
+        if (instances.containsKey(listener.hashCode()))
+            return (ListenerManagerInternal<T>) instances.get(listener.hashCode());
+        else return new ListenerManagerInternal<>(discordInternal, listener);
     }
 }
