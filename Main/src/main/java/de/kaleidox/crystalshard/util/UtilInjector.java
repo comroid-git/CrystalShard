@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.util;
 
-import de.kaleidox.crystalshard.DelegateBase;
+import de.kaleidox.crystalshard.InjectorBase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,23 +11,23 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-public abstract class UtilDelegate extends DelegateBase {
-    public final static UtilDelegate delegate;
+public abstract class UtilInjector extends InjectorBase {
+    public final static UtilInjector delegate;
     private final static Set<Class> mustOverride;
 
     static {
-        UtilDelegate using;
-        ServiceLoader<UtilDelegate> load = ServiceLoader.load(UtilDelegate.class);
-        Iterator<UtilDelegate> iterator = load.iterator();
+        UtilInjector using;
+        ServiceLoader<UtilInjector> load = ServiceLoader.load(UtilInjector.class);
+        Iterator<UtilInjector> iterator = load.iterator();
         if (iterator.hasNext()) using = iterator.next();
         else using = null;
         if (iterator.hasNext()) { // if no util delegate available, this if wont run
-            List<UtilDelegate> allImplementations = new ArrayList<>();
+            List<UtilInjector> allImplementations = new ArrayList<>();
             allImplementations.add(using);
             iterator.forEachRemaining(allImplementations::add);
             allImplementations.sort(Comparator.comparingInt(delegate -> delegate.getJdkVersion() * -1));
             using = allImplementations.get(0);
-            logger.warn("More than one implementation for " + UtilDelegate.class.getSimpleName() +
+            logger.warn("More than one implementation for " + UtilInjector.class.getSimpleName() +
                     " found! Using " + using.getClass().getName());
         }
         delegate = using;
@@ -38,7 +38,7 @@ public abstract class UtilDelegate extends DelegateBase {
         ));
     }
 
-    public UtilDelegate(Hashtable<Class, Class> implementations) {
+    public UtilInjector(Hashtable<Class, Class> implementations) {
         super(implementations, mustOverride);
     }
 

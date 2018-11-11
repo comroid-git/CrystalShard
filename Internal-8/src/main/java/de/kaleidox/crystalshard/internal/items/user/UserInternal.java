@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -172,7 +172,7 @@ public class UserInternal implements User {
 
     @Override
     public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
-        return CoreDelegate.webRequest(PrivateTextChannel.class, discord)
+        return CoreInjector.webRequest(PrivateTextChannel.class, discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.SELF_CHANNELS.createUri())
                 .setNode(objectNode("recipient_id", id))

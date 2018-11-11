@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
@@ -101,7 +101,7 @@ public class ChannelUpdaterInternal {
                     .orElseThrow(AssertionError::new)
                     .hasPermission(discord, Permission.MANAGE_CHANNELS))
                 return FutureHelper.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
-            return CoreDelegate.webRequest(ChannelCategory.class, discord)
+            return CoreInjector.webRequest(ChannelCategory.class, discord)
                     .setMethod(HttpMethod.PATCH)
                     .setUri(DiscordEndpoint.CHANNEL.createUri(channel))
                     .setNode((name != null ? new Object[]{"name",
@@ -149,7 +149,7 @@ public class ChannelUpdaterInternal {
                     .orElseThrow(AssertionError::new)
                     .hasPermission(discord, Permission.MANAGE_CHANNELS))
                 return FutureHelper.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
-            return CoreDelegate.webRequest(ServerTextChannel.class, discord)
+            return CoreInjector.webRequest(ServerTextChannel.class, discord)
                     .setMethod(HttpMethod.PATCH)
                     .setUri(DiscordEndpoint.CHANNEL.createUri(channel))
                     .setNode((name != null ? new Object[]{"name",
@@ -203,7 +203,7 @@ public class ChannelUpdaterInternal {
                     .orElseThrow(AssertionError::new)
                     .hasPermission(discord, Permission.MANAGE_CHANNELS))
                 return FutureHelper.failedFuture(new DiscordPermissionException("Cannot update channel!", Permission.MANAGE_CHANNELS));
-            return CoreDelegate.webRequest(ServerVoiceChannel.class, discord)
+            return CoreInjector.webRequest(ServerVoiceChannel.class, discord)
                     .setMethod(HttpMethod.PATCH)
                     .setUri(DiscordEndpoint.CHANNEL.createUri(channel))
                     .setNode((name != null ? new Object[]{"name",

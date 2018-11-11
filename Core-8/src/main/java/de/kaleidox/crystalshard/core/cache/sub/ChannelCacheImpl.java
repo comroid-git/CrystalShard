@@ -1,11 +1,11 @@
 package de.kaleidox.crystalshard.core.cache.sub;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.CacheImpl;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
@@ -40,7 +40,7 @@ public class ChannelCacheImpl extends CacheImpl<Channel, Long, Long> {
     @NotNull
     @Override
     public CompletableFuture<Object[]> requestConstructorParameters(Long requestIdent) {
-        WebRequest<Object[]> request = CoreDelegate.webRequest(discordInternal);
+        WebRequest<Object[]> request = CoreInjector.webRequest(discordInternal);
         return request.setMethod(GET)
                 .setUri(DiscordEndpoint.CHANNEL.createUri(requestIdent))
                 .executeAs(data -> {
@@ -61,15 +61,15 @@ public class ChannelCacheImpl extends CacheImpl<Channel, Long, Long> {
         switch (ChannelType.getFromId(data.get("type")
                 .asInt())) {
             case GUILD_TEXT:
-                return InternalDelegate.newInstance(ServerTextChannel.class, discord, server, data);
+                return InternalInjector.newInstance(ServerTextChannel.class, discord, server, data);
             case DM:
-                return InternalDelegate.newInstance(PrivateTextChannel.class, discord, data);
+                return InternalInjector.newInstance(PrivateTextChannel.class, discord, data);
             case GUILD_VOICE:
-                return InternalDelegate.newInstance(ServerVoiceChannel.class, discord, server, data);
+                return InternalInjector.newInstance(ServerVoiceChannel.class, discord, server, data);
             case GROUP_DM:
-                return InternalDelegate.newInstance(GroupChannel.class, discord, data);
+                return InternalInjector.newInstance(GroupChannel.class, discord, data);
             case GUILD_CATEGORY:
-                return InternalDelegate.newInstance(ChannelCategory.class, discord, server, data);
+                return InternalInjector.newInstance(ChannelCategory.class, discord, server, data);
             default:
                 throw new NoSuchElementException("Unknown or no channel Type.");
         }

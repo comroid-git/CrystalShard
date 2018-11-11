@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.internal;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
@@ -19,7 +19,7 @@ import de.kaleidox.crystalshard.main.items.user.AccountType;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
-import de.kaleidox.crystalshard.util.UtilDelegate;
+import de.kaleidox.crystalshard.util.UtilInjector;
 import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.functional.LivingInt;
 import de.kaleidox.util.objects.markers.IDPair;
@@ -58,25 +58,25 @@ public class DiscordInternal implements Discord {
     private final TunnelFramework tunnelFramework;
 
     public DiscordInternal(String token, AccountType type, Integer thisShard, Integer ShardCount) {
-        this.serverCache = CoreDelegate.serverCache(this);
-        this.userCache = CoreDelegate.userCache(this);
-        this.roleCache = CoreDelegate.roleCache(this);
-        this.channelCache = CoreDelegate.channelCache(this);
-        this.messageCache = CoreDelegate.messageCache(this);
-        this.emojiCache = CoreDelegate.emojiCache(this);
+        this.serverCache = CoreInjector.serverCache(this);
+        this.userCache = CoreInjector.userCache(this);
+        this.roleCache = CoreInjector.roleCache(this);
+        this.channelCache = CoreInjector.channelCache(this);
+        this.messageCache = CoreInjector.messageCache(this);
+        this.emojiCache = CoreInjector.emojiCache(this);
         this.selfFuture = new CompletableFuture<>();
         this.tunnelFramework = new TunnelFramework();
         this.serversInit = new LivingInt(5, 0, -1, 1, TimeUnit.SECONDS);
         this.serversInit.onStopHit(() -> init = true);
         this.thisShard = thisShard;
         this.shardCount = ShardCount;
-        this.pool = CoreDelegate.newInstance(ThreadPool.class, this);
+        this.pool = CoreInjector.newInstance(ThreadPool.class, this);
         this.token = token;
         Logger.addBlankedWord(token);
         this.type = type;
-        this.ratelimiter = CoreDelegate.newInstance(Ratelimiter.class, this);
-        this.webSocket = CoreDelegate.newInstance(WebSocketClient.class, this);
-        this.utils = UtilDelegate.newInstance(DiscordUtils.class, this);
+        this.ratelimiter = CoreInjector.newInstance(Ratelimiter.class, this);
+        this.webSocket = CoreInjector.newInstance(WebSocketClient.class, this);
+        this.utils = UtilInjector.newInstance(DiscordUtils.class, this);
 
         servers = new ArrayList<>();
 
@@ -86,11 +86,11 @@ public class DiscordInternal implements Discord {
     }
 
     public DiscordInternal(String token) {
-        this.pool = CoreDelegate.newInstance(ThreadPool.class, this, 1, "GetShards Discord Pool");
+        this.pool = CoreInjector.newInstance(ThreadPool.class, this, 1, "GetShards Discord Pool");
         this.token = token;
         this.type = AccountType.BOT;
         this.webSocket = null;
-        this.ratelimiter = CoreDelegate.newInstance(Ratelimiter.class, this);
+        this.ratelimiter = CoreInjector.newInstance(Ratelimiter.class, this);
         this.servers = null;
         this.utils = null;
         this.thisShard = 0;

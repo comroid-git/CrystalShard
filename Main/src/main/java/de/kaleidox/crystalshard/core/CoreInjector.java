@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.core;
 
-import de.kaleidox.crystalshard.DelegateBase;
+import de.kaleidox.crystalshard.InjectorBase;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
@@ -26,23 +26,23 @@ import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-public abstract class CoreDelegate extends DelegateBase {
-    public final static CoreDelegate delegate;
+public abstract class CoreInjector extends InjectorBase {
+    public final static CoreInjector delegate;
     private final static Set<Class> mustOverride;
 
     static {
-        CoreDelegate using;
-        ServiceLoader<CoreDelegate> load = ServiceLoader.load(CoreDelegate.class);
-        Iterator<CoreDelegate> iterator = load.iterator();
+        CoreInjector using;
+        ServiceLoader<CoreInjector> load = ServiceLoader.load(CoreInjector.class);
+        Iterator<CoreInjector> iterator = load.iterator();
         if (iterator.hasNext()) using = iterator.next();
-        else throw new IllegalStateException("No implementation for " + CoreDelegate.class.getName() + " found!");
+        else throw new IllegalStateException("No implementation for " + CoreInjector.class.getName() + " found!");
         if (iterator.hasNext()) {
-            List<CoreDelegate> allImplementations = new ArrayList<>();
+            List<CoreInjector> allImplementations = new ArrayList<>();
             allImplementations.add(using);
             iterator.forEachRemaining(allImplementations::add);
             allImplementations.sort(Comparator.comparingInt(delegate -> delegate.getJdkVersion() * -1));
             using = allImplementations.get(0);
-            logger.warn("More than one implementation for " + CoreDelegate.class.getSimpleName() +
+            logger.warn("More than one implementation for " + CoreInjector.class.getSimpleName() +
                     " found! Using " + using.getClass().getName());
         }
         delegate = using;
@@ -55,7 +55,7 @@ public abstract class CoreDelegate extends DelegateBase {
                 WebSocketClient.class));
     }
 
-    public CoreDelegate(Hashtable<Class, Class> implementations) {
+    public CoreInjector(Hashtable<Class, Class> implementations) {
         super(implementations, mustOverride);
     }
 

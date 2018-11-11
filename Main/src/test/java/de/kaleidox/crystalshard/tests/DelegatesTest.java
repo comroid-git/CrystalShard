@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.tests;
 
-import de.kaleidox.crystalshard.DelegateBase;
-import de.kaleidox.crystalshard.core.CoreDelegate;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.InjectorBase;
+import de.kaleidox.crystalshard.core.CoreInjector;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.util.UtilDelegate;
+import de.kaleidox.crystalshard.util.UtilInjector;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
 import org.junit.Test;
@@ -16,12 +16,12 @@ public class DelegatesTest {
     @Test(timeout = 10000)
     public void checkDelegateImplementations() {
         logger = new Logger(DelegatesTest.class);
-        runTestOn(new Reflections(InternalDelegate.class.getPackageName()), InternalDelegate.class);
-        runTestOn(new Reflections(CoreDelegate.class.getPackageName()), CoreDelegate.class);
-        runTestOn(new Reflections(UtilDelegate.class.getPackageName()), UtilDelegate.class);
+        runTestOn(new Reflections(InternalInjector.class.getPackage().getName()), InternalInjector.class);
+        runTestOn(new Reflections(CoreInjector.class.getPackage().getName()), CoreInjector.class);
+        runTestOn(new Reflections(UtilInjector.class.getPackage().getName()), UtilInjector.class);
     }
 
-    private <T extends DelegateBase> void runTestOn(Reflections reflections, Class<T> delegateClass) {
+    private <T extends InjectorBase> void runTestOn(Reflections reflections, Class<T> delegateClass) {
         logger.info("Running implementation tests for delegate: " + delegateClass.getSimpleName());
         int i = 0;
         for (Class<? extends T> delegateImplementation : reflections.getSubTypesOf(delegateClass)) {
@@ -29,7 +29,7 @@ public class DelegatesTest {
                     delegateImplementation.getSimpleName());
             i++;
             try {
-                final DelegateBase delegate = delegateImplementation.getConstructor().newInstance();
+                final InjectorBase delegate = delegateImplementation.getConstructor().newInstance();
                 Hashtable<Class, Class> implementations = delegate.implementations();
                 for (Class must : delegate.mustOverride()) {
                     if (!implementations.containsKey(must))
@@ -44,6 +44,6 @@ public class DelegatesTest {
         }
         if (i == 0)
             throw new IllegalStateException("No delegate implementation found for " + delegateClass.getName() + "\n" +
-                    "\tPlease provide an implementation within package: " + delegateClass.getPackageName());
+                    "\tPlease provide an implementation within package: " + delegateClass.getPackage().getName());
     }
 }

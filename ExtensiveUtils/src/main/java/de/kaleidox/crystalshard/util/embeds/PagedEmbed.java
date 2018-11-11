@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.util.embeds;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.main.Discord;
@@ -71,7 +71,7 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
 
     @Override
     public Embed.Builder addField(String title, String text, boolean inline) {
-        EmbedDraft.Field field = InternalDelegate.newInstance(EmbedDraft.Field.class, title, text, inline);
+        EmbedDraft.Field field = InternalInjector.newInstance(EmbedDraft.Field.class, title, text, inline);
         addField(field);
         return this;
     }

@@ -39,7 +39,7 @@ import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import java.util.Hashtable;
 
-public class InternalDelegateJRE8Impl extends InternalDelegate {
+public class InternalInjectorJRE8Impl extends InternalInjector {
     private final static Hashtable<Class, Class> implementations;
 
     static {
@@ -73,7 +73,7 @@ public class InternalDelegateJRE8Impl extends InternalDelegate {
         implementations.put(Message.Builder.class, MessageModifier.Builder.class);
     }
 
-    public InternalDelegateJRE8Impl() {
+    public InternalInjectorJRE8Impl() {
         super(implementations);
     }
 

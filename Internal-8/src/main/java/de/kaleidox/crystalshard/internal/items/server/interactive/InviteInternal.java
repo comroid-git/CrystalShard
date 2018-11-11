@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.server.interactive;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.main.Discord;
@@ -95,7 +95,7 @@ public class InviteInternal implements Invite {
             return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot delete invite.",
                     Permission.MANAGE_CHANNELS));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.INVITE.createUri(code))
                 .executeAsVoid();

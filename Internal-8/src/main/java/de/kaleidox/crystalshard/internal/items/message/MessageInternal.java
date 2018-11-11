@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -287,7 +287,7 @@ public class MessageInternal implements Message {
             return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot remove other peoples reactions.",
                     Permission.MANAGE_MESSAGES));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.REACTIONS.createUri(channelId, id))
                 .executeAsVoid();
@@ -305,7 +305,7 @@ public class MessageInternal implements Message {
                 .filter(reaction -> Stream.of(emojis)
                         .anyMatch(emoji -> reaction.getEmoji()
                                 .equals(emoji)))
-                .forEach(reaction -> deletions.add(CoreDelegate.webRequest(discord)
+                .forEach(reaction -> deletions.add(CoreInjector.webRequest(discord)
                         .setMethod(HttpMethod.DELETE)
                         .setUri(DiscordEndpoint.REACTION_USER.createUri(channelId,
                                 id,
@@ -329,7 +329,7 @@ public class MessageInternal implements Message {
                 .filter(reaction -> Stream.of(users)
                         .anyMatch(user -> reaction.getUser()
                                 .equals(user)))
-                .forEach(reaction -> deletions.add(CoreDelegate.webRequest(discord)
+                .forEach(reaction -> deletions.add(CoreInjector.webRequest(discord)
                         .setMethod(HttpMethod.DELETE)
                         .setUri(DiscordEndpoint.REACTION_USER.createUri(channelId,
                                 id,
@@ -353,7 +353,7 @@ public class MessageInternal implements Message {
 
     @Override
     public CompletableFuture<Message> pin() {
-        return CoreDelegate.webRequest(Message.class, discord)
+        return CoreInjector.webRequest(Message.class, discord)
                 .setMethod(HttpMethod.PUT)
                 .setUri(DiscordEndpoint.PIN_MESSAGE.createUri(channelId, id))
                 .executeAs(node -> this);
@@ -361,7 +361,7 @@ public class MessageInternal implements Message {
 
     @Override
     public CompletableFuture<Message> unpin() {
-        return CoreDelegate.webRequest(Message.class, discord)
+        return CoreInjector.webRequest(Message.class, discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.PIN_MESSAGE.createUri(channelId, id))
                 .executeAs(node -> this);
@@ -381,7 +381,7 @@ public class MessageInternal implements Message {
             return FutureHelper.failedFuture(new DiscordPermissionException(
                     "Cannot add new reactions!",
                     Permission.ADD_REACTIONS));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.PUT)
                 .setUri(DiscordEndpoint.REACTION_OWN.createUri(channelId, id, emojiPrintable))
                 .executeAsVoid();
@@ -398,7 +398,7 @@ public class MessageInternal implements Message {
                 .isPresent() && !author.isYourself() && !channel.hasPermission(discord, Permission.MANAGE_MESSAGES))
             return FutureHelper.failedFuture(new DiscordPermissionException("Cannot delete " + toString() + "; you are not the author.",
                     Permission.MANAGE_MESSAGES));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.MESSAGE_SPECIFIC.createUri(channelId, id))
                 .executeAsVoid();
@@ -508,7 +508,7 @@ public class MessageInternal implements Message {
             Objects.requireNonNull(channelId, "ChannelID for BulkDelete must not be NULL!");
             if (ids.size() >= 100)
                 throw new IllegalArgumentException("BulkDelete only allowed with up to 100 Messages!");
-            return CoreDelegate.webRequest(discord)
+            return CoreInjector.webRequest(discord)
                     .setMethod(HttpMethod.POST)
                     .setUri(DiscordEndpoint.MESSAGES_BULK_DELETE.createUri(channelId))
                     .setNode(objectNode(

@@ -23,7 +23,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class CoreDelegateJRE11Impl extends CoreDelegate {
+public class CoreInjectorJRE11Impl extends CoreInjector {
     private final static Hashtable<Class, Class> implementations;
 
     static {
@@ -35,7 +35,7 @@ public class CoreDelegateJRE11Impl extends CoreDelegate {
         implementations.put(WebSocketClient.class, WebSocketClientImpl.class);
     }
 
-    public CoreDelegateJRE11Impl() {
+    public CoreInjectorJRE11Impl() {
         super(implementations);
     }
 

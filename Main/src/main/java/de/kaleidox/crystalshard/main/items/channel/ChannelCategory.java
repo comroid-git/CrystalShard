@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.main.items.channel;
 
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 
@@ -14,7 +14,7 @@ public interface ChannelCategory extends ServerChannel {
     }
 
     static Builder builder(Discord discord) {
-        return InternalDelegate.newInstance(Builder.class, discord);
+        return InternalInjector.newInstance(Builder.class, discord);
     }
 
     @SuppressWarnings("JavaDoc")

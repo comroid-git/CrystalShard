@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
@@ -68,7 +68,7 @@ public class RoleBuilderInternal implements Role.Builder {
 
     @Override
     public CompletableFuture<Role> build() {
-        return CoreDelegate.webRequest(Role.class, discord)
+        return CoreInjector.webRequest(Role.class, discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.GUILD_ROLES.createUri(server))
                 .setNode(toJsonNode())

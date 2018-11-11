@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.main.Discord;
@@ -78,7 +78,7 @@ public class MessageModifier {
                 useId = usr.openPrivateChannel().thenApply(PrivateChannel::getId).join();
             }
             assert useId != -1 : "Unexpected type: " + target.getClass().getSimpleName();
-            return CoreDelegate.webRequest(Message.class, discord)
+            return CoreInjector.webRequest(Message.class, discord)
                     .setMethod(HttpMethod.POST)
                     .setUri(DiscordEndpoint.MESSAGE.createUri(useId))
                     .setNode(objectNode("content", sb.toString(),

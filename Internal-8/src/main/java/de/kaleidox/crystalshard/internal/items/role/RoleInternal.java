@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -113,7 +113,7 @@ public class RoleInternal implements Role {
     public CompletableFuture<Void> delete() {
         if (!server.hasPermission(discord, Permission.MANAGE_ROLES))
             return FutureHelper.failedFuture(new DiscordPermissionException("Cannot delete roles!", Permission.MANAGE_ROLES));
-        return CoreDelegate.webRequest(discord)
+        return CoreInjector.webRequest(discord)
                 .setMethod(HttpMethod.DELETE)
                 .setUri(DiscordEndpoint.GUILD_ROLE_SPECIFIC.createUri(server, id))
                 .executeAsVoid();

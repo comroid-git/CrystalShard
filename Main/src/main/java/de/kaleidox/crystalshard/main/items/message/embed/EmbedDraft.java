@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.main.items.message.embed;
 
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.util.FileContainer;
 import java.awt.Color;
@@ -38,7 +38,7 @@ public interface EmbedDraft extends Embed {
         Optional<URL> getIconUrl();
 
         static Footer BUILD(String text, String iconUrl) {
-            return InternalDelegate.newInstance(Footer.class, text, iconUrl);
+            return InternalInjector.newInstance(Footer.class, text, iconUrl);
         }
     }
 
@@ -46,7 +46,7 @@ public interface EmbedDraft extends Embed {
         Optional<URL> getUrl();
 
         static Image BUILD(String url) {
-            return InternalDelegate.newInstance(Image.class, url);
+            return InternalInjector.newInstance(Image.class, url);
         }
     }
 
@@ -56,7 +56,7 @@ public interface EmbedDraft extends Embed {
         Optional<URL> getIconUrl();
 
         static Author BUILD(String name, String url, String iconUrl) {
-            return InternalDelegate.newInstance(Author.class, name, url, iconUrl);
+            return InternalInjector.newInstance(Author.class, name, url, iconUrl);
         }
     }
 
@@ -64,7 +64,7 @@ public interface EmbedDraft extends Embed {
         Optional<URL> getUrl();
 
         static Thumbnail BUILD(String url) {
-            return InternalDelegate.newInstance(Thumbnail.class, url);
+            return InternalInjector.newInstance(Thumbnail.class, url);
         }
     }
 
@@ -78,17 +78,17 @@ public interface EmbedDraft extends Embed {
         int getTotalCharCount();
 
         default Optional<EditableField> toEditableField() {
-            return Optional.of(InternalDelegate.newInstance(EditableField.class, this));
+            return Optional.of(InternalInjector.newInstance(EditableField.class, this));
         }
 
         static Field BUILD(String title, String text, boolean inline) {
-            return InternalDelegate.newInstance(Field.class, title, text, (Objects.nonNull(inline) && inline));
+            return InternalInjector.newInstance(Field.class, title, text, (Objects.nonNull(inline) && inline));
         }
     }
 
     interface EditableField extends Field {
         static EditableField BUILD(Field fromField) {
-            return InternalDelegate.newInstance(EditableField.class, fromField);
+            return InternalInjector.newInstance(EditableField.class, fromField);
         }
     }
 }

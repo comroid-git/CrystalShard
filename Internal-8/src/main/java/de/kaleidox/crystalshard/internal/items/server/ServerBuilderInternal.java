@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
-import de.kaleidox.crystalshard.core.CoreDelegate;
+import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
@@ -98,7 +98,7 @@ public class ServerBuilderInternal implements Server.Builder {
 
     @Override
     public CompletableFuture<Server> build() {
-        return CoreDelegate.webRequest(Server.class, discord)
+        return CoreInjector.webRequest(Server.class, discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.GUILD.createUri())
                 .setNode("name",

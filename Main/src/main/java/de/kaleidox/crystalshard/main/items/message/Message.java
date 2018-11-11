@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.main.items.message;
 
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.internal.InternalDelegate;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
@@ -364,14 +364,14 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
 
     static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalThreadException {
         Discord discord = ThreadPool.getThreadDiscord();
-        return InternalDelegate.newInstance(BulkDelete.class, discord)
+        return InternalInjector.newInstance(BulkDelete.class, discord)
                 .setChannel(channelId)
                 .addIds(messageIds)
                 .deleteAll();
     }
 
     static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
-        return InternalDelegate.newInstance(BulkDelete.class, messages[0].getDiscord())
+        return InternalInjector.newInstance(BulkDelete.class, messages[0].getDiscord())
                 .setChannel(messages[0].getChannel()
                         .getId())
                 .addMessages(messages)
@@ -386,11 +386,11 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     TextChannel getChannel();
 
     static Builder builder() {
-        return InternalDelegate.newInstance(Builder.class);
+        return InternalInjector.newInstance(Builder.class);
     }
 
     static Builder builder(Message ofMessage) {
-        return InternalDelegate.newInstance(Builder.class, ofMessage);
+        return InternalInjector.newInstance(Builder.class, ofMessage);
     }
 
     interface Builder {
