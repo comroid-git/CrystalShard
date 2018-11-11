@@ -50,8 +50,8 @@ allprojects {
         if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
             destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
-            classifier "sources-${project.name}".toLowerCase()
         }
+        classifier "sources-${project.name}".toLowerCase()
     }
 
     repositories {
