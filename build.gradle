@@ -1,5 +1,6 @@
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 project.version = "0.10.2-SNAPSHOT"
 def mainV = '0.11'
