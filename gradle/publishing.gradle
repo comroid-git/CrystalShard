@@ -82,9 +82,7 @@ publishing {
     }
 }
 
-if (project.hasProperty("signing.keyId")) {
-    apply plugin: 'signing'
-    signing {
-        sign publishing.publications.mavenJava
-    }
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
