@@ -168,6 +168,9 @@ project(":Core-11") {
 
     dependencies {
         implementation project(":Main")
+
+        testImplementation project(":Internal-8")
+        testImplementation project(":ExtensiveUtils")
     }
 }
 

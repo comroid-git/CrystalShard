@@ -19,12 +19,10 @@ gradle-app.setting
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
 
-# Ignore testing Class
-src/test/java/Test.java
+# Local testing environment of Kaleidox
+/Core-11/src/test/
 
 /out/
 CrystalShard.iml
-src/test/java/de/kaleidox/Test.java
 *.jar
 *.class
-Tests/src/test/resources/token.txt
