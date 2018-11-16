@@ -37,8 +37,9 @@ public abstract class InjectorBase {
     @SuppressWarnings("unchecked")
     protected <T> T makeInstance(Class<T> tClass, Object... args) {
         final Class[] triedClass = {null};
+        Constructor<T> tConstructor = null;
         try {
-            Constructor<T> tConstructor = extractConstructor((Constructor<T>[]) implementations.entrySet()
+            tConstructor = extractConstructor((Constructor<T>[]) implementations.entrySet()
                     .stream()
                     .filter(entry -> entry.getKey()
                             .getName()
@@ -50,8 +51,11 @@ public abstract class InjectorBase {
                     .orElseThrow(() -> new IllegalStateException("No override found for class: " + tClass.getName()))
                     .getConstructors(), args);
             return tConstructor.newInstance(args);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("A construction exception occured:", e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("A construction exception occured: " + e.getClass().getSimpleName(), e);
+        } catch (InvocationTargetException e) {
+            assert tConstructor != null;
+            throw new RuntimeException("An exception occured in constructor: "+tConstructor.toGenericString(), e);
         } catch (NoSuchMethodException e) {
             StringBuilder sb = new StringBuilder();
             if (triedClass[0] != null) for (Constructor constr : triedClass[0].getConstructors())
