@@ -33,7 +33,7 @@ publishing {
                 void accept(Object o1, Object o2) {
                     final String name = (String) o1
                     final Project proj = (Project) o2
-                    if (!name.equals("CrystalShard") && !name.equals("Tests")) {
+                    if (!name.equals("CrystalShard")) {
                         gradle.rootProject.publishing.publications.mavenJava.artifact proj.jar
                     }
                 }

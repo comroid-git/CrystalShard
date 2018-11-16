@@ -33,11 +33,6 @@ jar {
     test
 }
 
-
-if (!isTravis()) {
-    apply from: 'gradle/publishing.gradle'
-}
-
 allprojects {
     group 'de.kaleidox'
 
@@ -86,10 +81,10 @@ project(":Main") {
 
     dependencies {
         testImplementation project(':Main')
-        testImplementation project(':Internal-8')
-        testImplementation project(':Core-8')
-        testImplementation project(':Core-11')
-        testImplementation project(':ExtensiveUtils')
+        testRuntimeOnly project(':Internal-8')
+        testRuntimeOnly project(':Core-8')
+        testRuntimeOnly project(':Core-11')
+        testRuntimeOnly project(':ExtensiveUtils')
 
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.reflections:reflections:0.9.11'
@@ -172,6 +167,10 @@ project(":Core-11") {
         testImplementation project(":Internal-8")
         testImplementation project(":ExtensiveUtils")
     }
+}
+
+if (!isTravis()) {
+    apply from: 'gradle/publishing.gradle'
 }
 
 static boolean isTravis() {
