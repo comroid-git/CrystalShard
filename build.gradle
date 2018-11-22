@@ -1,6 +1,4 @@
 apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
 project.version = "0.10.2-SNAPSHOT"
 def mainV = '0.11'
@@ -59,6 +57,7 @@ allprojects {
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
         implementation 'com.vdurmont:emoji-java:4.0.0'
         implementation 'com.github.burdoto:KalUtils:b5ea2a7'
+        compileOnly 'com.intellij:annotations:12.0'
     }
 
     sourceSets {
