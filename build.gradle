@@ -41,7 +41,7 @@ allprojects {
     }
 
     jar {
-        if (!isPublic()) {
+        if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
             destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
         }
@@ -168,11 +168,10 @@ project(":Core-11") {
     }
 }
 
-if (!isPublic()) {
+if (!isTravis()) {
     apply from: 'gradle/publishing.gradle'
 }
 
-static boolean isPublic() {
-    // set this to TRUE when you want to use non-public gradle tasks like publishing
-    return false
+static boolean isTravis() {
+    return System.getenv().containsKey("TRAVIS")
 }
