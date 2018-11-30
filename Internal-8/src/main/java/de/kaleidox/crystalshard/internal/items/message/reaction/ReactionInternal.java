@@ -10,8 +10,8 @@ import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import de.kaleidox.util.helpers.MapHelper;
 import java.util.concurrent.ConcurrentHashMap;
 

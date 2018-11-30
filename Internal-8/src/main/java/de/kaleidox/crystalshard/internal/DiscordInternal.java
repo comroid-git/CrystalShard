@@ -26,11 +26,13 @@ import de.kaleidox.util.objects.markers.IDPair;
 import de.kaleidox.util.tunnel.TunnelFramework;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DiscordInternal implements Discord {
@@ -58,6 +60,7 @@ public class DiscordInternal implements Discord {
     private final TunnelFramework tunnelFramework;
 
     public DiscordInternal(String token, AccountType type, Integer thisShard, Integer ShardCount) {
+        Logger.addBlankedWord(token);
         this.serverCache = CoreInjector.serverCache(this);
         this.userCache = CoreInjector.userCache(this);
         this.roleCache = CoreInjector.roleCache(this);
@@ -72,7 +75,6 @@ public class DiscordInternal implements Discord {
         this.shardCount = ShardCount;
         this.pool = CoreInjector.newInstance(ThreadPool.class, this);
         this.token = token;
-        Logger.addBlankedWord(token);
         this.type = type;
         this.ratelimiter = CoreInjector.newInstance(Ratelimiter.class, this);
         this.webSocket = CoreInjector.newInstance(WebSocketClient.class, this);
@@ -83,26 +85,6 @@ public class DiscordInternal implements Discord {
         logger.info("Waiting for initialization to finish...");
         self = selfFuture.join();
         logger.info("Discord connection for user " + self.getDiscriminatedName() + " is ready!");
-    }
-
-    public DiscordInternal(String token) {
-        this.pool = CoreInjector.newInstance(ThreadPool.class, this, 1, "GetShards Discord Pool");
-        this.token = token;
-        this.type = AccountType.BOT;
-        this.webSocket = null;
-        this.ratelimiter = CoreInjector.newInstance(Ratelimiter.class, this);
-        this.servers = null;
-        this.utils = null;
-        this.thisShard = 0;
-        this.shardCount = 1;
-        this.self = null;
-        this.serverCache = null;
-        this.userCache = null;
-        this.roleCache = null;
-        this.channelCache = null;
-        this.messageCache = null;
-        this.emojiCache = null;
-        this.tunnelFramework = null;
     }
 
     @Override
@@ -276,8 +258,13 @@ public class DiscordInternal implements Discord {
         return selfFuture;
     }
 
-    public void addServer(Server server) {
-        servers.add(server);
+    public synchronized void addServer(Server server) {
+        assureList(servers, ArrayList::new).add(server);
         serversInit.set(5);
+    }
+
+    private static <T, C extends Collection<T>> C assureList(C ptr, Supplier<C> supp) {
+        //noinspection UnusedAssignment -> Because the pointer needs to be filled
+        return ptr == null ? (ptr = supp.get()) : ptr;
     }
 }

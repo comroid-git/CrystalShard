@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.core.cache;
 
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.util.annotations.NotContainNull;
-import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

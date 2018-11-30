@@ -46,7 +46,6 @@ public class Logger {
         boolean invalid = false;
         try {
             File file = new File(configFile);
-            System.out.println(file.getAbsolutePath());
             InputStream resourceStream = ClassLoader.getSystemResourceAsStream(configFile);
 
             if (file.isFile() || resourceStream != null) {
@@ -55,6 +54,7 @@ public class Logger {
                 else stream = resourceStream;
                 int r;
                 StringBuilder sb = new StringBuilder();
+                assert stream != null;
                 while ((r = stream.read()) != -1) sb.append((char) r);
                 config = new ObjectMapper().readTree(sb.toString());
             }

@@ -38,13 +38,17 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
     private final AtomicReference<Message> sentMessage;
     private int page;
 
-    public PagedEmbed(Discord discord) {
+    private PagedEmbed(Discord discord) {
         super();
         this.discord = discord;
         ignoreFieldCount = true;
         page = 0;
         pages = new Hashtable<>();
         sentMessage = new AtomicReference<>();
+    }
+
+    public static Embed.Builder builder(Discord discord) {
+        return new PagedEmbed(discord);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
         return this;
     }
 
-    public void tunnelHandler(Message message) {
+    private void tunnelHandler(Message message) {
         sentMessage.set(message);
         message.addReaction(PREV_PAGE_EMOJI, NEXT_PAGE_EMOJI, DELETE_EMOJI);
         message.attachListener((ReactionAddListener) PagedEmbed.this::onReactionClick);
@@ -93,7 +97,7 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
                         KEEPALIVE_TIME, KEEPALIVE_UNIT);
     }
 
-    public void onReactionClick(ReactionEvent event) {
+    private void onReactionClick(ReactionEvent event) {
         if (!event.getUser().isYourself()) {
             switch (event.getEmoji().toDiscordPrintable()) {
                 case PREV_PAGE_EMOJI:

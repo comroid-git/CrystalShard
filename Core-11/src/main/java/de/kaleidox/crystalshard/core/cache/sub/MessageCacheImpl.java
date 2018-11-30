@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.util.annotations.NotNull;
+import org.jetbrains.annotations.NotNull;
 import de.kaleidox.util.objects.markers.IDPair;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;

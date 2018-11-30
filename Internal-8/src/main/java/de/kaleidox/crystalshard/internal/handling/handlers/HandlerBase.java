@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.util.annotations.MayContainNull;
-import de.kaleidox.util.annotations.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

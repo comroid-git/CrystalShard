@@ -26,3 +26,6 @@ gradle-app.setting
 CrystalShard.iml
 *.jar
 *.class
+
+*.cred
+*.asc

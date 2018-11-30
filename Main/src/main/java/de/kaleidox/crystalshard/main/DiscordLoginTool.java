@@ -2,7 +2,9 @@ package de.kaleidox.crystalshard.main;
 
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
 import java.util.Objects;
@@ -63,13 +65,14 @@ public class DiscordLoginTool {
     public DiscordLoginTool setRecommendedShardCount() {
         Objects.requireNonNull(token, "Token must be set first!");
         Discord login = InternalInjector.newInstance(Discord.class, token);
-        return CoreInjector.webRequest(DiscordLoginTool.class, login)
+        //noinspection unchecked
+        ((WebRequest<DiscordLoginTool>) CoreInjector.newInstance(WebRequest.class))
+                .addHeader("Authentication", type.getPrefix() + token)
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.GATEWAY_BOT.createUri())
-                .executeAs(node -> setShardCount(
-                        node.path("shards")
-                                .asInt(1)))
+                .executeAs(node -> setShardCount(node.path("shards").asInt(1)))
                 .join();
+        return this;
     }
 
     public DiscordLoginTool setShardCount(int count) {

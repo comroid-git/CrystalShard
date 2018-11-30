@@ -11,7 +11,7 @@ import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.annotations.NotNull;
+import org.jetbrains.annotations.NotNull;
 import de.kaleidox.util.objects.markers.IDPair;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;

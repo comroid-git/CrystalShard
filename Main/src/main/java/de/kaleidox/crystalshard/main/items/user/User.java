@@ -15,7 +15,7 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-import de.kaleidox.util.annotations.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;

@@ -59,4 +59,9 @@ public enum Permission {
     public int toggle(int toggleIn) {
         return apply(toggleIn, partOf(toggleIn));
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s[%s]", name(), Integer.toHexString(value));
+    }
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
 
-public class DiscordUtilsImpl {
+public class DiscordUtilsImpl implements DiscordUtils {
     private final static Logger logger = new Logger(DiscordUtilsImpl.class);
     private final static JsonNode configuration;
     private final static String configFile = "/discordutils_settings.json";
@@ -36,12 +36,8 @@ public class DiscordUtilsImpl {
         this.discord = discord;
 
         commandFramework = new CommandFrameworkImpl(discord,
-                configuration.path("commands")
-                        .path("prefix")
-                        .asText("!"),
-                configuration.path("commands")
-                        .path("enable_default_help")
-                        .asBoolean(true));
+                configuration.path("commands").path("prefix").asText("!"),
+                configuration.path("commands").path("enable_default_help").asBoolean(true));
 
         defaultEmbed = new DefaultEmbedImpl(discord, configuration.has("default_embd") ? configuration.path("default_embed") : JsonHelper.nodeOf(null));
     }
