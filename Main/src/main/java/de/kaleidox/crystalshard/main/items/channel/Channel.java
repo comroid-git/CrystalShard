@@ -11,6 +11,7 @@ import de.kaleidox.crystalshard.main.items.DiscordItem;
 import de.kaleidox.crystalshard.main.items.permission.PermissionApplyable;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 

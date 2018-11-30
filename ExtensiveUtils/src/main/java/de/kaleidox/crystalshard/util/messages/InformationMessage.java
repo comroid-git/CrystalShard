@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.util.helpers.ListHelper;
+
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;

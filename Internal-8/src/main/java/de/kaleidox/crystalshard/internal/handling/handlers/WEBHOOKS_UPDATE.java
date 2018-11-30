@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.other.ServerWebhookUpdateEventInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.other.ServerWebhookUpdateListener;

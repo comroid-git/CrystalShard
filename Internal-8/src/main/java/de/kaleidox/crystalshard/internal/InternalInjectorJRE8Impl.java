@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
@@ -8,8 +9,8 @@ import de.kaleidox.crystalshard.internal.items.channel.GroupChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.PrivateTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerTextChannelInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ServerVoiceChannelInternal;
-import de.kaleidox.crystalshard.internal.items.message.MessageModifier;
 import de.kaleidox.crystalshard.internal.items.message.MessageInternal;
+import de.kaleidox.crystalshard.internal.items.message.MessageModifier;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
@@ -37,6 +38,7 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.Hashtable;
 
 public class InternalInjectorJRE8Impl extends InternalInjector {

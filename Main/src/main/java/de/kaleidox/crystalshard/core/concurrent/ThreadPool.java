@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.core.concurrent;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.util.objects.CompletableFutureExtended;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;

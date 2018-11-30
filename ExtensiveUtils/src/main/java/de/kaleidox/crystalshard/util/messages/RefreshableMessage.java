@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,17 +55,6 @@ public class RefreshableMessage {
         }
     }
 
-    public static RefreshableMessage get(MessageReciever forParent, Supplier<EmbedDraft> defaultRefresher) {
-        if (selfMap.containsKey(forParent)) {
-            RefreshableMessage val = selfMap.get(forParent);
-            val.resend();
-
-            return val;
-        } else {
-            return selfMap.put(forParent, new RefreshableMessage(forParent, defaultRefresher));
-        }
-    }
-
     public void resend() {
         CompletableFuture<Message> sent = null;
 
@@ -80,6 +70,17 @@ public class RefreshableMessage {
                 msg.attachListener((ReactionRemoveListener) this::onRefresh);
                 msg.addReaction(REFRESH_EMOJI);
             });
+        }
+    }
+
+    public static RefreshableMessage get(MessageReciever forParent, Supplier<EmbedDraft> defaultRefresher) {
+        if (selfMap.containsKey(forParent)) {
+            RefreshableMessage val = selfMap.get(forParent);
+            val.resend();
+
+            return val;
+        } else {
+            return selfMap.put(forParent, new RefreshableMessage(forParent, defaultRefresher));
         }
     }
 

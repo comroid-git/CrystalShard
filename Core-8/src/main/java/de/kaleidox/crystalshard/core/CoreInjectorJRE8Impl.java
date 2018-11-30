@@ -19,6 +19,7 @@ import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.main.Discord;
+
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.NoSuchElementException;

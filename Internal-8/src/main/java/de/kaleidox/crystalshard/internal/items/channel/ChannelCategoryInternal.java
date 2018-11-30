@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
@@ -14,6 +15,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.OptionalHelper;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

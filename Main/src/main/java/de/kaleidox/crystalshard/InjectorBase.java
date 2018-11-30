@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard;
 
 import de.kaleidox.crystalshard.logging.Logger;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public abstract class InjectorBase {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("A construction exception occured: " + e.getClass().getSimpleName(), e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException("An exception occured in constructor: "+constr.toGenericString(), e);
+            throw new RuntimeException("An exception occured in constructor: " + constr.toGenericString(), e);
         }
     }
 

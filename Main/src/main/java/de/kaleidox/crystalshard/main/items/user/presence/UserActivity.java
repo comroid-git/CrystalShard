@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.main.items.user.presence;
 
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.util.objects.markers.BiTimestamp;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.stream.Stream;

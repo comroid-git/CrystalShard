@@ -31,6 +31,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.objects.markers.IDPair;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -362,6 +363,13 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
         return CompletableFuture.allOf(cfs);
     }
 
+    /**
+     * Gets the TextChannel that the message has been sent in.
+     *
+     * @return The text channel of the message.
+     */
+    TextChannel getChannel();
+
     static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalThreadException {
         Discord discord = ThreadPool.getThreadDiscord();
         return InternalInjector.newInstance(BulkDelete.class, discord)
@@ -377,13 +385,6 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
                 .addMessages(messages)
                 .deleteAll();
     }
-
-    /**
-     * Gets the TextChannel that the message has been sent in.
-     *
-     * @return The text channel of the message.
-     */
-    TextChannel getChannel();
 
     static Builder builder() {
         return InternalInjector.newInstance(Builder.class);

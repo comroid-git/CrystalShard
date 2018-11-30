@@ -24,9 +24,9 @@ import de.kaleidox.util.objects.functional.Evaluation;
 import de.kaleidox.util.objects.functional.LivingInt;
 import de.kaleidox.util.objects.markers.IDPair;
 import de.kaleidox.util.tunnel.TunnelFramework;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -54,10 +54,10 @@ public class DiscordInternal implements Discord {
     private final Cache<Channel, Long, Long> channelCache;
     private final Cache<Message, Long, IDPair> messageCache;
     private final Cache<CustomEmoji, Long, IDPair> emojiCache;
+    private final TunnelFramework tunnelFramework;
     private CompletableFuture<Self> selfFuture;
     private boolean init = false;
     private LivingInt serversInit;
-    private final TunnelFramework tunnelFramework;
 
     public DiscordInternal(String token, AccountType type, Integer thisShard, Integer ShardCount) {
         Logger.addBlankedWord(token);
@@ -213,13 +213,13 @@ public class DiscordInternal implements Discord {
     }
 
     @Override
-    public long getId() {
-        return 0;
+    public Discord getDiscord() {
+        return this;
     }
 
     @Override
-    public Discord getDiscord() {
-        return this;
+    public long getId() {
+        return 0;
     }
 
     @Override
@@ -235,14 +235,14 @@ public class DiscordInternal implements Discord {
                 .equals(listener)));
     }
 
+    public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers() {
+        return listenerManangers;
+    }
+
     public Collection<DiscordAttachableListener> getAttachedListeners() {
         return listenerManangers.stream()
                 .map(ListenerManager::getListener)
                 .collect(Collectors.toList());
-    }
-
-    public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers() {
-        return listenerManangers;
     }
 
     @Override

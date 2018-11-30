@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.core.net.socket;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;

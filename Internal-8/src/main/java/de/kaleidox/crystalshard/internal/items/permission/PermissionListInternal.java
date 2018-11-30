@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;

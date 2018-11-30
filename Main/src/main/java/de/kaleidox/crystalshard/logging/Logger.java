@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.util.helpers.ListHelper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.nodeOf;
 
 /**
  * This class represents a Logging framework.

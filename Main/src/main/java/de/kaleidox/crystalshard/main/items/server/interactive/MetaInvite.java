@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.main.items.server.interactive;
 
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.time.Instant;
 import java.util.OptionalInt;
 

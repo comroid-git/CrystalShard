@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.main.items.message.embed;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.items.Nameable;
 import de.kaleidox.crystalshard.main.util.FileContainer;
+
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;

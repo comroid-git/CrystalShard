@@ -19,6 +19,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DefaultEmbed;
 import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.helpers.FutureHelper;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,7 @@ import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 public interface MessageReciever extends DiscordItem {
     /**
      * Sends a plain text message to this object.
-     *
+     * <p>
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you do not have the permission to message this person or channel.
      *
@@ -56,7 +57,7 @@ public interface MessageReciever extends DiscordItem {
 
     /**
      * Sends an embed message to this object.
-     *
+     * <p>
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you do not have the permission to message this person or channel.
      *
@@ -73,7 +74,7 @@ public interface MessageReciever extends DiscordItem {
 
     /**
      * Sends an embed message to this object.
-     *
+     * <p>
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you do not have the permission to message this person or channel.
      *
@@ -92,13 +93,13 @@ public interface MessageReciever extends DiscordItem {
      * Sends an embed message to this object.
      * The embed is defined by the {@link DefaultEmbed},
      * and will be modified using the provided modifier.
-     *
+     * <p>
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you do not have the permission to message this person or channel.
      *
      * @param defaultEmbedModifier The content of the message.
      * @return A future to contain the sent message.
-     * @throws AbstractMethodError If this object is an instance of {@link Self}.
+     * @throws AbstractMethodError    If this object is an instance of {@link Self}.
      * @throws IllegalThreadException See {@link ThreadPool#getThreadDiscord()}.
      */
     default CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier)
@@ -123,7 +124,7 @@ public interface MessageReciever extends DiscordItem {
 
     /**
      * Gets a collection of messages from this reciever.
-     *
+     * <p>
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you don't have the permission {@link Permission#READ_MESSAGES}.
      * The returned future's collection will be empty if you don't
@@ -131,7 +132,7 @@ public interface MessageReciever extends DiscordItem {
      *
      * @param limit How many messages to get. See {@link Range}.
      * @return A future that completes with a collection of messages
-     * @throws AbstractMethodError If this object is an instance of {@link Self}.
+     * @throws AbstractMethodError      If this object is an instance of {@link Self}.
      * @throws IllegalArgumentException If the parameter {@code limit} is not within its annotated boundaries.
      */
     default CompletableFuture<Collection<Message>> getMessages(@Range(min = 1, max = 100) int limit)
@@ -162,7 +163,7 @@ public interface MessageReciever extends DiscordItem {
 
     /**
      * Gets a collection of 50 messages from this reciever.
-     *
+     * <p>
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you don't have the permission {@link Permission#READ_MESSAGES}.
      * The returned future's collection will be empty if you don't

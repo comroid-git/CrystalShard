@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.internal.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vdurmont.emoji.EmojiParser;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;

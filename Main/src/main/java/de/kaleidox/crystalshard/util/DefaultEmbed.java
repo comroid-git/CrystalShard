@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.util;
 
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 

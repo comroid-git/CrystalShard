@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
+import javax.naming.LimitExceededException;
+
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
@@ -8,6 +10,7 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.MapHelper;
 import de.kaleidox.util.helpers.QueueHelper;
 import de.kaleidox.util.objects.functional.LivingInt;
+
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +18,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.naming.LimitExceededException;
 
 class BucketManager {
     private final static Logger logger = new Logger(BucketManager.class);

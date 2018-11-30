@@ -7,6 +7,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.util.InfoReaction;
 import de.kaleidox.util.helpers.StringHelper;
+
 import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;

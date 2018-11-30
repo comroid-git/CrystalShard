@@ -1,18 +1,20 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
+import okhttp3.Headers;
+
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
+
 import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import okhttp3.Headers;
 
 public class RatelimiterImpl implements Ratelimiter {
     private final static Logger logger = new Logger(RatelimiterImpl.class);

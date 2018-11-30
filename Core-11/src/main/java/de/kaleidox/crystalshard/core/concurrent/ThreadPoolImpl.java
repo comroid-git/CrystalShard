@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.core.concurrent;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

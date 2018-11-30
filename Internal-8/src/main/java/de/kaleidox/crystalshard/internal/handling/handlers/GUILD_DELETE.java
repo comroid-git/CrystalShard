@@ -1,10 +1,12 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.generic.ServerDeleteEventInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.generic.ServerDeleteListener;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.util.concurrent.TimeUnit;
 
 public class GUILD_DELETE extends HandlerBase {

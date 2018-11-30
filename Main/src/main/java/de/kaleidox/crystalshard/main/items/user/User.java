@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.main.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.Nullable;
+
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.main.Discord;
@@ -15,7 +17,7 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-import org.jetbrains.annotations.Nullable;
+
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;

@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -43,6 +44,7 @@ import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -57,7 +59,26 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.*;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.AFK_CHANNEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.AFK_TIMEOUT;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.AVAILABILITY;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.DEFAULT_MESSAGE_NOTIFICATION_LEVEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.EMBED_CHANNEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.EMBED_ENABLED;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.EXPLICIT_CONTENT_FILTER_LEVEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.ICON;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.LARGE;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.MEMBER_COUNT;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.MFA_LEVEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.NAME;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.OWNER;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.OWN_PERMISSIONS;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.REGION;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.SPLASH;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.SYSTEM_CHANNEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.VERIFICATION_LEVEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.WIDGET_CHANNEL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.WIDGET_ENABLED;
 
 public class ServerInternal implements Server {
     private final static ConcurrentHashMap<Long, ServerInternal> instances = new ConcurrentHashMap<>();

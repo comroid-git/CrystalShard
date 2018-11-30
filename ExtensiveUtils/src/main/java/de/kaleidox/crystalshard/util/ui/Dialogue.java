@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.util.ui;
 
 import de.kaleidox.crystalshard.util.ui.response.ResponseElement;
 import de.kaleidox.util.objects.markers.NamedItem;
+
 import java.util.List;
 import java.util.function.Supplier;
 

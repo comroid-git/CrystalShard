@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -13,10 +14,11 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public class SelfInternal extends UserInternal implements Self {
     private final static Logger logger = new Logger(SelfInternal.class);

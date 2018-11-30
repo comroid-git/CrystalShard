@@ -10,6 +10,7 @@ import de.kaleidox.crystalshard.main.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
 import com.vdurmont.emoji.EmojiParser;
+
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 

@@ -1,5 +1,9 @@
 package de.kaleidox.crystalshard.util.command;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.util.ConfigurationBuilder;
+
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
@@ -18,7 +22,7 @@ import de.kaleidox.crystalshard.util.embeds.PagedEmbed;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.SetHelper;
 import de.kaleidox.util.objects.functional.Switch;
-import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -33,9 +37,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.util.ConfigurationBuilder;
 
 /**
  * This class represents the CommandFramework. Commands can be created using the {@link Command} annotation.
@@ -166,6 +167,34 @@ public class CommandFrameworkImpl implements CommandFramework {
                 .orElse(false);
     }
 
+    /**
+     * Registers a {@link Command} annotated method as a command.
+     *
+     * @param commandMethod The method to register.
+     * @throws IllegalArgumentException  If a duplicate alias was found.
+     * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
+     * @throws IllegalStateException     The Command-Method is not {@link Modifier#STATIC}.
+     */
+    @Override
+    public void registerCommands(Method commandMethod) throws IllegalArgumentException, IllegalStateException {
+        registerCommandMethod(commandMethod);
+    }
+
+    /**
+     * Tries to unregister a {@link Command} annotated method.
+     *
+     * @param commandMethod The method to unregister.
+     * @return Whether the command could be unregistered.
+     */
+    @Override
+    public boolean unregisterCommand(Method commandMethod) {
+        return commands.stream()
+                .filter(instance -> instance.method == commandMethod)
+                .findAny()
+                .map(commands::remove)
+                .orElse(false);
+    }
+
     private void handle(MessageCreateEvent event) {
         if (enabled.get()) {
             if (!ignored.contains(event.getChannel()
@@ -268,19 +297,6 @@ public class CommandFrameworkImpl implements CommandFramework {
         return false;
     }
 
-    /**
-     * Registers a {@link Command} annotated method as a command.
-     *
-     * @param commandMethod The method to register.
-     * @throws IllegalArgumentException  If a duplicate alias was found.
-     * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
-     * @throws IllegalStateException     The Command-Method is not {@link Modifier#STATIC}.
-     */
-    @Override
-    public void registerCommands(Method commandMethod) throws IllegalArgumentException, IllegalStateException {
-        registerCommandMethod(commandMethod);
-    }
-
     private void registerCommandMethod(Method method) throws IllegalArgumentException, IllegalStateException {
         if (!method.isAnnotationPresent(Command.class)) throw new IllegalArgumentException(
                 "Method " + method.toGenericString() + " does not have annotation " + Command.class + ".");
@@ -303,21 +319,6 @@ public class CommandFrameworkImpl implements CommandFramework {
                 .flatMap(cmd -> Stream.of(cmd.annotation.aliases()))
                 .anyMatch(alias -> ListHelper.of(aliases)
                         .contains(alias));
-    }
-
-    /**
-     * Tries to unregister a {@link Command} annotated method.
-     *
-     * @param commandMethod The method to unregister.
-     * @return Whether the command could be unregistered.
-     */
-    @Override
-    public boolean unregisterCommand(Method commandMethod) {
-        return commands.stream()
-                .filter(instance -> instance.method == commandMethod)
-                .findAny()
-                .map(commands::remove)
-                .orElse(false);
     }
 
     /**

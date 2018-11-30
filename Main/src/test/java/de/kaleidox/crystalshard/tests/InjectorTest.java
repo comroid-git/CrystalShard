@@ -1,14 +1,16 @@
 package de.kaleidox.crystalshard.tests;
 
+import org.junit.Test;
+import org.reflections.Reflections;
+
 import de.kaleidox.crystalshard.InjectorBase;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.util.UtilInjector;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Hashtable;
-import org.junit.Test;
-import org.reflections.Reflections;
 
 public class InjectorTest {
     Logger logger;

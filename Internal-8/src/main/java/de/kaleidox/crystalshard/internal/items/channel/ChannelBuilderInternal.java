@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -19,12 +20,13 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.util.helpers.FutureHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public class ChannelBuilderInternal {
     public static class ChannelInviteBuilder implements ServerChannel.InviteBuilder {

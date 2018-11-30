@@ -1,11 +1,13 @@
 package de.kaleidox.crystalshard.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.util.command.CommandFramework;
 import de.kaleidox.crystalshard.util.command.CommandFrameworkImpl;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;

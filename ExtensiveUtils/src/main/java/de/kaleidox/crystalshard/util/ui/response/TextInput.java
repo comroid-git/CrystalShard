@@ -8,6 +8,7 @@ import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueEndpoint;
 import de.kaleidox.util.objects.markers.NamedItem;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;

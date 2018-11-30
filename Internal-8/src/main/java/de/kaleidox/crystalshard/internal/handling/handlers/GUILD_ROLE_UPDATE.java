@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.role.RoleEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
@@ -8,6 +9,7 @@ import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleEditListener;
 import de.kaleidox.crystalshard.main.items.role.Role;
+
 import java.util.HashSet;
 import java.util.Set;
 

@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -22,6 +23,7 @@ import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.OptionalHelper;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,7 +33,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.*;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.BITRATE;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.NAME;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.PERMISSION_OVERWRITES;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.USER_LIMIT;
 
 public class ServerVoiceChannelInternal extends VoiceChannelInternal implements ServerVoiceChannel {
     final static ConcurrentHashMap<Long, ServerVoiceChannel> instances = new ConcurrentHashMap<>();

@@ -9,6 +9,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.objects.CompletableFutureExtended;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;

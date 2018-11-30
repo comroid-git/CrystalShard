@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -17,6 +18,7 @@ import de.kaleidox.crystalshard.main.items.channel.ChannelType;
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.objects.functional.Evaluation;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

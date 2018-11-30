@@ -1,18 +1,20 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
-import de.kaleidox.util.helpers.JsonHelper;
-import de.kaleidox.util.objects.CompletableFutureExtended;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
+import de.kaleidox.util.helpers.JsonHelper;
+import de.kaleidox.util.objects.CompletableFutureExtended;
+
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
     private final Discord discord;

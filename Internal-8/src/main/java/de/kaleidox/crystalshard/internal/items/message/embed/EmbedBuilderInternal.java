@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
+
 import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,8 +31,8 @@ public class EmbedBuilderInternal implements Embed.Builder {
     protected EmbedDraft.Thumbnail thumbnail;
     protected EmbedDraft.Author author;
     protected ArrayList<EmbedDraft.Field> fields = new ArrayList<>();
-    private int charCounter = 0;
     protected boolean ignoreFieldCount = false;
+    private int charCounter = 0;
 
     // Override Methods
     @Override

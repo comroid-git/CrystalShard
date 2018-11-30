@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.core.cache.sub;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.NotNull;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.CacheImpl;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
@@ -15,12 +17,12 @@ import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
-import org.jetbrains.annotations.NotNull;
+
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import static de.kaleidox.crystalshard.core.net.request.HttpMethod.*;
+import static de.kaleidox.crystalshard.core.net.request.HttpMethod.GET;
 
 public class ChannelCacheImpl extends CacheImpl<Channel, Long, Long> {
     private final Discord discordInternal;

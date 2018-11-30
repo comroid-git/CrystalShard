@@ -4,9 +4,9 @@ import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.items.user.AccountType;
+
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 

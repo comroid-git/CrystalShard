@@ -15,6 +15,7 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.objects.markers.IDPair;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -59,41 +60,45 @@ public abstract class CoreInjector extends InjectorBase {
         super(implementations, mustOverride);
     }
 
+    protected abstract Cache<Channel, Long, Long> makeChannelCache(Discord discord);
+
+    protected abstract Cache<CustomEmoji, Long, IDPair> makeEmojiCache(Discord discord);
+
+    protected abstract Cache<Message, Long, IDPair> makeMessageCache(Discord discord);
+
+    protected abstract Cache<Role, Long, IDPair> makeRoleCache(Discord discord);
+
+    protected abstract Cache<Server, Long, Long> makeServerCache(Discord discord);
+
+    protected abstract Cache<User, Long, Long> makeUserCache(Discord discord);
+
+    protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceinjector(Class<T> typeClass, I ident);
+
+    protected abstract <T> WebRequest<T> makeWebRequest(Discord discord);
+
     public static Cache<Channel, Long, Long> channelCache(Discord discord) {
         return injector.makeChannelCache(discord);
     }
-
-    protected abstract Cache<Channel, Long, Long> makeChannelCache(Discord discord);
 
     public static Cache<CustomEmoji, Long, IDPair> emojiCache(Discord discord) {
         return injector.makeEmojiCache(discord);
     }
 
-    protected abstract Cache<CustomEmoji, Long, IDPair> makeEmojiCache(Discord discord);
-
     public static Cache<Message, Long, IDPair> messageCache(Discord discord) {
         return injector.makeMessageCache(discord);
     }
-
-    protected abstract Cache<Message, Long, IDPair> makeMessageCache(Discord discord);
 
     public static Cache<Role, Long, IDPair> roleCache(Discord discord) {
         return injector.makeRoleCache(discord);
     }
 
-    protected abstract Cache<Role, Long, IDPair> makeRoleCache(Discord discord);
-
     public static Cache<Server, Long, Long> serverCache(Discord discord) {
         return injector.makeServerCache(discord);
     }
 
-    protected abstract Cache<Server, Long, Long> makeServerCache(Discord discord);
-
     public static Cache<User, Long, Long> userCache(Discord discord) {
         return injector.makeUserCache(discord);
     }
-
-    protected abstract Cache<User, Long, Long> makeUserCache(Discord discord);
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
         return injector.makeInstance(tClass, args);
@@ -114,8 +119,6 @@ public abstract class CoreInjector extends InjectorBase {
         return injector.getCacheInstanceinjector(typeClass, ident);
     }
 
-    protected abstract <I, T extends Cacheable> Cache<T, I, ?> getCacheInstanceinjector(Class<T> typeClass, I ident);
-
     public static <T> WebRequest<T> webRequest(Class<T> tClass, Discord discord) {
         WebRequest<T> request = webRequest(discord);
         return request;
@@ -124,6 +127,4 @@ public abstract class CoreInjector extends InjectorBase {
     public static <T> WebRequest<T> webRequest(Discord discord) {
         return injector.makeWebRequest(discord);
     }
-
-    protected abstract <T> WebRequest<T> makeWebRequest(Discord discord);
 }

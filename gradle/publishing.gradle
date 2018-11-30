@@ -3,7 +3,7 @@ apply plugin: 'signing'
 
 publishing {
     boolean snapshotPublication = rootProject.version.endsWith("SNAPSHOT")
-    
+
     repositories {
         maven {
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
@@ -16,9 +16,9 @@ publishing {
                 def passwd = ""
                 int r
                 def stream = new FileInputStream(fileOrTempFile(".credentials/sonatype-username.cred"))
-                while ((r = stream.read()) != -1) uName = (uName + (char)r)
+                while ((r = stream.read()) != -1) uName = (uName + (char) r)
                 stream = new FileInputStream(fileOrTempFile(".credentials/sonatype-password.cred"))
-                while ((r = stream.read()) != -1) passwd = (passwd + (char)r)
+                while ((r = stream.read()) != -1) passwd = (passwd + (char) r)
 
                 username uName
                 password passwd
@@ -93,7 +93,7 @@ publishing {
             version = vString(versionNo.core11, snapshotPublication)
             pom pomClosure
         }
-        
+
         mainPub(MavenPublication) {
             artifactId = 'crystalshard'
             version = rootProject.version
@@ -190,6 +190,6 @@ static String vString(Object vStringObj, boolean snapshot) {
     String vString = vStringObj.toString()
     if (vString.endsWith("-SNAPSHOT") && snapshot) return vString
     else if (!vString.endsWith("-SNAPSHOT") && snapshot) return "${vString}-SNAPSHOT"
-    else if (vString.endsWith("-SNAPSHOT") && !snapshot) return vString.substring(0, vString.indexOf("-SNAPSHOT")-1)
+    else if (vString.endsWith("-SNAPSHOT") && !snapshot) return vString.substring(0, vString.indexOf("-SNAPSHOT") - 1)
     else return vString
 }
