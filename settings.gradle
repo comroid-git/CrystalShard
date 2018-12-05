@@ -1,8 +1,8 @@
 rootProject.name = 'CrystalShard'
 
-include ':Main'
-include ':Internal-8'
+include ':API'
+include ':Implementation-8'
 include ':Core-8'
 include ':Core-11'
 
-include ':ExtensiveUtils'
+include ':ExtensiveUtilities'

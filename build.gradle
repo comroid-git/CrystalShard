@@ -88,18 +88,18 @@ allprojects {
     }
 }
 
-project(":Main") {
+project(":API") {
     version = versionNo.main ?: project.version
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
-        testImplementation project(':Main')
-        testRuntimeOnly project(':Internal-8')
+        testImplementation project(':API')
+        testRuntimeOnly project(':Implementation-8')
         testRuntimeOnly project(':Core-8')
         testRuntimeOnly project(':Core-11')
-        testRuntimeOnly project(':ExtensiveUtils')
+        testRuntimeOnly project(':ExtensiveUtilities')
 
         testImplementation "junit:junit:${depVersion.jUnit}"
         testImplementation "org.reflections:reflections:${depVersion.reflections}"
@@ -121,21 +121,21 @@ project(":Main") {
     }
 }
 
-project(":ExtensiveUtils") {
+project(":ExtensiveUtilities") {
     version = versionNo.extUtil ?: project.version
 
     sourceCompatibility = 9
     targetCompatibility = 9
 
     dependencies {
-        implementation project(':Main')
-        implementation project(':Internal-8')
+        implementation project(':API')
+        implementation project(':Implementation-8')
         
         implementation "org.reflections:reflections:${depVersion.reflections}"
     }
 }
 
-project(":Internal-8") {
+project(":Implementation-8") {
     version = versionNo.impl8 ?: project.version
 
     sourceCompatibility = 1.8
@@ -145,7 +145,7 @@ project(":Internal-8") {
         //implementation "com.github.CrystalShardDiscord:emoji-java:${depVersion.emojiJava}"
         implementation "com.vdurmont:emoji-java:${depVersion.emojiJava}"
 
-        implementation project(":Main")
+        implementation project(":API")
     }
 }
 
@@ -156,7 +156,7 @@ project(":Core-8") {
     targetCompatibility = 1.8
 
     dependencies {
-        implementation project(":Main")
+        implementation project(":API")
         implementation "com.squareup.okhttp3:okhttp:${depVersion.okHttp}"
     }
 }
@@ -168,10 +168,10 @@ project(":Core-11") {
     targetCompatibility = 11
 
     dependencies {
-        implementation project(":Main")
+        implementation project(":API")
 
-        testImplementation project(":Internal-8")
-        testImplementation project(":ExtensiveUtils")
+        testImplementation project(":Implementation-8")
+        testImplementation project(":ExtensiveUtilities")
     }
 }
 

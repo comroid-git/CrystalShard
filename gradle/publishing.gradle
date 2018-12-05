@@ -69,14 +69,14 @@ publishing {
 
         util(MavenPublication) {
             artifactId = 'crystalshard-utils'
-            artifact rootProject.findProject("ExtensiveUtils").jar
+            artifact rootProject.findProject("ExtensiveUtilities").jar
             version = vString(versionNo.extUtil, snapshotPublication)
             pom pomClosure
         }
 
         implIIX(MavenPublication) {
             artifactId = 'crystalshard-impl'
-            artifact rootProject.findProject("Internal-8").jar
+            artifact rootProject.findProject("Implementation-8").jar
             version = vString(versionNo.impl8, snapshotPublication)
             pom pomClosure
         }
@@ -111,7 +111,7 @@ publishing {
                     def impl = deps.appendNode("dependency")
                     impl.appendNode("groupId", "de.kaleidox")
                     impl.appendNode("artifactId", "crystalshard-impl")
-                    impl.appendNode("version", rootProject.findProject("Internal-8").version)
+                    impl.appendNode("version", rootProject.findProject("Implementation-8").version)
 
                     def core = deps.appendNode("dependency")
                     core.appendNode("groupId", "de.kaleidox")
@@ -137,7 +137,7 @@ publishing {
                     def impl = deps.appendNode("dependency")
                     impl.appendNode("groupId", "de.kaleidox")
                     impl.appendNode("artifactId", "crystalshard-impl")
-                    impl.appendNode("version", rootProject.findProject("Internal-8").version)
+                    impl.appendNode("version", rootProject.findProject("Implementation-8").version)
 
                     def core = deps.appendNode("dependency")
                     core.appendNode("groupId", "de.kaleidox")
@@ -163,7 +163,7 @@ publishing {
                     def impl = deps.appendNode("dependency")
                     impl.appendNode("groupId", "de.kaleidox")
                     impl.appendNode("artifactId", "crystalshard-impl")
-                    impl.appendNode("version", rootProject.findProject("Internal-8").version)
+                    impl.appendNode("version", rootProject.findProject("Implementation-8").version)
 
                     def core = deps.appendNode("dependency")
                     core.appendNode("groupId", "de.kaleidox")
