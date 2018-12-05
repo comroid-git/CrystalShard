@@ -13,12 +13,3 @@
 [submodule "ExtensiveUtilities"]
 	path = ExtensiveUtilities
 	url = https://github.com/CrystalShardDiscord/ExtensiveUtilities
-[submodule "API-7"]
-	path = API-7
-	url = https://github.com/CrystalShardDiscord/API-7
-[submodule "Core-7"]
-	path = Core-7
-	url = https://github.com/CrystalShardDiscord/Core-7
-[submodule "Implementation-7"]
-	path = Implementation-7
-	url = https://github.com/CrystalShardDiscord/Implementation-7
