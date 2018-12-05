@@ -1,6 +1,15 @@
-[submodule "API"]
-	path = API
-	url = https://github.com/CrystalShardDiscord/API
+[submodule "API-7"]
+	path = API-7
+	url = https://github.com/CrystalShardDiscord/API-7
+[submodule "Implementation-7"]
+	path = Implementation-7
+	url = https://github.com/CrystalShardDiscord/Implementation-7
+[submodule "Core-7"]
+	path = Core-7
+	url = https://github.com/CrystalShardDiscord/Core-7
+[submodule "API-8"]
+	path = API-8
+	url = https://github.com/CrystalShardDiscord/API-8
 [submodule "Implementation-8"]
 	path = Implementation-8
 	url = https://github.com/CrystalShardDiscord/Implementation-8
@@ -13,12 +22,3 @@
 [submodule "ExtensiveUtilities"]
 	path = ExtensiveUtilities
 	url = https://github.com/CrystalShardDiscord/ExtensiveUtilities
-[submodule "Core-7"]
-	path = Core-7
-	url = https://github.com/CrystalShardDiscord/Core-7
-[submodule "Implementation-7"]
-	path = Implementation-7
-	url = https://github.com/CrystalShardDiscord/Implementation-7
-[submodule "API-7"]
-	path = API-7
-	url = https://github.com/CrystalShardDiscord/API-7

@@ -88,14 +88,14 @@ allprojects {
     }
 }
 
-project(":API") {
+project(":API-8") {
     version = versionNo.main ?: project.version
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
-        testImplementation project(':API')
+        testImplementation project(':API-8')
         testRuntimeOnly project(':Implementation-8')
         testRuntimeOnly project(':Core-8')
         testRuntimeOnly project(':Core-11')
@@ -128,7 +128,7 @@ project(":ExtensiveUtilities") {
     targetCompatibility = 9
 
     dependencies {
-        implementation project(':API')
+        implementation project(':API-8')
         implementation project(':Implementation-8')
         
         implementation "org.reflections:reflections:${depVersion.reflections}"
@@ -145,7 +145,7 @@ project(":Implementation-8") {
         //implementation "com.github.CrystalShardDiscord:emoji-java:${depVersion.emojiJava}"
         implementation "com.vdurmont:emoji-java:${depVersion.emojiJava}"
 
-        implementation project(":API")
+        implementation project(":API-8")
     }
 }
 
@@ -156,7 +156,7 @@ project(":Core-8") {
     targetCompatibility = 1.8
 
     dependencies {
-        implementation project(":API")
+        implementation project(":API-8")
         implementation "com.squareup.okhttp3:okhttp:${depVersion.okHttp}"
     }
 }
@@ -168,7 +168,7 @@ project(":Core-11") {
     targetCompatibility = 11
 
     dependencies {
-        implementation project(":API")
+        implementation project(":API-8")
 
         testImplementation project(":Implementation-8")
         testImplementation project(":ExtensiveUtilities")
@@ -176,7 +176,7 @@ project(":Core-11") {
 }
 
 if (!isTravis()) {
-    apply from: 'gradle/publishing.gradle'
+    //apply from: 'gradle/publishing.gradle'
 }
 
 static boolean isTravis() {

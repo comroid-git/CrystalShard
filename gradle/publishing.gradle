@@ -8,7 +8,6 @@ publishing {
         maven {
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
             def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
-            //def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             url = snapshotPublication ? snapshotsRepoUrl : releasesRepoUrl
             name = "Sonatype"
 
@@ -28,147 +27,40 @@ publishing {
     }
 
     publications {
-        def pomClosure = {
-            name = "CrystalShard"
-            description = "Modular Java Discord library!"
-            inceptionYear = '2018'
-
-            licenses {
-                license {
-                    name = 'The Apache License, Version 2.0'
-                    url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                }
-            }
-
-            developers {
-                developer {
-                    id = "burdoto"
-                    name = "Tobias Burdow"
-                    email = "burdoto@outlook.com"
-                }
-            }
-
-            scm {
-                connection = 'scm:git:https://github.com/CrystalShardDiscord/CrystalShard.git'
-                developerConnection = 'scm:git:git@github.com:CrystalShardDiscord/CrystalShard.git'
-                url = 'https://github.com/CrystalShardDiscord/CrystalShard'
-            }
-
-            issueManagement {
-                system = 'GitHub'
-                url = 'https://github.com/CrystalShardDiscord/CrystalShard/issues'
-            }
-        }
-
-        mainPub(MavenPublication) {
+        mavenJava(MavenPublication) {
             artifactId = 'crystalshard-main'
             artifact rootProject.findProject("Main").jar
             version = vString(versionNo.main, snapshotPublication)
-            pom pomClosure
-        }
-
-        util(MavenPublication) {
-            artifactId = 'crystalshard-utils'
-            artifact rootProject.findProject("ExtensiveUtilities").jar
-            version = vString(versionNo.extUtil, snapshotPublication)
-            pom pomClosure
-        }
-
-        implIIX(MavenPublication) {
-            artifactId = 'crystalshard-impl'
-            artifact rootProject.findProject("Implementation-8").jar
-            version = vString(versionNo.impl8, snapshotPublication)
-            pom pomClosure
-        }
-
-        coreIIX(MavenPublication) {
-            artifactId = 'crystalshard-core8'
-            artifact rootProject.findProject("Core-8").jar
-            version = vString(versionNo.core8, snapshotPublication)
-            pom pomClosure
-        }
-
-        coreXI(MavenPublication) {
-            artifactId = 'crystalshard-core11'
-            artifact rootProject.findProject("Core-11").jar
-            version = vString(versionNo.core11, snapshotPublication)
-            pom pomClosure
-        }
-
-        mainPub(MavenPublication) {
-            artifactId = 'crystalshard'
-            version = rootProject.version
 
             pom {
-                withXml {
-                    def deps = asNode().appendNode("dependencies")
+                name = "CrystalShard"
+                description = "Modular Java Discord library!"
+                inceptionYear = '2018'
 
-                    def main = deps.appendNode("dependency")
-                    main.appendNode("groupId", "de.kaleidox")
-                    main.appendNode("artifactId", "crystalshard-main")
-                    main.appendNode("version", rootProject.findProject("Main").version)
-
-                    def impl = deps.appendNode("dependency")
-                    impl.appendNode("groupId", "de.kaleidox")
-                    impl.appendNode("artifactId", "crystalshard-impl")
-                    impl.appendNode("version", rootProject.findProject("Implementation-8").version)
-
-                    def core = deps.appendNode("dependency")
-                    core.appendNode("groupId", "de.kaleidox")
-                    core.appendNode("artifactId", "crystalshard-core11")
-                    core.appendNode("version", rootProject.findProject("Core-11").version)
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
                 }
-            }
-        }
 
-        java8Conv(MavenPublication) {
-            artifactId = 'crystalshard-java8'
-            version = rootProject.version
-
-            pom {
-                withXml {
-                    def deps = asNode().appendNode("dependencies")
-
-                    def main = deps.appendNode("dependency")
-                    main.appendNode("groupId", "de.kaleidox")
-                    main.appendNode("artifactId", "crystalshard-main")
-                    main.appendNode("version", rootProject.findProject("Main").version)
-
-                    def impl = deps.appendNode("dependency")
-                    impl.appendNode("groupId", "de.kaleidox")
-                    impl.appendNode("artifactId", "crystalshard-impl")
-                    impl.appendNode("version", rootProject.findProject("Implementation-8").version)
-
-                    def core = deps.appendNode("dependency")
-                    core.appendNode("groupId", "de.kaleidox")
-                    core.appendNode("artifactId", "crystalshard-core8")
-                    core.appendNode("version", rootProject.findProject("Core-8").version)
+                developers {
+                    developer {
+                        id = "burdoto"
+                        name = "Tobias Burdow"
+                        email = "burdoto@outlook.com"
+                    }
                 }
-            }
-        }
 
-        java11Conv(MavenPublication) {
-            artifactId = 'crystalshard-java11'
-            version = rootProject.version
+                scm {
+                    connection = 'scm:git:https://github.com/CrystalShardDiscord/CrystalShard.git'
+                    developerConnection = 'scm:git:git@github.com:CrystalShardDiscord/CrystalShard.git'
+                    url = 'https://github.com/CrystalShardDiscord/CrystalShard'
+                }
 
-            pom {
-                withXml {
-                    def deps = asNode().appendNode("dependencies")
-
-                    def main = deps.appendNode("dependency")
-                    main.appendNode("groupId", "de.kaleidox")
-                    main.appendNode("artifactId", "crystalshard-main")
-                    main.appendNode("version", rootProject.findProject("Main").version)
-
-                    def impl = deps.appendNode("dependency")
-                    impl.appendNode("groupId", "de.kaleidox")
-                    impl.appendNode("artifactId", "crystalshard-impl")
-                    impl.appendNode("version", rootProject.findProject("Implementation-8").version)
-
-                    def core = deps.appendNode("dependency")
-                    core.appendNode("groupId", "de.kaleidox")
-                    core.appendNode("artifactId", "crystalshard-core11")
-                    core.appendNode("version", rootProject.findProject("Core-11").version)
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/CrystalShardDiscord/CrystalShard/issues'
                 }
             }
         }
@@ -187,12 +79,4 @@ static File fileOrTempFile(String name) {
     def file = new File(name)
     if (file.exists()) return file
     return File.createTempFile(name, "")
-}
-
-static String vString(Object vStringObj, boolean snapshot) {
-    String vString = vStringObj.toString()
-    if (vString.endsWith("-SNAPSHOT") && snapshot) return vString
-    else if (!vString.endsWith("-SNAPSHOT") && snapshot) return "${vString}-SNAPSHOT"
-    else if (vString.endsWith("-SNAPSHOT") && !snapshot) return vString.substring(0, vString.indexOf("-SNAPSHOT") - 1)
-    else return vString
 }
