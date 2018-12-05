@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -9,10 +10,11 @@ import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.awt.Color;
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public class RoleBuilderInternal implements Role.Builder {
     private final Discord discord;

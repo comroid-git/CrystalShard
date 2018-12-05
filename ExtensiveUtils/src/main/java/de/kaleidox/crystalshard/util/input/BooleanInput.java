@@ -5,7 +5,8 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.functional.Evaluation;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;

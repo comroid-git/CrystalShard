@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.main.exception;
 
 import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.util.helpers.ListHelper;
+
 import java.util.List;
 
 public class DiscordPermissionException extends Throwable {

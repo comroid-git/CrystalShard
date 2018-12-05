@@ -1,6 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.message.reaction;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import de.kaleidox.crystalshard.internal.items.server.emoji.UnicodeEmojiInternal;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
@@ -10,9 +13,8 @@ import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
 import de.kaleidox.util.helpers.MapHelper;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ReactionInternal implements Reaction {
@@ -82,6 +84,17 @@ public class ReactionInternal implements Reaction {
         // todo
     }
 
+    private Reaction changeCount(int delta) {
+        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
+        counts.put(criteria, (delta == Integer.MIN_VALUE ? 0 : (counts.getOrDefault(criteria, 0) + delta)));
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Reaction at " + message + " with " + emoji;
+    }
+
     // Static membe
     public static Reaction getInstance(@Nullable Server server, @NotNull Message message, @Nullable User user, @NotNull JsonNode data, int delta) {
         Emoji emoji = Emoji.of(message.getDiscord(), server, data.get("emoji"));
@@ -89,15 +102,6 @@ public class ReactionInternal implements Reaction {
         return ((ReactionInternal) MapHelper.getEquals(instances,
                 criteria,
                 new ReactionInternal(message.getDiscord(), message, user, data))).changeCount(delta);
-    }
-
-    private Reaction changeCount(int delta) {
-        ReactionCriteria criteria = new ReactionCriteria(message, emoji);
-        counts.put(criteria, (delta == Integer.MIN_VALUE ? 0 : (counts.getOrDefault(criteria, 0) + delta)));
-        return this;
-    }    @Override
-    public String toString() {
-        return "Reaction at " + message + " with " + emoji;
     }
 
     private static class ReactionCriteria {

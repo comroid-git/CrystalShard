@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -19,7 +20,8 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.functional.Evaluation;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +33,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.*;
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.AVATAR;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.DISCRIMINATOR;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.EMAIL;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.LOCALE;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.MFA_STATE;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.USERNAME;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.VERIFIED_STATE;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 @SuppressWarnings("unused")
 public class UserInternal implements User {

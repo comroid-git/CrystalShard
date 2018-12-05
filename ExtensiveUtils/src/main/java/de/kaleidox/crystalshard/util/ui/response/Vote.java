@@ -12,7 +12,8 @@ import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueEndpoint;
-import de.kaleidox.util.objects.markers.NamedItem;
+import de.kaleidox.util.markers.NamedItem;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,7 +28,6 @@ import java.util.function.Supplier;
  *
  * @param <ResultType> The Type that is voted for. You will later get a CompletableFuture of this type, that will contain the voted object.
  */
-@SuppressWarnings({"unused", "ConstantConditions", "WeakerAccess"})
 public class Vote<ResultType> extends ResponseElement<ResultType> {
     private final ArrayList<Option> optionsOrdered;
     private final HashMap<Option, Integer> rankingMap;
@@ -48,7 +48,6 @@ public class Vote<ResultType> extends ResponseElement<ResultType> {
         this.rankingMap = new HashMap<>();
     }
 
-    // Override Methods
     @Override
     public CompletableFuture<NamedItem<ResultType>> build() {
         if (optionsOrdered.isEmpty()) {

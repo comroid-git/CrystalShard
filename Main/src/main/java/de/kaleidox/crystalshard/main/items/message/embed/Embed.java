@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.util.Castable;
+
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;

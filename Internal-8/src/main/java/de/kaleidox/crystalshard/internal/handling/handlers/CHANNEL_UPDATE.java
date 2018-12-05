@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.channel.generic.ChannelEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelInternal;
@@ -9,6 +10,7 @@ import de.kaleidox.crystalshard.main.handling.listener.channel.generic.ChannelEd
 import de.kaleidox.crystalshard.main.items.channel.Channel;
 import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.util.Set;
 
 /**

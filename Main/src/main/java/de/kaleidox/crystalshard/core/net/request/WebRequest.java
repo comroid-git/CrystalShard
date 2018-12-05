@@ -1,15 +1,15 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public interface WebRequest<T> {
     WebRequest<T> addHeader(String name, String value);
-
-    WebRequest<T> setNode(JsonNode node);
 
     RequestURI getUri();
 
@@ -20,6 +20,8 @@ public interface WebRequest<T> {
     WebRequest<T> setMethod(HttpMethod method);
 
     JsonNode getNode();
+
+    WebRequest<T> setNode(JsonNode node);
 
     WebRequest<T> setNode(Object... data);
 

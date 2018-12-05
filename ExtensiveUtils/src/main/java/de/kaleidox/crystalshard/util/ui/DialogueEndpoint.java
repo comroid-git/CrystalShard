@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.util.ui;
 
-import de.kaleidox.util.objects.markers.NamedItem;
+import de.kaleidox.util.markers.NamedItem;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;

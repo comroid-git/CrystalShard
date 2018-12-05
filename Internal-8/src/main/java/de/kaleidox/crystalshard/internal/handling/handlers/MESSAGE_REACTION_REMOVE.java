@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.reaction.ReactionRemoveEventInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
@@ -12,7 +13,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.markers.IDPair;
 
 public class MESSAGE_REACTION_REMOVE extends HandlerBase {
     // Override Methods

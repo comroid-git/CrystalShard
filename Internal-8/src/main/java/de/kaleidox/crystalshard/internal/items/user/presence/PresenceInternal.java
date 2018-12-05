@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.user.presence;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.Server;
@@ -8,6 +9,7 @@ import de.kaleidox.crystalshard.main.items.user.ServerMember;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.main.items.user.presence.Presence;
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
+
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,6 +55,13 @@ public class PresenceInternal implements Presence {
         return status;
     }
 
+    private Presence updateData(JsonNode data) {
+        this.game = data.has("game") ? new UserActivityInternal(data.get("game")) : null;
+        this.status = Status.getFromKey(data.get("status")
+                .asText());
+        return this;
+    }
+
     // Static membe
     public static Presence getInstance(Discord discord, JsonNode data) {
         long id = data.get("user")
@@ -65,12 +74,5 @@ public class PresenceInternal implements Presence {
                 .getOrRequest(serverId, serverId);
         return instances.getOrDefault(server.getId() + "/" + id, new PresenceInternal(discord, server, data))
                 .updateData(data);
-    }
-
-    private Presence updateData(JsonNode data) {
-        this.game = data.has("game") ? new UserActivityInternal(data.get("game")) : null;
-        this.status = Status.getFromKey(data.get("status")
-                .asText());
-        return this;
     }
 }

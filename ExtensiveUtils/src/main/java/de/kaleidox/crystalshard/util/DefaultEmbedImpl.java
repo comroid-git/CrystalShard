@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.Worker;
 import de.kaleidox.crystalshard.internal.InternalInjector;
@@ -10,6 +11,7 @@ import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

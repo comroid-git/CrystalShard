@@ -1,9 +1,11 @@
 package de.kaleidox.crystalshard.internal.items.user.presence;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.objects.markers.BiTimestamp;
+import de.kaleidox.util.markers.BiTimestamp;
+
 import java.net.URL;
 import java.util.Optional;
 

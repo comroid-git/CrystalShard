@@ -1,13 +1,25 @@
 apply plugin: 'java-library'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
-project.version = "0.10.2-SNAPSHOT"
-def mainV = '0.11'
-def impl8V = '0.11'
-def core8V = '0.10'
-def core11V = '0.10'
-def extUtilV = '1.1'
+project.version = "1.0.0"
+
+ext {
+    versionNo = [
+            main   : '1.0.0',
+            impl8  : '0.12.0',
+            core8  : '0.11.0',
+            core11 : '0.10.2',
+            extUtil: '1.2.0'
+    ]
+    depVersion = [
+            jackson      : '2.9.7',
+            kalutils     : '0.4.1',
+            jUnit        : '4.12',
+            reflections  : '0.9.11',
+            okHttp       : '3.9.1',
+            emojiJava    : '4.0.0',
+            ijAnnotations: '12.0'
+    ]
+}
 
 version = "${project.version}"
 
@@ -22,20 +34,15 @@ task javadocs(type: Javadoc) {
 }
 
 javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
+    if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html4', true)
     }
     options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
+    options.destinationDirectory(new File("./docs/"))
 }
 
 jar {
     test
-}
-
-
-if (!isTravis()) {
-    apply from: 'gradle/publishing.gradle'
 }
 
 allprojects {
@@ -50,20 +57,23 @@ allprojects {
     jar {
         if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
-            destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+            destinationDir = new File("${project.rootProject.projectDir.absolutePath}/artifacts")
         }
         classifier "sources-${project.name}".toLowerCase()
     }
 
     repositories {
         jcenter()
-        maven { url 'https://jitpack.io' }
+        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://jitpack.io" }
     }
 
     dependencies {
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.3'
-        implementation 'com.vdurmont:emoji-java:4.0.0'
-        implementation 'com.github.burdoto:KalUtils:b5ea2a7'
+        implementation "com.fasterxml.jackson.core:jackson-databind:${depVersion.jackson}"
+        implementation("de.kaleidox:kalutils:${depVersion.kalutils}") {
+            exclude group: 'com.vdurmont' // A fork is included already.
+        }
+        compileOnly "com.intellij:annotations:${depVersion.ijAnnotations}"
     }
 
     sourceSets {
@@ -79,20 +89,20 @@ allprojects {
 }
 
 project(":Main") {
-    version = (mainV == null ? project.version : mainV)
+    version = versionNo.main ?: project.version
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
         testImplementation project(':Main')
-        testImplementation project(':Internal-8')
-        testImplementation project(':Core-8')
-        testImplementation project(':Core-11')
-        testImplementation project(':ExtensiveUtils')
+        testRuntimeOnly project(':Internal-8')
+        testRuntimeOnly project(':Core-8')
+        testRuntimeOnly project(':Core-11')
+        testRuntimeOnly project(':ExtensiveUtils')
 
-        testImplementation 'junit:junit:4.12'
-        testImplementation 'org.reflections:reflections:0.9.11'
+        testImplementation "junit:junit:${depVersion.jUnit}"
+        testImplementation "org.reflections:reflections:${depVersion.reflections}"
     }
 
     sourceSets {
@@ -112,7 +122,7 @@ project(":Main") {
 }
 
 project(":ExtensiveUtils") {
-    version = (extUtilV == null ? project.version : extUtilV)
+    version = versionNo.extUtil ?: project.version
 
     sourceCompatibility = 9
     targetCompatibility = 9
@@ -120,55 +130,53 @@ project(":ExtensiveUtils") {
     dependencies {
         implementation project(':Main')
         implementation project(':Internal-8')
-
-        implementation 'org.reflections:reflections:0.9.11'
+        
+        implementation "org.reflections:reflections:${depVersion.reflections}"
     }
 }
 
 project(":Internal-8") {
-    version = (impl8V == null ? project.version : impl8V)
+    version = versionNo.impl8 ?: project.version
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
+        //implementation "com.github.CrystalShardDiscord:emoji-java:${depVersion.emojiJava}"
+        implementation "com.vdurmont:emoji-java:${depVersion.emojiJava}"
+
         implementation project(":Main")
     }
 }
 
 project(":Core-8") {
-    version = (core8V == null ? project.version : core8V)
+    version = versionNo.core8 ?: project.version
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
         implementation project(":Main")
-        implementation 'com.squareup.okhttp3:okhttp:3.9.1'
-    }
-}
-
-project(":Core-8") {
-    version '0.9'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        implementation project(":Main")
-        implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+        implementation "com.squareup.okhttp3:okhttp:${depVersion.okHttp}"
     }
 }
 
 project(":Core-11") {
-    version = (core11V == null ? project.version : core11V)
+    version = versionNo.core11 ?: project.version
 
     sourceCompatibility = 11
     targetCompatibility = 11
 
     dependencies {
         implementation project(":Main")
+
+        testImplementation project(":Internal-8")
+        testImplementation project(":ExtensiveUtils")
     }
+}
+
+if (!isTravis()) {
+    apply from: 'gradle/publishing.gradle'
 }
 
 static boolean isTravis() {

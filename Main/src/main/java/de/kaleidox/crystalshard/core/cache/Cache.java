@@ -1,9 +1,11 @@
 package de.kaleidox.crystalshard.core.cache;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.util.annotations.NotContainNull;
-import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;

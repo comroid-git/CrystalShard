@@ -1,17 +1,19 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
-import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.util.helpers.JsonHelper;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.util.helpers.JsonHelper;
+
+import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class WebRequestImpl<T> implements WebRequest<T> {
     protected static final Logger logger = new Logger(WebRequest.class);
@@ -31,12 +33,6 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     @Override
     public WebRequest<T> addHeader(String name, String value) {
         requestBuilder.addHeader(name, value);
-        return this;
-    }
-
-    @Override
-    public WebRequest<T> setNode(JsonNode node) {
-        this.node = node;
         return this;
     }
 
@@ -65,6 +61,12 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     @Override
     public JsonNode getNode() {
         return node;
+    }
+
+    @Override
+    public WebRequest<T> setNode(JsonNode node) {
+        this.node = node;
+        return this;
     }
 
     @Override

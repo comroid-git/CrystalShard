@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -19,8 +20,9 @@ import de.kaleidox.crystalshard.main.items.permission.PermissionList;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.helpers.FutureHelper;
-import de.kaleidox.util.objects.functional.Evaluation;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.markers.IDPair;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +32,13 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.*;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.COLOR;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.GROUPING;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.MANAGED;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.MENTIONABILITY;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.NAME;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.PERMISSION_OVERWRITES;
+import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.POSITION;
 
 public class RoleInternal implements Role {
     private final static Logger logger = new Logger(RoleInternal.class);

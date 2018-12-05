@@ -1,12 +1,13 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.role.RoleDeleteEventInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleDeleteListener;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.markers.IDPair;
 
 public class GUILD_ROLE_DELETE extends HandlerBase {
     @Override

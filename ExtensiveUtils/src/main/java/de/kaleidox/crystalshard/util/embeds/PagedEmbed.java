@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.util.embeds;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
@@ -13,6 +14,7 @@ import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;
@@ -33,18 +35,24 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
     public final static String DELETE_EMOJI = "🗑";
     private final static List<Built> built = new ArrayList<>();
     private final Discord discord;
+    private final AtomicReference<Message> sentMessage;
     private Built myBuilt;
     private Hashtable<Integer, List<EmbedDraft.Field>> pages;
-    private final AtomicReference<Message> sentMessage;
     private int page;
 
-    public PagedEmbed(Discord discord) {
+    private PagedEmbed(Discord discord) {
         super();
         this.discord = discord;
         ignoreFieldCount = true;
         page = 0;
         pages = new Hashtable<>();
         sentMessage = new AtomicReference<>();
+    }
+
+    @Override
+    public Embed.Builder addField(EmbedDraft.Field field) {
+        super.addField(field);
+        return this;
     }
 
     @Override
@@ -64,12 +72,6 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
     }
 
     @Override
-    public Embed.Builder addField(EmbedDraft.Field field) {
-        super.addField(field);
-        return this;
-    }
-
-    @Override
     public Embed.Builder addField(String title, String text, boolean inline) {
         EmbedDraft.Field field = InternalInjector.newInstance(EmbedDraft.Field.class, title, text, inline);
         addField(field);
@@ -82,7 +84,7 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
         return this;
     }
 
-    public void tunnelHandler(Message message) {
+    private void tunnelHandler(Message message) {
         sentMessage.set(message);
         message.addReaction(PREV_PAGE_EMOJI, NEXT_PAGE_EMOJI, DELETE_EMOJI);
         message.attachListener((ReactionAddListener) PagedEmbed.this::onReactionClick);
@@ -93,12 +95,12 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
                         KEEPALIVE_TIME, KEEPALIVE_UNIT);
     }
 
-    public void onReactionClick(ReactionEvent event) {
+    private void onReactionClick(ReactionEvent event) {
         if (!event.getUser().isYourself()) {
             switch (event.getEmoji().toDiscordPrintable()) {
                 case PREV_PAGE_EMOJI:
                     page--;
-                    if (page < 0) page = pages.size()-1;
+                    if (page < 0) page = pages.size() - 1;
                     sentMessage.get().edit(myBuilt);
                     break;
                 case NEXT_PAGE_EMOJI:
@@ -134,6 +136,10 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
         pages.putAll(tempPages);
     }
 
+    public static Embed.Builder builder(Discord discord) {
+        return new PagedEmbed(discord);
+    }
+
     private class Built extends EmbedDraftInternal {
         private final PagedEmbed root;
 
@@ -155,7 +161,7 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
 
         /**
          * {@inheritDoc}
-         *
+         * <p>
          * Only this method is actually differing, because when editing an existing
          * message with an EmbedDraft, this method gets called for the new embed draft.
          */

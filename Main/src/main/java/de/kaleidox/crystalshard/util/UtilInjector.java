@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.util;
 
 import de.kaleidox.crystalshard.InjectorBase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -43,9 +44,11 @@ public abstract class UtilInjector extends InjectorBase {
     }
 
     public static <T> T newInstance(Class<T> tClass, Object... args) {
-        if (injector == null)
-            throw new IllegalStateException("No Util injector found. Please " +
-                    "make sure you have any utilities implementation present.");
+        if (injector == null) {
+            logger.warn("No Util injector found. Please make sure you have any utilities implementation present. " +
+                    "[NULL WAS RETURNED]");
+            return null;
+        }
         return injector.makeInstance(tClass, args);
     }
 }

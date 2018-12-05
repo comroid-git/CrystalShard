@@ -1,6 +1,10 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.WebSocket;
+
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -9,13 +13,11 @@ import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.WebSocket;
 
 public class WebSocketClientImpl implements WebSocketClient {
     private static final Logger logger = new Logger(WebSocketClient.class);

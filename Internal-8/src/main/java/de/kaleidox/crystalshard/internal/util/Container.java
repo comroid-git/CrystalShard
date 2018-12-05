@@ -1,7 +1,10 @@
 package de.kaleidox.crystalshard.internal.util;
 
+import javax.imageio.ImageIO;
+
 import de.kaleidox.crystalshard.main.util.FileContainer;
 import de.kaleidox.util.FileType;
+
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -9,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import javax.imageio.ImageIO;
 
 public class Container implements FileContainer {
     public Container(File file) {

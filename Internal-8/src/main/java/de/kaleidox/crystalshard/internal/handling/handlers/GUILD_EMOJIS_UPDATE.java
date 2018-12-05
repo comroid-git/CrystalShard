@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.emoji.ServerEmojiEditEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
@@ -8,8 +9,9 @@ import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.server.ServerEmojiEditListener;
 import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
+import de.kaleidox.util.Difference;
 import de.kaleidox.util.helpers.ListHelper;
-import de.kaleidox.util.objects.Difference;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -40,8 +41,9 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
-import de.kaleidox.util.objects.functional.Evaluation;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.markers.IDPair;
+
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -55,7 +57,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
 public class MessageInternal implements Message {

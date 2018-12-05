@@ -1,11 +1,13 @@
 package de.kaleidox.crystalshard.internal.items.message.embed;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
 import de.kaleidox.util.helpers.UrlHelper;
+
 import java.awt.Color;
 import java.net.URL;
 import java.time.Instant;

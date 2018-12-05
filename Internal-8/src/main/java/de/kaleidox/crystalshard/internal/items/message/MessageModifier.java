@@ -16,9 +16,10 @@ import de.kaleidox.crystalshard.main.items.permission.Permission;
 import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
+
 import java.util.concurrent.CompletableFuture;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public class MessageModifier {
     public static class Builder implements Message.Builder {

@@ -1,12 +1,14 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.user.UserUpdateEventInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.main.handling.listener.user.UserUpdateListener;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.Set;
 
 public class USER_UPDATE extends HandlerBase {

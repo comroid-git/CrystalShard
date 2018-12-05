@@ -1,9 +1,15 @@
 package de.kaleidox.crystalshard.util.command;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.util.ConfigurationBuilder;
+
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
 import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageCreateListener;
+import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.main.items.channel.TextChannel;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
@@ -12,10 +18,11 @@ import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.Self;
+import de.kaleidox.crystalshard.util.embeds.PagedEmbed;
+import de.kaleidox.util.functional.Switch;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.SetHelper;
-import de.kaleidox.util.objects.functional.Switch;
-import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -30,9 +37,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.util.ConfigurationBuilder;
 
 /**
  * This class represents the CommandFramework. Commands can be created using the {@link Command} annotation.
@@ -93,6 +97,7 @@ public class CommandFrameworkImpl implements CommandFramework {
      * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
      * @throws IllegalStateException     If a Command-Method is not {@link Modifier#STATIC}.
      */
+    @Override
     public void registerCommands(Class commandClass) throws IllegalArgumentException, IllegalStateException {
         Stream.of(commandClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(Command.class))
@@ -104,6 +109,7 @@ public class CommandFrameworkImpl implements CommandFramework {
      *
      * @return All registered Command annotations.
      */
+    @Override
     public List<Command> getCommands() {
         return commands.stream()
                 .map(inst -> inst.annotation)
@@ -115,6 +121,7 @@ public class CommandFrameworkImpl implements CommandFramework {
      *
      * @return The discord object.
      */
+    @Override
     public Discord getDiscord() {
         return discord;
     }
@@ -122,6 +129,7 @@ public class CommandFrameworkImpl implements CommandFramework {
     /**
      * Enables listening for commands globally.
      */
+    @Override
     public void enable() {
         enabled.set(true);
     }
@@ -129,6 +137,7 @@ public class CommandFrameworkImpl implements CommandFramework {
     /**
      * Disables listening for commands globally.
      */
+    @Override
     public void disable() {
         enabled.set(false);
     }
@@ -138,6 +147,7 @@ public class CommandFrameworkImpl implements CommandFramework {
      *
      * @param object The channel to ignore.
      */
+    @Override
     public void ignore(TextChannel object) {
         ignored.add(object);
     }
@@ -148,11 +158,40 @@ public class CommandFrameworkImpl implements CommandFramework {
      * @param object The object to remove from the ignore list.
      * @return Whether the {@link TextChannel} could be removed from the ignored list.
      */
+    @Override
     public boolean unignore(TextChannel object) {
         return ignored.stream()
                 .filter(object::equals)
                 .findAny()
                 .map(ignored::remove)
+                .orElse(false);
+    }
+
+    /**
+     * Registers a {@link Command} annotated method as a command.
+     *
+     * @param commandMethod The method to register.
+     * @throws IllegalArgumentException  If a duplicate alias was found.
+     * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
+     * @throws IllegalStateException     The Command-Method is not {@link Modifier#STATIC}.
+     */
+    @Override
+    public void registerCommands(Method commandMethod) throws IllegalArgumentException, IllegalStateException {
+        registerCommandMethod(commandMethod);
+    }
+
+    /**
+     * Tries to unregister a {@link Command} annotated method.
+     *
+     * @param commandMethod The method to unregister.
+     * @return Whether the command could be unregistered.
+     */
+    @Override
+    public boolean unregisterCommand(Method commandMethod) {
+        return commands.stream()
+                .filter(instance -> instance.method == commandMethod)
+                .findAny()
+                .map(commands::remove)
                 .orElse(false);
     }
 
@@ -163,8 +202,7 @@ public class CommandFrameworkImpl implements CommandFramework {
                     .orElseThrow(AssertionError::new))) {
                 commands.stream()
                         .filter(instance -> checkAlias(instance, event.getMessageContent()))
-                        .filter(instance -> checkProperties(instance.annotation,
-                                event))
+                        .filter(instance -> checkProperties(instance.annotation, event))
                         .map(instance -> instance.method)
                         .forEach(method -> runWithDynamicParams(method, event));
             }
@@ -172,6 +210,7 @@ public class CommandFrameworkImpl implements CommandFramework {
     }
 
     private void runWithDynamicParams(Method method, MessageCreateEvent event) {
+        final Command annotation = method.getAnnotation(Command.class);
         Discord discord = event.getDiscord();
         Server server = event.getServer()
                 .orElse(null);
@@ -183,26 +222,29 @@ public class CommandFrameworkImpl implements CommandFramework {
         String content = event.getMessageContent();
 
         Class<?>[] parameterTypes = method.getParameterTypes();
-        Object[] finalParam = new Object[parameterTypes.length];
-        int[] ref = new int[1];
-        @SuppressWarnings("unchecked") Switch<Class> classSwitch = new Switch<Class>(Class::isAssignableFrom).addCase(MessageCreateEvent.class,
-                type -> finalParam[ref[0]] = event)
+        final Object[] finalParam = new Object[parameterTypes.length];
+        final int[] ref = new int[1];
+        @SuppressWarnings("unchecked") Switch<Class> swtc = new Switch<Class>(Class::isAssignableFrom)
+                .addCase(MessageCreateEvent.class, type -> finalParam[ref[0]] = event)
                 .addCase(Discord.class, type -> finalParam[ref[0]] = discord)
                 .addCase(Server.class, type -> finalParam[ref[0]] = server)
                 .addCase(TextChannel.class, type -> finalParam[ref[0]] = channel)
                 .addCase(Message.class, type -> finalParam[ref[0]] = message)
                 .addCase(Author.class, type -> finalParam[ref[0]] = author)
                 .addCase(String.class, type -> finalParam[ref[0]] = content)
-                .defaultCase(type -> finalParam[ref[0]] = null);
-        for (ref[0] = 0; ref[0] < parameterTypes.length; ref[0]++) {
-            classSwitch.test(parameterTypes[ref[0]]);
-        }
+                .defaultCase(type -> finalParam[ref[0]] = null)
+                // specified sender channels if possible
+                .addCase(ServerTextChannel.class, type ->
+                        finalParam[ref[0]] = channel.toServerTextChannel().orElse(null))
+                .addCase(PrivateTextChannel.class, type ->
+                        finalParam[ref[0]] = channel.toPrivateTextChannel().orElse(null));
+        for (ref[0] = 0; ref[0] < parameterTypes.length; ref[0]++) swtc.test(parameterTypes[ref[0]]);
 
         discord.getThreadPool()
                 .execute(() -> {
                     try {
                         method.invoke(this, finalParam);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                    } catch (Exception e) {
                         logger.exception(e, "Exception invoking command Method: " + method.toGenericString());
                     }
                 });
@@ -255,18 +297,6 @@ public class CommandFrameworkImpl implements CommandFramework {
         return false;
     }
 
-    /**
-     * Registers a {@link Command} annotated method as a command.
-     *
-     * @param commandMethod The method to register.
-     * @throws IllegalArgumentException  If a duplicate alias was found.
-     * @throws InvalidParameterException If a private-only marked method has {@link Server} as a parameter.
-     * @throws IllegalStateException     The Command-Method is not {@link Modifier#STATIC}.
-     */
-    public void registerCommands(Method commandMethod) throws IllegalArgumentException, IllegalStateException {
-        registerCommandMethod(commandMethod);
-    }
-
     private void registerCommandMethod(Method method) throws IllegalArgumentException, IllegalStateException {
         if (!method.isAnnotationPresent(Command.class)) throw new IllegalArgumentException(
                 "Method " + method.toGenericString() + " does not have annotation " + Command.class + ".");
@@ -292,20 +322,6 @@ public class CommandFrameworkImpl implements CommandFramework {
     }
 
     /**
-     * Tries to unregister a {@link Command} annotated method.
-     *
-     * @param commandMethod The method to unregister.
-     * @return Whether the command could be unregistered.
-     */
-    public boolean unregisterCommand(Method commandMethod) {
-        return commands.stream()
-                .filter(instance -> instance.method == commandMethod)
-                .findAny()
-                .map(commands::remove)
-                .orElse(false);
-    }
-
-    /**
      * This method describes the default help command. This command is being enabled by passing {@code TRUE} as third argument when initializing the Command
      * Framework.
      *
@@ -316,53 +332,38 @@ public class CommandFrameworkImpl implements CommandFramework {
      */
     @Command(aliases = "help", description = "Shows a list of all commands.")
     public static void defaultHelp(Discord discord, Server server, Author author, TextChannel channel) {
-        CommandFrameworkImpl framework = (CommandFrameworkImpl) discord.getUtilities()
+        final CommandFrameworkImpl framework = (CommandFrameworkImpl) discord.getUtilities()
                 .getCommandFramework();
-        // TODO: 09.11.2018
-        /*
-        OldPagedEmbed embed = new OldPagedEmbed(channel, () -> {
-            Embed.Builder builder = Embed.BUILDER();
-            Self self = discord.getSelf();
+        final Self self = discord.getSelf();
+        final Embed.Builder builder = PagedEmbed.builder(discord);
 
-            self.getAvatarUrl()
-                    .map(URL::toExternalForm)
-                    .ifPresent(builder::setThumbnail);
-            builder.setTitle(self.getDisplayName(server) + "'s Commands");
-            author.toAuthorUser()
-                    .ifPresent(user -> {
-                        Optional<String> opt = user.getAvatarUrl()
-                                .map(URL::toExternalForm);
+        self.getAvatarUrl()
+                .map(URL::toExternalForm)
+                .ifPresent(builder::setThumbnail);
+        builder.setTitle(self.getDisplayName(server) + " Commands");
 
-                        if (opt.isPresent())
-                            builder.setFooter("Requested by " + user.getDisplayName(server), opt.get());
-                        else builder.setFooter("Requested by " + user.getDisplayName(server));
-                    });
-
-            return builder;
-        });
         framework.commands.stream()
-                .map(instance -> instance.annotation)
-                .forEach(annotation -> {
+                .map(inst -> inst.annotation)
+                .forEachOrdered(annotation -> {
                     if (annotation.shownInDefaultHelp()) {
                         StringBuilder sb = new StringBuilder();
                         String description = annotation.description();
 
                         sb.append(description)
-                                .append("\n\n")
-                                .append(annotation.enableServerChat() ? "✅" : "❌")
-                                .append(" Server Chat | ")
-                                .append(annotation.enablePrivateChat() ? "✅" : "❌")
-                                .append(" Private Chat")
-                                .append("\n")
-                                .append("Required Discord Permission: ")
-                                .append(annotation.requiredDiscordPermission()
-                                        .name())
-                                .append("\n")
-                                .append(annotation.requireChannelMentions() == 0 ? "" : "Required Channel mentions: " + annotation.requireChannelMentions())
-                                .append("\n")
-                                .append(annotation.requireUserMentions() == 0 ? "" : "Required User mentions: " + annotation.requireUserMentions())
-                                .append("\n")
-                                .append(annotation.requireRoleMentions() == 0 ? "" : "Required Role mentions: " + annotation.requireRoleMentions());
+                                .append("\nWorks in:\n")
+                                .append(annotation.enablePrivateChat() ? "🔒 Private Chat\n" : "")
+                                .append(annotation.enableServerChat() ? "🌐 Server Chat\n" : "")
+                                .append(annotation.requiredDiscordPermission() == Permission.EMPTY ? "" :
+                                        String.format("Required Discord-Permission: %s\n",
+                                                annotation.requiredDiscordPermission().toString()))
+                                .append(annotation.requireChannelMentions() == 0 ? "" :
+                                        String.format("Required Channel-Mentions: %d\n",
+                                                annotation.requireChannelMentions()))
+                                .append(annotation.requireUserMentions() == 0 ? "" :
+                                        String.format("Required User-Mentions: %d\n", annotation.requireUserMentions()))
+                                .append(annotation.requireRoleMentions() == 0 ? "" :
+                                        String.format("Required Role mentions: %d\n", annotation.requireRoleMentions())
+                                );
 
                         StringBuilder aliases = new StringBuilder(framework.prefix);
                         Iterator<String> iterator = ListHelper.of(annotation.aliases())
@@ -373,10 +374,10 @@ public class CommandFrameworkImpl implements CommandFramework {
                             if (iterator.hasNext()) aliases.append(" | ");
                         }
 
-                        embed.addField(aliases.toString(), sb.toString());
+                        builder.addField(aliases.toString(), sb.toString());
                     }
                 });
-        embed.build();*/
+        builder.send(channel);
     }
 
     private class Instance {

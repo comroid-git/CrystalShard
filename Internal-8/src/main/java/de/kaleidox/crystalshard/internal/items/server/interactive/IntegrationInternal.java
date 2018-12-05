@@ -1,12 +1,14 @@
 package de.kaleidox.crystalshard.internal.items.server.interactive;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.markers.IDPair;
+
 import java.time.Instant;
 
 public class IntegrationInternal implements Integration {

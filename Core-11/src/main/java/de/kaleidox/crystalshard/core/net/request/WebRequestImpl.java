@@ -1,9 +1,11 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -32,12 +34,6 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     }
 
     @Override
-    public WebRequest<T> setNode(JsonNode node) {
-        this.node = node;
-        return this;
-    }
-
-    @Override
     public RequestURI getUri() {
         return uri;
     }
@@ -62,6 +58,12 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     @Override
     public JsonNode getNode() {
         return node;
+    }
+
+    @Override
+    public WebRequest<T> setNode(JsonNode node) {
+        this.node = node;
+        return this;
     }
 
     @Override

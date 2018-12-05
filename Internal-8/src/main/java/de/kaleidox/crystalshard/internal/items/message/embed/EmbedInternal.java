@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.internal.items.message.embed;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
+
 import java.util.Optional;
 
 public class EmbedInternal implements Embed {

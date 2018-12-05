@@ -16,6 +16,7 @@ import de.kaleidox.crystalshard.main.items.server.ServerComponent;
 import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
 import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
 import de.kaleidox.util.FileType;
+
 import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;

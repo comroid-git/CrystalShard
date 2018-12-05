@@ -6,6 +6,7 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
+
 import java.net.http.HttpHeaders;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;

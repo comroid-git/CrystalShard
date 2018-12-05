@@ -9,7 +9,8 @@ import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueEndpoint;
-import de.kaleidox.util.objects.markers.NamedItem;
+import de.kaleidox.util.markers.NamedItem;
+
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;

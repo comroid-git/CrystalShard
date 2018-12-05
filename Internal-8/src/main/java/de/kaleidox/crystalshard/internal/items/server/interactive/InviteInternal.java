@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal.items.server.interactive;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
@@ -14,6 +15,7 @@ import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.UrlHelper;
+
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;

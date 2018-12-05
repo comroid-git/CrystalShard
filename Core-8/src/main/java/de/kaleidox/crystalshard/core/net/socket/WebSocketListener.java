@@ -1,13 +1,15 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
-import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.util.helpers.JsonHelper;
-import java.nio.charset.Charset;
-import java.util.concurrent.CompletableFuture;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okio.ByteString;
+
+import de.kaleidox.crystalshard.logging.Logger;
+import de.kaleidox.crystalshard.main.Discord;
+import de.kaleidox.util.helpers.JsonHelper;
+
+import java.nio.charset.Charset;
+import java.util.concurrent.CompletableFuture;
 
 public class WebSocketListener extends okhttp3.WebSocketListener {
     private final static Logger logger = new Logger(WebSocketListener.class);

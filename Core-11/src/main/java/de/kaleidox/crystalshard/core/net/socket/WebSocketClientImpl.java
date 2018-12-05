@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -10,6 +11,7 @@ import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.JsonHelper;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;

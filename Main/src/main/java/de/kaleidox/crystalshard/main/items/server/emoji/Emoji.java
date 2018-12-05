@@ -1,14 +1,16 @@
 package de.kaleidox.crystalshard.main.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.Mentionable;
 import de.kaleidox.crystalshard.main.items.message.Message;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.util.Castable;
-import de.kaleidox.util.annotations.NotNull;
-import de.kaleidox.util.annotations.Nullable;
+
 import java.util.Optional;
 
 public interface Emoji extends Mentionable, Castable<Emoji> {

@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.NotNull;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.logging.Logger;
@@ -9,7 +11,7 @@ import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.util.annotations.MayContainNull;
-import de.kaleidox.util.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +21,8 @@ public abstract class HandlerBase {
     private final static Package handlerPackage = HandlerBase.class.getPackage();
     private final static ConcurrentHashMap<String, HandlerBase> instances = new ConcurrentHashMap<>();
     final static Logger baseLogger = new Logger(HandlerBase.class);
+
+    public abstract void handle(DiscordInternal discord, JsonNode data);
 
     @SuppressWarnings("unchecked")
     public static <T extends HandlerBase> void tryHandle(DiscordInternal discord, JsonNode data) {
@@ -49,8 +53,6 @@ public abstract class HandlerBase {
             }
         }
     }
-
-    public abstract void handle(DiscordInternal discord, JsonNode data);
 
     @SuppressWarnings("unchecked")
     @SafeVarargs

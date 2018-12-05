@@ -5,6 +5,7 @@ import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.event.server.role.RoleDeleteEvent;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.util.Optional;
 
 public class RoleDeleteEventInternal extends EventBase implements RoleDeleteEvent {

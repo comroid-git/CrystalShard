@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.logging.Logger;

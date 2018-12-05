@@ -1,13 +1,15 @@
 package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.member.ServerMemberUpdateEventInternal;
 import de.kaleidox.crystalshard.main.handling.listener.server.member.ServerMemberUpdateListener;
 import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.markers.IDPair;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

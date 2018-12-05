@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.core.net.request.endpoint;
 
 import de.kaleidox.crystalshard.main.CrystalShard;
 import de.kaleidox.crystalshard.main.items.DiscordItem;
+
 import java.net.URISyntaxException;
 import java.util.Objects;
 

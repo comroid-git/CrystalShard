@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.main.items.permission;
 
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.stream.Stream;
 
 public interface PermissionApplyable {

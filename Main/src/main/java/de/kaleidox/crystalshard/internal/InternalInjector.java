@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 import de.kaleidox.crystalshard.InjectorBase;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
@@ -19,6 +20,7 @@ import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.crystalshard.main.items.user.User;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -84,6 +86,8 @@ public abstract class InternalInjector extends InjectorBase {
         super(implementations, mustOverride);
     }
 
+    protected abstract void tryHandleinjector(Discord discord, JsonNode data);
+
     public static <T> T newInstance(Class<T> tClass, Object... args) {
         return injector.makeInstance(tClass, args);
     }
@@ -92,5 +96,15 @@ public abstract class InternalInjector extends InjectorBase {
         injector.tryHandleinjector(discord, data);
     }
 
-    protected abstract void tryHandleinjector(Discord discord, JsonNode data);
+    public abstract String parseToAliasesDel(String emojiExact);
+
+    public static String parseToAliases(String emoji) {
+        return injector.parseToAliasesDel(emoji);
+    }
+
+    public abstract String parseToUnicodeDel(String emojiExact);
+
+    public static String parseToUnicode(String emoji) {
+        return injector.parseToAliasesDel(emoji);
+    }
 }

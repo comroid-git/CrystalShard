@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.exception.LowStackTraceable;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.util.config.Configuration;
 import de.kaleidox.util.helpers.ListHelper;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.kaleidox.util.helpers.JsonHelper.*;
+import static de.kaleidox.util.helpers.JsonHelper.nodeOf;
 
 /**
  * This class represents a Logging framework.
@@ -31,8 +33,7 @@ public class Logger {
     private final static String DEFAULT_PREFIX = "[%l]\t%t\t%c:";
     private final static String DEFAULT_SUFFIX = "{%r}";
     private final static List<String> DEFAULT_BLANKED = new ArrayList<>();
-    private final static String configFile = "config/logging.json";
-    private final static JsonNode cfg;
+    private final static String configFile = "logging.json";
     private static String prefix, suffix;
     private static LoggingLevel level;
     private static List<Class> ignored;
@@ -42,53 +43,18 @@ public class Logger {
     private static List<CustomExceptionHandler> customExceptionHandlers = new ArrayList<>();
     private final Class loggingClass;
 
+    private final static Configuration config;
+
     static {
-        JsonNode config = null;
-        boolean invalid = false;
-        try {
-            File file = new File(configFile);
-            System.out.println(file.getAbsolutePath());
-            InputStream resourceStream = ClassLoader.getSystemResourceAsStream(configFile);
-
-            if (file.isFile() || resourceStream != null) {
-                InputStream stream;
-                if (file.isFile()) stream = new FileInputStream(file);
-                else stream = resourceStream;
-                int r;
-                StringBuilder sb = new StringBuilder();
-                while ((r = stream.read()) != -1) sb.append((char) r);
-                config = new ObjectMapper().readTree(sb.toString());
-            }
-        } catch (IOException ignored) {
-            invalid = true;
-        } finally {
-            if (config == null) {
-                System.out.println("[INFO] Logger configuration file \"" + configFile + "\" " +
-                        (invalid ? "is invalid" : "could not be found at either program or resource root") + "!");
-                config = JsonNodeFactory.instance.objectNode();
-            }
-        }
-
-        cfg = config;
-        level = LoggingLevel.of(cfg.path("level").asText(DEFAULT_LEVEL.getName())).orElse(DEFAULT_LEVEL);
-        ignored = new ArrayList<Class>() {{
-            if (cfg.has("ignored")) {
-                for (JsonNode clsNode : cfg.path("ignored")) {
-                    try {
-                        add(Class.forName(clsNode.asText()));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("Unknown class to ignore: " + clsNode.asText(), e);
-                    }
-                }
-            } else addAll(DEFAULT_IGNORED);
-        }};
-        prefix = cfg.path("prefix").asText(DEFAULT_PREFIX);
-        suffix = cfg.path("suffix").asText(DEFAULT_SUFFIX);
-        blanked = new ArrayList<String>() {{
-            if (cfg.has("blanked"))
-                cfg.path("blanked").forEach(node -> add(node.asText()));
-            else addAll(DEFAULT_BLANKED);
-        }};
+        config = new Configuration(configFile);
+        config.register("level", LoggingLevel.WARN, obj -> LoggingLevel.of(obj.toString()))
+                .register("prefix", "[%l]\t%t\t%c:")
+                .register("suffix", "{%r}");
+        level = config.var("level", LoggingLevel.class);
+        prefix = config.var("prefix");
+        suffix = config.var("suffix");
+        ignored = new ArrayList<>();
+        blanked = new ArrayList<>();
     }
 
     /**
@@ -181,21 +147,99 @@ public class Logger {
         }
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void writeCurrentConfig() throws IOException {
-        ObjectNode wrt = JsonNodeFactory.instance.objectNode();
-        wrt.set("level", cfg.has("level") ? cfg.get("level") : nodeOf(DEFAULT_LEVEL));
-        wrt.set("ignored", cfg.has("ignored") ? cfg.get("ignored") : nodeOf(DEFAULT_IGNORED));
-        wrt.set("prefix", cfg.has("prefix") ? cfg.get("prefix") : nodeOf(DEFAULT_PREFIX));
-        wrt.set("suffix", cfg.has("suffix") ? cfg.get("suffix") : nodeOf(DEFAULT_SUFFIX));
-        wrt.set("blanked", cfg.has("blanked") ? cfg.get("blanked") : nodeOf(DEFAULT_BLANKED));
+    /**
+     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for usage in
+     * {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
+     *
+     * @param throwable The throwable to post.
+     * @param <T>       A type variable for the return-type.
+     * @return null
+     * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
+     */
+    public <T> T exception(Throwable throwable) {
+        return exception(throwable, null);
+    }
 
-        File file = new File(configFile);
-        new File(file.getPath().substring(0, file.getPath().lastIndexOf('\\'))).mkdirs();
-        file.createNewFile();
-        FileOutputStream stream = new FileOutputStream(file);
-        String write = wrt.toString();
-        for (char c : write.toCharArray()) stream.write(c);
+    /**
+     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for logging caught exceptions with a custom message.
+     *
+     * @param throwable     The throwable to post.
+     * @param customMessage A custom message to post instead of {@link Throwable#getMessage()}. May be null.
+     * @param <T>           A type variable for the return-type.
+     * @return null
+     */
+    public <T> T exception(Throwable throwable, String customMessage) {
+        if (!ignored.contains(loggingClass)) {
+            StringBuilder post = new StringBuilder();
+            post.append("An exception has occurred: ")
+                    .append(customMessage == null ? throwable.getMessage() : customMessage)
+                    .append("\n");
+            if (throwable instanceof DiscordPermissionException) post.append("Insufficient Discord Permissions: ")
+                    .append(makePermList((DiscordPermissionException) throwable))
+                    .append(" Thread ");
+            else post.append("Exception in thread ");
+            post.append("\"")
+                    .append(Thread.currentThread().getName())
+                    .append("\" ")
+                    .append(throwable.getClass().getName())
+                    .append(": ")
+                    .append(throwable.getMessage());
+            appendThrowable(post, throwable, 15, true);
+            customExceptionHandlers.forEach(handler -> handler.apply(throwable));
+            post(LoggingLevel.ERROR, post.toString());
+        }
+
+        return null;
+    }
+
+    private void appendThrowable(StringBuilder post, Throwable throwable, int omitAt, boolean first) {
+        if (!first) post.append("Caused by: ")
+                .append(throwable.getClass().getName())
+                .append(": ")
+                .append(throwable.getMessage())
+                .append("\n");
+        int c = 0;
+        for (StackTraceElement stackTraceElement : throwable.getStackTrace())
+            if (++c <= omitAt) post.append("\tat ").append(stackTraceElement.toString()).append("\n");
+        if (throwable.getCause() != null) appendThrowable(post, throwable.getCause(), omitAt, false);
+    }
+
+    private String makePermList(DiscordPermissionException throwable) {
+        PermissionList lackingPermission = PermissionList.create(throwable.getLackingPermission());
+        return "(" + lackingPermission.toPermissionInt() + ") " + Arrays.toString(lackingPermission.toArray());
+    }
+
+    private void post(LoggingLevel level, String message) {
+        if (!ignored.contains(loggingClass)) {
+            if (level != LoggingLevel.ERROR) {
+                customHandlers.forEach(handler -> handler.apply(level, message));
+            }
+            String format = String.format("%s %s %s", newFix(level, -1), message, newFix(level, 1));
+            for (String string : blanked) {
+                int i1 = format.indexOf(string);
+                if (i1 > -1) {
+                    format = format.substring(0, i1) + "*****" + format.substring(i1 + string.length());
+                }
+            }
+            System.out.println(format);
+        }
+    }
+
+    private String newFix(LoggingLevel level, int x) {
+        String fix = (x < 0 ? prefix : suffix);
+
+        fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
+        fix = fix.replace("%c", loggingClass.getName());
+        fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
+        fix = fix.replace("%l", level.getName());
+        fix = fix.replace("%r", Thread.currentThread()
+                .getName());
+
+        return fix.equals("null") ? "" : fix;
+    }
+
+    public static Configuration getConfig() {
+        return config;
     }
 
     /**
@@ -249,8 +293,6 @@ public class Logger {
         Logger.prefix = prefix;
     }
 
-// Static membe
-
     /**
      * Sets the suffix of the logger. Changes are not stored and get lost on any restart.
      *
@@ -278,94 +320,6 @@ public class Logger {
     public static <T> T handle(Throwable throwable) {
         staticLogger.exception(throwable);
         return null;
-    }
-
-    /**
-     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for usage in
-     * {@link java.util.concurrent.CompletableFuture#exceptionally(Function)}.
-     *
-     * @param throwable The throwable to post.
-     * @param <T>       A type variable for the return-type.
-     * @return null
-     * @see java.util.concurrent.CompletableFuture#exceptionally(Function)
-     */
-    public <T> T exception(Throwable throwable) {
-        return exception(throwable, null);
-    }
-
-    /**
-     * Posts an exception with {@link LoggingLevel#ERROR}. This method is useful for logging caught exceptions with a custom message.
-     *
-     * @param throwable     The throwable to post.
-     * @param customMessage A custom message to post instead of {@link Throwable#getMessage()}. May be null.
-     * @param <T>           A type variable for the return-type.
-     * @return null
-     */
-    public <T> T exception(Throwable throwable, String customMessage) {
-        if (!ignored.contains(loggingClass)) {
-            StringBuilder sb = new StringBuilder().append("An exception has occurred: ")
-                    .append(customMessage == null ? throwable.getMessage() : customMessage)
-                    .append((throwable instanceof DiscordPermissionException ?
-                            "\nInsufficent Discord Permissions: " + makePermList((DiscordPermissionException) throwable) + " Thread \"" :
-                            "\nException in thread \""))
-                    .append(Thread.currentThread()
-                            .getName())
-                    .append("\" ")
-                    .append(throwable.getClass()
-                            .getName())
-                    .append(": ")
-                    .append(throwable.getMessage());
-
-            if (throwable instanceof LowStackTraceable) {
-                if (((LowStackTraceable) throwable).lowStackTrace()) {
-                    sb.append("\n\t")
-                            .append(throwable.getStackTrace()[0]);
-                }
-            } else {
-                ListHelper.of(throwable.getStackTrace())
-                        .forEach(line -> sb.append("\n\t")
-                                .append(line));
-            }
-
-            customExceptionHandlers.forEach(handler -> handler.apply(throwable));
-            post(LoggingLevel.ERROR, sb.toString());
-        }
-
-        return null;
-    }
-
-    private String makePermList(DiscordPermissionException throwable) {
-        PermissionList lackingPermission = PermissionList.create(throwable.getLackingPermission());
-        return "(" + lackingPermission.toPermissionInt() + ") " + Arrays.toString(lackingPermission.toArray());
-    }
-
-    private void post(LoggingLevel level, String message) {
-        if (!ignored.contains(loggingClass)) {
-            if (level != LoggingLevel.ERROR) {
-                customHandlers.forEach(handler -> handler.apply(level, message));
-            }
-            String format = String.format("%s %s %s", newFix(level, -1), message, newFix(level, 1));
-            for (String string : blanked) {
-                int i1 = format.indexOf(string);
-                if (i1 > -1) {
-                    format = format.substring(0, i1) + "*****" + format.substring(i1 + string.length());
-                }
-            }
-            System.out.println(format);
-        }
-    }
-
-    private String newFix(LoggingLevel level, int x) {
-        String fix = (x < 0 ? prefix : suffix);
-
-        fix = fix.replace("%t", new Timestamp(System.currentTimeMillis()).toString());
-        fix = fix.replace("%c", loggingClass.getName());
-        fix = fix.replace("%s", "Class \"" + loggingClass.getSimpleName() + "\"");
-        fix = fix.replace("%l", level.getName());
-        fix = fix.replace("%r", Thread.currentThread()
-                .getName());
-
-        return fix.equals("null") ? "" : fix;
     }
 
     private static List<Class> createIgnoredList(JsonNode data) {
