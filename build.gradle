@@ -1,18 +1,22 @@
 apply plugin: 'java-library'
 
-project.version = "0.11.1"
+project.version = "1.0.0"
 
 ext {
     versionNo = [
-            main   : '0.11.1',
-            impl8  : '0.11.1',
-            core8  : '0.10.1',
-            core11 : '0.10.1',
-            extUtil: '1.1.1'
+            main   : '1.0.0',
+            impl8  : '0.12.0',
+            core8  : '0.11.0',
+            core11 : '0.10.2',
+            extUtil: '1.2.0'
     ]
     depVersion = [
-            jackson      : '2.9.3',
-            kalutils     : '0.3.0',
+            jackson      : '2.9.7',
+            kalutils     : '0.4.1',
+            jUnit        : '4.12',
+            reflections  : '0.9.11',
+            okHttp       : '3.9.1',
+            emojiJava    : '4.0.0',
             ijAnnotations: '12.0'
     ]
 }
@@ -34,7 +38,7 @@ javadoc {
         options.addBooleanOption('html4', true)
     }
     options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("A:\\Workspaces\\CrystalShardDocumentation\\"))
+    options.destinationDirectory(new File("./docs/"))
 }
 
 jar {
@@ -53,7 +57,7 @@ allprojects {
     jar {
         if (!isTravis()) {
             archiveName = "CrystalShard-${project.name}.jar"
-            destinationDir = new File("${project.rootProject.projectDir.absolutePath}\\artifacts")
+            destinationDir = new File("${project.rootProject.projectDir.absolutePath}/artifacts")
         }
         classifier "sources-${project.name}".toLowerCase()
     }
@@ -61,11 +65,14 @@ allprojects {
     repositories {
         jcenter()
         maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url = "https://jitpack.io" }
     }
 
     dependencies {
         implementation "com.fasterxml.jackson.core:jackson-databind:${depVersion.jackson}"
-        implementation "de.kaleidox:kalutils:${depVersion.kalutils}"
+        implementation("de.kaleidox:kalutils:${depVersion.kalutils}") {
+            exclude group: 'com.vdurmont' // A fork is included already.
+        }
         compileOnly "com.intellij:annotations:${depVersion.ijAnnotations}"
     }
 
@@ -94,8 +101,8 @@ project(":Main") {
         testRuntimeOnly project(':Core-11')
         testRuntimeOnly project(':ExtensiveUtils')
 
-        testImplementation 'junit:junit:4.12'
-        testImplementation 'org.reflections:reflections:0.9.11'
+        testImplementation "junit:junit:${depVersion.jUnit}"
+        testImplementation "org.reflections:reflections:${depVersion.reflections}"
     }
 
     sourceSets {
@@ -123,9 +130,8 @@ project(":ExtensiveUtils") {
     dependencies {
         implementation project(':Main')
         implementation project(':Internal-8')
-
-        implementation 'com.vdurmont:emoji-java:4.0.0'
-        implementation 'org.reflections:reflections:0.9.11'
+        
+        implementation "org.reflections:reflections:${depVersion.reflections}"
     }
 }
 
@@ -136,6 +142,9 @@ project(":Internal-8") {
     targetCompatibility = 1.8
 
     dependencies {
+        //implementation "com.github.CrystalShardDiscord:emoji-java:${depVersion.emojiJava}"
+        implementation "com.vdurmont:emoji-java:${depVersion.emojiJava}"
+
         implementation project(":Main")
     }
 }
@@ -148,7 +157,7 @@ project(":Core-8") {
 
     dependencies {
         implementation project(":Main")
-        implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+        implementation "com.squareup.okhttp3:okhttp:${depVersion.okHttp}"
     }
 }
 
