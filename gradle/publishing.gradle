@@ -176,9 +176,11 @@ publishing {
 }
 
 signing {
-    useGpgCmd()
-    for (def pub : publishing.publications)
-        sign pub
+    if (new File(".credentials/sonatype-password.cred").exists()) {
+        useGpgCmd()
+        for (def pub : publishing.publications)
+            sign pub
+    }
 }
 
 static File fileOrTempFile(String name) {
