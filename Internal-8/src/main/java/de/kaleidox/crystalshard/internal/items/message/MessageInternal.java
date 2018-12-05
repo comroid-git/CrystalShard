@@ -41,8 +41,8 @@ import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
-import de.kaleidox.util.objects.functional.Evaluation;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.markers.IDPair;
 
 import java.time.DateTimeException;
 import java.time.Instant;

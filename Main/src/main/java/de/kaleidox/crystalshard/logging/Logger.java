@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.main.items.permission.PermissionList;
+import de.kaleidox.util.config.Configuration;
 import de.kaleidox.util.helpers.ListHelper;
 
 import java.io.File;
@@ -32,8 +33,7 @@ public class Logger {
     private final static String DEFAULT_PREFIX = "[%l]\t%t\t%c:";
     private final static String DEFAULT_SUFFIX = "{%r}";
     private final static List<String> DEFAULT_BLANKED = new ArrayList<>();
-    private final static String configFile = "config/logging.json";
-    private final static JsonNode cfg;
+    private final static String configFile = "logging.json";
     private static String prefix, suffix;
     private static LoggingLevel level;
     private static List<Class> ignored;
@@ -43,53 +43,18 @@ public class Logger {
     private static List<CustomExceptionHandler> customExceptionHandlers = new ArrayList<>();
     private final Class loggingClass;
 
+    private final static Configuration config;
+
     static {
-        JsonNode config = null;
-        boolean invalid = false;
-        try {
-            File file = new File(configFile);
-            InputStream resourceStream = ClassLoader.getSystemResourceAsStream(configFile);
-
-            if (file.isFile() || resourceStream != null) {
-                InputStream stream;
-                if (file.isFile()) stream = new FileInputStream(file);
-                else stream = resourceStream;
-                int r;
-                StringBuilder sb = new StringBuilder();
-                assert stream != null;
-                while ((r = stream.read()) != -1) sb.append((char) r);
-                config = new ObjectMapper().readTree(sb.toString());
-            }
-        } catch (IOException ignored) {
-            invalid = true;
-        } finally {
-            if (config == null) {
-                System.out.println("[INFO] Logger configuration file \"" + configFile + "\" " +
-                        (invalid ? "is invalid" : "could not be found at either program or resource root") + "!");
-                config = JsonNodeFactory.instance.objectNode();
-            }
-        }
-
-        cfg = config;
-        level = LoggingLevel.of(cfg.path("level").asText(DEFAULT_LEVEL.getName())).orElse(DEFAULT_LEVEL);
-        ignored = new ArrayList<Class>() {{
-            if (cfg.has("ignored")) {
-                for (JsonNode clsNode : cfg.path("ignored")) {
-                    try {
-                        add(Class.forName(clsNode.asText()));
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException("Unknown class to ignore: " + clsNode.asText(), e);
-                    }
-                }
-            } else addAll(DEFAULT_IGNORED);
-        }};
-        prefix = cfg.path("prefix").asText(DEFAULT_PREFIX);
-        suffix = cfg.path("suffix").asText(DEFAULT_SUFFIX);
-        blanked = new ArrayList<String>() {{
-            if (cfg.has("blanked"))
-                cfg.path("blanked").forEach(node -> add(node.asText()));
-            else addAll(DEFAULT_BLANKED);
-        }};
+        config = new Configuration(configFile);
+        config.register("level", LoggingLevel.WARN, obj -> LoggingLevel.of(obj.toString()))
+                .register("prefix", "[%l]\t%t\t%c:")
+                .register("suffix", "{%r}");
+        level = config.var("level", LoggingLevel.class);
+        prefix = config.var("prefix");
+        suffix = config.var("suffix");
+        ignored = new ArrayList<>();
+        blanked = new ArrayList<>();
     }
 
     /**
@@ -273,23 +238,8 @@ public class Logger {
         return fix.equals("null") ? "" : fix;
     }
 
-// Static membe
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void writeCurrentConfig() throws IOException {
-        ObjectNode wrt = JsonNodeFactory.instance.objectNode();
-        wrt.set("level", cfg.has("level") ? cfg.get("level") : nodeOf(DEFAULT_LEVEL));
-        wrt.set("ignored", cfg.has("ignored") ? cfg.get("ignored") : nodeOf(DEFAULT_IGNORED));
-        wrt.set("prefix", cfg.has("prefix") ? cfg.get("prefix") : nodeOf(DEFAULT_PREFIX));
-        wrt.set("suffix", cfg.has("suffix") ? cfg.get("suffix") : nodeOf(DEFAULT_SUFFIX));
-        wrt.set("blanked", cfg.has("blanked") ? cfg.get("blanked") : nodeOf(DEFAULT_BLANKED));
-
-        File file = new File(configFile);
-        new File(file.getPath().substring(0, file.getPath().lastIndexOf('\\'))).mkdirs();
-        file.createNewFile();
-        FileOutputStream stream = new FileOutputStream(file);
-        String write = wrt.toString();
-        for (char c : write.toCharArray()) stream.write(c);
+    public static Configuration getConfig() {
+        return config;
     }
 
     /**

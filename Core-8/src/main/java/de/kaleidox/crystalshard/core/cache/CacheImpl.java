@@ -270,6 +270,7 @@ public abstract class CacheImpl<T extends Cacheable, I, R> implements Cache<T, I
      * @param parameter An array of parameters.
      * @return Whether the parameters can fit.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean matchingParams(Object... parameter) {
         boolean match = true;
 

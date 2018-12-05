@@ -4,7 +4,7 @@ import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.util.objects.functional.Evaluation;
+import de.kaleidox.util.functional.Evaluation;
 
 import java.util.Collection;
 

@@ -20,9 +20,9 @@ import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.crystalshard.util.UtilInjector;
-import de.kaleidox.util.objects.functional.Evaluation;
-import de.kaleidox.util.objects.functional.LivingInt;
-import de.kaleidox.util.objects.markers.IDPair;
+import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.functional.LivingInt;
+import de.kaleidox.util.markers.IDPair;
 import de.kaleidox.util.tunnel.TunnelFramework;
 
 import java.util.ArrayList;

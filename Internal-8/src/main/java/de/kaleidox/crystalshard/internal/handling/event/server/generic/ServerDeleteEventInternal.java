@@ -4,6 +4,7 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
 import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerDeleteEvent;
 import de.kaleidox.crystalshard.main.items.server.Server;
+
 import java.util.Optional;
 
 public class ServerDeleteEventInternal extends EventBase implements ServerDeleteEvent {

@@ -95,4 +95,16 @@ public abstract class InternalInjector extends InjectorBase {
     public static void tryHandle(Discord discord, JsonNode data) {
         injector.tryHandleinjector(discord, data);
     }
+
+    public abstract String parseToAliasesDel(String emojiExact);
+
+    public static String parseToAliases(String emoji) {
+        return injector.parseToAliasesDel(emoji);
+    }
+
+    public abstract String parseToUnicodeDel(String emojiExact);
+
+    public static String parseToUnicode(String emoji) {
+        return injector.parseToAliasesDel(emoji);
+    }
 }

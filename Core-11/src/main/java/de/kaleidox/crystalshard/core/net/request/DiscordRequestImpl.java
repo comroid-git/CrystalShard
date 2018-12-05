@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
+import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
-import de.kaleidox.util.objects.CompletableFutureExtended;
 
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;

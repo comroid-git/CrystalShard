@@ -19,9 +19,9 @@ import de.kaleidox.crystalshard.main.items.user.Author;
 import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 import de.kaleidox.crystalshard.main.items.user.Self;
 import de.kaleidox.crystalshard.util.embeds.PagedEmbed;
+import de.kaleidox.util.functional.Switch;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.SetHelper;
-import de.kaleidox.util.objects.functional.Switch;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

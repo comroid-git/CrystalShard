@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.internal;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.vdurmont.emoji.EmojiParser;
 
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
@@ -87,5 +88,15 @@ public class InternalInjectorJRE8Impl extends InternalInjector {
     @Override
     public int getJdkVersion() {
         return 8;
+    }
+
+    @Override
+    public String parseToAliasesDel(String emojiExact) {
+        return EmojiParser.parseToAliases(emojiExact);
+    }
+
+    @Override
+    public String parseToUnicodeDel(String emojiExact) {
+        return EmojiParser.parseToUnicode(emojiExact);
     }
 }

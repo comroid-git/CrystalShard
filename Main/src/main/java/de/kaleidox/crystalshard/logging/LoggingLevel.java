@@ -75,11 +75,12 @@ public enum LoggingLevel {
      * @param name The name to search for.
      * @return The logging level with that name.
      */
-    public static Optional<LoggingLevel> of(String name) {
+    public static LoggingLevel of(String name) {
         return Stream.of(values())
                 .filter(level -> name.matches("[0-9]+") ?
                         level.severity == Integer.parseInt(name) :
                         level.name.equalsIgnoreCase(name))
-                .findAny();
+                .findAny()
+                .orElse(WARN);
     }
 }

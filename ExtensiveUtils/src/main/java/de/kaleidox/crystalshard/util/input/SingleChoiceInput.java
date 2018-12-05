@@ -5,7 +5,7 @@ import de.kaleidox.crystalshard.main.handling.listener.message.reaction.Reaction
 import de.kaleidox.crystalshard.main.items.message.MessageReciever;
 import de.kaleidox.crystalshard.main.items.message.embed.Embed;
 import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.objects.CompletableFutureExtended;
+import de.kaleidox.util.CompletableFutureExtended;
 
 import java.util.ArrayList;
 import java.util.List;

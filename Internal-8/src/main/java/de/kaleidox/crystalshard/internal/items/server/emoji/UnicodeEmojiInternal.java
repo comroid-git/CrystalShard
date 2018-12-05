@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.vdurmont.emoji.EmojiParser;
 
 import de.kaleidox.crystalshard.internal.DiscordInternal;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
@@ -19,7 +19,7 @@ public class UnicodeEmojiInternal implements UnicodeEmoji {
         this.discord = (DiscordInternal) discord;
         this.emojiExact = data.get("name")
                 .asText();
-        this.aliases = EmojiParser.parseToAliases(emojiExact);
+        this.aliases = InternalInjector.parseToAliases(emojiExact);
     }
 
     public UnicodeEmojiInternal(Discord discord, String aliases, String unicode) {
