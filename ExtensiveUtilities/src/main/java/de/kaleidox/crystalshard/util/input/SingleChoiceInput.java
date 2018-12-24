@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.util.input;
 
-import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionAddEvent;
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionAddEvent;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionAddListener;
 import de.kaleidox.util.CompletableFutureExtended;
 
 import java.util.ArrayList;

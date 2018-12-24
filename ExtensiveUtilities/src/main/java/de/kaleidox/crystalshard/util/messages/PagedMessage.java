@@ -1,11 +1,11 @@
 package de.kaleidox.crystalshard.util.messages;
 
-import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
+import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
+import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionEvent;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionRemoveListener;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

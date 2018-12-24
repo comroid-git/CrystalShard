@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.handling.event.server.generic;
 
 import org.jetbrains.annotations.NotNull;
 
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.event.server.generic.ServerEditEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.event.server.generic.ServerEditEvent;
-import de.kaleidox.crystalshard.main.items.server.Server;
 import de.kaleidox.util.annotations.NotContainNull;
 
 import java.util.Set;

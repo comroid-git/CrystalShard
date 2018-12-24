@@ -1,13 +1,13 @@
 package de.kaleidox.crystalshard.util.command;
 
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.handling.event.message.generic.MessageCreateEvent;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.Author;
+import de.kaleidox.crystalshard.api.handling.event.message.generic.MessageCreateEvent;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

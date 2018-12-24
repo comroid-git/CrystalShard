@@ -2,6 +2,15 @@ package de.kaleidox.crystalshard.internal.items.role;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionList;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.api.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -10,17 +19,8 @@ import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionListInternal;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.markers.IDPair;
 
 import java.awt.Color;
@@ -32,13 +32,13 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.COLOR;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.GROUPING;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.MANAGED;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.MENTIONABILITY;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.NAME;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.PERMISSION_OVERWRITES;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.RoleEditTrait.POSITION;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.COLOR;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.GROUPING;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.MANAGED;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.MENTIONABILITY;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.NAME;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.PERMISSION_OVERWRITES;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.RoleEditTrait.POSITION;
 
 public class RoleInternal implements Role {
     private final static Logger logger = new Logger(RoleInternal.class);

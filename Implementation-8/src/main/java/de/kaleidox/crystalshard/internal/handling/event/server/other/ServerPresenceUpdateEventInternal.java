@@ -1,12 +1,12 @@
 package de.kaleidox.crystalshard.internal.handling.event.server.other;
 
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.entity.user.presence.Presence;
+import de.kaleidox.crystalshard.api.entity.user.presence.UserActivity;
+import de.kaleidox.crystalshard.api.handling.event.server.other.ServerPresenceUpdateEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.event.server.other.ServerPresenceUpdateEvent;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 
 import java.util.Optional;
 
@@ -18,7 +18,6 @@ public class ServerPresenceUpdateEventInternal extends EventBase implements Serv
         this.presence = presence;
     }
 
-    // Override Methods
     @Override
     public Presence getPresence() {
         return presence;
@@ -30,7 +29,7 @@ public class ServerPresenceUpdateEventInternal extends EventBase implements Serv
     }
 
     @Override
-    public Presence.Status getStatus() {
+    public String getStatus() {
         return presence.getStatus();
     }
 

@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.logging;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.api.entity.permission.PermissionList;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.util.config.Configuration;
 import de.kaleidox.util.helpers.ListHelper;
 
@@ -24,6 +24,7 @@ public class Logger {
     private final static String DEFAULT_SUFFIX = "{%r}";
     private final static List<String> DEFAULT_BLANKED = new ArrayList<>();
     private final static String configFile = "logging.json";
+    private final static Configuration config;
     private static String prefix, suffix;
     private static LoggingLevel level;
     private static List<Class> ignored;
@@ -32,8 +33,6 @@ public class Logger {
     private static List<CustomHandler> customHandlers = new ArrayList<>();
     private static List<CustomExceptionHandler> customExceptionHandlers = new ArrayList<>();
     private final Class loggingClass;
-
-    private final static Configuration config;
 
     static {
         config = new Configuration(configFile);

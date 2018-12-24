@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.api.handling.event.message;
 
-import de.kaleidox.crystalshard.api.handling.event.Event;
 import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.handling.event.Event;
 
 public interface MessageEvent extends Event {
     default long getMessageId() {

@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.handling.listener.server.role.ServerRoleCreateListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.role.RoleCreateEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
-import de.kaleidox.crystalshard.main.handling.listener.server.role.ServerRoleCreateListener;
-import de.kaleidox.crystalshard.main.items.role.Role;
 
 public class GUILD_ROLE_CREATE extends HandlerBase {
     // Override Methods

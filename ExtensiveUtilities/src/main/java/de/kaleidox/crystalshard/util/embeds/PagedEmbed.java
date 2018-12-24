@@ -3,16 +3,16 @@ package de.kaleidox.crystalshard.util.embeds;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionEvent;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionAddListener;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.message.embed.EmbedDraftInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionEvent;
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.awt.Color;

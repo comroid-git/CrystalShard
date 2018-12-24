@@ -1,17 +1,17 @@
 package de.kaleidox.crystalshard.api.entity.role;
 
-import de.kaleidox.crystalshard.core.cache.Cacheable;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
-import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
-import de.kaleidox.crystalshard.api.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.api.entity.DiscordItem;
 import de.kaleidox.crystalshard.api.entity.Mentionable;
 import de.kaleidox.crystalshard.api.entity.Nameable;
 import de.kaleidox.crystalshard.api.entity.permission.PermissionList;
 import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
 import de.kaleidox.crystalshard.api.entity.permission.PermissionOverwritable;
+import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.api.handling.listener.server.role.RoleAttachableListener;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.util.markers.IDPair;
 
 import java.awt.Color;

@@ -1,13 +1,15 @@
 package de.kaleidox.crystalshard.internal.items.user.presence;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
-import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
+import de.kaleidox.crystalshard.api.entity.user.presence.UserActivity;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.markers.BiTimestamp;
 
 import java.net.URL;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 public class UserActivityInternal implements UserActivity {
     private final String name;
@@ -21,8 +23,10 @@ public class UserActivityInternal implements UserActivity {
     private final UserActivity.Assets assets;
     private final UserActivity.Secrets secrets;
     private final boolean instance;
-    private final Flag flags;
+    @MagicConstant(valuesFromClass = UserActivity.Flag.class)
+    private final int flags;
 
+    @SuppressWarnings("MagicConstant")
     public UserActivityInternal(JsonNode data) {
         this.name = data.get("name")
                 .asText();
@@ -42,8 +46,7 @@ public class UserActivityInternal implements UserActivity {
         this.secrets = data.has("secrets") ? new UserActivityInternal.Secrets(data.get("secrets")) : null;
         this.instance = data.path("instance")
                 .asBoolean(false);
-        this.flags = Flag.getFromValue(data.path("flags")
-                .asInt(-1));
+        this.flags = data.path("flags").asInt(-1);
     }
 
     // Override Methods
@@ -97,8 +100,9 @@ public class UserActivityInternal implements UserActivity {
     }
 
     @Override
-    public Optional<Flag> getFlag() {
-        return Optional.ofNullable(flags);
+    @MagicConstant(valuesFromClass = Flag.class)
+    public OptionalInt getFlag() {
+        return OptionalInt.of(flags);
     }
 
     @Override

@@ -1,19 +1,19 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.channel.Channel.Type;
+import de.kaleidox.crystalshard.api.entity.channel.ChannelCategory;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
 import de.kaleidox.util.helpers.FutureHelper;
 
 import java.util.ArrayList;
@@ -45,13 +45,13 @@ public class ChannelUpdaterInternal {
     }
 
     public static abstract class ServerChannelUpdater<T, R> extends ChannelUpdater<T, R> implements ServerChannel.Updater<T, R> {
-        protected final ChannelType type;
+        protected final int type;
         protected String name;
         protected Integer position;
         protected ChannelCategory category;
         protected List<PermissionOverride> overrides;
 
-        protected ServerChannelUpdater(Discord discord, ServerChannel channel, ChannelType type) {
+        protected ServerChannelUpdater(Discord discord, ServerChannel channel, int type) {
             super(discord, channel);
             this.type = type;
             this.overrides = new ArrayList<>();
@@ -85,7 +85,7 @@ public class ChannelUpdaterInternal {
 
     public static class ServerCategoryUpdater extends ServerChannelUpdater<ChannelCategory.Updater, ChannelCategory> {
         protected ServerCategoryUpdater(Discord discord, ChannelCategory channel) {
-            super(discord, channel, ChannelType.GUILD_CATEGORY);
+            super(discord, channel, Type.GUILD_CATEGORY);
             setSuperType(this);
             this.category = null;
         }
@@ -127,7 +127,7 @@ public class ChannelUpdaterInternal {
         protected Boolean nsfw;
 
         protected ServerTextChannelUpdater(Discord discord, ServerTextChannel channel) {
-            super(discord, channel, ChannelType.GUILD_TEXT);
+            super(discord, channel, Type.GUILD_TEXT);
             setSuperType(this);
         }
 
@@ -181,7 +181,7 @@ public class ChannelUpdaterInternal {
         protected Integer limit;
 
         protected ServerVoiceChannelUpdater(Discord discord, ServerVoiceChannel channel) {
-            super(discord, channel, ChannelType.GUILD_VOICE);
+            super(discord, channel, Type.GUILD_VOICE);
             setSuperType(this);
         }
 

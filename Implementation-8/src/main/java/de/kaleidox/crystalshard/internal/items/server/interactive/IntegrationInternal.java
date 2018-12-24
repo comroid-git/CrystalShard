@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.items.server.interactive;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
-import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Integration;
+import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.util.markers.IDPair;
 
 import java.time.Instant;

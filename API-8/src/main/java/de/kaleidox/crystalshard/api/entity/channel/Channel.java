@@ -23,14 +23,6 @@ public interface Channel
     @MagicConstant(valuesFromClass = Type.class)
     int getType();
 
-    class Type {
-        public static final int GUILD_TEXT = 0;
-        public static final int DIRECT_MESSAGE = 1;
-        public static final int GUILD_VOIDE = 2;
-        public static final int GROUP_DM = 3;
-        public static final int GUILD_CATEGORY = 4;
-    }
-
     String getName();
 
     int getPosition();
@@ -112,5 +104,13 @@ public interface Channel
          * @return A future that completes with the built channel.
          */
         CompletableFuture<R> build();
+    }
+
+    class Type {
+        public static final int GUILD_TEXT = 0;
+        public static final int DIRECT_MESSAGE = 1;
+        public static final int GUILD_VOICE = 2;
+        public static final int GROUP_DM = 3;
+        public static final int GUILD_CATEGORY = 4;
     }
 }

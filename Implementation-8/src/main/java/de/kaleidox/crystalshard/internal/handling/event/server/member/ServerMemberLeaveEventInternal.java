@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.handling.event.server.member;
 
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.event.server.member.ServerMemberLeaveEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.event.server.member.ServerMemberLeaveEvent;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 public class ServerMemberLeaveEventInternal extends EventBase implements ServerMemberLeaveEvent {
     private final Server server;

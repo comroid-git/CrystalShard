@@ -2,17 +2,17 @@ package de.kaleidox.crystalshard.internal.items.server.interactive;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Invite;
+import de.kaleidox.crystalshard.api.entity.server.interactive.MetaInvite;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
-import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 

@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.api.entity.server.emoji;
 
-import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.api.entity.DiscordItem;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.util.markers.IDPair;
 
 import java.util.NoSuchElementException;

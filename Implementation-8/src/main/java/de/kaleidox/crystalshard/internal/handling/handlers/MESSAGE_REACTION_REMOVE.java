@@ -2,17 +2,17 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.reaction.Reaction;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionRemoveEvent;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionRemoveListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.message.reaction.ReactionRemoveEventInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
-import de.kaleidox.crystalshard.main.handling.event.message.reaction.ReactionRemoveEvent;
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionRemoveListener;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.markers.IDPair;
 
 public class MESSAGE_REACTION_REMOVE extends HandlerBase {

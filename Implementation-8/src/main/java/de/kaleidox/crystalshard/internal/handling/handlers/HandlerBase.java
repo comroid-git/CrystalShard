@@ -3,13 +3,13 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.NotNull;
 
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.handling.listener.Listener;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.util.RoleContainer;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.handling.listener.Listener;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.items.role.Role;
 import de.kaleidox.util.annotations.MayContainNull;
 
 import java.util.ArrayList;

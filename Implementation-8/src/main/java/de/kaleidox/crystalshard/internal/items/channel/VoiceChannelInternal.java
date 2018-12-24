@@ -2,8 +2,8 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.VoiceChannel;
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.VoiceChannel;
 
 public abstract class VoiceChannelInternal extends ChannelInternal implements VoiceChannel {
     int bitrate;

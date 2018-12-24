@@ -2,12 +2,12 @@ package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
 import okhttp3.Headers;
 
+import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
 
 import java.time.Instant;
 import java.util.Optional;

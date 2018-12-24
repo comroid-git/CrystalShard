@@ -2,18 +2,18 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.channel.ChannelCategory;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.interactive.MetaInvite;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.editevent.enums.ChannelEditTrait;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.OptionalHelper;
 
 import java.util.ArrayList;

@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
 import javax.naming.LimitExceededException;
 
+import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.functional.LivingInt;
 import de.kaleidox.util.helpers.MapHelper;
 import de.kaleidox.util.helpers.QueueHelper;

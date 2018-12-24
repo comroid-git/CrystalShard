@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.items.server.emoji;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.server.emoji.UnicodeEmoji;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
 
 public class UnicodeEmojiInternal implements UnicodeEmoji {
     private final static Logger logger = new Logger(UnicodeEmojiInternal.class);

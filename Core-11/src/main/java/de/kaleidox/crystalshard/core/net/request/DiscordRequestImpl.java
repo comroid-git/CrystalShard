@@ -2,9 +2,9 @@ package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.exception.DiscordResponseException;
 import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
 

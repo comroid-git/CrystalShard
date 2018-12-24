@@ -5,13 +5,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 
+import de.kaleidox.crystalshard.api.CrystalShard;
+import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.CrystalShard;
-import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.net.MalformedURLException;

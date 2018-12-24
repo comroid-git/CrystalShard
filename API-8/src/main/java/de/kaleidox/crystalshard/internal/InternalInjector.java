@@ -88,6 +88,10 @@ public abstract class InternalInjector extends InjectorBase {
 
     protected abstract void tryHandleinjector(Discord discord, JsonNode data);
 
+    public abstract String parseToAliasesDel(String emojiExact);
+
+    public abstract String parseToUnicodeDel(String emojiExact);
+
     public static <T> T newInstance(Class<T> tClass, Object... args) {
         return injector.makeInstance(tClass, args);
     }
@@ -96,13 +100,9 @@ public abstract class InternalInjector extends InjectorBase {
         injector.tryHandleinjector(discord, data);
     }
 
-    public abstract String parseToAliasesDel(String emojiExact);
-
     public static String parseToAliases(String emoji) {
         return injector.parseToAliasesDel(emoji);
     }
-
-    public abstract String parseToUnicodeDel(String emojiExact);
 
     public static String parseToUnicode(String emoji) {
         return injector.parseToAliasesDel(emoji);

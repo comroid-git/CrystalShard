@@ -1,7 +1,33 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
+import de.kaleidox.crystalshard.api.entity.message.Attachment;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.MessageActivity;
+import de.kaleidox.crystalshard.api.entity.message.MessageApplication;
+import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
+import de.kaleidox.crystalshard.api.entity.message.reaction.Reaction;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
+import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
+import de.kaleidox.crystalshard.api.entity.server.emoji.UnicodeEmoji;
+import de.kaleidox.crystalshard.api.entity.user.Author;
+import de.kaleidox.crystalshard.api.entity.user.AuthorUser;
+import de.kaleidox.crystalshard.api.entity.user.AuthorWebhook;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.api.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -14,34 +40,8 @@ import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.message.MessageAttachableListener;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.message.Attachment;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.MessageActivity;
-import de.kaleidox.crystalshard.main.items.message.MessageApplication;
-import de.kaleidox.crystalshard.main.items.message.MessageType;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
-import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
-import de.kaleidox.crystalshard.main.items.user.Author;
-import de.kaleidox.crystalshard.main.items.user.AuthorUser;
-import de.kaleidox.crystalshard.main.items.user.AuthorWebhook;
-import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.markers.IDPair;
 
 import java.time.DateTimeException;
@@ -73,7 +73,8 @@ public class MessageInternal implements Message {
     private final boolean tts;
     private final boolean mentionsEveryone;
     private final boolean pinned;
-    private final MessageType type;
+    @MagicConstant(valuesFromClass = Message.Type.class)
+    private final int type;
     private final MessageActivity activity;
     private final MessageApplication application;
     private final List<User> userMentions = new ArrayList<>();
@@ -88,6 +89,7 @@ public class MessageInternal implements Message {
     private final TextChannel channel;
     private Collection<ListenerManager<? extends MessageAttachableListener>> listenerManagers;
 
+    @SuppressWarnings("MagicConstant")
     public MessageInternal(Discord discord, JsonNode data) {
         logger.deeptrace("Creating message object for data: " + data.toString());
         Instant timestamp1;
@@ -125,8 +127,7 @@ public class MessageInternal implements Message {
                 .asBoolean(false);
         this.pinned = data.get("pinned")
                 .asBoolean(false);
-        this.type = MessageType.getTypeById(data.get("type")
-                .asInt());
+        this.type = data.get("type").asInt();
         this.activity = data.has("activity") ? new MessageActivityInternal(data.get("activity")) : null;
         this.application = data.has("application") ? new MessageApplicationInternal(data.get("application")) : null;
         if (!data.has("webhook_id")) {
@@ -158,7 +159,7 @@ public class MessageInternal implements Message {
             }
         }
 
-        listenerManagers = new ArrayList<ListenerManager<? extends MessageAttachableListener>>();
+        listenerManagers = new ArrayList<>();
 
         instances.put(id, this);
     }
@@ -219,7 +220,7 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public MessageType getType() {
+    public int getType() {
         return type;
     }
 

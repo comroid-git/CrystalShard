@@ -3,6 +3,23 @@ package de.kaleidox.crystalshard.internal;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vdurmont.emoji.EmojiParser;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.ChannelCategory;
+import de.kaleidox.crystalshard.api.entity.channel.GroupChannel;
+import de.kaleidox.crystalshard.api.entity.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionList;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
+import de.kaleidox.crystalshard.api.entity.server.emoji.UnicodeEmoji;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Invite;
+import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.internal.handling.handlers.HandlerBase;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelCategoryInternal;
@@ -22,23 +39,6 @@ import de.kaleidox.crystalshard.internal.items.server.emoji.CustomEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.server.emoji.UnicodeEmojiInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
 import de.kaleidox.crystalshard.internal.items.user.UserInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.GroupChannel;
-import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
-import de.kaleidox.crystalshard.main.items.server.emoji.UnicodeEmoji;
-import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.util.Hashtable;
 
@@ -86,11 +86,6 @@ public class InternalInjectorJRE8Impl extends InternalInjector {
     }
 
     @Override
-    public int getJdkVersion() {
-        return 8;
-    }
-
-    @Override
     public String parseToAliasesDel(String emojiExact) {
         return EmojiParser.parseToAliases(emojiExact);
     }
@@ -98,5 +93,10 @@ public class InternalInjectorJRE8Impl extends InternalInjector {
     @Override
     public String parseToUnicodeDel(String emojiExact) {
         return EmojiParser.parseToUnicode(emojiExact);
+    }
+
+    @Override
+    public int getJdkVersion() {
+        return 8;
     }
 }

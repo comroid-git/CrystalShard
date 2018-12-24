@@ -1,15 +1,15 @@
 package de.kaleidox.crystalshard.internal.handling.event.message.generic;
 
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.Author;
+import de.kaleidox.crystalshard.api.entity.user.AuthorUser;
+import de.kaleidox.crystalshard.api.handling.event.message.generic.MessageCreateEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.Author;
-import de.kaleidox.crystalshard.main.items.user.AuthorUser;
 
 import java.util.Optional;
 

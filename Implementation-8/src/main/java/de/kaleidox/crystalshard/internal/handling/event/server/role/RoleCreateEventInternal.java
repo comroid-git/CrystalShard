@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.handling.event.server.role;
 
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.handling.event.server.role.RoleCreateEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.event.server.role.RoleCreateEvent;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
 
 public class RoleCreateEventInternal extends EventBase implements RoleCreateEvent {
     private final Server server;

@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.internal.util;
 
-import de.kaleidox.crystalshard.main.handling.listener.ListenerAttachable;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.server.role.RoleAttachableListener;
-import de.kaleidox.crystalshard.main.items.role.Role;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.api.handling.listener.server.role.RoleAttachableListener;
 import de.kaleidox.util.functional.Evaluation;
 
 import java.util.Collection;

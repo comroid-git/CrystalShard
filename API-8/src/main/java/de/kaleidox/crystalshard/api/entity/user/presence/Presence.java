@@ -15,7 +15,7 @@ public interface Presence {
     Server getServer();
 
     @MagicConstant(flagsFromClass = Status.class)
-    Status getStatus();
+    String getStatus();
 
     class Status {
         public static final String HIDDEN = "hidden";

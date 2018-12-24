@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.util.input;
 
-import de.kaleidox.crystalshard.main.handling.event.message.generic.MessageCreateEvent;
-import de.kaleidox.crystalshard.main.handling.listener.message.generic.MessageCreateListener;
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.event.message.generic.MessageCreateEvent;
+import de.kaleidox.crystalshard.api.handling.listener.message.generic.MessageCreateListener;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;

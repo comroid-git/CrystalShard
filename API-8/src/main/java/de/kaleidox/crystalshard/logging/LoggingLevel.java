@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.logging;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**

@@ -2,6 +2,15 @@ package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.api.handling.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -9,18 +18,9 @@ import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.user.UserAttachableListener;
-import de.kaleidox.crystalshard.main.items.channel.PrivateTextChannel;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.util.functional.Evaluation;
 import de.kaleidox.util.helpers.NullHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.functional.Evaluation;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,13 +33,13 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.AVATAR;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.DISCRIMINATOR;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.EMAIL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.LOCALE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.MFA_STATE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.USERNAME;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.UserEditTrait.VERIFIED_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.AVATAR;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.DISCRIMINATOR;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.EMAIL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.LOCALE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.MFA_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.USERNAME;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.UserEditTrait.VERIFIED_STATE;
 import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 @SuppressWarnings("unused")

@@ -4,8 +4,8 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okio.ByteString;
 
+import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.nio.charset.Charset;

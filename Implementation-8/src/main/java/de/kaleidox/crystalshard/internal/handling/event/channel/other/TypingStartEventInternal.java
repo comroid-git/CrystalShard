@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.handling.event.channel.other;
 
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.event.channel.other.TypingStartEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.event.channel.other.TypingStartEvent;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 public class TypingStartEventInternal extends EventBase implements TypingStartEvent {
     private final Channel channel;

@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.util.util;
 
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;

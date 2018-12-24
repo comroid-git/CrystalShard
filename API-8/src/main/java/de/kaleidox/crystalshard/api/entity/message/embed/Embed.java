@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.api.entity.message.embed;
 
-import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.util.Castable;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 
 import java.awt.Color;
 import java.net.URL;

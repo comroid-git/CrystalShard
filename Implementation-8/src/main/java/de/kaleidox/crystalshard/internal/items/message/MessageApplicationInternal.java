@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.kaleidox.crystalshard.main.items.message.MessageApplication;
+import de.kaleidox.crystalshard.api.entity.message.MessageApplication;
 
 public class MessageApplicationInternal implements MessageApplication {
     private final long id;

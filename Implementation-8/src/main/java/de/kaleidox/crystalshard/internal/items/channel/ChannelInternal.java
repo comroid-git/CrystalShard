@@ -1,23 +1,23 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.api.handling.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.channel.ChannelAttachableListener;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.functional.Evaluation;
+import de.kaleidox.util.helpers.FutureHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,18 +28,19 @@ import java.util.stream.Collectors;
 
 public abstract class ChannelInternal implements Channel {
     final Discord discord;
-    final ChannelType type;
+    @MagicConstant(valuesFromClass = Channel.Type.class)
+    final int type;
     final boolean isPrivate;
     final long id;
     final List<ListenerManager<? extends ChannelAttachableListener>> listenerManagers;
 
+    @SuppressWarnings("MagicConstant")
     ChannelInternal(Discord discord, JsonNode data) {
         this.discord = discord;
         this.id = data.get("id")
                 .asLong();
-        this.type = ChannelType.getFromId(data.get("type")
-                .asInt());
-        this.isPrivate = (type == ChannelType.DM || type == ChannelType.GROUP_DM);
+        this.type = data.get("type").asInt();
+        this.isPrivate = (type == Type.DIRECT_MESSAGE || type == Type.GROUP_DM);
         this.listenerManagers = new ArrayList<>();
     }
 
@@ -82,7 +83,7 @@ public abstract class ChannelInternal implements Channel {
     }
 
     @Override
-    public ChannelType getType() {
+    public int getType() {
         return type;
     }
 

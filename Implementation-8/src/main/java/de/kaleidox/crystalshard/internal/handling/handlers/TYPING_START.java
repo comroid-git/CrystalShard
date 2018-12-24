@@ -2,15 +2,15 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.listener.channel.other.TypingStartListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.channel.other.TypingStartEventInternal;
 import de.kaleidox.crystalshard.internal.util.RoleContainer;
-import de.kaleidox.crystalshard.main.handling.listener.channel.other.TypingStartListener;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.TextChannel;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.util.Collection;
 import java.util.Collections;

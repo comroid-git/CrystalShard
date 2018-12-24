@@ -1,16 +1,16 @@
 package de.kaleidox.crystalshard.internal.items.server.interactive;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.DiscordItem;
+import de.kaleidox.crystalshard.api.entity.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.items.DiscordItem;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

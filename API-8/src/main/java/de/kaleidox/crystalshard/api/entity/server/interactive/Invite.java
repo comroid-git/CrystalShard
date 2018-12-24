@@ -1,15 +1,15 @@
 package de.kaleidox.crystalshard.api.entity.server.interactive;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
+import de.kaleidox.crystalshard.api.util.Castable;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.InternalInjector;
-import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
-import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
-import de.kaleidox.crystalshard.api.entity.server.Server;
-import de.kaleidox.crystalshard.api.util.Castable;
 
 import java.net.URL;
 import java.util.Optional;

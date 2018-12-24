@@ -2,24 +2,24 @@ package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.items.channel.VoiceChannel;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.VoiceState;
-import de.kaleidox.crystalshard.main.items.user.User;
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.VoiceChannel;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.VoiceState;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
 
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.CHANNEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.DEAFENED_STATE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.MUTED_STATE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.SELF_DEAFENED_STATE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.SELF_MUTED_STATE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.VoiceStateEditTrait.SUPPRESSED_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.VoiceStateEditTrait.CHANNEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.VoiceStateEditTrait.DEAFENED_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.VoiceStateEditTrait.MUTED_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.VoiceStateEditTrait.SELF_DEAFENED_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.VoiceStateEditTrait.SELF_MUTED_STATE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.VoiceStateEditTrait.SUPPRESSED_STATE;
 
 /**
  * guild_id?	snowflake	    the guild id this voice state is for channel_id	?snowflake	    the channel id this user is connected to user_id      snowflake

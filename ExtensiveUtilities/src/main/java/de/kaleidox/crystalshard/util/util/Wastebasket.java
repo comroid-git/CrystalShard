@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.util.util;
 
-import de.kaleidox.crystalshard.main.handling.listener.message.reaction.ReactionAddListener;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
+import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionAddListener;
 
 import java.util.concurrent.CompletableFuture;
 

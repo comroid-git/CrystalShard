@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.handling.listener.server.member.ServerMemberJoinListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.member.ServerMemberJoinEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
-import de.kaleidox.crystalshard.main.handling.listener.server.member.ServerMemberJoinListener;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class GUILD_MEMBER_ADD extends HandlerBase {
     // Override Methods

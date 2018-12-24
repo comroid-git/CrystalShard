@@ -1,24 +1,25 @@
 package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.channel.Channel.Type;
+import de.kaleidox.crystalshard.api.entity.channel.ChannelCategory;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Invite;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ChannelType;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
 import de.kaleidox.util.helpers.FutureHelper;
 
 import java.util.ArrayList;
@@ -94,19 +95,19 @@ public class ChannelBuilderInternal {
     }
 
     public static abstract class ServerChannelBuilder<T, R> extends ChannelBuilder<T, R> implements ServerChannel.Builder<T, R> {
-        protected final ChannelType type;
+        @MagicConstant(valuesFromClass = Type.class)
+        protected final int type;
         protected Server server;
         protected String name;
         protected ChannelCategory category;
         protected List<PermissionOverride> overrides;
 
-        protected ServerChannelBuilder(Discord discord, ChannelType type) {
+        protected ServerChannelBuilder(Discord discord, @MagicConstant(valuesFromClass = Type.class) int type) {
             super(discord);
             this.type = type;
             this.overrides = new ArrayList<>();
         }
 
-        // Override Methods
         @Override
         public T setServer(Server server) {
             this.server = server;
@@ -133,17 +134,16 @@ public class ChannelBuilderInternal {
 
         public JsonNode toPartialJsonNode() {
             if (name == null) throw new IllegalArgumentException("No channel name set!");
-            return objectNode("name", name, "type", type.getId());
+            return objectNode("name", name, "type", type);
         }
     }
 
     public static class ServerCategoryBuilder extends ServerChannelBuilder<ChannelCategory.Builder, ChannelCategory> implements ChannelCategory.Builder {
         public ServerCategoryBuilder(Discord discord) {
-            super(discord, ChannelType.GUILD_CATEGORY);
+            super(discord, Type.GUILD_CATEGORY);
             setSuperType(this);
         }
 
-        // Override Methods
         @Override
         public ChannelCategory.Builder setCategory(ChannelCategory category) {
             throw new UnsupportedOperationException("Cannot set a category to a category!");
@@ -183,7 +183,7 @@ public class ChannelBuilderInternal {
         protected Boolean nsfw;
 
         public ServerTextChannelBuilder(Discord discord) {
-            super(discord, ChannelType.GUILD_TEXT);
+            super(discord, Type.GUILD_TEXT);
             setSuperType(this);
         }
 
@@ -238,7 +238,7 @@ public class ChannelBuilderInternal {
         protected Integer limit;
 
         public ServerVoiceChannelBuilder(Discord discord) {
-            super(discord, ChannelType.GUILD_VOICE);
+            super(discord, Type.GUILD_VOICE);
             setSuperType(this);
         }
 

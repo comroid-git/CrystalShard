@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.api.entity.message.embed;
 
-import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.api.entity.Nameable;
 import de.kaleidox.crystalshard.api.util.FileContainer;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 
 import java.awt.Color;
 import java.net.URL;

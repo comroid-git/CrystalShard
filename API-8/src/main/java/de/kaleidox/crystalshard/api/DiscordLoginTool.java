@@ -1,11 +1,11 @@
 package de.kaleidox.crystalshard.api;
 
+import de.kaleidox.crystalshard.api.entity.user.AccountType;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.InternalInjector;
-import de.kaleidox.crystalshard.api.entity.user.AccountType;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;

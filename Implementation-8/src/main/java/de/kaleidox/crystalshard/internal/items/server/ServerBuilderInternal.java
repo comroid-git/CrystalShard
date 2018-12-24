@@ -1,20 +1,19 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
+import org.intellij.lang.annotations.MagicConstant;
+
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.ServerComponent;
+import de.kaleidox.crystalshard.api.entity.server.VoiceRegion;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.channel.ChannelBuilderInternal;
 import de.kaleidox.crystalshard.internal.items.role.RoleBuilderInternal;
 import de.kaleidox.crystalshard.internal.util.Container;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
-import de.kaleidox.crystalshard.main.items.server.ExplicitContentFilterLevel;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.ServerComponent;
-import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
-import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
 import de.kaleidox.util.FileType;
 
 import java.awt.Dimension;
@@ -29,9 +28,12 @@ public class ServerBuilderInternal implements Server.Builder {
     private String name;
     private VoiceRegion region;
     private File icon;
-    private VerificationLevel verificationLevel;
-    private DefaultMessageNotificationLevel notificationLevel;
-    private ExplicitContentFilterLevel contentFilter;
+    @MagicConstant(valuesFromClass = Server.VerificationLevel.class)
+    private int verificationLevel;
+    @MagicConstant(valuesFromClass = Server.DefaultMessageNotificationLevel.class)
+    private int notificationLevel;
+    @MagicConstant(valuesFromClass = Server.ExplicitContentFilterLevel.class)
+    private int contentFilter;
     private List<RoleBuilderInternal> roleBuilders;
     private List<ServerChannel.Builder> channelBuilders;
 
@@ -61,19 +63,19 @@ public class ServerBuilderInternal implements Server.Builder {
     }
 
     @Override
-    public Server.Builder setVerificationLevel(VerificationLevel level) {
+    public Server.Builder setVerificationLevel(int level) {
         this.verificationLevel = level;
         return this;
     }
 
     @Override
-    public Server.Builder setDefaultNotificationLevel(DefaultMessageNotificationLevel level) {
+    public Server.Builder setDefaultNotificationLevel(int level) {
         this.notificationLevel = level;
         return this;
     }
 
     @Override
-    public Server.Builder setExplicitContentFilter(ExplicitContentFilterLevel level) {
+    public Server.Builder setExplicitContentFilter(int level) {
         this.contentFilter = level;
         return this;
     }
@@ -102,27 +104,19 @@ public class ServerBuilderInternal implements Server.Builder {
         return CoreInjector.webRequest(Server.class, discord)
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.GUILD.createUri())
-                .setNode("name",
-                        name,
-                        "region",
-                        region.getRegionKey(),
-                        "icon",
-                        Container.encodeBase64(icon,
+                .setNode("name", name,
+                        "region", region.getRegionKey(),
+                        "icon", Container.encodeBase64(icon,
                                 FileType.IMAGE.JPEG,
                                 new Dimension(128,
                                         128)),
-                        "verification_level",
-                        verificationLevel.getId(),
-                        "default_message_notifications",
-                        notificationLevel.getId(),
-                        "explicit_content_filter",
-                        contentFilter.getId(),
-                        "roles",
-                        roleBuilders.stream()
+                        "verification_level", verificationLevel,
+                        "default_message_notifications", notificationLevel,
+                        "explicit_content_filter", contentFilter,
+                        "roles", roleBuilders.stream()
                                 .map(RoleBuilderInternal::toJsonNode)
                                 .collect(Collectors.toList()),
-                        "channels",
-                        channelBuilders.stream()
+                        "channels", channelBuilders.stream()
                                 .map(builder -> ((ChannelBuilderInternal.ServerChannelBuilder) builder).toPartialJsonNode())
                                 .collect(Collectors.toList()))
                 .executeAs(node -> discord.getServerCache()

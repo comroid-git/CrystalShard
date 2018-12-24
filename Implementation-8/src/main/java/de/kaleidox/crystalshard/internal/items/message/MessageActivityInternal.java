@@ -1,26 +1,26 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
-import de.kaleidox.crystalshard.main.items.message.MessageActivity;
-import de.kaleidox.crystalshard.main.items.message.MessageActivityType;
+import de.kaleidox.crystalshard.api.entity.message.MessageActivity;
 
 import java.util.Optional;
 
 public class MessageActivityInternal implements MessageActivity {
-    private final MessageActivityType type;
+    @MagicConstant(valuesFromClass = MessageActivity.Type.class)
+    private final int type;
     private final String partyId;
 
+    @SuppressWarnings("MagicConstant")
     public MessageActivityInternal(JsonNode data) {
-        this.type = MessageActivityType.getById(data.get("type")
-                .asInt());
+        this.type = data.get("type").asInt();
         this.partyId = data.get("party_id")
                 .asText(null);
     }
 
-    // Override Methods
     @Override
-    public MessageActivityType getType() {
+    public int getType() {
         return type;
     }
 

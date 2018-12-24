@@ -2,14 +2,14 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Ban;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.handling.listener.server.ban.ServerBanListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.ban.ServerBanEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.BanInternal;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
-import de.kaleidox.crystalshard.main.handling.listener.server.ban.ServerBanListener;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.interactive.Ban;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
 
 public class GUILD_BAN_ADD extends HandlerBase {
     // Override Methods

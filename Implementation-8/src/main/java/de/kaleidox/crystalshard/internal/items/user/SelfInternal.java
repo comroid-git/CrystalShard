@@ -1,18 +1,19 @@
 package de.kaleidox.crystalshard.internal.items.user;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.Self;
+import de.kaleidox.crystalshard.api.entity.user.presence.Presence;
+import de.kaleidox.crystalshard.api.entity.user.presence.UserActivity;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.net.socket.OpCode;
 import de.kaleidox.crystalshard.core.net.socket.Payload;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.Self;
-import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import java.net.URL;
@@ -22,7 +23,8 @@ import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
 public class SelfInternal extends UserInternal implements Self {
     private final static Logger logger = new Logger(SelfInternal.class);
-    private Presence.Status status;
+    @MagicConstant(flagsFromClass = Presence.Status.class)
+    private String status;
     private UserActivity.Type type;
     private String title;
     private String url;
@@ -63,7 +65,7 @@ public class SelfInternal extends UserInternal implements Self {
     }
 
     @Override
-    public CompletableFuture<Void> setStatus(Presence.Status status) {
+    public CompletableFuture<Void> setStatus(@MagicConstant(flagsFromClass = Presence.Status.class) String status) {
         this.status = status;
         return sendStatus();
     }
@@ -85,7 +87,7 @@ public class SelfInternal extends UserInternal implements Self {
         return getDiscord().getWebSocket()
                 .sendPayload(Payload.create(OpCode.STATUS_UPDATE,
                         objectNode("since",
-                                (status == Presence.Status.IDLE ?
+                                (status.equals(Presence.Status.IDLE) ?
                                         System.currentTimeMillis() : null),
                                 "game",
                                 objectNode("type", type.getId(), "name", title,
@@ -94,10 +96,8 @@ public class SelfInternal extends UserInternal implements Self {
                                         // set, else include nothing
                                         (url != null ? new Object[]{"url", url} :
                                                 new Object[0])),
-                                "status",
-                                status.getKey(),
-                                "afk",
-                                false)))
+                                "status", status,
+                                "afk", false)))
                 .thenApply(e -> null);
     }
 }

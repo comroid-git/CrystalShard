@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.api.handling.event.server.member;
 
-import de.kaleidox.crystalshard.api.handling.editevent.EditEvent;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.handling.editevent.EditEvent;
 
 import java.util.List;
 import java.util.Optional;

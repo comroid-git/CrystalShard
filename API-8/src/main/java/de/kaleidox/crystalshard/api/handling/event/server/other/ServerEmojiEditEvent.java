@@ -1,8 +1,8 @@
 package de.kaleidox.crystalshard.api.handling.event.server.other;
 
+import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.api.handling.editevent.EditEvent;
 import de.kaleidox.crystalshard.api.handling.event.server.ServerEvent;
-import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
 
 import java.util.List;
 

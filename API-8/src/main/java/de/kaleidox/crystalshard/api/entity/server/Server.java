@@ -124,6 +124,28 @@ public interface Server
                 .get(id);
     }
 
+    interface Builder {
+        Builder setName(String name);
+
+        Builder setRegion(VoiceRegion region);
+
+        Builder setIcon(File icon);
+
+        Builder setVerificationLevel(@MagicConstant(valuesFromClass = Server.VerificationLevel.class) int level);
+
+        Builder setDefaultNotificationLevel(@MagicConstant(valuesFromClass = Server.DefaultMessageNotificationLevel.class) int level);
+
+        Builder setExplicitContentFilter(@MagicConstant(valuesFromClass = Server.ExplicitContentFilterLevel.class) int level);
+
+        Builder addRole(Role.Builder roleBuilder);
+
+        Builder addChannel(ServerChannel.Builder channelBuilder);
+
+        Builder add(ServerComponent component);
+
+        CompletableFuture<Server> build();
+    }
+
     class ExplicitContentFilterLevel {
         public static final int DISABLED = 0;
         public static final int MEMBERS_WITHOUT_ROLES = 1;
@@ -147,28 +169,6 @@ public interface Server
         public static final int HIGH = 3; // (╯°□°）╯︵ ┻━┻ - must be a member of the server for longer than 10 minutes
         public static final int VERY_HIGH = 4; // ┻━┻ミヽ(ಠ益ಠ)ﾉ彡┻━┻ - must have a verified phone number
 
-    }
-
-    interface Builder {
-        Builder setName(String name);
-
-        Builder setRegion(VoiceRegion region);
-
-        Builder setIcon(File icon);
-
-        Builder setVerificationLevel(VerificationLevel level);
-
-        Builder setDefaultNotificationLevel(DefaultMessageNotificationLevel level);
-
-        Builder setExplicitContentFilter(ExplicitContentFilterLevel level);
-
-        Builder addRole(Role.Builder roleBuilder);
-
-        Builder addChannel(ServerChannel.Builder channelBuilder);
-
-        Builder add(ServerComponent component);
-
-        CompletableFuture<Server> build();
     }
 
 

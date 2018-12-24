@@ -1,12 +1,6 @@
 package de.kaleidox.crystalshard.core;
 
 import de.kaleidox.crystalshard.InjectorBase;
-import de.kaleidox.crystalshard.core.cache.Cache;
-import de.kaleidox.crystalshard.core.cache.Cacheable;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
-import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
@@ -14,6 +8,12 @@ import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.core.cache.Cache;
+import de.kaleidox.crystalshard.core.cache.Cacheable;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
+import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.util.markers.IDPair;
 
 import java.util.ArrayList;

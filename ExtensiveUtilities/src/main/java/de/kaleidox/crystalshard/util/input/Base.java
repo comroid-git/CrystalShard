@@ -1,15 +1,14 @@
 package de.kaleidox.crystalshard.util.input;
 
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.CompletableFutureExtended;
-import de.kaleidox.util.markers.NamedItem;
 
 import java.net.URL;
 import java.util.ArrayList;

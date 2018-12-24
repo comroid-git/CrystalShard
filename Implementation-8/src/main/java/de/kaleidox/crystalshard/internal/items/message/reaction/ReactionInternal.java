@@ -4,15 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.reaction.Reaction;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
+import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.internal.items.server.emoji.UnicodeEmojiInternal;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.reaction.Reaction;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.emoji.Emoji;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.MapHelper;
 
 import java.util.concurrent.ConcurrentHashMap;

@@ -3,12 +3,12 @@ package de.kaleidox.crystalshard.internal.items.message.embed;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
+import de.kaleidox.crystalshard.api.util.FileContainer;
 import de.kaleidox.crystalshard.internal.util.Container;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.main.items.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.main.util.FileContainer;
 import de.kaleidox.util.helpers.JsonHelper;
 import de.kaleidox.util.helpers.UrlHelper;
 import de.kaleidox.util.interfaces.JsonNodeable;

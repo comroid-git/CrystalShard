@@ -1,11 +1,11 @@
 package de.kaleidox.crystalshard.util.ui.response;
 
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
+import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.items.message.Message;
-import de.kaleidox.crystalshard.main.items.message.MessageReciever;
-import de.kaleidox.crystalshard.main.items.message.embed.Embed;
-import de.kaleidox.crystalshard.main.items.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueEndpoint;
 import de.kaleidox.util.markers.NamedItem;
 

@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.listener.server.member.ServerMemberLeaveListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.member.ServerMemberLeaveEventInternal;
 import de.kaleidox.crystalshard.internal.items.server.ServerInternal;
-import de.kaleidox.crystalshard.main.handling.listener.server.member.ServerMemberLeaveListener;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 public class GUILD_MEMBER_REMOVE extends HandlerBase {
     // Override Methods

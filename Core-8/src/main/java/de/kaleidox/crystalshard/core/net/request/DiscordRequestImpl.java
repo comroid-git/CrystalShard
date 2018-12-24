@@ -7,9 +7,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.exception.DiscordResponseException;
 import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordResponseException;
 import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
 

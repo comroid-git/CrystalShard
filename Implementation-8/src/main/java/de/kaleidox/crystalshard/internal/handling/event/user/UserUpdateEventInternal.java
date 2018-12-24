@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.handling.event.user;
 
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.event.user.UserUpdateEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.event.user.UserUpdateEvent;
-import de.kaleidox.crystalshard.main.items.user.User;
 
 import java.util.Set;
 

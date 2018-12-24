@@ -2,11 +2,11 @@ package de.kaleidox.crystalshard.internal.handling.handlers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.handling.listener.server.other.ServerWebhookUpdateListener;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.server.other.ServerWebhookUpdateEventInternal;
-import de.kaleidox.crystalshard.main.handling.listener.server.other.ServerWebhookUpdateListener;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.server.Server;
 
 /**
  * guild_id	    snowflake	id of the guild channel_id	snowflake	id of the channel

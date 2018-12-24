@@ -1,13 +1,5 @@
 package de.kaleidox.crystalshard.api.entity.message;
 
-import de.kaleidox.crystalshard.core.CoreInjector;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.core.net.request.HttpMethod;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.internal.InternalInjector;
-import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.api.entity.DiscordItem;
 import de.kaleidox.crystalshard.api.entity.channel.PrivateChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
@@ -16,6 +8,14 @@ import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.api.entity.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.user.Self;
 import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
+import de.kaleidox.crystalshard.core.CoreInjector;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.net.request.HttpMethod;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.util.DefaultEmbed;
 import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.helpers.FutureHelper;

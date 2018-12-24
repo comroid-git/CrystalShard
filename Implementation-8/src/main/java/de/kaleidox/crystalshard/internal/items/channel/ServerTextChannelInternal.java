@@ -2,24 +2,24 @@ package de.kaleidox.crystalshard.internal.items.channel;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.channel.ChannelCategory;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.interactive.MetaInvite;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.items.permission.PermissionOverrideInternal;
 import de.kaleidox.crystalshard.internal.items.server.interactive.InviteInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.items.channel.Channel;
-import de.kaleidox.crystalshard.main.items.channel.ChannelCategory;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.interactive.MetaInvite;
-import de.kaleidox.crystalshard.main.items.user.User;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.ListHelper;
 import de.kaleidox.util.helpers.OptionalHelper;
@@ -33,10 +33,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.NAME;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.NSFW_FLAG;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.PERMISSION_OVERWRITES;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ChannelEditTrait.TOPIC;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ChannelEditTrait.NAME;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ChannelEditTrait.NSFW_FLAG;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ChannelEditTrait.PERMISSION_OVERWRITES;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ChannelEditTrait.TOPIC;
 
 public class ServerTextChannelInternal extends TextChannelInternal implements ServerTextChannel {
     final static ConcurrentHashMap<Long, ServerTextChannel> instances = new ConcurrentHashMap<>();

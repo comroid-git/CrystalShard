@@ -1,14 +1,15 @@
 package de.kaleidox.crystalshard.internal.items.user.presence;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.entity.user.presence.Presence;
+import de.kaleidox.crystalshard.api.entity.user.presence.UserActivity;
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.main.items.user.presence.Presence;
-import de.kaleidox.crystalshard.main.items.user.presence.UserActivity;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,8 +19,10 @@ public class PresenceInternal implements Presence {
     private final User user;
     private final Server server;
     private UserActivity game;
-    private Status status;
+    @MagicConstant(flagsFromClass = Presence.Status.class)
+    private String status;
 
+    @SuppressWarnings("MagicConstant")
     private PresenceInternal(Discord discord, Server server, JsonNode data) {
         long userId = data.get("user")
                 .get("id")
@@ -28,8 +31,7 @@ public class PresenceInternal implements Presence {
                 .getOrRequest(userId, userId);
         this.server = server;
         this.game = data.has("game") ? new UserActivityInternal(data.get("game")) : null;
-        this.status = Status.getFromKey(data.get("status")
-                .asText());
+        this.status = data.get("status").asText();
 
         instances.put(server.getId() + "/" + user.getId(), this);
     }
@@ -51,14 +53,14 @@ public class PresenceInternal implements Presence {
     }
 
     @Override
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
+    @SuppressWarnings("MagicConstant")
     private Presence updateData(JsonNode data) {
         this.game = data.has("game") ? new UserActivityInternal(data.get("game")) : null;
-        this.status = Status.getFromKey(data.get("status")
-                .asText());
+        this.status = data.get("status").asText();
         return this;
     }
 

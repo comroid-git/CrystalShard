@@ -48,7 +48,7 @@ jar {
 allprojects {
     apply plugin: 'java-library'
     apply plugin: 'groovy'
-    
+
     group 'de.kaleidox'
 
     compileJava {

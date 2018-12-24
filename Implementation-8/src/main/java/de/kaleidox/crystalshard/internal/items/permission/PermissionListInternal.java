@@ -1,9 +1,9 @@
 package de.kaleidox.crystalshard.internal.items.permission;
 
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverride;
-import de.kaleidox.crystalshard.main.items.permission.PermissionOverwritable;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionList;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionOverwritable;
 
 import java.util.HashSet;
 import java.util.Optional;

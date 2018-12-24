@@ -1,7 +1,29 @@
 package de.kaleidox.crystalshard.internal.items.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.channel.ChannelStructure;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerVoiceChannel;
+import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.permission.PermissionList;
+import de.kaleidox.crystalshard.api.entity.role.Role;
+import de.kaleidox.crystalshard.api.entity.server.Server;
+import de.kaleidox.crystalshard.api.entity.server.VoiceRegion;
+import de.kaleidox.crystalshard.api.entity.server.VoiceState;
+import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Integration;
+import de.kaleidox.crystalshard.api.entity.server.interactive.Invite;
+import de.kaleidox.crystalshard.api.entity.user.ServerMember;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.entity.user.presence.Presence;
+import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerManager;
+import de.kaleidox.crystalshard.api.handling.listener.server.ServerAttachableListener;
 import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.crystalshard.core.cache.Cache;
 import de.kaleidox.crystalshard.core.net.request.HttpMethod;
@@ -16,34 +38,9 @@ import de.kaleidox.crystalshard.internal.items.server.interactive.ServerMemberUp
 import de.kaleidox.crystalshard.internal.items.user.ServerMemberInternal;
 import de.kaleidox.crystalshard.internal.items.user.presence.PresenceInternal;
 import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.crystalshard.main.Discord;
-import de.kaleidox.crystalshard.main.exception.DiscordPermissionException;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.listener.ListenerManager;
-import de.kaleidox.crystalshard.main.handling.listener.server.ServerAttachableListener;
-import de.kaleidox.crystalshard.main.items.channel.ChannelStructure;
-import de.kaleidox.crystalshard.main.items.channel.ServerChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerTextChannel;
-import de.kaleidox.crystalshard.main.items.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.main.items.permission.Permission;
-import de.kaleidox.crystalshard.main.items.permission.PermissionList;
-import de.kaleidox.crystalshard.main.items.role.Role;
-import de.kaleidox.crystalshard.main.items.server.DefaultMessageNotificationLevel;
-import de.kaleidox.crystalshard.main.items.server.ExplicitContentFilterLevel;
-import de.kaleidox.crystalshard.main.items.server.MFALevel;
-import de.kaleidox.crystalshard.main.items.server.Server;
-import de.kaleidox.crystalshard.main.items.server.VerificationLevel;
-import de.kaleidox.crystalshard.main.items.server.VoiceRegion;
-import de.kaleidox.crystalshard.main.items.server.VoiceState;
-import de.kaleidox.crystalshard.main.items.server.emoji.CustomEmoji;
-import de.kaleidox.crystalshard.main.items.server.interactive.Integration;
-import de.kaleidox.crystalshard.main.items.server.interactive.Invite;
-import de.kaleidox.crystalshard.main.items.user.ServerMember;
-import de.kaleidox.crystalshard.main.items.user.User;
-import de.kaleidox.crystalshard.main.items.user.presence.Presence;
+import de.kaleidox.util.functional.Evaluation;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.helpers.UrlHelper;
-import de.kaleidox.util.functional.Evaluation;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,32 +53,30 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.AFK_CHANNEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.AFK_TIMEOUT;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.AVAILABILITY;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.DEFAULT_MESSAGE_NOTIFICATION_LEVEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.EMBED_CHANNEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.EMBED_ENABLED;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.EXPLICIT_CONTENT_FILTER_LEVEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.ICON;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.LARGE;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.MEMBER_COUNT;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.MFA_LEVEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.NAME;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.OWNER;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.OWN_PERMISSIONS;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.REGION;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.SPLASH;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.SYSTEM_CHANNEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.VERIFICATION_LEVEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.WIDGET_CHANNEL;
-import static de.kaleidox.crystalshard.main.handling.editevent.enums.ServerEditTrait.WIDGET_ENABLED;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.AFK_CHANNEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.AFK_TIMEOUT;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.AVAILABILITY;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.DEFAULT_MESSAGE_NOTIFICATION_LEVEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.EMBED_CHANNEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.EMBED_ENABLED;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.EXPLICIT_CONTENT_FILTER_LEVEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.ICON;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.LARGE;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.MEMBER_COUNT;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.MFA_LEVEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.NAME;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.OWNER;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.OWN_PERMISSIONS;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.REGION;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.SPLASH;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.SYSTEM_CHANNEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.VERIFICATION_LEVEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.WIDGET_CHANNEL;
+import static de.kaleidox.crystalshard.api.handling.editevent.enums.ServerEditTrait.WIDGET_ENABLED;
 
 public class ServerInternal implements Server {
-    private final static ConcurrentHashMap<Long, ServerInternal> instances = new ConcurrentHashMap<>();
     private final static Logger logger = new Logger(ServerInternal.class);
     private final DiscordInternal discord;
     private final long id;
@@ -104,10 +99,14 @@ public class ServerInternal implements Server {
     private int afkTimeout;
     private boolean embedEnabled;
     private ServerChannel embedChannel;
-    private VerificationLevel verificationLevel;
-    private DefaultMessageNotificationLevel defaultMessageNotificationLevel;
-    private ExplicitContentFilterLevel explicitContentFilterLevel;
-    private MFALevel mfaLevel;
+    @MagicConstant(valuesFromClass = Server.VerificationLevel.class)
+    private int verificationLevel;
+    @MagicConstant(valuesFromClass = Server.DefaultMessageNotificationLevel.class)
+    private int defaultMessageNotificationLevel;
+    @MagicConstant(valuesFromClass = Server.ExplicitContentFilterLevel.class)
+    private int explicitContentFilterLevel;
+    @MagicConstant(valuesFromClass = Server.MFALevel.class)
+    private int mfaLevel;
     private boolean widgetEnabled;
     private ServerChannel widgetChannel;
     private ServerTextChannel systemChannel;
@@ -125,27 +124,20 @@ public class ServerInternal implements Server {
                 .asBoolean()) {
             this.unavailable = true;
         } else {
-            data.path("roles")
-                    .forEach(role -> roles.add(discord.getRoleCache()
-                            .getOrCreate(discord, this, role)));
-            data.path("emojis")
-                    .forEach(emoji -> emojis.add(discord.getEmojiCache()
-                            .getOrCreate(getDiscord(), this, emoji, true)));
-            data.path("features")
-                    .forEach(feature -> features.add(feature.asText()));
-            data.path("voice_states")
-                    .forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
-            data.path("members")
-                    .forEach(member -> members.add(discord.getUserCache()
-                            .getOrCreate(discord, member.get("user"))
-                            .toServerMember(this, member)));
-            data.path("channels")
-                    .forEach(channel -> channels.add(discord.getChannelCache()
-                            .getOrCreate(discord, this, channel)
-                            .toServerChannel()
-                            .orElseThrow(AssertionError::new)));
-            data.path("presenceStates")
-                    .forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
+            data.path("roles").forEach(role -> roles.add(discord.getRoleCache()
+                    .getOrCreate(discord, this, role)));
+            data.path("emojis").forEach(emoji -> emojis.add(discord.getEmojiCache()
+                    .getOrCreate(getDiscord(), this, emoji, true)));
+            data.path("features").forEach(feature -> features.add(feature.asText()));
+            data.path("voice_states").forEach(state -> voiceStates.add(VoiceStateInternal.getInstance(discord, state)));
+            data.path("members").forEach(member -> members.add(discord.getUserCache()
+                    .getOrCreate(discord, member.get("user"))
+                    .toServerMember(this, member)));
+            data.path("channels").forEach(channel -> channels.add(discord.getChannelCache()
+                    .getOrCreate(discord, this, channel)
+                    .toServerChannel()
+                    .orElseThrow(AssertionError::new)));
+            data.path("presenceStates").forEach(presence -> presenceStates.add(PresenceInternal.getInstance(discord, presence)));
             structure = new ChannelStructureInternal(channels);
             updateData(data);
             this.everyoneRole = roles.stream()
@@ -155,8 +147,6 @@ public class ServerInternal implements Server {
                     .orElseThrow(() -> new NoSuchElementException("No @everyone Role found!"));
         }
         listenerManangers = new ArrayList<>();
-
-        instances.put(id, this);
     }
 
     @Override
@@ -169,6 +159,7 @@ public class ServerInternal implements Server {
         return id;
     }
 
+    @SuppressWarnings("MagicConstant")
     public Set<EditTrait<Server>> updateData(JsonNode data) {
         HashSet<EditTrait<Server>> traits = new HashSet<>();
 
@@ -215,29 +206,20 @@ public class ServerInternal implements Server {
                     .asBoolean(false);
             traits.add(EMBED_ENABLED);
         }
-        if (verificationLevel == null || verificationLevel.getId() != data.path("verification_level")
-                .asInt(-1)) {
-            verificationLevel = VerificationLevel.getFromId(data.get("verification_level")
-                    .asInt(-1));
+        if (verificationLevel != data.path("verification_level").asInt(-1)) {
+            verificationLevel = data.get("verification_level").asInt(-1);
             traits.add(VERIFICATION_LEVEL);
         }
-        if (defaultMessageNotificationLevel == null || defaultMessageNotificationLevel.getId() != data.path("default_message_notification")
-                .asInt(
-                        defaultMessageNotificationLevel.getId())) {
-            defaultMessageNotificationLevel = DefaultMessageNotificationLevel.getFromId(data.get("default_message_notifications")
-                    .asInt(-1));
+        if (defaultMessageNotificationLevel != data.path("default_message_notification").asInt(defaultMessageNotificationLevel)) {
+            defaultMessageNotificationLevel = data.get("default_message_notifications").asInt(-1);
             traits.add(DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
         }
-        if (explicitContentFilterLevel == null || explicitContentFilterLevel.getId() != data.path("explicit_content_filter")
-                .asInt(-1)) {
-            explicitContentFilterLevel = ExplicitContentFilterLevel.getFromId(data.get("explicit_content_filter")
-                    .asInt(-1));
+        if (explicitContentFilterLevel != data.path("explicit_content_filter").asInt(-1)) {
+            explicitContentFilterLevel = data.get("explicit_content_filter").asInt(-1);
             traits.add(EXPLICIT_CONTENT_FILTER_LEVEL);
         }
-        if (mfaLevel == null || mfaLevel.getId() != data.path("mfa_level")
-                .asInt(-1)) {
-            mfaLevel = MFALevel.getFromId(data.get("mfa_level")
-                    .asInt(-1));
+        if (mfaLevel != data.path("mfa_level").asInt(-1)) {
+            mfaLevel = data.get("mfa_level").asInt(-1);
             traits.add(MFA_LEVEL);
         }
         if (widgetEnabled != data.path("widget_enabled")
@@ -384,17 +366,17 @@ public class ServerInternal implements Server {
     }
 
     @Override
-    public VerificationLevel getVerificationLevel() {
+    public int getVerificationLevel() {
         return verificationLevel;
     }
 
     @Override
-    public DefaultMessageNotificationLevel getDefaultMessageNotificationLevel() {
+    public int getDefaultMessageNotificationLevel() {
         return defaultMessageNotificationLevel;
     }
 
     @Override
-    public ExplicitContentFilterLevel getExplicitContentFilterLevel() {
+    public int getExplicitContentFilterLevel() {
         return explicitContentFilterLevel;
     }
 
@@ -414,7 +396,7 @@ public class ServerInternal implements Server {
     }
 
     @Override
-    public MFALevel getMFALevel() {
+    public int getMFALevel() {
         return mfaLevel;
     }
 
@@ -625,7 +607,8 @@ public class ServerInternal implements Server {
     }
 
     public void removeUser(User user) {
-        members.remove(user);
+        if (user instanceof ServerMember)
+            members.remove(user);
     }
 
     public void addRole(Role role) {

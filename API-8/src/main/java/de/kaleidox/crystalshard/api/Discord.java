@@ -1,11 +1,5 @@
 package de.kaleidox.crystalshard.api;
 
-import de.kaleidox.crystalshard.core.cache.Cache;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
-import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
-import de.kaleidox.crystalshard.api.handling.listener.DiscordAttachableListener;
-import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.role.Role;
@@ -13,8 +7,14 @@ import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.api.entity.user.Self;
 import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.handling.listener.DiscordAttachableListener;
+import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.api.util.ChannelContainer;
 import de.kaleidox.crystalshard.api.util.UserContainer;
+import de.kaleidox.crystalshard.core.cache.Cache;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
+import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
+import de.kaleidox.crystalshard.core.net.socket.WebSocketClient;
 import de.kaleidox.crystalshard.util.DiscordUtils;
 import de.kaleidox.util.markers.IDPair;
 import de.kaleidox.util.tunnel.TunnelFramework;

@@ -1,10 +1,10 @@
 package de.kaleidox.crystalshard.internal.handling.event.voice;
 
+import de.kaleidox.crystalshard.api.entity.server.VoiceState;
+import de.kaleidox.crystalshard.api.handling.editevent.EditTrait;
+import de.kaleidox.crystalshard.api.handling.event.voice.VoiceStateUpdateEvent;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.event.EventBase;
-import de.kaleidox.crystalshard.main.handling.editevent.EditTrait;
-import de.kaleidox.crystalshard.main.handling.event.voice.VoiceStateUpdateEvent;
-import de.kaleidox.crystalshard.main.items.server.VoiceState;
 
 import java.util.Set;
 

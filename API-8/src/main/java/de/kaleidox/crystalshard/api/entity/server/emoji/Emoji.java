@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.Mentionable;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.util.Castable;
+import de.kaleidox.crystalshard.internal.InternalInjector;
 
 import java.util.Optional;
 

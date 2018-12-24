@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.internal.util;
 
 import javax.imageio.ImageIO;
 
-import de.kaleidox.crystalshard.main.util.FileContainer;
+import de.kaleidox.crystalshard.api.util.FileContainer;
 import de.kaleidox.util.FileType;
 
 import java.awt.Dimension;
