@@ -34,11 +34,6 @@ public class PrivateTextChannelInternal extends TextChannelInternal implements P
     }
 
     @Override
-    public int getPosition() {
-        return 0;
-    }
-
-    @Override
     public Set<EditTrait<Channel>> updateData(JsonNode data) {
         Set<EditTrait<Channel>> traits = new HashSet<>();
 

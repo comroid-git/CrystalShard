@@ -25,8 +25,6 @@ public interface Channel
 
     String getName();
 
-    int getPosition();
-
     CompletableFuture<Void> delete();
 
     default boolean isPrivate() {

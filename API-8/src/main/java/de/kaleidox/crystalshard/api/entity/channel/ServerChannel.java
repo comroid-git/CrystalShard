@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.api.entity.channel;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.kaleidox.crystalshard.api.entity.Nameable;
 import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
 import de.kaleidox.crystalshard.api.entity.server.Server;
@@ -13,7 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public interface ServerChannel extends Channel, Nameable {
+public interface ServerChannel extends Channel, Nameable, Comparable<ServerChannel> {
     Server getServer();
 
     Optional<ChannelCategory> getCategory();
@@ -23,6 +25,13 @@ public interface ServerChannel extends Channel, Nameable {
     CompletableFuture<Collection<MetaInvite>> getChannelInvites();
 
     InviteBuilder getInviteBuilder();
+
+    int getPosition();
+
+    @Override
+    default int compareTo(@NotNull ServerChannel serverChannel) {
+        return getPosition() - serverChannel.getPosition();
+    }
 
     interface InviteBuilder {
         InviteBuilder setMaxAge(int maxAge);
