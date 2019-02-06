@@ -1,7 +1,19 @@
 package de.kaleidox.crystalshard.internal.items.message;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.intellij.lang.annotations.MagicConstant;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
@@ -44,18 +56,8 @@ import de.kaleidox.util.functional.Evaluation;
 import de.kaleidox.util.helpers.FutureHelper;
 import de.kaleidox.util.markers.IDPair;
 
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.intellij.lang.annotations.MagicConstant;
 
 import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
@@ -272,6 +274,18 @@ public class MessageInternal implements Message {
     @Override
     public List<UnicodeEmoji> getUnicodeEmojis() {
         return null;
+    }
+
+    @Override
+    public URL getQuoteUrl() {
+        try {
+            if (isPrivate()) return new URL(String.format("https://discordapp.com/channels/%d/%d", channelId, id));
+            else return new URL(
+                    String.format("https://discordapp.com/channels/%d/%d/%d", server.getId(), channelId, id)
+            );
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Unexpected MalformedURLException", e);
+        }
     }
 
     @Override

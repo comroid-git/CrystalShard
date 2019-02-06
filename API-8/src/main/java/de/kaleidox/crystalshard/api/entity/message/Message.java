@@ -34,6 +34,7 @@ import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.markers.IDPair;
 
+import java.net.URL;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -187,7 +188,6 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * Gets a list of any emoji used within this message.
      *
      * @return A list of used Emojis.
-     * @see com.vdurmont.emoji.EmojiParser
      */
     List<Emoji> getEmojis();
 
@@ -204,6 +204,12 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * @return A list with used UnicodeEmojis.
      */
     List<UnicodeEmoji> getUnicodeEmojis();
+
+    URL getQuoteUrl();
+
+    default String getQuoteMarkdown(String facadeText) {
+        return "["+facadeText+"]("+getQuoteUrl().toExternalForm()+")";
+    }
 
     /**
      * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
