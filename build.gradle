@@ -34,6 +34,9 @@ subprojects {
     
     dependencies {
         implementation "de.kaleidox:kalutils:${dependency.kalUtils}"
+        implementation "org.apache.logging.log4j:log4j-api:${dependency.log4j}"
+        implementation "org.apache.logging.log4j:log4j-core:${dependency.log4j}"
+
         compileOnly "org.jetbrains:annotations:${dependency.jetbrains_annotations}"
 
         testImplementation "junit:junit:${dependency.jUnit}"
