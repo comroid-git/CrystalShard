@@ -15,8 +15,8 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '4.10.2'
-  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+    gradleVersion = '4.10.2'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -31,7 +31,7 @@ subprojects {
 
     compileJava.options.encoding = 'UTF-8'
     repositories.jcenter()
-    
+
     dependencies {
         implementation "de.kaleidox:kalutils:${dependency.kalUtils}"
         implementation "org.apache.logging.log4j:log4j-api:${dependency.log4j}"
@@ -55,7 +55,7 @@ project(":API") {
 project(":Core") {
     dependencies {
         implementation project(":API")
-        
+
         implementation "com.fasterxml.jackson.core:jackson-databind:${dependency.jackson}"
     }
 }

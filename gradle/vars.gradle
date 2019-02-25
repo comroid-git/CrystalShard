@@ -12,6 +12,7 @@ ext {
 
     dependency = [
             kalUtils             : '0.4.1',
+            log4j                : '2.11.2',
             jackson              : '2.9.8',
             reflections          : '0.9.11',
 
