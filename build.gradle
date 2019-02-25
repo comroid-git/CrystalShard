@@ -1,175 +1,68 @@
-apply plugin: 'java-library'
-
-project.version = "1.0.0"
-
-ext {
-    versionNo = [
-            main   : '1.0.0',
-            impl8  : '0.12.0',
-            core8  : '0.11.0',
-            core11 : '0.10.2',
-            extUtil: '1.2.0'
-    ]
-    depVersion = [
-            jackson      : '2.9.7',
-            kalutils     : '0.4.1',
-            jUnit        : '4.12',
-            reflections  : '0.9.11',
-            okHttp       : '3.9.1',
-            emojiJava    : '4.0.0',
-            ijAnnotations: '12.0'
-    ]
+buildscript {
+    repositories.gradlePluginPortal()
+    dependencies.classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.20.0"
 }
 
-version = "${project.version}"
+apply plugin: 'java-library'
+apply plugin: 'groovy'
+
+group 'de.kaleidox'
+version '2.0.0-SNAPSHOT'
+
+apply from: 'gradle/vars.gradle'
+
+sourceCompatibility = 11
+targetCompatibility = 11
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.10.2'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+  gradleVersion = '4.10.2'
+  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-task javadocs(type: Javadoc) {
-    source = sourceSets.main.allJava
-    options.encoding = 'UTF-8'
-}
+compileJava.options.encoding = 'UTF-8'
+repositories.jcenter()
 
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html4', true)
-    }
-    options.encoding = 'UTF-8'
-    options.destinationDirectory(new File("./docs/"))
-}
-
-jar {
-    test
-}
-
-allprojects {
+subprojects {
     apply plugin: 'java-library'
     apply plugin: 'groovy'
-
-    group 'de.kaleidox'
-
-    compileJava {
-        options.encoding = 'UTF-8'
-    }
-
-    jar {
-        if (!isTravis()) {
-            archiveName = "CrystalShard-${project.name}.jar"
-            destinationDir = new File("${project.rootProject.projectDir.absolutePath}/artifacts")
-        }
-        classifier "sources-${project.name}".toLowerCase()
-    }
-
-    repositories {
-        jcenter()
-        maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url = "https://jitpack.io" }
-    }
-
-    dependencies {
-        implementation "com.fasterxml.jackson.core:jackson-databind:${depVersion.jackson}"
-        implementation("de.kaleidox:kalutils:${depVersion.kalutils}") {
-            exclude group: 'com.vdurmont' // A fork is included already.
-        }
-        compileOnly "com.intellij:annotations:${depVersion.ijAnnotations}"
-    }
-
-    sourceSets {
-        main {
-            java.srcDirs = ["src\\main\\java"]
-            resources.srcDirs = ["src\\main\\resources"]
-        }
-        test {
-            java.srcDirs = ["src\\test\\java"]
-            groovy.srcDirs = ["src\\test\\groovy"]
-            resources.srcDirs = ["src\\test\\resources"]
-        }
-    }
-}
-
-project(":API-8") {
-    version = versionNo.main ?: project.version
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        testImplementation project(':API-8')
-        testRuntimeOnly project(':Implementation-8')
-        testRuntimeOnly project(':Core-8')
-        testRuntimeOnly project(':Core-11')
-        testRuntimeOnly project(':ExtensiveUtilities')
-
-        testImplementation "junit:junit:${depVersion.jUnit}"
-        testImplementation "org.reflections:reflections:${depVersion.reflections}"
-    }
-
-    test {
-        test.outputs.upToDateWhen { false }
-    }
-}
-
-project(":ExtensiveUtilities") {
-    version = versionNo.extUtil ?: project.version
-
-    sourceCompatibility = 9
-    targetCompatibility = 9
-
-    dependencies {
-        implementation project(':API-8')
-        implementation project(':Implementation-8')
-        
-        implementation "org.reflections:reflections:${depVersion.reflections}"
-    }
-}
-
-project(":Implementation-8") {
-    version = versionNo.impl8 ?: project.version
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        //runtimeOnly "com.github.CrystalShardDiscord:emoji-java:${depVersion.emojiJava}"
-        implementation "com.vdurmont:emoji-java:${depVersion.emojiJava}"
-
-        implementation project(":API-8")
-    }
-}
-
-project(":Core-8") {
-    version = versionNo.core8 ?: project.version
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
-
-    dependencies {
-        implementation project(":API-8")
-        implementation "com.squareup.okhttp3:okhttp:${depVersion.okHttp}"
-    }
-}
-
-project(":Core-11") {
-    version = versionNo.core11 ?: project.version
 
     sourceCompatibility = 11
     targetCompatibility = 11
 
+    compileJava.options.encoding = 'UTF-8'
+    repositories.jcenter()
+    
     dependencies {
-        implementation project(":API-8")
+        implementation "de.kaleidox:kalutils:${dependency.kalUtils}"
+        compileOnly "org.jetbrains:annotations:${dependency.jetbrains_annotations}"
 
-        testImplementation project(":Implementation-8")
-        testImplementation project(":ExtensiveUtilities")
+        testImplementation "junit:junit:${dependency.jUnit}"
+        testCompile "org.codehaus.groovy:groovy-all:${dependency.groovy}"
+    }
+
+    sourceSets {
+        main.java.srcDirs = ["src\\main\\java"]
+        test.groovy.srcDirs = ["src\\test\\groovy"]
     }
 }
 
-if (!isTravis()) {
-    //apply from: 'gradle/publishing.gradle'
+project(":API") {
 }
 
-static boolean isTravis() {
-    return System.getenv().containsKey("TRAVIS")
+project(":Core") {
+    dependencies {
+        implementation project(":API")
+        
+        implementation "com.fasterxml.jackson.core:jackson-databind:${dependency.jackson}"
+    }
 }
+
+project(":Utilities") {
+    dependencies {
+        implementation project(":API")
+
+        implementation "org.reflections:reflections:${dependency.reflections}"
+    }
+}
+
+// TODO apply from: 'gradle/publishing.gradle'
