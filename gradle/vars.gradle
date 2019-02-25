@@ -1,0 +1,25 @@
+import static java.lang.System.getenv
+
+ext {
+    artifactName = "crystalshard"
+    projectName = "CrystalShard"
+    projectDescription = "Discord API for Java 11"
+
+    snapshot = project.version.endsWith("-SNAPSHOT")
+
+    sonatypeUsername = getenv("sonatypeUsername")
+    sonatypePassword = getenv("sonatypePassword")
+
+    dependency = [
+            kalUtils             : '0.4.1',
+            jackson              : '2.9.8',
+            reflections          : '0.9.11',
+
+            jetbrains_annotations: '17.0.0',
+
+            jUnit                : '4.12',
+            groovy               : '2.4.14'
+    ]
+}
+
+ext."signing.password" = getenv("gpgKeyPassword")

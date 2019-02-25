@@ -1,41 +1,40 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
+apply plugin: "io.codearte.nexus-staging"
+
+project.getGradle().getTaskGraph().whenReady {
+    tasks.withType(GenerateMavenPom.class).destination = file("$projectDir/pom.xml")
+}
 
 publishing {
-    boolean snapshotPublication = rootProject.version.endsWith("SNAPSHOT")
+    test
 
     repositories {
         maven {
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
-            url = snapshotPublication ? snapshotsRepoUrl : releasesRepoUrl
+            url = snapshot
+                    ? "https://oss.sonatype.org/content/repositories/snapshots"
+                    : "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             name = "Sonatype"
 
             credentials {
-                def uName = ""
-                def passwd = ""
-                int r
-                def stream = new FileInputStream(fileOrTempFile(".credentials/sonatype-username.cred"))
-                while ((r = stream.read()) != -1) uName = (uName + (char) r)
-                stream = new FileInputStream(fileOrTempFile(".credentials/sonatype-password.cred"))
-                while ((r = stream.read()) != -1) passwd = (passwd + (char) r)
-
-                username uName
-                password passwd
+                username sonatypeUsername
+                password sonatypePassword
             }
         }
     }
 
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'crystalshard-main'
-            artifact rootProject.findProject("Main").jar
-            version = vString(versionNo.main, snapshotPublication)
+            artifactId = artifactName
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
 
             pom {
-                name = "CrystalShard"
-                description = "Modular Java Discord library!"
-                inceptionYear = '2018'
+                name = projectName
+                description = projectDescription
+                inceptionYear = '2019'
 
                 licenses {
                     license {
@@ -51,32 +50,19 @@ publishing {
                         email = "burdoto@outlook.com"
                     }
                 }
-
-                scm {
-                    connection = 'scm:git:https://github.com/CrystalShardDiscord/CrystalShard.git'
-                    developerConnection = 'scm:git:git@github.com:CrystalShardDiscord/CrystalShard.git'
-                    url = 'https://github.com/CrystalShardDiscord/CrystalShard'
-                }
-
-                issueManagement {
-                    system = 'GitHub'
-                    url = 'https://github.com/CrystalShardDiscord/CrystalShard/issues'
-                }
             }
         }
     }
 }
 
 signing {
-    if (new File(".credentials/sonatype-password.cred").exists()) {
-        useGpgCmd()
-        for (def pub : publishing.publications)
-            sign pub
-    }
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
 
-static File fileOrTempFile(String name) {
-    def file = new File(name)
-    if (file.exists()) return file
-    return File.createTempFile(name, "")
+tasks.removeAll([promoteRepository, closeAndPromoteRepository, getStagingProfile])
+
+nexusStaging {
+    username sonatypeUsername
+    password sonatypePassword
 }
