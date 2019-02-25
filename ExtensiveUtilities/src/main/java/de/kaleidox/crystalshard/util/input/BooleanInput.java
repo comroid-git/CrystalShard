@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.util.input;
 
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionAddEvent;
 import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionAddListener;

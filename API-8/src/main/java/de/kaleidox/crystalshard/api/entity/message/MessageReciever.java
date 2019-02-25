@@ -3,8 +3,6 @@ package de.kaleidox.crystalshard.api.entity.message;
 import de.kaleidox.crystalshard.api.entity.DiscordItem;
 import de.kaleidox.crystalshard.api.entity.channel.PrivateChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
-import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.api.entity.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.user.Self;
 import de.kaleidox.crystalshard.api.entity.user.User;
@@ -78,14 +76,14 @@ public interface MessageReciever extends DiscordItem {
      * The returned future will complete with a {@link DiscordPermissionException}
      * if you do not have the permission to message this person or channel.
      *
-     * @param embedDraft An EmbedDraft to send.
+     * @param embed An EmbedDraft to send.
      * @return A future to contain the sent message.
      * @throws AbstractMethodError If this object is an instance of {@link Self}.
      */
-    default CompletableFuture<Message> sendMessage(EmbedDraft embedDraft) throws AbstractMethodError {
+    default CompletableFuture<Message> sendMessage(Embed embed) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
         return InternalInjector.newInstance(Message.Builder.class)
-                .setEmbed(embedDraft)
+                .setEmbed(embed)
                 .send(this);
     }
 

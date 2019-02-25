@@ -10,10 +10,6 @@ import de.kaleidox.crystalshard.api.entity.channel.GroupChannel;
 import de.kaleidox.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
-import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.api.entity.message.reaction.Reaction;
 import de.kaleidox.crystalshard.api.entity.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
@@ -221,7 +217,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * @param embedDraft The new Embed to set.
      * @return A future that completes with this message when it has been modified.
      */
-    CompletableFuture<Message> edit(EmbedDraft embedDraft);
+    CompletableFuture<Message> edit(Embed embedDraft);
 
     /**
      * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The

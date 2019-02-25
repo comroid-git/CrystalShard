@@ -23,8 +23,14 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-public interface User
-        extends DiscordItem, Nameable, Mentionable, MessageReciever, Castable<User>, ListenerAttachable<UserAttachableListener>, Cacheable<User, Long, Long> {
+public interface User extends
+        DiscordItem,
+        Nameable,
+        Mentionable,
+        MessageReciever,
+        Castable<User>,
+        ListenerAttachable<UserAttachableListener>,
+        Cacheable<User, Long, Long> {
     String getDiscriminatedName();
 
     String getDiscriminator();

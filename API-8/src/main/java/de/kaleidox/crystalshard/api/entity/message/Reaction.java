@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.api.entity.message.reaction;
+package de.kaleidox.crystalshard.api.entity.message;
 
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.message.Message;

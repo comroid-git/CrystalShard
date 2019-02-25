@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.internal.handling.event.message.reaction;
 
 import de.kaleidox.crystalshard.api.entity.message.Message;
-import de.kaleidox.crystalshard.api.entity.message.reaction.Reaction;
+import de.kaleidox.crystalshard.api.entity.message.Reaction;
 import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionRemoveEvent;

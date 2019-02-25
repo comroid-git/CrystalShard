@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
-import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.User;

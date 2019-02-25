@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.util.ui.response;
 
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.util.ui.DialogueBranch;
 import de.kaleidox.util.markers.NamedItem;

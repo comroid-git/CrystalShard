@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.internal.handling.event.message.generic;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
-import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.Author;
 import de.kaleidox.crystalshard.api.entity.user.AuthorUser;

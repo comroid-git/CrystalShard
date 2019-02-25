@@ -8,12 +8,11 @@ import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.message.Attachment;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.MessageActivity;
 import de.kaleidox.crystalshard.api.entity.message.MessageApplication;
-import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
-import de.kaleidox.crystalshard.api.entity.message.reaction.Reaction;
+import de.kaleidox.crystalshard.api.entity.message.Reaction;
 import de.kaleidox.crystalshard.api.entity.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.server.Server;
@@ -34,7 +33,6 @@ import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.internal.DiscordInternal;
 import de.kaleidox.crystalshard.internal.handling.ListenerManagerInternal;
-import de.kaleidox.crystalshard.internal.items.message.embed.SentEmbedInternal;
 import de.kaleidox.crystalshard.internal.items.message.reaction.ReactionInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorUserInternal;
 import de.kaleidox.crystalshard.internal.items.user.AuthorWebhookInternal;
@@ -280,7 +278,7 @@ public class MessageInternal implements Message {
     }
 
     @Override
-    public CompletableFuture<Message> edit(EmbedDraft embedDraft) {
+    public CompletableFuture<Message> edit(Embed embedDraft) {
         return null;
     }
 

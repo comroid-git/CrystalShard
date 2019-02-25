@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.util;
 
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
-import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;

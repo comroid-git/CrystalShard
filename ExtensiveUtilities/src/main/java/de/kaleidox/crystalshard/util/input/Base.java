@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.util.input;
 import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.ServerMember;
 import de.kaleidox.crystalshard.api.entity.user.User;

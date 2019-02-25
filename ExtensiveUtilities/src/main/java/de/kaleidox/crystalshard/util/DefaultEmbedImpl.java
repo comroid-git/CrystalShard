@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
-import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
-import de.kaleidox.crystalshard.api.entity.message.embed.SentEmbed;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.Worker;

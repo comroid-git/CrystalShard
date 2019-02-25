@@ -9,7 +9,7 @@ import de.kaleidox.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.entity.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.Author;

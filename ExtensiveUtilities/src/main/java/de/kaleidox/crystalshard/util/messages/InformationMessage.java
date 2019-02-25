@@ -2,7 +2,7 @@ package de.kaleidox.crystalshard.util.messages;
 
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
-import de.kaleidox.crystalshard.api.entity.message.embed.Embed;
+import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.logging.Logger;
 import de.kaleidox.util.helpers.ListHelper;
 

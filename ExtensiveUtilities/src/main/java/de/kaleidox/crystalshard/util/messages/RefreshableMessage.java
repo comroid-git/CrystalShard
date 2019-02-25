@@ -2,7 +2,6 @@ package de.kaleidox.crystalshard.util.messages;
 
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.MessageReciever;
-import de.kaleidox.crystalshard.api.entity.message.embed.EmbedDraft;
 import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
 import de.kaleidox.crystalshard.api.handling.event.message.reaction.ReactionEvent;
 import de.kaleidox.crystalshard.api.handling.listener.message.reaction.ReactionAddListener;
