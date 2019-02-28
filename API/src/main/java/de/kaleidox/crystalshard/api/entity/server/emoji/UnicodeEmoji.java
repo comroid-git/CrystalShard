@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.api.entity.server.emoji;
 
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.internal.InternalInjector;
 
 public interface UnicodeEmoji extends Emoji {
     Discord getDiscord();

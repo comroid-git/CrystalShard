@@ -39,7 +39,7 @@ public interface Discord extends UserContainer, ChannelContainer, ListenerAttach
 
     Optional<User> getUserById(long id);
 
-    Self getSelf();
+    Self getYourself();
 
     Optional<Server> getServerById(long id);
 

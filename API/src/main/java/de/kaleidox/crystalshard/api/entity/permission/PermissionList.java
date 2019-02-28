@@ -1,7 +1,5 @@
 package de.kaleidox.crystalshard.api.entity.permission;
 
-import de.kaleidox.crystalshard.internal.InternalInjector;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

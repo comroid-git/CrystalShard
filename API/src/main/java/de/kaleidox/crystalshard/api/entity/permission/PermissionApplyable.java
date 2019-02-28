@@ -7,13 +7,13 @@ import java.util.stream.Stream;
 
 public interface PermissionApplyable {
     default boolean hasPermission(Discord discord, Permission permission) {
-        return hasPermission(discord.getSelf(), permission);
+        return hasPermission(discord.getYourself(), permission);
     }
 
     boolean hasPermission(User user, Permission permission);
 
     default boolean hasPermission(Discord discord, Permission... permissions) {
-        return hasPermission(discord.getSelf(), permissions);
+        return hasPermission(discord.getYourself(), permissions);
     }
 
     default boolean hasPermission(User user, Permission... permissions) {

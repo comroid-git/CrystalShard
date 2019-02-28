@@ -20,6 +20,13 @@ public class Log {
     private static Collection<char[]> silenced = new HashSet<>();
     private static ConcurrentHashMap<Class, Logger> loggers = new ConcurrentHashMap<>();
 
+    @SuppressWarnings({"TypeParameterExplicitlyExtendsObject", "ConstantConditions"})
+    @Deprecated // todo Add exceptionlogger
+    public static <X extends Object> X exceptionally(Throwable throwable) {
+        get().error(throwable);
+        return null;
+    }
+
     public static void silence(String str) {
         silenced.add(str.toCharArray());
     }

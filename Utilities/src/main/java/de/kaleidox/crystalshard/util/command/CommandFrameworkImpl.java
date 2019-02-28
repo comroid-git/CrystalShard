@@ -334,7 +334,7 @@ public class CommandFrameworkImpl implements CommandFramework {
     public static void defaultHelp(Discord discord, Server server, Author author, TextChannel channel) {
         final CommandFrameworkImpl framework = (CommandFrameworkImpl) discord.getUtilities()
                 .getCommandFramework();
-        final Self self = discord.getSelf();
+        final Self self = discord.getYourself();
         final Embed.Builder builder = PagedEmbed.builder(discord);
 
         self.getAvatarUrl()

@@ -9,11 +9,12 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import de.kaleidox.crystalshard.api.util.Castable;
-import de.kaleidox.crystalshard.internal.InternalInjector;
+
+import com.google.inject.Guice;
 
 @SuppressWarnings("unused")
 public interface Embed extends Castable<Embed> {
-    Message getMessage();
+    Optional<Message> getMessage();
 
     Optional<String> getTitle();
 
@@ -44,7 +45,7 @@ public interface Embed extends Castable<Embed> {
     Updater updater();
 
     static Builder builder() {
-        return InternalInjector.newInstance(Embed.Builder.class);
+        Guice.
     }
 
     enum State {

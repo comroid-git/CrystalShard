@@ -103,7 +103,7 @@ public abstract class Base<T> {
         if (parent instanceof ServerChannel) {
             Server server = ((ServerChannel) parent).getServer();
             ServerMember member = server.getDiscord()
-                    .getSelf()
+                    .getYourself()
                     .toServerMember(server)
                     .orElseThrow(AssertionError::new);
             member.getRoleColor()

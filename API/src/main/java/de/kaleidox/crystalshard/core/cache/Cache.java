@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.core.cache;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import de.kaleidox.crystalshard.core.CoreInjector;
 import de.kaleidox.util.annotations.NotContainNull;
 
 import java.util.List;

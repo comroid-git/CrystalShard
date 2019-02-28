@@ -8,7 +8,6 @@ import de.kaleidox.crystalshard.api.entity.message.Embed;
 import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.concurrent.Worker;
-import de.kaleidox.crystalshard.internal.InternalInjector;
 
 import java.util.ArrayList;
 import java.util.List;

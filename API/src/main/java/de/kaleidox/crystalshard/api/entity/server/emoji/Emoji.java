@@ -9,7 +9,6 @@ import de.kaleidox.crystalshard.api.entity.Mentionable;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.util.Castable;
-import de.kaleidox.crystalshard.internal.InternalInjector;
 
 import java.util.Optional;
 

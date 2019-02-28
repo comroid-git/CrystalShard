@@ -25,7 +25,6 @@ import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.api.handling.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
-import de.kaleidox.crystalshard.internal.InternalInjector;
 import de.kaleidox.util.annotations.NotContainNull;
 import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.markers.IDPair;
