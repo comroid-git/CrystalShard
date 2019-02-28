@@ -3,6 +3,7 @@ package de.kaleidox.crystalshard.core.listener.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -15,38 +16,48 @@ import de.kaleidox.util.functional.Evaluation;
 
 public class ListenerAttachableBase<L extends Listener> implements ListenerAttachable<L> {
     protected Discord discord;
-    protected ConcurrentHashMap<Class, List<ListenerManager<? extends L>>> listeners;
+    protected ConcurrentHashMap<Class, List<ListenerManager<? extends L>>> managers;
 
     protected ListenerAttachableBase(Discord discord) {
-        listeners = new ConcurrentHashMap<>();
+        managers = new ConcurrentHashMap<>();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <C extends L> ListenerManager<C> attachListener(C listener) {
-        ListenerManagerImpl<C> listenerManager = new ListenerManagerImpl<>(discord, this, listener);
+        ListenerManagerImpl<C> listenerManager;
+
+        Optional<ListenerManager<? extends L>> prevManager = managers.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .filter(manager -> ((ListenerManagerImpl) manager).listener == listener)
+                .findAny();
+        listenerManager = prevManager.map(manager -> (ListenerManagerImpl<C>) manager)
+                .orElseGet(() -> new ListenerManagerImpl<>(discord, this, listener));
+
         Class listenerClass = listener.getClass();
-        listeners.putIfAbsent(listenerClass, new ArrayList<>());
-        listeners.get(listenerClass).add(listenerManager);
+        managers.putIfAbsent(listenerClass, new ArrayList<>());
+        managers.get(listenerClass).add(listenerManager);
         return listenerManager;
     }
 
     @Override
     public Evaluation<Boolean> detachListener(L listener) {
         Class listenerClass = listener.getClass();
-        return listeners.entrySet()
+        return managers.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey() == listenerClass)
                 .flatMap(entry -> entry.getValue().stream())
                 .map(ListenerManagerImpl.class::cast)
                 .filter(manager -> manager.listener == listener)
                 .findFirst()
-                .map(manager -> Evaluation.of(listeners.getOrDefault(listenerClass, new ArrayList<>()).remove(manager)))
+                .map(manager -> Evaluation.of(managers.getOrDefault(listenerClass, new ArrayList<>()).remove(manager)))
                 .orElseGet(() -> Evaluation.of(false));
     }
 
     @Override
     public Collection<ListenerManager<? extends L>> getListenerManagers(Predicate<ListenerManager<? extends L>> filter) {
-        return listeners.values()
+        return managers.values()
                 .stream()
                 .flatMap(Collection::stream)
                 .filter(filter)
@@ -54,10 +65,11 @@ public class ListenerAttachableBase<L extends Listener> implements ListenerAttac
     }
 
     @Override
-    public Collection<L> getListeners(Predicate<ListenerManager<? extends L>> filter) {
-        return getListenerManagers(filter)
+    public Collection<L> getListeners(Predicate<? super L> filter) {
+        return getListenerManagers()
                 .stream()
                 .map(ListenerManager::getListener)
+                .filter(filter)
                 .collect(Collectors.toList());
     }
 }

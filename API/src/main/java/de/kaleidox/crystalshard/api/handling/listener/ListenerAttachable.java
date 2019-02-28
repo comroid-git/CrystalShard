@@ -69,8 +69,9 @@ public interface ListenerAttachable<L extends Listener> {
      * Returns a collection of all listeners that are attached to this object.
      *
      * @return A collection with the attached listeners.
+     * @param filter
      */
-    Collection<L> getListeners(Predicate<ListenerManager<? extends L>> filter);
+    Collection<L> getListeners(Predicate<? super L> filter);
 
     /**
      * Detached all listeners from the current object.
