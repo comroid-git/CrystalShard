@@ -7,8 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
-import de.kaleidox.crystalshard.api.util.Log;
-
 import org.apache.logging.log4j.Logger;
 
 public abstract class Injector {
@@ -22,14 +20,14 @@ public abstract class Injector {
         for (Injector injector : ServiceLoader.load(Injector.class)) injectors.add(injector);
     }
 
-    protected abstract Optional<Class> findOverride(Class forClass);
+    protected abstract Optional<Class> findOverride(Class forClass, Object... args);
 
     @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> tClass, Object... args) {
         Class rClass = null;
         try {
             rClass = injectors.stream()
-                    .map(injector -> injector.findOverride(tClass))
+                    .map(injector -> injector.findOverride(tClass, args))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .findFirst()

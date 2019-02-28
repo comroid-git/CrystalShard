@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.api.util;
+package de.kaleidox.crystalshard;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -17,18 +18,11 @@ import static java.lang.System.arraycopy;
 public class Log {
     public final static PrintStream out = new PrivacyPrintStream();
 
-    private static Collection<char[]> silenced = new HashSet<>();
     private static ConcurrentHashMap<Class, Logger> loggers = new ConcurrentHashMap<>();
 
-    @SuppressWarnings({"TypeParameterExplicitlyExtendsObject", "ConstantConditions"})
-    @Deprecated // todo Add exceptionlogger
-    public static <X extends Object> X exceptionally(Throwable throwable) {
-        get().error(throwable);
-        return null;
-    }
-
-    public static void silence(String str) {
-        silenced.add(str.toCharArray());
+    @SuppressWarnings("unchecked")
+    public static <X> ExceptionLogger<X> exceptionLogger() {
+        return (ExceptionLogger<X>) ExceptionLogger.INSTANCE;
     }
 
     public static Logger get() {
@@ -63,6 +57,12 @@ public class Log {
     }
 
     public static class PrivacyPrintStream extends PrintStream {
+        private static Collection<char[]> silenced = new HashSet<>();
+
+        public static void silence(String str) {
+            PrivacyPrintStream.silenced.add(str.toCharArray());
+        }
+
         public PrivacyPrintStream() {
             super(new PrivacyOutputStream(true), true);
         }
@@ -79,7 +79,7 @@ public class Log {
             @Override
             public void write(int i) {
                 appendBuf((char) i);
-                if ((char) i == '\n' && flushOnNewline) ;
+                if ((char) i == '\n' && flushOnNewline) flush();
             }
 
             @Override
@@ -111,6 +111,32 @@ public class Log {
                 arraycopy(sub, 0, buf, 0, sub.length);
                 arraycopy(app, 0, buf, sub.length, app.length);
             }
+        }
+    }
+
+    public static class ExceptionLogger<X> extends SimpleLogger implements Function<Throwable, X> {
+        public final static ExceptionLogger<?> INSTANCE = new ExceptionLogger<>();
+
+        private ExceptionLogger() {
+            super(
+                    ExceptionLogger.class.getName(),
+                    Level.ERROR,
+                    true,
+                    false,
+                    true,
+                    true,
+                    "yyyy-MM-dd HH:mm:ss.SSSZ",
+                    null,
+                    PropertiesUtil.getProperties(),
+                    out
+            );
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        @Override
+        public X apply(Throwable throwable) {
+            catching(throwable);
+            return null;
         }
     }
 }

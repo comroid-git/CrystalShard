@@ -11,6 +11,6 @@ public interface UnicodeEmoji extends Emoji {
         if (aliases.equalsIgnoreCase(emojiOrAlias) && unicode.equalsIgnoreCase(emojiOrAlias))
             throw new IllegalArgumentException(
                     "The provided Emoji String is not a valid unicode emoji.");
-        else return InternalInjector.newInstance(UnicodeEmoji.class, discord, aliases, unicode);
+        else return Injector.create(UnicodeEmoji.class, discord, aliases, unicode);
     }
 }

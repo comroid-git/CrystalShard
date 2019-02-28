@@ -1,16 +1,19 @@
 package de.kaleidox.crystalshard.api.entity.message;
 
 import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.Range;
 
+import de.kaleidox.crystalshard.Injector;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.DiscordItem;
 import de.kaleidox.crystalshard.api.entity.Mentionable;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.GroupChannel;
 import de.kaleidox.crystalshard.api.entity.channel.PrivateTextChannel;
+import de.kaleidox.crystalshard.api.entity.channel.ServerChannel;
 import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
-import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.server.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.server.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.api.entity.server.emoji.Emoji;
@@ -23,12 +26,14 @@ import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 import de.kaleidox.crystalshard.api.exception.IllegalThreadException;
 import de.kaleidox.crystalshard.api.handling.listener.ListenerAttachable;
 import de.kaleidox.crystalshard.api.handling.listener.message.MessageAttachableListener;
+import de.kaleidox.crystalshard.api.util.Highlightable;
 import de.kaleidox.crystalshard.core.cache.Cacheable;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPool;
 import de.kaleidox.util.annotations.NotContainNull;
-import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.markers.IDPair;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +42,28 @@ import java.util.concurrent.CompletableFuture;
 /**
  * This interface represents a normal Discord message.
  */
-public interface Message extends DiscordItem, ListenerAttachable<MessageAttachableListener>, Cacheable<Message, Long, IDPair> {
+public interface Message extends
+        DiscordItem,
+        Highlightable,
+        ListenerAttachable<MessageAttachableListener>,
+        Cacheable<Message, Long, IDPair> {
+
+    @Override
+    default URL getHighlighingLink() {
+        try {
+            return new URL("https://discordapp.com/channels/" + (
+                    isPrivate()
+                            ? getChannel().getId() + getId()
+                            : ""
+                            + getServerTextChannel().flatMap(ServerChannel::getServer).map(DiscordItem::getId)
+                            + getChannel().getId()
+                            + getId()
+            ));
+        } catch (MalformedURLException e) {
+            throw new AssertionError(e);
+        }
+    }
+
     /**
      * Gets the user (Author) that sent this message.
      *
@@ -69,7 +95,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     String getContent();
 
     /**
-     * Gets the readable content of the message. All mentions get replaced by their respective names. Markdown tags will not get removed. See {@link
+     * Gets the readable content of the message. All mentions get replaced by their respective names. Markdown tags will
+     * not get removed. See {@link
      * #getTextContent()}.
      *
      * @return The readable content of the message.
@@ -78,7 +105,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     String getReadableContent();
 
     /**
-     * Gets the plain text content. All Markdown tags will get removed, as well as mentions are being replaced as in {@link #getReadableContent()}.
+     * Gets the plain text content. All Markdown tags will get removed, as well as mentions are being replaced as in
+     * {@link #getReadableContent()}.
      *
      * @return The plain text content of the message.
      */
@@ -120,7 +148,8 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     boolean isPrivate();
 
     /**
-     * Gets the type of the message. The type of the message can tell whether the message was e.g. sent by a Webhook, or if the message was a "Welcome User XYZ"
+     * Gets the type of the message. The type of the message can tell whether the message was e.g. sent by a Webhook, or
+     * if the message was a "Welcome User XYZ"
      * message.
      *
      * @return The type of the message.
@@ -201,47 +230,60 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     List<UnicodeEmoji> getUnicodeEmojis();
 
     /**
-     * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
+     * Updates the content of the current message. The returned future will complete exceptionally with a {@link
+     * IllegalAccessException} if the bot is not the
      * author of this message, as you may never edit other people's messages.
      *
      * @param newContent The new content to set.
+     *
      * @return A future that completes with this message when it has been modified.
      */
     CompletableFuture<Message> edit(String newContent);
 
     /**
-     * Updates the content of the current message. The returned future will complete exceptionally with a {@link IllegalAccessException} if the bot is not the
+     * Updates the content of the current message. The returned future will complete exceptionally with a {@link
+     * IllegalAccessException} if the bot is not the
      * author of this message, as you may never edit other people's messages.
      *
      * @param embedDraft The new Embed to set.
+     *
      * @return A future that completes with this message when it has been modified.
      */
     CompletableFuture<Message> edit(Embed embedDraft);
 
     /**
-     * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The
-     * returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission required to remove all
-     * reactions. This will also occur on Private chats, as you can not have the theoretical permission to remove reactions in a private chat.
+     * Removes all reactions of the message. This method requires the bot to have the {@link Permission#MANAGE_MESSAGES}
+     * within the current context. The
+     * returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have
+     * the permission required to remove all
+     * reactions. This will also occur on Private chats, as you can not have the theoretical permission to remove
+     * reactions in a private chat.
      *
      * @return A future that completes when all reactions have been removed.
      */
     CompletableFuture<Void> removeAllReactions();
 
     /**
-     * Removes all reactions from a specific user filtered by the given emojis. Don't include any emoji to remove all known reactions of the user. This method
-     * requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a {@link
-     * DiscordPermissionException} if the bot does not have the permission required to remove other users reactions. This will also occur on Private chats, as
+     * Removes all reactions from a specific user filtered by the given emojis. Don't include any emoji to remove all
+     * known reactions of the user. This method
+     * requires the bot to have the {@link Permission#MANAGE_MESSAGES} within the current context. The returned future
+     * will complete exceptionally with a {@link
+     * DiscordPermissionException} if the bot does not have the permission required to remove other users reactions.
+     * This will also occur on Private chats, as
      * you can not have the theoretical permission to remove reactions in a private chat.
      *
      * @param emojis The emojis whose reactions should be removed.
+     *
      * @return A future that completes when all reactions have been removed.
      */
     CompletableFuture<Void> removeReactionsByEmoji(@NotContainNull Emoji... emojis);
 
     /**
-     * Removes all reactions of the bot from the message, filtered by the given emojis. Don't include any emoji to remove all known reactions by yourself.
+     * Removes all reactions of the bot from the message, filtered by the given emojis. Don't include any emoji to
+     * remove all known reactions by yourself.
      *
      * @param users The users whose reaction should be removed.
+     *
      * @return A future that completes when the reactions are removed.
      */
     CompletableFuture<Void> removeReactionsByUser(@NotContainNull User... users);
@@ -265,11 +307,14 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     CompletableFuture<Message> unpin();
 
     /**
-     * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within the current
-     * context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission required to
+     * Adds a reaction with the given emoji to the message. This method requires the bot to have the {@link
+     * Permission#ADD_REACTIONS} within the current
+     * context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot
+     * does not have the permission required to
      * add reactions.
      *
      * @param emoji The emoji to add as a reaction.
+     *
      * @return A future that completes when the reaction has been added.
      */
     default CompletableFuture<Void> addReaction(Emoji emoji) {
@@ -277,12 +322,16 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     }
 
     /**
-     * Adds a reaction with the given emoji-printable to the message. Emoji printables of UnicodeEmojis are the actual UnicodeEmoji, the printable of a
-     * CustomEmojis is its mention tag. See {@link Emoji#toDiscordPrintable()}. This method requires the bot to have the {@link Permission#ADD_REACTIONS} within
-     * the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the permission
+     * Adds a reaction with the given emoji-printable to the message. Emoji printables of UnicodeEmojis are the actual
+     * UnicodeEmoji, the printable of a
+     * CustomEmojis is its mention tag. See {@link Emoji#toDiscordPrintable()}. This method requires the bot to have the
+     * {@link Permission#ADD_REACTIONS} within
+     * the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if
+     * the bot does not have the permission
      * required to add reactions.
      *
      * @param emojiPrintable The emojis to add as a reaction.
+     *
      * @return A future that completes when the reaction has been added.
      */
     CompletableFuture<Void> addReaction(String emojiPrintable);
@@ -293,7 +342,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * @return The optional ServerTextChannel.
      */
     default Optional<ServerTextChannel> getServerTextChannel() {
-        return getChannel().toServerTextChannel();
+        return getChannel().asServerTextChannel();
     }
 
     /**
@@ -302,7 +351,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * @return The optional PrivateTextChannel.
      */
     default Optional<PrivateTextChannel> getPrivateTextChannel() {
-        return getChannel().toPrivateTextChannel();
+        return getChannel().asPrivateTextChannel();
     }
 
     /**
@@ -311,7 +360,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      * @return The optional GroupChannel.
      */
     default Optional<GroupChannel> getGroupChannel() {
-        return getChannel().toGroupChannel();
+        return getChannel().asGroupChannel();
     }
 
     /**
@@ -319,23 +368,30 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      *
      * @return The optional Embed of this message.
      */
-    default Optional<SentEmbed> getEmbed() {
-        List<SentEmbed> embeds = getEmbeds();
-        return Optional.ofNullable(embeds.size() > 0 ? embeds.get(0) : null);
+    default Optional<Embed> getEmbed() {
+        try {
+            return Optional.ofNullable(getEmbeds().get(0));
+        } catch (IndexOutOfBoundsException ignored) {
+            return Optional.empty();
+        }
     }
 
     /**
-     * Gets a list of the embeds within this message. Usually, there is only one embed per message. There may be more than one embed per message if there are
+     * Gets a list of the embeds within this message. Usually, there is only one embed per message. There may be more
+     * than one embed per message if there are
      * e.g. embedded YouTube Videos. See {@link #getEmbed()} to only get the "api" embed of the message.
      *
      * @return A list of embeds.
      */
-    List<SentEmbed> getEmbeds();
+    List<Embed> getEmbeds();
 
     /**
-     * Deletes the current message. If the bot is not the owner of the message, this method requires the bot to have the {@link Permission#MANAGE_MESSAGES}
-     * within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the bot does not have the
-     * permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical permissions to close other
+     * Deletes the current message. If the bot is not the owner of the message, this method requires the bot to have the
+     * {@link Permission#MANAGE_MESSAGES}
+     * within the current context. The returned future will complete exceptionally with a {@link
+     * DiscordPermissionException} if the bot does not have the
+     * permission required to close this message. This will always occur in a private chat, as the bot can never have
+     * the theoretical permissions to close other
      * peoples messages within a private chat.
      *
      * @return A future that completes when the message has been deleted.
@@ -345,12 +401,16 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     }
 
     /**
-     * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method requires the bot to have the {@link
-     * Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a {@link DiscordPermissionException} if the
-     * bot does not have the permission required to close this message. This will always occur in a private chat, as the bot can never have the theoretical
+     * Deletes the current message for a specified reason. If the bot is not the owner of the message, this method
+     * requires the bot to have the {@link
+     * Permission#MANAGE_MESSAGES} within the current context. The returned future will complete exceptionally with a
+     * {@link DiscordPermissionException} if the
+     * bot does not have the permission required to close this message. This will always occur in a private chat, as the
+     * bot can never have the theoretical
      * permissions to close other peoples messages within a private chat.
      *
      * @param reason The reason to close the message for.
+     *
      * @return A future that completes when the message has been deleted.
      */
     CompletableFuture<Void> delete(String reason);
@@ -368,16 +428,16 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
      */
     TextChannel getChannel();
 
-    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(min = 2, max = 100) long... messageIds) throws IllegalThreadException {
+    static CompletableFuture<Void> bulkDelete(long channelId, @NotContainNull @Range(from = 2, to = 100) long... messageIds) throws IllegalThreadException {
         Discord discord = ThreadPool.getThreadDiscord();
-        return InternalInjector.newInstance(BulkDelete.class, discord)
+        return Injector.create(BulkDelete.class, discord)
                 .setChannel(channelId)
                 .addIds(messageIds)
                 .deleteAll();
     }
 
-    static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(min = 2, max = 100) Message... messages) {
-        return InternalInjector.newInstance(BulkDelete.class, messages[0].getDiscord())
+    static CompletableFuture<Void> bulkDelete(@NotContainNull @Range(from = 2, to = 100) Message... messages) {
+        return Injector.create(BulkDelete.class, messages[0].getDiscord())
                 .setChannel(messages[0].getChannel()
                         .getId())
                 .addMessages(messages)
@@ -385,11 +445,11 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
     }
 
     static Builder builder() {
-        return InternalInjector.newInstance(Builder.class);
+        return Injector.create(Builder.class);
     }
 
     static Builder builder(Message ofMessage) {
-        return InternalInjector.newInstance(Builder.class, ofMessage);
+        return Injector.create(Builder.class, ofMessage);
     }
 
     interface Builder {
@@ -397,6 +457,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
          * Appends the provided text as plain string to the message.
          *
          * @param text The text to append.
+         *
          * @return The instance of the builder.
          */
         Builder addText(String text);
@@ -405,6 +466,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
          * Adds a mention to the provided mentionable as text to the message.
          *
          * @param mentionable The mentionable to mention.
+         *
          * @return The instance of the builder.
          */
         Builder addMention(Mentionable mentionable);
@@ -413,6 +475,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
          * Adds an emoji to the message as text.
          *
          * @param emoji The emoji to add.
+         *
          * @return The instance of the builder.
          */
         Builder addEmoji(Emoji emoji);
@@ -421,10 +484,11 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
          * Sets the embed for the message.
          *
          * @param embed The embed to set.
+         *
          * @return The instance of the builder.
          * @see #setEmbed(Embed.Builder)
          */
-        Builder setEmbed(EmbedDraft embed);
+        Builder setEmbed(Embed embed);
 
         /**
          * Builds and sends the message to the given target reciever.
@@ -432,6 +496,7 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
          * if you are not allowed to send messages to the provided target.
          *
          * @param target The reciever to send the message to.
+         *
          * @return A future to contain the sent message.
          */
         CompletableFuture<Message> send(MessageReciever target);
@@ -440,8 +505,9 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
          * Sets an embed for the message.
          *
          * @param embedBuilder The embed to build and then set.
+         *
          * @return The instance of the builder.
-         * @see #setEmbed(EmbedDraft)
+         * @see #setEmbed(Embed)
          */
         default Builder setEmbed(Embed.Builder embedBuilder) {
             return setEmbed(embedBuilder.build());
@@ -453,11 +519,11 @@ public interface Message extends DiscordItem, ListenerAttachable<MessageAttachab
 
         BulkDelete addMessage(Message message);
 
-        BulkDelete addMessages(@Range(min = 2, max = 100) Message... messages);
+        BulkDelete addMessages(@Range(from = 2, to = 100) Message... messages);
 
         BulkDelete addId(long id);
 
-        BulkDelete addIds(@Range(min = 2, max = 100) long... ids);
+        BulkDelete addIds(@Range(from = 2, to = 100) long... ids);
 
         CompletableFuture<Void> deleteAll();
     }

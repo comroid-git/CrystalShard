@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.api.entity.channel;
 import org.jetbrains.annotations.NotNull;
 
 import de.kaleidox.crystalshard.api.entity.Nameable;
-import de.kaleidox.crystalshard.api.entity.permission.PermissionOverride;
+import de.kaleidox.crystalshard.api.entity.server.permission.PermissionOverride;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.server.ServerComponent;
 import de.kaleidox.crystalshard.api.entity.server.interactive.Invite;
@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface ServerChannel extends Channel, Nameable, Comparable<ServerChannel> {
-    Server getServer();
+    Optional<Server> getServer();
 
     Optional<ChannelCategory> getCategory();
 

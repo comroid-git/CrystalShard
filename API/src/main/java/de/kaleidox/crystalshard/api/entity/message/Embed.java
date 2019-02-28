@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import de.kaleidox.crystalshard.Injector;
 import de.kaleidox.crystalshard.api.util.Castable;
-
-import com.google.inject.Guice;
 
 @SuppressWarnings("unused")
 public interface Embed extends Castable<Embed> {
@@ -45,7 +44,7 @@ public interface Embed extends Castable<Embed> {
     Updater updater();
 
     static Builder builder() {
-        Guice.
+        return Injector.create(Builder.class);
     }
 
     enum State {
@@ -77,7 +76,7 @@ public interface Embed extends Castable<Embed> {
         Updater updater();
 
         static Builder builder() {
-            return InternalInjector.newInstance(Embed.Author.Builder.class);
+            return Injector.create(Embed.Author.Builder.class);
         }
 
         interface Builder {
@@ -112,7 +111,7 @@ public interface Embed extends Castable<Embed> {
         Updater updater();
 
         static Builder builder() {
-            return InternalInjector.newInstance(Embed.Thumbnail.Builder.class);
+            return Injector.create(Embed.Thumbnail.Builder.class);
         }
 
         interface Builder {
@@ -139,7 +138,7 @@ public interface Embed extends Castable<Embed> {
         Updater updater();
 
         static Builder builder() {
-            return InternalInjector.newInstance(Embed.Field.Builder.class);
+            return Injector.create(Embed.Field.Builder.class);
         }
 
         interface Builder {
@@ -174,7 +173,7 @@ public interface Embed extends Castable<Embed> {
         Updater updater();
 
         static Builder builder() {
-            return InternalInjector.newInstance(Embed.Image.Builder.class);
+            return Injector.create(Embed.Image.Builder.class);
         }
 
         interface Builder {
@@ -212,7 +211,7 @@ public interface Embed extends Castable<Embed> {
         Updater updater();
 
         static Builder builder() {
-            return InternalInjector.newInstance(Embed.Footer.Builder.class);
+            return Injector.create(Embed.Footer.Builder.class);
         }
 
         interface Builder {

@@ -1,7 +1,10 @@
 package de.kaleidox.crystalshard.core.net.request;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.Nullable;
 
+import de.kaleidox.crystalshard.Injector;
+import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.util.helpers.JsonHelper;
 
@@ -39,7 +42,12 @@ public interface WebRequest<T> {
         return execute().thenApply(JsonHelper::parse);
     }
 
-    static <T> WebRequest<T> create() {
-        return null; // TODO: 30.10.2018
+    @SuppressWarnings("unchecked")
+    static <T> WebRequest<T> create(@Nullable Discord discord) {
+        //TODO test the generic creation
+        return (WebRequest<T>) (discord != null
+                ? Injector.create(WebRequest.class, discord)
+                : Injector.create(WebRequest.class)
+        );
     }
 }

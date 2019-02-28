@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.api.exception;
 
-public class UncachedItemException extends Throwable {
+public class UncachedItemException extends RuntimeException {
     public UncachedItemException(String message) {
         super(message);
     }

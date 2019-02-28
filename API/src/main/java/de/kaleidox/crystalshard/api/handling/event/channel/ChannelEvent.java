@@ -17,18 +17,18 @@ public interface ChannelEvent extends Event {
     Channel getChannel();
 
     default Optional<ServerTextChannel> getServerTextChannel() {
-        return getChannel().toServerTextChannel();
+        return getChannel().asServerTextChannel();
     }
 
     default Optional<ServerVoiceChannel> getServerVoiceChannel() {
-        return getChannel().toServerVoiceChannel();
+        return getChannel().asServerVoiceChannel();
     }
 
     default Optional<PrivateTextChannel> getPrivateTextChannel() {
-        return getChannel().toPrivateTextChannel();
+        return getChannel().asPrivateTextChannel();
     }
 
     default Optional<GroupChannel> getGroupChannel() {
-        return getChannel().toGroupChannel();
+        return getChannel().asGroupChannel();
     }
 }

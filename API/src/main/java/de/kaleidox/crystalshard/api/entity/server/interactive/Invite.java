@@ -38,6 +38,6 @@ public interface Invite extends Castable<Invite> {
                 .setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.INVITE.createUri(code))
                 .setNode("with_counts", true)
-                .executeAs(node -> InternalInjector.newInstance(Invite.class, discord, node));
+                .executeAs(node -> Injector.create(Invite.class, discord, node));
     }
 }

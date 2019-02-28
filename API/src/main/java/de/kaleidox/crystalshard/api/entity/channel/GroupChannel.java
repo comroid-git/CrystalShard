@@ -6,4 +6,8 @@ public interface GroupChannel extends TextChannel {
     interface Builder extends Channel.Builder<Builder, GroupChannel> {
         Builder addRecipient(User user);
     }
+
+    interface Updater extends Channel.Updater<Updater, GroupChannel> {
+        Updater addRecipient(User user);
+    }
 }

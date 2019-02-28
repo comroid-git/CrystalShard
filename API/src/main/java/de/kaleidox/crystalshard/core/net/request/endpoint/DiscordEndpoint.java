@@ -2,6 +2,8 @@ package de.kaleidox.crystalshard.core.net.request.endpoint;
 
 import java.util.Optional;
 
+import de.kaleidox.crystalshard.core.net.request.HttpMethod;
+
 public enum DiscordEndpoint {
     AUDIT_LOG("/guilds/%s/audit-logs"),
     BAN("/guilds/%s/bans"),

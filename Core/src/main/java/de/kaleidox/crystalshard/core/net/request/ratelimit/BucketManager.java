@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.naming.LimitExceededException;
 
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.Log;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;

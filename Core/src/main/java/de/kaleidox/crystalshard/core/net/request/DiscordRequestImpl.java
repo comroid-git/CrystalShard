@@ -8,6 +8,9 @@ import java.util.concurrent.CompletableFuture;
 
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.exception.DiscordResponseException;
+import de.kaleidox.crystalshard.core.DiscordImpl;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
+import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
 import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
@@ -37,7 +40,7 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
                 HttpRequest request = requestBuilder.uri(uri.getURI())
                         .header("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)")
                         .header("Content-Type", "application/json")
-                        .header("Authorization", discord.getPrefixedToken())
+                        .header("Authorization", discord)
                         .method(method.getDescriptor(), HttpRequest.BodyPublishers.ofString(body))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());

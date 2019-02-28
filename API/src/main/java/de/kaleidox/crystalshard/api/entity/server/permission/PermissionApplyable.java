@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.api.entity.permission;
+package de.kaleidox.crystalshard.api.entity.server.permission;
 
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.user.User;

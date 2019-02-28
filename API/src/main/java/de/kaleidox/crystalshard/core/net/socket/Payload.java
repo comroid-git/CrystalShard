@@ -11,12 +11,12 @@ import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class Payload {
-    private OpCode code;
+    private int code;
     private JsonNode node;
     private long lastSeq;
     private boolean last = true;
 
-    OpCode getCode() {
+    int getCode() {
         return code;
     }
 
@@ -35,7 +35,7 @@ public class Payload {
     CharSequence getSendableNode() {
         ObjectNode data = JsonHelper.objectNode();
 
-        data.set("op", JsonHelper.nodeOf(code.getCode()));
+        data.set("op", JsonHelper.nodeOf(code));
         data.set("s", JsonHelper.nodeOf(lastSeq));
         if (!(node instanceof NullNode)) {
             data.set("d", node);
@@ -58,7 +58,7 @@ public class Payload {
         this.node = node;
     }
 
-    Payload opcode(OpCode code) {
+    Payload opcode(int code) {
         this.code = code;
         return this;
     }
@@ -68,7 +68,7 @@ public class Payload {
         return this;
     }
 
-    public static Payload create(OpCode code, JsonNode node) {
+    public static Payload create(int code, JsonNode node) {
         return new Payload().opcode(code)
                 .node(node);
     }

@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.api.entity.user;
 
 import de.kaleidox.crystalshard.api.entity.channel.ServerVoiceChannel;
-import de.kaleidox.crystalshard.api.entity.permission.PermissionOverwritable;
+import de.kaleidox.crystalshard.api.entity.server.permission.PermissionOverwritable;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
 

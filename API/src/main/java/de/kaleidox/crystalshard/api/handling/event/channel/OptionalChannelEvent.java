@@ -17,18 +17,18 @@ public interface OptionalChannelEvent {
     Optional<Channel> getChannel();
 
     default Optional<ServerTextChannel> getServerTextChannel() {
-        return getChannel().flatMap(Channel::toServerTextChannel);
+        return getChannel().flatMap(Channel::asServerTextChannel);
     }
 
     default Optional<ServerVoiceChannel> getServerVoiceChannel() {
-        return getChannel().flatMap(Channel::toServerVoiceChannel);
+        return getChannel().flatMap(Channel::asServerVoiceChannel);
     }
 
     default Optional<PrivateTextChannel> getPrivateTextChannel() {
-        return getChannel().flatMap(Channel::toPrivateTextChannel);
+        return getChannel().flatMap(Channel::asPrivateTextChannel);
     }
 
     default Optional<GroupChannel> getGroupChannel() {
-        return getChannel().flatMap(Channel::toGroupChannel);
+        return getChannel().flatMap(Channel::asGroupChannel);
     }
 }

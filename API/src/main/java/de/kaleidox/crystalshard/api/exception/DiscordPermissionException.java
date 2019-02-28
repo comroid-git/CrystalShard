@@ -1,11 +1,11 @@
 package de.kaleidox.crystalshard.api.exception;
 
-import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.server.permission.Permission;
 import de.kaleidox.util.helpers.ListHelper;
 
 import java.util.List;
 
-public class DiscordPermissionException extends Throwable {
+public class DiscordPermissionException extends RuntimeException {
     private final Permission[] lackingPermission;
 
     public DiscordPermissionException(String message, Permission... lackingPermission) {

@@ -1,4 +1,4 @@
-package de.kaleidox.crystalshard.api.entity.permission;
+package de.kaleidox.crystalshard.api.entity.server.permission;
 
 @SuppressWarnings("unused")
 public enum Permission {

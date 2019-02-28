@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.Log;
 import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
 import de.kaleidox.util.helpers.JsonHelper;
 

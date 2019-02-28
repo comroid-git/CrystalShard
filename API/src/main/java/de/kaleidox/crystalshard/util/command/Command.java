@@ -13,7 +13,7 @@ import de.kaleidox.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
-import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.server.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.role.Role;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.Author;
@@ -138,11 +138,11 @@ public @interface Command {
         TextChannel getTextChannel();
 
         default Optional<ServerTextChannel> getServerTextChannel() {
-            return getTextChannel().toServerTextChannel();
+            return getTextChannel().asServerTextChannel();
         }
 
         default Optional<PrivateTextChannel> getPrivateTextChannel() {
-            return getTextChannel().toPrivateTextChannel();
+            return getTextChannel().asPrivateTextChannel();
         }
 
         Message getCommandMessage();

@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicMarkableReference;
 
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.Log;
 import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
 
 import org.apache.logging.log4j.Logger;
@@ -279,7 +279,6 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
          */
         void attachTask(Task task) {
             synchronized (queue) {
-                //noinspection StatementWithEmptyBody
                 if (isBusy.get()) {
                     execute(task); // if current worker is busy, add task to the queue
                 } else {
@@ -315,7 +314,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
             try {
                 runnable.run();
             } catch (Exception e) {
-                logger.error(e);
+                logger.catching(e);
             }
         }
 

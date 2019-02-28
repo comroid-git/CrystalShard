@@ -1,9 +1,10 @@
 package de.kaleidox.crystalshard.api.entity.message;
 
+import de.kaleidox.crystalshard.Injector;
 import de.kaleidox.crystalshard.api.entity.DiscordItem;
 import de.kaleidox.crystalshard.api.entity.channel.PrivateChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
-import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.server.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.user.Self;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.exception.DiscordPermissionException;
@@ -13,7 +14,6 @@ import de.kaleidox.crystalshard.core.net.request.HttpMethod;
 import de.kaleidox.crystalshard.core.net.request.WebRequest;
 import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
 import de.kaleidox.crystalshard.util.DefaultEmbed;
-import de.kaleidox.util.annotations.Range;
 import de.kaleidox.util.helpers.FutureHelper;
 
 import java.util.ArrayList;
@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+
+import org.jetbrains.annotations.Range;
 
 import static de.kaleidox.util.helpers.JsonHelper.objectNode;
 
@@ -46,7 +48,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Message> sendMessage(String content) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return InternalInjector.newInstance(Message.Builder.class)
+        return Injector.create(Message.Builder.class)
                 .addText(content)
                 .send(this);
     }
@@ -63,7 +65,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Message> sendMessage(Embed.Builder embedBuilder) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return InternalInjector.newInstance(Message.Builder.class)
+        return Injector.create(Message.Builder.class)
                 .setEmbed(embedBuilder)
                 .send(this);
     }
@@ -80,7 +82,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Message> sendMessage(Embed embed) throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return InternalInjector.newInstance(Message.Builder.class)
+        return Injector.create(Message.Builder.class)
                 .setEmbed(embed)
                 .send(this);
     }
@@ -101,7 +103,7 @@ public interface MessageReciever extends DiscordItem {
     default CompletableFuture<Message> sendMessage(Consumer<Embed.Builder> defaultEmbedModifier)
             throws IllegalThreadException, AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
-        return sendMessage(DefaultEmbed.getStatic(defaultEmbedModifier)); // TODO: 08.11.2018 Create interface
+        return null;//sendMessage(DefaultEmbed.getStatic(defaultEmbedModifier)); // TODO: 08.11.2018 Create interface
     }
 
     /**
@@ -112,7 +114,7 @@ public interface MessageReciever extends DiscordItem {
      */
     default CompletableFuture<Void> typing() throws AbstractMethodError {
         if (this instanceof Self) throw new AbstractMethodError("You cannot type to yourself!");
-        return CoreInjector.webRequest(Void.class, getDiscord())
+        return WebRequest.create(getDiscord())
                 .setMethod(HttpMethod.POST)
                 .setUri(DiscordEndpoint.CHANNEL_TYPING.createUri(getId()))
                 .executeAsVoid();
@@ -131,7 +133,7 @@ public interface MessageReciever extends DiscordItem {
      * @throws AbstractMethodError      If this object is an instance of {@link Self}.
      * @throws IllegalArgumentException If the parameter {@code limit} is not within its annotated boundaries.
      */
-    default CompletableFuture<Collection<Message>> getMessages(@Range(min = 1, max = 100) int limit)
+    default CompletableFuture<Collection<Message>> getMessages(@Range(from = 1, to = 100) int limit)
             throws AbstractMethodError, IllegalArgumentException {
         if (this instanceof Self) throw new AbstractMethodError("You cannot message yourself!");
         if (this instanceof TextChannel) {
@@ -144,7 +146,7 @@ public interface MessageReciever extends DiscordItem {
             if (!target.hasPermission(getDiscord(), Permission.READ_MESSAGE_HISTORY))
                 return CompletableFuture.completedFuture(Collections.emptyList());
         }
-        WebRequest<Collection<Message>> request = CoreInjector.webRequest(getDiscord());
+        WebRequest<Collection<Message>> request = WebRequest.create(getDiscord());
         return request.setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.MESSAGE.createUri(this instanceof User ?
                         ((User) this).openPrivateChannel().thenApply(PrivateChannel::getId).join() : getId()))

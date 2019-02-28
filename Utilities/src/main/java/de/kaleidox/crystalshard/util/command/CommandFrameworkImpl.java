@@ -10,7 +10,7 @@ import de.kaleidox.crystalshard.api.entity.channel.ServerTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.message.Embed;
-import de.kaleidox.crystalshard.api.entity.permission.Permission;
+import de.kaleidox.crystalshard.api.entity.server.permission.Permission;
 import de.kaleidox.crystalshard.api.entity.server.Server;
 import de.kaleidox.crystalshard.api.entity.user.Author;
 import de.kaleidox.crystalshard.api.entity.user.AuthorUser;
@@ -198,7 +198,7 @@ public class CommandFrameworkImpl implements CommandFramework {
     private void handle(MessageCreateEvent event) {
         if (enabled.get()) {
             if (!ignored.contains(event.getChannel()
-                    .toTextChannel()
+                    .asTextChannel()
                     .orElseThrow(AssertionError::new))) {
                 commands.stream()
                         .filter(instance -> checkAlias(instance, event.getMessageContent()))
@@ -215,7 +215,7 @@ public class CommandFrameworkImpl implements CommandFramework {
         Server server = event.getServer()
                 .orElse(null);
         TextChannel channel = event.getChannel()
-                .toTextChannel()
+                .asTextChannel()
                 .orElseThrow(AssertionError::new);
         Message message = event.getMessage();
         Author author = event.getMessageAuthor();
@@ -235,9 +235,9 @@ public class CommandFrameworkImpl implements CommandFramework {
                 .defaultCase(type -> finalParam[ref[0]] = null)
                 // specified sender channels if possible
                 .addCase(ServerTextChannel.class, type ->
-                        finalParam[ref[0]] = channel.toServerTextChannel().orElse(null))
+                        finalParam[ref[0]] = channel.asServerTextChannel().orElse(null))
                 .addCase(PrivateTextChannel.class, type ->
-                        finalParam[ref[0]] = channel.toPrivateTextChannel().orElse(null));
+                        finalParam[ref[0]] = channel.asPrivateTextChannel().orElse(null));
         for (ref[0] = 0; ref[0] < parameterTypes.length; ref[0]++) swtc.test(parameterTypes[ref[0]]);
 
         discord.getThreadPool()
@@ -260,7 +260,7 @@ public class CommandFrameworkImpl implements CommandFramework {
         int roleMentions = annotation.requireRoleMentions();
 
         TextChannel channel = event.getChannel()
-                .toTextChannel()
+                .asTextChannel()
                 .orElseThrow(AssertionError::new);
         Optional<AuthorUser> authorUserOpt = event.getMessageAuthorUser();
         Message message = event.getMessage();

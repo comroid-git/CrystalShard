@@ -59,7 +59,7 @@ public interface Emoji extends Mentionable, Castable<Emoji> {
     static Emoji of(@NotNull Discord discord, @Nullable Server server, @NotNull JsonNode data) {
         if (data.get("id")
                 .isNull()) {
-            return InternalInjector.newInstance(UnicodeEmoji.class, discord, data, true);
+            return Injector.create(UnicodeEmoji.class, discord, data, true);
         } else {
             return discord.getEmojiCache()
                     .getOrCreate(discord, server, data, true);

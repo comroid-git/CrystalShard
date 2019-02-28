@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.api.handling.listener;
 
 import de.kaleidox.crystalshard.api.Discord;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public interface ListenerManager<T extends Listener> {

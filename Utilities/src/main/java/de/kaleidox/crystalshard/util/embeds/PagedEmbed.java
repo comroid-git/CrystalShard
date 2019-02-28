@@ -69,7 +69,7 @@ public class PagedEmbed extends EmbedBuilderInternal implements Embed.Builder {
 
     @Override
     public Embed.Builder addField(String title, String text, boolean inline) {
-        EmbedDraft.Field field = InternalInjector.newInstance(EmbedDraft.Field.class, title, text, inline);
+        EmbedDraft.Field field = Injector.create(EmbedDraft.Field.class, title, text, inline);
         addField(field);
         return this;
     }

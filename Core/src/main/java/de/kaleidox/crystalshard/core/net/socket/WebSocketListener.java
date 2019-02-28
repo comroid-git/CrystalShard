@@ -6,11 +6,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.Log;
 import de.kaleidox.util.helpers.JsonHelper;
 
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("ConstantConditions")
 public class WebSocketListener implements WebSocket.Listener {
     private final static Logger logger = Log.get(WebSocketListener.class);
     private final Discord discord;
@@ -21,7 +22,6 @@ public class WebSocketListener implements WebSocket.Listener {
         this.discord = discordObject;
     }
 
-    // Override Methods
     @Override
     public void onOpen(WebSocket webSocket) {
         webSocket.request(1);
@@ -37,9 +37,9 @@ public class WebSocketListener implements WebSocket.Listener {
             onTextBuilder = new StringBuilder();
             CompletableFuture<String> returning = onTextFuture;
             returning.thenAcceptAsync(logger::debug);
-            returning.exceptionally(Log::exceptionally)
+            returning.exceptionally(Log.exceptionLogger())
                     .thenApplyAsync(JsonHelper::parse)
-                    .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node));
+                    .thenAcceptAsync(node -> ((WebSocketClientImpl) discord.getWebSocket()).getDispatch().socket(node));
             onTextFuture = new CompletableFuture<>();
             return returning;
         }

@@ -30,7 +30,7 @@ public class DefaultEmbedImpl implements DefaultEmbed {
         this.discord = discord;
         this.modifiers = new ArrayList<>();
 
-        EMPTY_BUILDER = data.isNull() ? Embed::BUILDER : () -> InternalInjector.newInstance(SentEmbed.class, null, data)
+        EMPTY_BUILDER = data.isNull() ? Embed::BUILDER : () -> Injector.create(SentEmbed.class, null, data)
                 .toBuilder();
         EMPTY_SUPPLIER = () -> EMPTY_BUILDER.get()
                 .build();

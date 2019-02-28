@@ -1,11 +1,11 @@
-package de.kaleidox.crystalshard.api.entity.permission;
+package de.kaleidox.crystalshard.api.entity.server.permission;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 public interface PermissionList extends Set<Permission> {
-    PermissionList EMPTY_LIST = InternalInjector.newInstance(PermissionList.class, null, 0);
+    PermissionList EMPTY_LIST = Injector.create(PermissionList.class, null, 0);
 
     Optional<PermissionOverwritable> getParent();
 
@@ -26,15 +26,15 @@ public interface PermissionList extends Set<Permission> {
     boolean remove(Object o);
 
     static PermissionList emptyListOf(PermissionOverwritable parent) {
-        return InternalInjector.newInstance(PermissionList.class, parent, 0);
+        return Injector.create(PermissionList.class, parent, 0);
     }
 
     static PermissionList create(PermissionOverwritable parent) {
-        return InternalInjector.newInstance(PermissionList.class, parent);
+        return Injector.create(PermissionList.class, parent);
     }
 
     static PermissionList create(List<Permission> lackingPermission) {
-        PermissionList permissions = InternalInjector.newInstance(PermissionList.class, null, 0);
+        PermissionList permissions = Injector.create(PermissionList.class, null, 0);
         permissions.addAll(lackingPermission);
         return permissions;
     }
