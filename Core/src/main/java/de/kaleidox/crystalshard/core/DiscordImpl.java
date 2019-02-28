@@ -101,7 +101,7 @@ public class DiscordImpl extends ListenerAttachableBase<DiscordAttachableListene
         return this.utils;
     }
 
-    static class GroupedDiscord extends ArrayList<Discord> implements Discord.Group {
+    static abstract class GroupedDiscord extends ArrayList<Discord> implements Discord.Group { // TODO
     }
 
     public static class BuilderImpl implements Discord.Builder {
@@ -131,7 +131,7 @@ public class DiscordImpl extends ListenerAttachableBase<DiscordAttachableListene
                     })
                     .thenApply(shards -> {
                         if (shards.size() == 1) return shards.get(0);
-                        else return new GroupedDiscord(shards);
+                        else return null;//new GroupedDiscord(shards); TODO
                     });
         }
     }

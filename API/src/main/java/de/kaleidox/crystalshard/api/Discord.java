@@ -62,15 +62,6 @@ public interface Discord extends
         CompletableFuture<Discord> login();
     }
 
-    interface Group extends Discord, ListIterator<Discord> {
-        <C extends DiscordAttachableListener> ListenerManager<C> attachListenerSingleShard(C listener);
-
-        Evaluation<Boolean> detachListenerSingleShard(DiscordAttachableListener listener);
-
-        Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagersSingleShard(
-                Predicate<ListenerManager<? extends DiscordAttachableListener>> filter);
-
-        Collection<DiscordAttachableListener> getListenersSingleShard(
-                Predicate<? super DiscordAttachableListener> filter);
+    interface Group extends Discord { // TODO
     }
 }
