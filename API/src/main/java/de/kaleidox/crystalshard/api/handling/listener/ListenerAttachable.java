@@ -8,11 +8,12 @@ import de.kaleidox.crystalshard.api.handling.listener.user.UserAttachableListene
 import de.kaleidox.util.functional.Evaluation;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 /**
  * This interface marks an object as listener attachable for listeners of type T.
  *
- * @param <T> The supertype of the listeners that can be attached to this object.
+ * @param <L> The supertype of the listeners that can be attached to this object.
  * @see DiscordAttachableListener
  * @see ServerAttachableListener
  * @see ChannelAttachableListener
@@ -20,7 +21,7 @@ import java.util.Collection;
  * @see RoleAttachableListener
  * @see UserAttachableListener
  */
-public interface ListenerAttachable<T extends Listener> {
+public interface ListenerAttachable<L extends Listener> {
     /**
      * Attaches a new Listener of type C to the object.
      *
@@ -28,7 +29,7 @@ public interface ListenerAttachable<T extends Listener> {
      * @param <C>      Type variable so that C extends T.
      * @return The ListenerManager of the attached listener.
      */
-    <C extends T> ListenerManager<C> attachListener(C listener);
+    <C extends L> ListenerManager<C> attachListener(C listener);
 
     /**
      * Tries to detach the given listener from the object.
@@ -36,20 +37,32 @@ public interface ListenerAttachable<T extends Listener> {
      * @param listener The listener to detach.
      * @return An Evaluation object that tells if the detach could be performed.
      */
-    Evaluation<Boolean> detachListener(T listener);
+    Evaluation<Boolean> detachListener(L listener);
 
     /**
      * Returns a collection of all ListenerManagers attached to this object.
      *
      * @return A collection with attached ListenerManagers.
      */
-    Collection<ListenerManager<? extends T>> getListenerManagers();
+    default Collection<ListenerManager<? extends L>> getListenerManagers() {
+        return getListenerManagers(any -> true);
+    }
 
     /**
-     * Detached all listeners from the current object.
+     * Returns a collection of all ListenerManagers attached to this object.
+     *
+     * @return A collection with attached ListenerManagers.
+     * @param filter
      */
-    default void detachAllListeners() {
-        getAttachedListeners().forEach(this::detachListener);
+    Collection<ListenerManager<? extends L>> getListenerManagers(Predicate<ListenerManager<? extends L>> filter);
+
+    /**
+     * Returns a collection of all listeners that are attached to this object.
+     *
+     * @return A collection with the attached listeners.
+     */
+    default Collection<L> getListeners() {
+        return getListeners(any -> true);
     }
 
     /**
@@ -57,5 +70,12 @@ public interface ListenerAttachable<T extends Listener> {
      *
      * @return A collection with the attached listeners.
      */
-    Collection<T> getAttachedListeners();
+    Collection<L> getListeners(Predicate<ListenerManager<? extends L>> filter);
+
+    /**
+     * Detached all listeners from the current object.
+     */
+    default void detachAllListeners() {
+        getListeners(any -> true).forEach(this::detachListener);
+    }
 }
