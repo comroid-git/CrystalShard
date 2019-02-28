@@ -1,25 +1,27 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import de.kaleidox.crystalshard.api.CrystalShard;
-import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
-import de.kaleidox.crystalshard.core.net.request.HttpMethod;
-import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
-import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.util.helpers.FutureHelper;
-import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
+import de.kaleidox.crystalshard.CrystalShard;
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
+import de.kaleidox.crystalshard.core.net.request.DiscordRequestImpl;
+import de.kaleidox.crystalshard.core.net.request.HttpMethod;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordEndpoint;
+import de.kaleidox.util.helpers.FutureHelper;
+import de.kaleidox.util.helpers.JsonHelper;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.inject.Inject;
+import org.apache.logging.log4j.Logger;
+
 public class WebSocketClientImpl implements WebSocketClient {
-    private static final Logger logger = new Logger(WebSocketClient.class);
+    private static final Logger logger = Log.get(WebSocketClient.class);
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
     private final Discord discord;
     private final WebSocket webSocket;
@@ -27,6 +29,7 @@ public class WebSocketClientImpl implements WebSocketClient {
     private final AtomicLong lastHeartbeat = new AtomicLong(0);
     private final ThreadPoolImpl threadPool;
 
+    @Inject
     public WebSocketClientImpl(Discord discordObject) {
         URI gatewayUrl = new DiscordRequestImpl<String>(discordObject).setMethod(HttpMethod.GET)
                 .setUri(DiscordEndpoint.GATEWAY.createUri())
@@ -34,7 +37,7 @@ public class WebSocketClientImpl implements WebSocketClient {
                         "url")
                         .asText())
                 .exceptionally(throwable -> {
-                    logger.exception(throwable);
+                    logger.error(throwable);
                     return "wss://gateway.discord.gg"; // default
                     // gateway if gateway couldn't be retrieved
                 })
@@ -60,7 +63,7 @@ public class WebSocketClientImpl implements WebSocketClient {
                         JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT),
                         "$device",
                         JsonHelper.nodeOf(CrystalShard.SHORT_FOOTPRINT)));
-        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(logger::exception);
+        sendPayload(Payload.create(OpCode.IDENTIFY, data)).exceptionally(Log::exceptionally);
     }
 
     public CompletableFuture<Void> sendPayload(Payload payload) {
@@ -71,7 +74,7 @@ public class WebSocketClientImpl implements WebSocketClient {
                 try {
                     Thread.sleep(50L);
                 } catch (InterruptedException e) {
-                    logger.exception(e);
+                    logger.error(e);
                 }
             }
             if (lastPacket.get() <= (System.currentTimeMillis() - 500)) {

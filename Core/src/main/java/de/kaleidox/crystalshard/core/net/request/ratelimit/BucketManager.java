@@ -1,27 +1,27 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
-import javax.naming.LimitExceededException;
-
-import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
-import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
-import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.util.functional.LivingInt;
-import de.kaleidox.util.helpers.MapHelper;
-import de.kaleidox.util.helpers.QueueHelper;
-
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import javax.naming.LimitExceededException;
+
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
+import de.kaleidox.crystalshard.core.net.request.endpoint.DiscordRequestURI;
+import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
+import de.kaleidox.util.functional.LivingInt;
+import de.kaleidox.util.helpers.MapHelper;
+import de.kaleidox.util.helpers.QueueHelper;
+
+import org.apache.logging.log4j.Logger;
 
 class BucketManager {
-    private final static Logger logger = new Logger(BucketManager.class);
-    @SuppressWarnings("ALL")
+    private final static Logger logger = Log.get(BucketManager.class);
     private final Discord discord;
     private final RatelimiterImpl ratelimiterImpl;
     private final ConcurrentLinkedQueue<Bucket> bucketQueue;
@@ -49,12 +49,12 @@ class BucketManager {
                         }
                         Bucket poll = bucketQueue.poll();
                         while (!poll.canRun()) { // wait until the bucket can be run
-                            logger.deeptrace("Ratelimited bucket " + poll + " for " + poll.waitDuration() + " MS");
+                            logger.debug("Ratelimited bucket " + poll + " for " + poll.waitDuration() + " MS");
                             Thread.sleep(poll.waitDuration());
                         }
                         poll.runAll();
                     } catch (InterruptedException e) {
-                        logger.exception(e, "BucketQueue wait or sleep interrupted.");
+                        logger.catching(new Error("BucketQueue wait or sleep interrupted.", e));
                     }
                 }
             }
@@ -78,7 +78,7 @@ class BucketManager {
                 }
                 bucketQueue.notify();
             } catch (LimitExceededException e) {
-                logger.exception(e);
+                logger.catching(e);
             }
         }
     }
@@ -94,9 +94,8 @@ class BucketManager {
         @Override
         public String toString() {
             int numEndpoints = requests.size();
-            int numRequests = requests.entrySet()
+            int numRequests = requests.values()
                     .stream()
-                    .map(Map.Entry::getValue)
                     .mapToInt(arr -> arr.length)
                     .sum();
             return "Bucket [" + numEndpoints + " Endpoint" + (numEndpoints == 1 ? "" : "s") + ", " + numRequests + " Requests]";
@@ -135,7 +134,7 @@ class BucketManager {
                     try {
                         ratelimiterImpl.executePool.execute(task, "Request to " + endpoint);
                     } catch (Exception e) {
-                        logger.exception(e, "Exception in Request " + endpoint);
+                        logger.catching(new Error("Exception in Request " + endpoint, e));
                     }
                 }
                 requests.remove(endpoint, runnables);
@@ -151,10 +150,7 @@ class BucketManager {
                 return false; // false if global ratelimit counter would be over 50
             int trueC = 0;
 
-            for (RequestURI end : requests.entrySet()
-                    .stream()
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList())) {
+            for (RequestURI end : new ArrayList<>(requests.keySet())) {
                 final int remaining = ratelimiterImpl.getRemaining(end)
                         .get();
                 final int limit = ratelimiterImpl.getLimit(end)
@@ -166,9 +162,8 @@ class BucketManager {
                     if (reset.isBefore(Instant.now())) {
                         trueC++;
                     }
-                } else if ((remaining + requests.entrySet()
+                } else if ((remaining + requests.keySet()
                         .stream()
-                        .map(Map.Entry::getKey)
                         .map(RequestURI::getAppendix)
                         .mapToInt(a -> 1)
                         .sum()) < limit) {

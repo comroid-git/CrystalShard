@@ -1,9 +1,5 @@
 package de.kaleidox.crystalshard.core.concurrent;
 
-import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
-import de.kaleidox.crystalshard.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +14,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicMarkableReference;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.core.net.socket.WebSocketClientImpl;
+
+import org.apache.logging.log4j.Logger;
+
 /**
  * This class is the main concurrent implementation.
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.ThreadPool {
     // Static Fields
-    private final static Logger logger = new Logger(ThreadPoolImpl.class);
+    private final static Logger logger = Log.get(ThreadPoolImpl.class);
     private final ConcurrentHashMap<Worker, AtomicBoolean> threads;
     private final Discord discord;
     private final int maxSize;
@@ -64,7 +66,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         this.name = name;
         this.factory = new Factory();
 
-        execute(() -> logger.deeptrace("New ThreadPool created: " + name));
+        execute(() -> logger.trace("New ThreadPool created: " + name));
     }
 
     @Override
@@ -102,7 +104,8 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
     }
 
     /**
-     * Removes terminated Threads from the {@code factoriedThreads} list, and decrements the name counter for each thread.
+     * Removes terminated Threads from the {@code factoriedThreads} list, and decrements the name counter for each
+     * thread.
      */
     void cleanupThreads() {
         factoriedThreads.stream()
@@ -117,6 +120,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
      * Used to exclude deeptracing of tasks that come from CompletableFuture async methods.
      *
      * @param task The task to check.
+     *
      * @return Whether the task is most likely from an async stage.
      */
     private static boolean nonFutureTask(Runnable task) {
@@ -225,7 +229,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
                                 try {
                                     queue.wait();
                                 } catch (InterruptedException e) {
-                                    logger.exception(e);
+                                    logger.error(e);
                                 }
                             }
                             task = nextTask.isMarked() ? nextTask.getReference() : queue.poll();
@@ -266,8 +270,10 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
         }
 
         /**
-         * Attaches a new Runnable to this worker. This method should not be used for chaining tasks, but for attaching runnables to worker threads in the
-         * {@code java.lang.Thread.State.RUNNABLE} state. For chaining tasks, use {@link #execute(Runnable, String...)} instead.
+         * Attaches a new Runnable to this worker. This method should not be used for chaining tasks, but for attaching
+         * runnables to worker threads in the
+         * {@code java.lang.Thread.State.RUNNABLE} state. For chaining tasks, use {@link #execute(Runnable, String...)}
+         * instead.
          *
          * @param task The task to attach.
          */
@@ -309,7 +315,7 @@ public class ThreadPoolImpl implements de.kaleidox.crystalshard.core.concurrent.
             try {
                 runnable.run();
             } catch (Exception e) {
-                logger.exception(e);
+                logger.error(e);
             }
         }
 

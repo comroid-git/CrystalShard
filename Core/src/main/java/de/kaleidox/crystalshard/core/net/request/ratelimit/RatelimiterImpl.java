@@ -1,12 +1,5 @@
 package de.kaleidox.crystalshard.core.net.request.ratelimit;
 
-import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.core.net.request.WebRequest;
-import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
-import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
-import de.kaleidox.crystalshard.logging.Logger;
-
 import java.net.http.HttpHeaders;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
@@ -14,9 +7,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
+import de.kaleidox.crystalshard.core.net.request.WebRequest;
+import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
+import de.kaleidox.crystalshard.core.net.request.ratelimiting.Ratelimiter;
+
+import org.apache.logging.log4j.Logger;
+
 public class RatelimiterImpl implements Ratelimiter {
-    private final static Logger logger = new Logger(RatelimiterImpl.class);
-    @SuppressWarnings("ALL")
+    private final static Logger logger = Log.get(RatelimiterImpl.class);
     private final Discord discord;
     private final BucketManager bucketManager;
     private final ConcurrentHashMap<RequestURI, AtomicInteger> remainingMap;
@@ -94,7 +95,7 @@ public class RatelimiterImpl implements Ratelimiter {
                         .ifPresent(retryAt -> resetMap.get(requestUri)
                                 .set(retryAt));
             } catch (NullPointerException e) {
-                logger.exception(e, "NPE on Ratelimit header evaluation.");
+                logger.catching(e);
             }
         });
 

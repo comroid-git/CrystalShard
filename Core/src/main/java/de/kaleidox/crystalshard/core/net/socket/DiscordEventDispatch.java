@@ -1,14 +1,14 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.util.Log;
 import de.kaleidox.crystalshard.core.concurrent.ThreadPoolImpl;
-import de.kaleidox.crystalshard.internal.InternalInjector;
-import de.kaleidox.crystalshard.logging.Logger;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.logging.log4j.Logger;
 
 public class DiscordEventDispatch {
-    private final static Logger logger = new Logger(DiscordEventDispatch.class);
+    private final static Logger logger = Log.get(DiscordEventDispatch.class);
 
     public static void handle(Discord discord, JsonNode data) {
         WebSocketClientImpl webSocket = (WebSocketClientImpl) discord.getWebSocket();
@@ -24,7 +24,7 @@ public class DiscordEventDispatch {
                             ((ThreadPoolImpl) discord.getThreadPool()).startHeartbeat(heartbeat_interval);
                             break;
                         case DISPATCH:
-                            InternalInjector.tryHandle(discord, data);
+                            //InternalInjector.tryHandle(discord, data); // todo
                             break;
                         case HEARTBEAT:
                             webSocket.heartbeat();
@@ -35,7 +35,8 @@ public class DiscordEventDispatch {
                             }
                             break;
                         default:
-                            logger.warn("Unexpected OpCode recieved: " + opCode + " with body: " + data + "\n" + "Please inform the developer!");
+                            logger.warn("Unexpected OpCode recieved: " + opCode +
+                                    " with body: " + data + "\n" + "Please inform the developer!");
                             break;
                     }
                 });

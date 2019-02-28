@@ -1,16 +1,18 @@
 package de.kaleidox.crystalshard.core.net.socket;
 
-import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.util.helpers.JsonHelper;
-
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.util.helpers.JsonHelper;
+
+import org.apache.logging.log4j.Logger;
+
 public class WebSocketListener implements WebSocket.Listener {
-    private final static Logger logger = new Logger(WebSocketListener.class);
+    private final static Logger logger = Log.get(WebSocketListener.class);
     private final Discord discord;
     private StringBuilder onTextBuilder = new StringBuilder();
     private CompletableFuture<String> onTextFuture = new CompletableFuture<>();
@@ -34,8 +36,8 @@ public class WebSocketListener implements WebSocket.Listener {
             onTextFuture.complete(onTextBuilder.toString());
             onTextBuilder = new StringBuilder();
             CompletableFuture<String> returning = onTextFuture;
-            returning.thenAcceptAsync(logger::deeptrace);
-            returning.exceptionally(logger::exception)
+            returning.thenAcceptAsync(logger::debug);
+            returning.exceptionally(Log::exceptionally)
                     .thenApplyAsync(JsonHelper::parse)
                     .thenAcceptAsync(node -> DiscordEventDispatch.handle(discord, node));
             onTextFuture = new CompletableFuture<>();
@@ -75,6 +77,6 @@ public class WebSocketListener implements WebSocket.Listener {
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
         webSocket.request(1);
-        logger.exception(error, "WebSocket error");
+        logger.catching(error);
     }
 }

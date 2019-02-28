@@ -1,11 +1,5 @@
 package de.kaleidox.crystalshard.core.net.request;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
-import de.kaleidox.crystalshard.logging.Logger;
-import de.kaleidox.util.helpers.JsonHelper;
-
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -13,8 +7,15 @@ import java.net.http.HttpResponse;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import de.kaleidox.crystalshard.api.util.Log;
+import de.kaleidox.crystalshard.core.net.request.endpoint.RequestURI;
+import de.kaleidox.util.helpers.JsonHelper;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.logging.log4j.Logger;
+
 public class WebRequestImpl<T> implements WebRequest<T> {
-    protected static final Logger logger = new Logger(WebRequest.class);
+    protected static final Logger logger = Log.get(WebRequest.class);
     protected static final HttpClient CLIENT = HttpClient.newHttpClient();
     protected final HttpRequest.Builder requestBuilder;
     protected final CompletableFuture<String> future;

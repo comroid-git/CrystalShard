@@ -1,6 +1,10 @@
 package de.kaleidox.crystalshard.core.net.request;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.exception.DiscordResponseException;
@@ -8,11 +12,7 @@ import de.kaleidox.crystalshard.core.net.request.ratelimit.RatelimiterImpl;
 import de.kaleidox.util.CompletableFutureExtended;
 import de.kaleidox.util.helpers.JsonHelper;
 
-import java.net.http.HttpHeaders;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
     private final Discord discord;
@@ -66,18 +66,18 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
                         unknown = false;
                     default: // Anything else
                         JsonNode responseNode = JsonHelper.parse(responseBody);
-                        logger.traceElseInfo(
+                        logger.error(
                                 "{" + statusCode + ":" + responseNode.get("code")
                                         .asText() + ":\"" + responseNode.get("message")
                                         .asText() + "\"} " +
                                         (unknown ? "Recieved unknown status code from Discord" + " " + "with responseBody: " + responseBody :
-                                                "Untreated code recieved with body: " + responseBody), "Recieved unknown status code: " + statusCode);
+                                                "Untreated code recieved with body: " + responseBody));
                         future.completeExceptionally(new DiscordResponseException(
                                 "Discord Responded with unknown status code " + statusCode + " and message: " + responseBody));
                         break;
                 }
             } catch (Throwable e) {
-                logger.exception(e, "Error in WebRequest " + toString());
+                logger.error("Error in WebRequest " + toString() + ": " + e.getMessage());
             }
         });
 
