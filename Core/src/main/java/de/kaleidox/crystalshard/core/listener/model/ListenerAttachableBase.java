@@ -53,7 +53,8 @@ public class ListenerAttachableBase<L extends Listener> implements ListenerAttac
     }
 
     @Override
-    public Collection<ListenerManager<? extends L>> getListenerManagers(Predicate<ListenerManager<? extends L>> filter) {
+    public Collection<ListenerManager<? extends L>> getListenerManagers(
+            Predicate<ListenerManager<? extends L>> filter) {
         return managers.values()
                 .stream()
                 .flatMap(Collection::stream)
