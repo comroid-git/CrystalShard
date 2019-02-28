@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import de.kaleidox.crystalshard.Log;
@@ -48,7 +49,7 @@ public class DiscordImpl extends ListenerAttachableBase<DiscordAttachableListene
         super(null);
         super.discord = this;
 
-        this.token = token;
+        this.token = "Bot " + token;
 
         this.currentShard = currentShard;
         this.threadpool = new ThreadPoolImpl(this);
@@ -105,34 +106,146 @@ public class DiscordImpl extends ListenerAttachableBase<DiscordAttachableListene
         return this.utils;
     }
 
-    @Override
-    public <C extends DiscordAttachableListener> ListenerManager<C> attachListener(C listener) {
-        return null;
-    }
-
-    @Override
-    public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
-        return null;
-    }
-
-    @Override
-    public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers(Predicate<ListenerManager<L>> filter) {
-        return null;
-    }
-
-    @Override
-    public Collection<DiscordAttachableListener> getListeners() {
-        return null;
-    }
-
-    static class GroupedDiscord extends ArrayList<Discord> implements Discord {
+    static class GroupedDiscord extends ArrayList<Discord> implements Discord.Group {
         private final Collection<? extends Discord> shardsOrdered;
+
+        private Discord current;
 
         public GroupedDiscord(@NotNull List<DiscordImpl> c) {
             super(c);
             this.shardsOrdered = c;
-
             c.forEach(shard -> shard.shardsSorted = c);
+        }
+
+        @Override
+        public String getToken() {
+            return current.getToken();
+        }
+
+        @Override
+        public ThreadPool getThreadPool() {
+            return current.getThreadPool();
+        }
+
+        @Override
+        public WebSocketClient getWebSocket() {
+            return current.getWebSocket();
+        }
+
+        @Override
+        public Ratelimiter getRatelimiter() {
+            return current.getRatelimiter();
+        }
+
+        @Override
+        public int shardID() {
+            return current.shardID();
+        }
+
+        @Override
+        public int shardCount() {
+            return current.shardCount();
+        }
+
+        @Override
+        public Discord getShard(int shardNumber) {
+            return current = get(shardNumber);
+        }
+
+        @Override
+        public Self getYourself() {
+            return current.getYourself();
+        }
+
+        @Override
+        public DiscordUtils getUtilities() {
+            return current.getUtilities();
+        }
+
+        @Override
+        public <C extends DiscordAttachableListener> ListenerManager<C> attachListenerSingleShard(C listener) {
+            return current.attachListener(listener);
+        }
+
+        @Override
+        public Evaluation<Boolean> detachListenerSingleShard(DiscordAttachableListener listener) {
+            return current.detachListener(listener);
+        }
+
+        @Override
+        public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagersSingleShard(
+                Predicate<ListenerManager<? extends DiscordAttachableListener>> filter) {
+            return current.getListenerManagers(filter);
+        }
+
+        @Override
+        public Collection<DiscordAttachableListener> getListenersSingleShard(
+                Predicate<? super DiscordAttachableListener> filter) {
+            return current.getListeners(filter);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <C extends DiscordAttachableListener> ListenerManager<C> attachListener(C listener) {
+            final ListenerManager[] manager = new ListenerManager[1];
+            forEach(shard -> manager[0] = shard.attachListener(listener));
+            return (ListenerManager<C>) manager[0];
+        }
+
+        @Override
+        public Evaluation<Boolean> detachListener(DiscordAttachableListener listener) {
+            return null;
+        }
+
+        @Override
+        public Collection<ListenerManager<? extends DiscordAttachableListener>> getListenerManagers(
+                Predicate<ListenerManager<? extends DiscordAttachableListener>> filter) {
+            return null;
+        }
+
+        @Override
+        public Collection<DiscordAttachableListener> getListeners(Predicate<? super DiscordAttachableListener> filter) {
+            return null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+
+        @Override
+        public Discord next() {
+            return null;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return false;
+        }
+
+        @Override
+        public Discord previous() {
+            return null;
+        }
+
+        @Override
+        public int nextIndex() {
+            return 0;
+        }
+
+        @Override
+        public int previousIndex() {
+            return 0;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void set(Discord discord) {
+
         }
     }
 
@@ -161,7 +274,10 @@ public class DiscordImpl extends ListenerAttachableBase<DiscordAttachableListene
                                 .forEachOrdered(shard -> shards.add(new DiscordImpl(token, shard)));
                         return shards;
                     })
-                    .thenApply(GroupedDiscord::new);
+                    .thenApply(shards -> {
+                        if (shards.size() == 1) return shards.get(0);
+                        else return new GroupedDiscord(shards);
+                    });
         }
     }
 }

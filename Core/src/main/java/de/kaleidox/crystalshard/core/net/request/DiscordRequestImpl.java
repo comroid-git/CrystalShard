@@ -40,7 +40,7 @@ public class DiscordRequestImpl<T> extends WebRequestImpl<T> {
                 HttpRequest request = requestBuilder.uri(uri.getURI())
                         .header("User-Agent", "DiscordBot (http://kaleidox.de, 0.1)")
                         .header("Content-Type", "application/json")
-                        .header("Authorization", discord)
+                        .header("Authorization", discord.getToken())
                         .method(method.getDescriptor(), HttpRequest.BodyPublishers.ofString(body))
                         .build();
                 HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
