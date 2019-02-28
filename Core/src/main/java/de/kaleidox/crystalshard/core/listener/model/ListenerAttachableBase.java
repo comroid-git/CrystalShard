@@ -3,7 +3,6 @@ package de.kaleidox.crystalshard.core.listener.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -25,17 +24,15 @@ public class ListenerAttachableBase<L extends Listener> implements ListenerAttac
     @SuppressWarnings("unchecked")
     @Override
     public <C extends L> ListenerManager<C> attachListener(C listener) {
-        ListenerManagerImpl<C> listenerManager;
-
-        Optional<ListenerManager<? extends L>> prevManager = managers.values()
+        Class listenerClass = listener.getClass();
+        ListenerManagerImpl<C> listenerManager = managers
+                .getOrDefault(listenerClass, new ArrayList<>())
                 .stream()
-                .flatMap(Collection::stream)
                 .filter(manager -> ((ListenerManagerImpl) manager).listener == listener)
-                .findAny();
-        listenerManager = prevManager.map(manager -> (ListenerManagerImpl<C>) manager)
+                .findAny()
+                .map(manager -> (ListenerManagerImpl<C>) manager)
                 .orElseGet(() -> new ListenerManagerImpl<>(discord, this, listener));
 
-        Class listenerClass = listener.getClass();
         managers.putIfAbsent(listenerClass, new ArrayList<>());
         managers.get(listenerClass).add(listenerManager);
         return listenerManager;
