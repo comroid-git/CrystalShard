@@ -12,7 +12,7 @@ ext {
     ]
     depVersion = [
             jackson      : '2.9.9',
-            kalutils     : '0.4.1',
+            kalutils     : '0.4.2',
             jUnit        : '4.12',
             reflections  : '0.9.11',
             okHttp       : '3.14.2',
