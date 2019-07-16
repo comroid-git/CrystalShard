@@ -15,7 +15,7 @@ ext {
             kalutils     : '0.4.2',
             jUnit        : '4.12',
             reflections  : '0.9.11',
-            okHttp       : '3.14.2',
+            okHttp       : '4.0.1',
             emojiJava    : '4.0.0',
             ijAnnotations: '12.0'
     ]
