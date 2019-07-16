@@ -11,7 +11,7 @@ ext {
             extUtil: '1.2.0'
     ]
     depVersion = [
-            jackson      : '2.9.9',
+            jackson      : '2.9.9.1',
             kalutils     : '0.4.2',
             jUnit        : '4.12',
             reflections  : '0.9.11',
