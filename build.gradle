@@ -16,7 +16,7 @@ ext {
             jUnit        : '4.12',
             reflections  : '0.9.11',
             okHttp       : '3.14.2',
-            emojiJava    : '4.0.0',
+            emojiJava    : '5.0.0',
             ijAnnotations: '12.0'
     ]
 }
