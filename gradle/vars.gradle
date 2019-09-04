@@ -1,0 +1,14 @@
+import static java.lang.System.getenv
+
+ext {
+    artifactName = "crystalshard"
+    projectName = "CrystalShard"
+    projectDescription = "Modular Java-Wrapper for the Discord Bot API"
+
+    snapshot = project.version.endsWith("-SNAPSHOT")
+
+    sonatypeUsername = getenv("sonatypeUsername")
+    sonatypePassword = getenv("sonatypePassword")
+}
+
+ext."signing.password" = getenv("gpgKeyPassword")

@@ -1,82 +1,86 @@
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+apply plugin: "io.codearte.nexus-staging"
 
-publishing {
-    boolean snapshotPublication = rootProject.version.endsWith("SNAPSHOT")
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-    repositories {
-        maven {
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-            def releasesRepoUrl = "https://oss.sonatype.org/content/repositories/releases"
-            url = snapshotPublication ? snapshotsRepoUrl : releasesRepoUrl
-            name = "Sonatype"
+    publishing {
+        repositories {
+            maven {
+                url = snapshot
+                        ? "https://oss.sonatype.org/content/repositories/snapshots"
+                        : "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                name = "Sonatype"
 
-            credentials {
-                def uName = ""
-                def passwd = ""
-                int r
-                def stream = new FileInputStream(fileOrTempFile(".credentials/sonatype-username.cred"))
-                while ((r = stream.read()) != -1) uName = (uName + (char) r)
-                stream = new FileInputStream(fileOrTempFile(".credentials/sonatype-password.cred"))
-                while ((r = stream.read()) != -1) passwd = (passwd + (char) r)
+                credentials {
+                    username sonatypeUsername
+                    password sonatypePassword
+                }
+            }
+        }
 
-                username uName
-                password passwd
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                if (project.name.equals("CrystalShard")) {
+                    artifactId = "${artifactName}"
+                } else {
+                    artifactId = "${artifactName}-${project.name}"
+                    artifact sourcesJar
+                    artifact javadocJar
+                }
+
+                pom {
+                    name = projectName
+                    description = projectDescription
+                    inceptionYear = '2019'
+                    url = "https://github.com/CrystalShardDiscord/${artifactName}-${project.name}".toString()
+
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = "burdoto"
+                            name = "Tobias Burdow"
+                            email = "burdoto@outlook.com"
+                        }
+                    }
+
+                    scm {
+                        connection = "scm:git:git://github.com/CrystalShardDiscord/${projectName}.git".toString()
+                        developerConnection = "scm:git:ssh://github.com/CrystalShardDiscord/${projectName}.git".toString()
+                        url = "https://github.com/CrystalShardDiscord/${projectName}".toString()
+                    }
+                }
+
+                System.out.println("Registered artifact publication: '${group}:${artifactId}:${project.version}'")
             }
         }
     }
 
-    publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'crystalshard-main'
-            artifact rootProject.findProject("Main").jar
-            version = vString(versionNo.main, snapshotPublication)
+    task generateGithubPom(type: GenerateMavenPom) {
+        destination = file("$projectDir/pom.xml")
+        pom = publishing.publications.mavenJava.pom
+    }
 
-            pom {
-                name = "CrystalShard"
-                description = "Modular Java Discord library!"
-                inceptionYear = '2018'
-
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = "burdoto"
-                        name = "Tobias Burdow"
-                        email = "burdoto@outlook.com"
-                    }
-                }
-
-                scm {
-                    connection = 'scm:git:https://github.com/CrystalShardDiscord/CrystalShard.git'
-                    developerConnection = 'scm:git:git@github.com:CrystalShardDiscord/CrystalShard.git'
-                    url = 'https://github.com/CrystalShardDiscord/CrystalShard'
-                }
-
-                issueManagement {
-                    system = 'GitHub'
-                    url = 'https://github.com/CrystalShardDiscord/CrystalShard/issues'
-                }
-            }
+    if (!System.getenv().containsKey('JITPACK')) {
+        signing {
+            useGpgCmd()
+            sign publishing.publications.mavenJava
         }
     }
 }
 
-signing {
-    if (new File(".credentials/sonatype-password.cred").exists()) {
-        useGpgCmd()
-        for (def pub : publishing.publications)
-            sign pub
-    }
+tasks.removeAll([promoteRepository, closeAndPromoteRepository, getStagingProfile])
+
+nexusStaging {
+    username sonatypeUsername.toString()
+    password sonatypePassword.toString()
 }
 
-static File fileOrTempFile(String name) {
-    def file = new File(name)
-    if (file.exists()) return file
-    return File.createTempFile(name, "")
-}

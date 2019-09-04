@@ -1,19 +1,9 @@
 rootProject.name = 'CrystalShard'
 
-/*
-// Java 7
-include ':API-7'
-include ':Implementation-7'
-include ':Core-7'
-*/
+include(':api')
 
-// Java 8
-include ':API-8'
-include ':Implementation-8'
-include ':Core-8'
+include(':impl')
 
-// Java 11
-include ':Core-11'
+include(':core')
 
-// Extensions
-include ':ExtensiveUtilities'
+include(':util')
