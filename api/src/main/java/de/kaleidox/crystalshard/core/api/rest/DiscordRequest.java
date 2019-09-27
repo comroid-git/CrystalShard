@@ -4,10 +4,13 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import de.kaleidox.crystalshard.api.model.ApiBound;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Contract;
 
-public interface DiscordRequest<T> extends WebRequest<T> {
+public interface DiscordRequest<T> extends WebRequest<T>, ApiBound {
     @Override
     DiscordRequest<T> method(RestMethod method);
 
@@ -21,10 +24,13 @@ public interface DiscordRequest<T> extends WebRequest<T> {
     }
 
     @Override
-    DiscordRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPCodes.class) int code);
+    DiscordRequest<T> body(String body);
 
     @Override
-    CompletableFuture<T> executeAs(Function<String, T> mapper);
+    DiscordRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPStatusCodes.class) int code);
+
+    @Override
+    CompletableFuture<T> executeAs(Function<JsonNode, T> mapper);
 
     DiscordRequest<T> endpoint(DiscordEndpoint endpoint, Object... args) throws IllegalArgumentException;
 

@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.core.api.gateway;
 
+import java.util.NoSuchElementException;
+
 public enum OpCode {
     DISPATCH(0),
 
@@ -29,5 +31,18 @@ public enum OpCode {
 
     OpCode(int value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "OpCode(" + value + ")";
+    }
+
+    public static OpCode getByValue(int value) {
+        for (OpCode opCode : values())
+            if (opCode.value == value)
+                return opCode;
+
+        throw new NoSuchElementException("Unknown OpCode: " + value);
     }
 }

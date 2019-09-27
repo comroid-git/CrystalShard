@@ -9,14 +9,35 @@ import java.util.function.Predicate;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.model.guild.invite.Invite;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverride;
+import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.cache;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.collective;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
 
 public interface GuildChannel extends Channel {
+    interface Trait extends Channel.Trait {
+        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonTrait<Integer, Integer> POSITION = identity("position");
+        JsonTrait<JsonNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
+        JsonTrait<String, String> NAME = identity("name");
+        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
+                (CacheManager cache, Long id) -> cache.getChannelByID(id)
+                        .flatMap(Channel::asGuildChannelCategory));
+        // todo
+    }
+
     @IntroducedBy(GETTER)
-    Guild getGuild();
+    default Guild getGuild() {
+        return getTrait(Trait.GUILD);
+    }
 
     @IntroducedBy(GETTER)
     int getPosition();

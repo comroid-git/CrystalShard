@@ -15,6 +15,7 @@ public class GatewayEventTest {
                 .setScanners(new SubTypesScanner())
                 .addUrls(ClasspathHelper.forClass(GatewayEvent.class))
         );
+
         int c = 0;
 
         for (Class<? extends GatewayEvent> klass : reflections.getSubTypesOf(GatewayEvent.class)) {

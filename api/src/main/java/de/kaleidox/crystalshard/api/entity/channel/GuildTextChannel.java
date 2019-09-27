@@ -10,10 +10,17 @@ import java.util.concurrent.TimeUnit;
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.entity.EntityType;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
-import de.kaleidox.crystalshard.api.entity.user.Webhook;
+import de.kaleidox.crystalshard.api.entity.guild.webhook.Webhook;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
+import org.w3c.dom.Text;
+
+@JsonTraits(GuildTextChannel.Trait.class)
 public interface GuildTextChannel extends GuildChannel, TextChannel {
+    interface Trait extends GuildChannel.Trait, TextChannel.Trait {
+    }
+
     // direct api methods
     CompletableFuture<Collection<Webhook>> requestWebhooks();
 

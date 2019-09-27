@@ -1,61 +1,101 @@
 package de.kaleidox.crystalshard.core.api.cache;
 
-import de.kaleidox.crystalshard.adapter.Adapter;
+import java.util.Collection;
+import java.util.Optional;
 
-import com.google.common.flogger.FluentLogger;
+import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
+import de.kaleidox.crystalshard.api.entity.guild.Guild;
+import de.kaleidox.crystalshard.api.entity.guild.Role;
+import de.kaleidox.crystalshard.api.entity.message.Message;
+import de.kaleidox.crystalshard.api.entity.user.GuildMember;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.model.ApiBound;
+import de.kaleidox.crystalshard.api.model.guild.ban.Ban;
 
-public abstract class CacheManager extends Adapter {
-    private final static FluentLogger log;
-    private final static CacheManager adapter;
+import com.fasterxml.jackson.databind.JsonNode;
 
-    static {
-        log = FluentLogger.forEnclosingClass();
-        adapter = Adapter.loadAdapter(CacheManager.class);
+public interface CacheManager extends ApiBound {
+    <R extends Cacheable & Snowflake> Optional<R> set(Class<R> type, long id, R instance);
+
+    <M extends Cacheable, B extends Cacheable> Optional<M> setMember(
+            Class<B> baseType,
+            Class<M> memberType,
+            long baseId,
+            long memberId,
+            M instance
+    );
+
+    <M extends Cacheable, B extends Cacheable> Optional<M> setSingleton(
+            Class<B> baseType,
+            Class<M> memberType,
+            long baseId,
+            M instance
+    );
+
+    <R extends Cacheable> R updateOrCreateAndGet(Class<R> type, long id, JsonNode data);
+
+    <M extends Cacheable, B extends Cacheable> M updateOrCreateMemberAndGet(
+            Class<B> baseType,
+            Class<M> memberType,
+            long baseId,
+            long memberId,
+            JsonNode data
+    );
+
+    <M extends Cacheable, B extends Cacheable> M updateOrCreateSingletonMemberAndGet(
+            Class<B> baseType,
+            Class<M> memberType,
+            long baseId,
+            JsonNode data
+    );
+
+    <R extends Cacheable> Void delete(Class<R> type, long id);
+
+    <B extends Cacheable, M extends Cacheable> Void deleteMember(
+            Class<B> baseType,
+            Class<M> memberType,
+            long baseId,
+            long memberId
+    );
+
+    <R extends Cacheable> Cache<R> getCache(Class<R> forType);
+
+    default Optional<Guild> getGuildByID(long id) {
+        return getCache(Guild.class).getByID(id);
     }
 
-    protected abstract <R> R getImpl(Class<R> type, long id);
-
-    protected abstract <R> R updateAndGetImpl(Class<R> type, long id, String data);
-
-    protected abstract <M, B> M updateMemberAndGetImpl(Class<B> baseType, Class<M> memberType, long baseId, long memberId, String data);
-
-    protected abstract <M, B> M updateSingletonMemberAndGetImpl(Class<B> baseType, Class<M> memberType, long baseId, String data);
-
-    protected abstract <R> void deleteImpl(Class<R> type, long id);
-
-    protected abstract <B, M> void deleteMemberImpl(Class<B> baseType, Class<M> memberType, long baseId, long memberId);
-
-    protected abstract <R> Cache<R> getCacheImpl(Class<R> forType);
-
-    public static <R> R get(Class<R> type, long id) {
-        return adapter.getImpl(type, id);
+    default Optional<Channel> getChannelByID(long id) {
+        return getCache(Channel.class).getByID(id);
     }
 
-    public static <R> R updateAndGet(Class<R> type, long id, String data) {
-        return adapter.updateAndGetImpl(type, id, data);
+    default Optional<User> getUserByID(long id) {
+        return getCache(User.class).getByID(id);
     }
 
-    public static <B, M> M updateMemberAndGet(Class<B> baseType, Class<M> memberType, long baseId, long memberId, String data) {
-        return adapter.updateMemberAndGetImpl(baseType, memberType, baseId, memberId, data);
+    default Optional<GuildMember> getGuildMemberByID(long guildId, long id) {
+        return getCache(Guild.class)
+                .getMemberCache(guildId, GuildMember.class)
+                .getByID(id);
     }
 
-    public static <R> Void delete(Class<R> type, long id) {
-        adapter.deleteImpl(type, id);
-
-        return null;
+    default Optional<Role> getRoleByID(long guildId, long id) {
+        return getCache(Guild.class)
+                .getMemberCache(guildId, Role.class)
+                .getByID(id);
     }
 
-    public static <B, M> Void deleteMember(Class<B> baseType, Class<M> memberType, long baseId, long memberId) {
-        adapter.deleteMemberImpl(baseType, memberType, baseId, memberId);
-
-        return null;
+    default Optional<Message> getMessageByID(long channelId, long id) {
+        return getCache(Channel.class)
+                .getMemberCache(channelId, Message.class)
+                .getByID(id);
     }
 
-    public static <R> Cache<R> getCache(Class<R> forType) {
-        return adapter.getCacheImpl(forType);
+    default Optional<Ban> getBanByUserID(long guildId, long userId) {
+        return getCache(Guild.class)
+                .getMemberCache(guildId, Ban.class)
+                .getByID(userId);
     }
 
-    public static <B, M> M updateSingletonMemberAndGet(Class<B> baseType, Class<M> memberType, long baseId, String data) {
-        return adapter.updateSingletonMemberAndGetImpl(baseType, memberType, baseId, data);
-    }
+    Collection<Snowflake> getSnowflakesByID(long id);
 }

@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.core.api.concurrent;
 
-import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.model.ApiBound;
 
-public interface WorkerThread {
-    Discord getDiscord();
+public interface WorkerThread extends ApiBound {
 }

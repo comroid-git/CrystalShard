@@ -58,7 +58,8 @@ public abstract class Adapter {
             override = ImplAdapter.adapter.getImplementingClass(targetClass);
         else if (pkg.startsWith("de.kaleidox.crystalshard.util."))
             override = UtilAdapter.adapter.getImplementingClass(targetClass);
-        else throw new AssertionError("Class " + targetClass.getSimpleName() + " is not instantiable by CrystalShard!");
+        else throw new AssertionError("Class " + targetClass.getSimpleName()
+                    + " is not instantiable by CrystalShard!");
 
         Method declaredMethod = null;
 

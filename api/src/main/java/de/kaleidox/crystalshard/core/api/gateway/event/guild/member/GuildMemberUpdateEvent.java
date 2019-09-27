@@ -9,7 +9,10 @@ import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.entity.user.GuildMember;
 import de.kaleidox.crystalshard.core.api.gateway.event.GatewayEvent;
+import de.kaleidox.crystalshard.core.api.gateway.listener.guild.member.GuildMemberUpdateListener;
+import de.kaleidox.crystalshard.util.annotation.ManagedBy;
 
+@ManagedBy(GuildMemberUpdateListener.Manager.class)
 public interface GuildMemberUpdateEvent extends GatewayEvent {
     String NAME = "GUILD_MEMBER_UPDATE";
 
@@ -17,7 +20,7 @@ public interface GuildMemberUpdateEvent extends GatewayEvent {
 
     Collection<Role> getRole();
 
-    Collection<GuildMember> getMember();
+    GuildMember getMember();
 
     Optional<String> getNickname();
 }

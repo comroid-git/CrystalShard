@@ -13,8 +13,9 @@ import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.model.guild.ban.Ban;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverridable;
 import de.kaleidox.crystalshard.core.api.cache.CacheManager;
+import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
-import de.kaleidox.crystalshard.core.api.rest.HTTPCodes;
+import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
@@ -23,7 +24,10 @@ import org.jetbrains.annotations.Nullable;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface GuildMember extends User, PermissionOverridable {
+public interface GuildMember extends User, PermissionOverridable, Cacheable {
+    @IntroducedBy(PRODUCTION)
+    User getUnderlyingUser();
+
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
@@ -47,8 +51,9 @@ public interface GuildMember extends User, PermissionOverridable {
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.BAN_SPECIFIC, getGuild().getID(), getID())
                 .method(RestMethod.DELETE)
-                .expectCode(HTTPCodes.EMPTY_RESPONSE)
-                .executeAs(data -> CacheManager.deleteMember(Guild.class, Ban.class, getGuild().getID(), getID()));
+                .expectCode(HTTPStatusCodes.NO_CONTENT)
+                .executeAs(data -> getAPI().getCacheManager()
+                        .deleteMember(Guild.class, Ban.class, getGuild().getID(), getID()));
     }
 
     @IntroducedBy(PRODUCTION)

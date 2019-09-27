@@ -6,6 +6,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -17,6 +18,9 @@ import de.kaleidox.crystalshard.api.entity.emoji.Emoji;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.api.event.message.MessageEvent;
+import de.kaleidox.crystalshard.api.listener.message.MessageAttachableListener;
+import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.api.model.message.MessageActivity;
 import de.kaleidox.crystalshard.api.model.message.MessageAuthor;
 import de.kaleidox.crystalshard.api.model.message.MessageFlags;
@@ -25,7 +29,9 @@ import de.kaleidox.crystalshard.api.model.message.TextDecoration;
 import de.kaleidox.crystalshard.api.model.message.embed.Embed;
 import de.kaleidox.crystalshard.api.model.message.reaction.Reaction;
 import de.kaleidox.crystalshard.core.api.cache.CacheManager;
+import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
+import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
@@ -35,7 +41,7 @@ import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.Implementati
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface Message extends Snowflake {
+public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
     @IntroducedBy(GETTER)
     TextChannel getChannel();
 
@@ -108,8 +114,9 @@ public interface Message extends Snowflake {
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.MESSAGE_SPECIFIC, getChannel().getID(), getID())
                 .method(RestMethod.DELETE)
-                .expectCode(204)
-                .executeAs(data -> CacheManager.delete(Message.class, getID()));
+                .expectCode(HTTPStatusCodes.NO_CONTENT)
+                .executeAs(data -> getAPI().getCacheManager()
+                        .delete(Message.class, getID()));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/channel#add-pinned-channel-message")
@@ -123,6 +130,21 @@ public interface Message extends Snowflake {
 
     static BulkDeleter createBulkDeleter(TextChannel channel) {
         return Adapter.create(BulkDeleter.class, channel);
+    }
+
+    @Override
+    default OptionalLong getCacheParentID() {
+        return OptionalLong.of(getChannel().getID());
+    }
+
+    @Override
+    default Optional<Class<? extends Cacheable>> getCacheParentType() {
+        return Optional.of(TextChannel.class);
+    }
+
+    @Override
+    default boolean isSubcacheMember() {
+        return true;
     }
 
     @IntroducedBy(PRODUCTION)

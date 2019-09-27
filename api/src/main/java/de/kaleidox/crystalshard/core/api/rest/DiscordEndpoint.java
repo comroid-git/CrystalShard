@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.core.api.rest;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static de.kaleidox.crystalshard.CrystalShard.BASE_URL;
+import static de.kaleidox.crystalshard.CrystalShard.API_BASE_URL;
 
 public enum DiscordEndpoint {
     AUDIT_LOG("/guilds/%s/audit-logs"),
@@ -67,7 +67,7 @@ public enum DiscordEndpoint {
             throw new IllegalArgumentException("Invalid argument count, [" + parameterCount + "] arguments are required.");
 
         try {
-            return new URI(String.format(BASE_URL + appendix, args));
+            return new URI(String.format(API_BASE_URL + appendix, args));
         } catch (URISyntaxException e) {
             throw new AssertionError("Invalid URI", e);
         }

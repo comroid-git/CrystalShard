@@ -7,21 +7,27 @@ import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.EntityType;
 import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.api.listener.channel.ChannelAttachableListener;
+import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.api.model.Mentionable;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
+import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 import de.kaleidox.crystalshard.util.model.TypeGroup;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
 import static de.kaleidox.crystalshard.util.Util.hackCast;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
 
-public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
+public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable, ListenerAttachable<ChannelAttachableListener>, Cacheable {
     @IntroducedBy(API)
-    ChannelType getChannelType();
+    default ChannelType getChannelType() {
+        return getTrait(Trait.CHANNEL_TYPE);
+    }
 
     @Override
     default EntityType getEntityType() {
@@ -33,7 +39,7 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.CHANNEL, getID())
                 .method(RestMethod.DELETE)
-                .executeAs(data -> CacheManager.delete(Channel.class, getID()));
+                .executeAs(data -> getAPI().getCacheManager().delete(Channel.class, getID()));
     }
 
     @IntroducedBy(PRODUCTION)
@@ -47,32 +53,32 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
     }
 
     @IntroducedBy(PRODUCTION)
-    default Optional<GuildChannel> asServerChannel() {
+    default Optional<GuildChannel> asGuildChannel() {
         return as(GuildChannel.class);
     }
 
     @IntroducedBy(PRODUCTION)
-    default Optional<GuildTextChannel> asServerTextChannel() {
+    default Optional<GuildTextChannel> asGuildTextChannel() {
         return as(GuildTextChannel.class);
     }
 
     @IntroducedBy(PRODUCTION)
-    default Optional<GuildVoiceChannel> asServerVoiceChannel() {
+    default Optional<GuildVoiceChannel> asGuildVoiceChannel() {
         return as(GuildVoiceChannel.class);
     }
 
     @IntroducedBy(PRODUCTION)
-    default Optional<GuildNewsChannel> asServerNewsChannel() {
+    default Optional<GuildNewsChannel> asGuildNewsChannel() {
         return as(GuildNewsChannel.class);
     }
 
     @IntroducedBy(PRODUCTION)
-    default Optional<GuildStoreChannel> asServerStoreChannel() {
+    default Optional<GuildStoreChannel> asGuildStoreChannel() {
         return as(GuildStoreChannel.class);
     }
 
     @IntroducedBy(PRODUCTION)
-    default Optional<GuildChannelCategory> asServerChannelCategory() {
+    default Optional<GuildChannelCategory> asGuildChannelCategory() {
         return as(GuildChannelCategory.class);
     }
 
@@ -86,12 +92,18 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
         return as(GroupTextChannel.class);
     }
 
+    @Override
+    default String getMentionTag() {
+        return "<#" + getID() + ">";
+    }
+
     @IntroducedBy(API)
     static CompletableFuture<Channel> requestChannel(Discord api, long id) {
         return Adapter.<Channel>request(api)
                 .endpoint(DiscordEndpoint.CHANNEL, id)
                 .method(RestMethod.GET)
-                .executeAs(data -> CacheManager.updateAndGet(Channel.class, id, data));
+                .executeAs(data -> api.getCacheManager()
+                        .updateOrCreateAndGet(Channel.class, id, data));
     }
 
     interface Builder<R extends Channel, Self extends Channel.Builder> extends TypeGroup<Builder<R, Self>> {
@@ -105,27 +117,27 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
             return hackCast(as(hackCast(VoiceChannel.Builder.class)));
         }
 
-        default Optional<GuildChannel.Builder> asServerChannelBuilder() {
+        default Optional<GuildChannel.Builder> asGuildChannelBuilder() {
             return hackCast(as(hackCast(GuildChannel.Builder.class)));
         }
 
-        default Optional<GuildTextChannel.Builder> asServerTextChannelBuilder() {
+        default Optional<GuildTextChannel.Builder> asGuildTextChannelBuilder() {
             return hackCast(as(hackCast(GuildTextChannel.Builder.class)));
         }
 
-        default Optional<GuildVoiceChannel.Builder> asServerVoiceChannelBuilder() {
+        default Optional<GuildVoiceChannel.Builder> asGuildVoiceChannelBuilder() {
             return hackCast(as(hackCast(GuildVoiceChannel.Builder.class)));
         }
 
-        default Optional<GuildNewsChannel.Builder> asServerNewsChannelBuilder() {
+        default Optional<GuildNewsChannel.Builder> asGuildNewsChannelBuilder() {
             return hackCast(as(hackCast(GuildNewsChannel.Builder.class)));
         }
 
-        default Optional<GuildStoreChannel.Builder> asServerStoreChannelBuilder() {
+        default Optional<GuildStoreChannel.Builder> asGuildStoreChannelBuilder() {
             return hackCast(as(hackCast(GuildStoreChannel.Builder.class)));
         }
 
-        default Optional<GuildChannelCategory.Builder> asServerChannelCategoryBuilder() {
+        default Optional<GuildChannelCategory.Builder> asGuildChannelCategoryBuilder() {
             return hackCast(as(hackCast(GuildChannelCategory.Builder.class)));
         }
 
@@ -150,23 +162,23 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
             return hackCast(as(hackCast(VoiceChannel.Builder.class)));
         }
 
-        default Optional<GuildChannel.Updater> asServerChannelUpdater() {
+        default Optional<GuildChannel.Updater> asGuildChannelUpdater() {
             return hackCast(as(hackCast(GuildChannel.Builder.class)));
         }
 
-        default Optional<GuildTextChannel.Updater> asServerTextChannelUpdater() {
+        default Optional<GuildTextChannel.Updater> asGuildTextChannelUpdater() {
             return hackCast(as(hackCast(GuildTextChannel.Builder.class)));
         }
 
-        default Optional<GuildVoiceChannel.Updater> asServerVoiceChannelUpdater() {
+        default Optional<GuildVoiceChannel.Updater> asGuildVoiceChannelUpdater() {
             return hackCast(as(hackCast(GuildVoiceChannel.Builder.class)));
         }
 
-        default Optional<GuildNewsChannel.Updater> asServerNewsChannelUpdater() {
+        default Optional<GuildNewsChannel.Updater> asGuildNewsChannelUpdater() {
             return hackCast(as(hackCast(GuildNewsChannel.Updater.class)));
         }
 
-        default Optional<GuildStoreChannel.Updater> asServerStoreChannelUpdater() {
+        default Optional<GuildStoreChannel.Updater> asGuildStoreChannelUpdater() {
             return hackCast(as(hackCast(GuildStoreChannel.Updater.class)));
         }
 
@@ -178,8 +190,12 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable {
             return hackCast(as(hackCast(GroupTextChannel.Builder.class)));
         }
 
-        default Optional<GuildChannelCategory.Updater> asServerChannelCategoryUpdater() {
+        default Optional<GuildChannelCategory.Updater> asGuildChannelCategoryUpdater() {
             return hackCast(as(hackCast(GuildChannelCategory.Builder.class)));
         }
+    }
+
+    interface Trait extends Snowflake.Trait {
+        JsonTrait<String, ChannelType> CHANNEL_TYPE = simple("type", ChannelType::valueOf);
     }
 }

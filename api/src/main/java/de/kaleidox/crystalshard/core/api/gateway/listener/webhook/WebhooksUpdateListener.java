@@ -2,8 +2,9 @@ package de.kaleidox.crystalshard.core.api.gateway.listener.webhook;
 
 import de.kaleidox.crystalshard.core.api.gateway.event.webhook.WebhooksUpdateEvent;
 import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListener;
+import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 
-@FunctionalInterface
 public interface WebhooksUpdateListener extends GatewayListener<WebhooksUpdateEvent> {
-    void onWebhooksUpdate(WebhooksUpdateEvent event);
+    interface Manager extends GatewayListenerManager<WebhooksUpdateListener> {
+    }
 }

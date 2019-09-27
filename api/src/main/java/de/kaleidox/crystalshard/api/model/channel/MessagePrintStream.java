@@ -3,10 +3,19 @@ package de.kaleidox.crystalshard.api.model.channel;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
+
 import org.jetbrains.annotations.NotNull;
 
-public abstract class MessagePrintStream extends PrintStream {
-    public MessagePrintStream(@NotNull OutputStream out) {
+public final class MessagePrintStream extends PrintStream {
+    private final TextChannel channel;
+
+    public MessagePrintStream(TextChannel channel, @NotNull OutputStream out) {
         super(out, true);
+        this.channel = channel;
+    }
+
+    public TextChannel getChannel() {
+        return channel;
     }
 }

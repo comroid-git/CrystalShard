@@ -5,14 +5,14 @@ package de.kaleidox.crystalshard.core.api.gateway.event.voice;
 import java.net.URL;
 
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
+import de.kaleidox.crystalshard.api.model.voice.VoiceState;
 import de.kaleidox.crystalshard.core.api.gateway.event.GatewayEvent;
+import de.kaleidox.crystalshard.core.api.gateway.listener.voice.VoiceStateUpdateListener;
+import de.kaleidox.crystalshard.util.annotation.ManagedBy;
 
+@ManagedBy(VoiceStateUpdateListener.Manager.class)
 public interface VoiceStateUpdateEvent extends GatewayEvent {
     String NAME = "VOICE_STATE_UPDATE";
 
-    String getVoiceConnectionToken();
-
-    Guild getGuild();
-
-    URL getEndpoint();
+    VoiceState getVoiceState();
 }

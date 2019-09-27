@@ -16,15 +16,19 @@ import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.model.Mentionable;
 import de.kaleidox.crystalshard.core.api.cache.CacheManager;
+import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
+import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface CustomEmoji extends Emoji, Mentionable, Snowflake {
+public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
@@ -55,8 +59,9 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake {
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC, getGuild().getID(), getID())
                 .method(RestMethod.DELETE)
-                .expectCode(204)
-                .executeAs(data -> CacheManager.delete(CustomEmoji.class, getID()));
+                .expectCode(HTTPStatusCodes.NO_CONTENT)
+                .executeAs(data -> getAPI().getCacheManager()
+                        .delete(CustomEmoji.class, getID()));
     }
 
     static Builder builder(Guild guild) {

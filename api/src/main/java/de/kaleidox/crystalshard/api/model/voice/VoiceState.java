@@ -14,7 +14,9 @@ public interface VoiceState {
 
     User getUser();
 
-    Optional<GuildMember> getGuildMember();
+    default Optional<GuildMember> getGuildMember() {
+        return getGuild().flatMap(getUser()::asGuildMember);
+    }
 
     String getSessionID();
 

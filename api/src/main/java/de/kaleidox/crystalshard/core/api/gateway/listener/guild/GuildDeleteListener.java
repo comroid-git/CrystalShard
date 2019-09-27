@@ -2,8 +2,9 @@ package de.kaleidox.crystalshard.core.api.gateway.listener.guild;
 
 import de.kaleidox.crystalshard.core.api.gateway.event.guild.GuildDeleteEvent;
 import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListener;
+import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 
-@FunctionalInterface
 public interface GuildDeleteListener extends GatewayListener<GuildDeleteEvent> {
-    void onGuildDelete(GuildDeleteEvent event);
+    interface Manager extends GatewayListenerManager<GuildDeleteListener> {
+    }
 }

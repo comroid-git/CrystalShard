@@ -75,8 +75,7 @@ subprojects {
 
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.easymock:easymock:4.0.2'
-
-        testCompileOnly 'org.codehaus.groovy:groovy:3.0.0-beta-1'
+        testImplementation 'com.google.flogger:flogger-system-backend:0.4'
     }
 }
 
@@ -84,17 +83,9 @@ project(":api") {
     version = '2.0.0'
 
     dependencies {
+        compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
+
         testImplementation 'org.reflections:reflections:0.9.10'
-    }
-}
-
-project(":impl") {
-    version = '2.0.0'
-
-    dependencies {
-        api project(':api')
-
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
     }
 }
 
@@ -103,8 +94,23 @@ project(":core") {
 
     dependencies {
         api project(':api')
-        
+
         implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
+
+        runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
+    }
+}
+
+project(":impl") {
+    version = '2.0.0'
+
+    dependencies {
+        api project(':api')
+        api project(':core')
+
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
+
+        runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
 }
 

@@ -11,7 +11,8 @@ public enum RestMethod {
 
     DELETE;
 
-    public String identifier() {
+    @Override
+    public String toString() {
         return name();
     }
 }

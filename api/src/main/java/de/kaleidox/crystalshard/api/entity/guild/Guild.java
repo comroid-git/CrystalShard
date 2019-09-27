@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -24,15 +25,18 @@ import de.kaleidox.crystalshard.api.entity.channel.GuildVoiceChannel;
 import de.kaleidox.crystalshard.api.entity.emoji.CustomEmoji;
 import de.kaleidox.crystalshard.api.entity.user.GuildMember;
 import de.kaleidox.crystalshard.api.entity.user.User;
-import de.kaleidox.crystalshard.api.entity.user.Webhook;
+import de.kaleidox.crystalshard.api.entity.guild.webhook.Webhook;
+import de.kaleidox.crystalshard.api.listener.guild.GuildAttachableListener;
+import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.api.model.guild.ban.Ban;
 import de.kaleidox.crystalshard.api.model.guild.invite.Invite;
 import de.kaleidox.crystalshard.api.model.user.Presence;
 import de.kaleidox.crystalshard.api.model.voice.VoiceRegion;
 import de.kaleidox.crystalshard.api.model.voice.VoiceState;
 import de.kaleidox.crystalshard.core.api.cache.CacheManager;
+import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
-import de.kaleidox.crystalshard.core.api.rest.HTTPCodes;
+import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
@@ -40,7 +44,7 @@ import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.Implementati
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface Guild extends Snowflake {
+public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableListener>, Cacheable {
     @IntroducedBy(API)
     CompletableFuture<Collection<Webhook>> requestWebhooks();
 
@@ -52,7 +56,7 @@ public interface Guild extends Snowflake {
         return Adapter.<CustomEmoji>request(getAPI())
                 .endpoint(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC, getID(), id)
                 .method(RestMethod.GET)
-                .executeAs(data -> CacheManager.updateAndGet(CustomEmoji.class, id, data));
+                .executeAs(data -> getAPI().getCacheManager().updateOrCreateAndGet(CustomEmoji.class, id, data));
     }
 
     @IntroducedBy(GETTER)
@@ -168,8 +172,8 @@ public interface Guild extends Snowflake {
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_SPECIFIC)
                 .method(RestMethod.DELETE)
-                .expectCode(204)
-                .executeAs(data -> CacheManager.delete(Guild.class, getID()));
+                .expectCode(HTTPStatusCodes.NO_CONTENT)
+                .executeAs(data -> getAPI().getCacheManager().delete(Guild.class, getID()));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#get-guild-channels")
@@ -180,7 +184,8 @@ public interface Guild extends Snowflake {
         return Adapter.<GuildMember>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_MEMBER, getID(), user.getID())
                 .method(RestMethod.GET)
-                .executeAs(data -> CacheManager.updateAndGet(GuildMember.class, user.getID(), data));
+                .executeAs(data -> getAPI().getCacheManager()
+                        .updateOrCreateAndGet(GuildMember.class, user.getID(), data));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#list-guild-members")
@@ -197,7 +202,8 @@ public interface Guild extends Snowflake {
         return Adapter.<Ban>request(getAPI())
                 .endpoint(DiscordEndpoint.BAN_SPECIFIC, getID(), user.getID())
                 .method(RestMethod.GET)
-                .executeAs(data -> CacheManager.updateMemberAndGet(Guild.class, Ban.class, getID(), user.getID(), data))
+                .executeAs(data -> getAPI().getCacheManager()
+                        .updateOrCreateMemberAndGet(Guild.class, Ban.class, getID(), user.getID(), data))
                 .thenApply(Optional::ofNullable);
     }
 
@@ -224,7 +230,8 @@ public interface Guild extends Snowflake {
         return Adapter.<Embed>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_EMBED, getID())
                 .method(RestMethod.GET)
-                .executeAs(data -> CacheManager.updateSingletonMemberAndGet(Guild.class, Embed.class, getID(), data));
+                .executeAs(data -> getAPI().getCacheManager()
+                        .updateOrCreateSingletonMemberAndGet(Guild.class, Embed.class, getID(), data));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#get-guild-vanity-url")
@@ -244,20 +251,36 @@ public interface Guild extends Snowflake {
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_SELF, getID())
                 .method(RestMethod.DELETE)
-                .expectCode(HTTPCodes.EMPTY_RESPONSE)
-                .executeAs(data -> CacheManager.delete(Guild.class, getID()));
+                .expectCode(HTTPStatusCodes.NO_CONTENT)
+                .executeAs(data -> getAPI().getCacheManager()
+                        .delete(Guild.class, getID()));
     }
 
     static Builder builder(Discord api) {
         return Adapter.create(Builder.class, api);
     }
 
-    interface Embed {
+    interface Embed extends Cacheable {
         Guild getGuild();
 
         boolean isEnabled();
 
         Optional<GuildChannel> getChannel();
+
+        @Override
+        default OptionalLong getCacheParentID() {
+            return OptionalLong.of(getGuild().getID());
+        }
+
+        @Override
+        default Optional<Class<? extends Cacheable>> getCacheParentType() {
+            return Optional.of(Guild.class);
+        }
+
+        @Override
+        default boolean isSingletonType() {
+            return true;
+        }
 
         interface Updater {
             Optional<GuildChannel> getChannel();
@@ -273,7 +296,7 @@ public interface Guild extends Snowflake {
         }
     }
 
-    interface Integration extends Snowflake {
+    interface Integration extends Snowflake, Cacheable {
         Guild getGuild();
 
         @IntroducedBy(GETTER)
@@ -311,9 +334,10 @@ public interface Guild extends Snowflake {
             return Adapter.<Void>request(getAPI())
                     .endpoint(DiscordEndpoint.INTEGRATION_SPECIFIC, getGuild().getID(), getID())
                     .method(RestMethod.DELETE)
-                    .expectCode(HTTPCodes.EMPTY_RESPONSE)
-                    .executeAs(data -> CacheManager.deleteMember(Guild.class, Integration.class, getGuild().getID(), getID()));
-            // todo add thenCompose?
+                    .expectCode(HTTPStatusCodes.NO_CONTENT)
+                    .executeAs(data -> getAPI().getCacheManager()
+                            .deleteMember(Guild.class, Integration.class, getGuild().getID(), getID()));
+            // todo add thenCompose waiting for deletion listener?
         }
 
         @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#sync-guild-integration")
@@ -321,8 +345,23 @@ public interface Guild extends Snowflake {
             return Adapter.<Void>request(getAPI())
                     .endpoint(DiscordEndpoint.INTEGRATION_SPECIFIC_SYNC, getGuild().getID(), getID())
                     .method(RestMethod.POST)
-                    .expectCode(HTTPCodes.EMPTY_RESPONSE)
+                    .expectCode(HTTPStatusCodes.NO_CONTENT)
                     .executeAs(data -> null);
+        }
+
+        @Override
+        default OptionalLong getCacheParentID() {
+            return OptionalLong.of(getGuild().getID());
+        }
+
+        @Override
+        default Optional<Class<? extends Cacheable>> getCacheParentType() {
+            return Optional.of(Guild.class);
+        }
+
+        @Override
+        default boolean isSingletonType() {
+            return true;
         }
 
         interface Account {
@@ -442,7 +481,7 @@ public interface Guild extends Snowflake {
         CompletableFuture<Guild> update();
     }
 
-    enum WidgetImageStyle { // todo
+    enum WidgetImageStyle {
         /**
          * shield style widget with Discord icon and guild members online count
          * <p>

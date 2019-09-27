@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.intellij.lang.annotations.MagicConstant;
 
 public interface WebRequest<T> {
@@ -13,7 +14,9 @@ public interface WebRequest<T> {
 
     WebRequest<T> uri(URI uri);
 
-    WebRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPCodes.class) int code);
+    WebRequest<T> body(String body);
 
-    CompletableFuture<T> executeAs(Function<String, T> mapper);
+    WebRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPStatusCodes.class) int code);
+
+    CompletableFuture<T> executeAs(Function<JsonNode, T> mapper);
 }

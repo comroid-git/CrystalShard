@@ -2,8 +2,9 @@ package de.kaleidox.crystalshard.core.api.gateway.listener.message;
 
 import de.kaleidox.crystalshard.core.api.gateway.event.message.MessageDeleteBulkEvent;
 import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListener;
+import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 
-@FunctionalInterface
 public interface MessageDeleteBulkListener extends GatewayListener<MessageDeleteBulkEvent> {
-    void onMessageDeleteBulk(MessageDeleteBulkEvent event);
+    interface Manager extends GatewayListenerManager<MessageDeleteBulkListener> {
+    }
 }

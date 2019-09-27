@@ -9,7 +9,10 @@ import de.kaleidox.crystalshard.api.entity.channel.PrivateChannel;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.core.api.gateway.event.GatewayEvent;
+import de.kaleidox.crystalshard.core.api.gateway.listener.common.ReadyListener;
+import de.kaleidox.crystalshard.util.annotation.ManagedBy;
 
+@ManagedBy(ReadyListener.Manager.class)
 public interface ReadyEvent extends GatewayEvent {
     String NAME = "READY";
 

@@ -2,8 +2,9 @@ package de.kaleidox.crystalshard.core.api.gateway.listener.user.presence;
 
 import de.kaleidox.crystalshard.core.api.gateway.event.user.presence.PresenceUpdateEvent;
 import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListener;
+import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 
-@FunctionalInterface
 public interface PresenceUpdateListener extends GatewayListener<PresenceUpdateEvent> {
-    void onPresenceUpdate(PresenceUpdateEvent event);
+    interface Manager extends GatewayListenerManager<PresenceUpdateListener> {
+    }
 }

@@ -8,7 +8,10 @@ import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.core.api.gateway.event.GatewayEvent;
+import de.kaleidox.crystalshard.core.api.gateway.listener.message.reaction.MessageReactionRemoveAllListener;
+import de.kaleidox.crystalshard.util.annotation.ManagedBy;
 
+@ManagedBy(MessageReactionRemoveAllListener.Manager.class)
 public interface MessageReactionRemoveAllEvent extends GatewayEvent {
     String NAME = "MESSAGE_REACTION_REMOVE_ALL";
 

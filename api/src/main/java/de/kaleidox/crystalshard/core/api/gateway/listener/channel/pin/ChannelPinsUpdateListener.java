@@ -2,8 +2,9 @@ package de.kaleidox.crystalshard.core.api.gateway.listener.channel.pin;
 
 import de.kaleidox.crystalshard.core.api.gateway.event.channel.pin.ChannelPinsUpdateEvent;
 import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListener;
+import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 
-@FunctionalInterface
 public interface ChannelPinsUpdateListener extends GatewayListener<ChannelPinsUpdateEvent> {
-    void onChannelPinsUpdate(ChannelPinsUpdateEvent event);
+    interface Manager extends GatewayListenerManager<ChannelPinsUpdateListener> {
+    }
 }

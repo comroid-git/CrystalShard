@@ -1,6 +1,8 @@
 package de.kaleidox.crystalshard.api.entity;
 
 public enum EntityType {
+    UNKNOWN(0x0, 0x0),
+
     GUILD(0x00001, 0x00001),
 
     AUDIT_LOG_ENTRY(0x00002, 0x00002),

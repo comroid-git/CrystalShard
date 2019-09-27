@@ -10,5 +10,5 @@ script:
 
 jobs:
     include:
-        - stage: deploy
-          install: skip
+        -   stage: deploy
+            install: skip
