@@ -3,7 +3,7 @@ package de.kaleidox.crystalshard.abstraction.event;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.kaleidox.crystalshard.abstraction.model.AbstractJsonDeserializable;
+import de.kaleidox.crystalshard.abstraction.serialization.AbstractJsonDeserializable;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.event.model.Event;
 import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;

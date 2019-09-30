@@ -1,6 +1,6 @@
 package de.kaleidox.crystalshard.abstraction.entity;
 
-import de.kaleidox.crystalshard.abstraction.model.AbstractJsonDeserializable;
+import de.kaleidox.crystalshard.abstraction.serialization.AbstractJsonDeserializable;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.EntityType;
 import de.kaleidox.crystalshard.api.entity.Snowflake;

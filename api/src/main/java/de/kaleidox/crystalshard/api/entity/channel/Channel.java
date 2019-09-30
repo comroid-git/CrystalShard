@@ -26,7 +26,7 @@ import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple
 public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable, ListenerAttachable<ChannelAttachableListener>, Cacheable {
     @IntroducedBy(API)
     default ChannelType getChannelType() {
-        return getTrait(Trait.CHANNEL_TYPE);
+        return getValue(Trait.CHANNEL_TYPE);
     }
 
     @Override

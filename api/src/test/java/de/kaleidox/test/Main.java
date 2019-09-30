@@ -6,7 +6,6 @@ import de.kaleidox.crystalshard.api.event.channel.ChannelEvent;
 import de.kaleidox.crystalshard.api.event.message.MessageSentEvent;
 import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.api.model.message.TextDecoration;
-import de.kaleidox.crystalshard.util.model.Pair;
 
 public class Main {
     private static final Discord API;
@@ -22,7 +21,7 @@ public class Main {
         API.getCacheManager()
                 .getChannelByID(487700636280946688L)
                 .flatMap(Channel::asGuildTextChannel)
-                .ifPresent(gtc -> gtc.attachListenerAsNStream(MessageSentEvent.class)
+                .ifPresent(gtc -> gtc.listenInStream(MessageSentEvent.class)
                         .map(ListenerAttachable.EventPair::getEvent)
                         .filter(event -> event.getMessage()
                                 .getContent()
