@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static de.kaleidox.crystalshard.core.cache.CacheManagerImpl.getKeyClass;
 
-public class CacheImpl<T extends Cacheable & Snowflake> implements Cache<T> {
+public class CacheImpl<T extends Cacheable> implements Cache<T> {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 
     private final Class<T> myType;
@@ -58,7 +58,7 @@ public class CacheImpl<T extends Cacheable & Snowflake> implements Cache<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <M extends Cacheable & Snowflake> Optional<M> getSingleton(long baseId, Class<M> memberType) {
+    public <M extends Cacheable> Optional<M> getSingleton(long baseId, Class<M> memberType) {
         return Optional.ofNullable((M) singletonMap.compute(baseId,
                 (keyBaseId, valueTypeMap) -> valueTypeMap == null ? new ConcurrentHashMap<>() : valueTypeMap)
                 .get(getKeyClass(memberType)));
@@ -66,7 +66,7 @@ public class CacheImpl<T extends Cacheable & Snowflake> implements Cache<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <M extends Cacheable & Snowflake> Optional<M> setSingleton(long baseId, Class<M> memberType, M inst) {
+    public <M extends Cacheable> Optional<M> setSingleton(long baseId, Class<M> memberType, M inst) {
         if (!inst.isSingletonType())
             throw new IllegalArgumentException(inst+" is not a Singleton Cacheable type!");
 
@@ -78,7 +78,7 @@ public class CacheImpl<T extends Cacheable & Snowflake> implements Cache<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <M extends Cacheable & Snowflake> Cache<M> getMemberCache(long baseId, Class<M> type) {
+    public <M extends Cacheable> Cache<M> getMemberCache(long baseId, Class<M> type) {
         Map<Class, Cache> subCacheMap = subCaches.compute(baseId,
                 (keyBaseId, valueSubCacheMap) -> valueSubCacheMap == null
                         ? new ConcurrentHashMap<>()
@@ -94,7 +94,7 @@ public class CacheImpl<T extends Cacheable & Snowflake> implements Cache<T> {
 
     @Override
     public Collection<Snowflake> getSnowflakesByID(long id) {
-        @Nullable Snowflake baseCacheResult = cache.get(id);
+        @Nullable T baseCacheResult = cache.get(id);
 
         List<Snowflake> subCacheResults = subCaches.values()
                 .stream()
@@ -113,7 +113,7 @@ public class CacheImpl<T extends Cacheable & Snowflake> implements Cache<T> {
                 .collect(Collectors.toList());
 
         Collection<Snowflake> yields = new ArrayList<>();
-        if (baseCacheResult != null) yields.add(baseCacheResult);
+        if (baseCacheResult != null) yields.add((Snowflake) baseCacheResult);
         yields.addAll(subCacheResults);
         yields.addAll(singletonCacheResults);
 

@@ -16,7 +16,7 @@ import de.kaleidox.crystalshard.api.model.guild.ban.Ban;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface CacheManager extends ApiBound {
-    <R extends Cacheable & Snowflake> Optional<R> set(Class<R> type, long id, R instance);
+    <R extends Cacheable> Optional<R> set(Class<R> type, long id, R instance);
 
     <M extends Cacheable, B extends Cacheable> Optional<M> setMember(
             Class<B> baseType,

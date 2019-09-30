@@ -36,7 +36,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <R extends Cacheable & Snowflake> Optional<R> set(Class<R> type, long id, R instance) {
+    public <R extends Cacheable> Optional<R> set(Class<R> type, long id, R instance) {
         if (instance.isSubcacheMember() || instance.isSingletonType())
             throw new IllegalArgumentException(instance + " cannot be stored in a parentcache!");
 
@@ -44,7 +44,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <M extends Cacheable & Snowflake, B extends Cacheable & Snowflake> Optional<M> setMember(Class<B> baseType, Class<M> memberType, long baseId, long memberId, M instance) {
+    public <M extends Cacheable, B extends Cacheable> Optional<M> setMember(Class<B> baseType, Class<M> memberType, long baseId, long memberId, M instance) {
         if (!instance.isSubcacheMember())
             throw new IllegalArgumentException(instance + " is not a Member Cacheable type!");
 
@@ -54,7 +54,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <M extends Cacheable & Snowflake, B extends Cacheable & Snowflake> Optional<M> setSingleton(Class<B> baseType, Class<M> memberType, long baseId, M instance) {
+    public <M extends Cacheable, B extends Cacheable> Optional<M> setSingleton(Class<B> baseType, Class<M> memberType, long baseId, M instance) {
         if (!instance.isSingletonType())
             throw new IllegalArgumentException(instance + " is not a Singleton Cacheable type!");
 
@@ -63,7 +63,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <R extends Cacheable & Snowflake> R updateOrCreateAndGet(Class<R> type, long id, JsonNode node) {
+    public <R extends Cacheable> R updateOrCreateAndGet(Class<R> type, long id, JsonNode node) {
         return getCache(type)
                 .getByID(id)
                 .map(inst -> {
@@ -100,7 +100,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <M extends Cacheable & Snowflake, B extends Cacheable & Snowflake> M updateOrCreateMemberAndGet(
+    public <M extends Cacheable, B extends Cacheable> M updateOrCreateMemberAndGet(
             Class<B> baseType,
             Class<M> memberType,
             long baseId,
@@ -138,7 +138,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <M extends Cacheable & Snowflake, B extends Cacheable & Snowflake> M updateOrCreateSingletonMemberAndGet(
+    public <M extends Cacheable, B extends Cacheable> M updateOrCreateSingletonMemberAndGet(
             Class<B> baseType,
             Class<M> memberType,
             long baseId,
@@ -175,14 +175,14 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <R extends Cacheable & Snowflake> Void delete(Class<R> type, long id) {
+    public <R extends Cacheable> Void delete(Class<R> type, long id) {
         getCache(type).delete(id);
 
         return null;
     }
 
     @Override
-    public <B extends Cacheable & Snowflake, M extends Cacheable & Snowflake> Void deleteMember(Class<B> baseType, Class<M> memberType, long baseId, long memberId) {
+    public <B extends Cacheable, M extends Cacheable> Void deleteMember(Class<B> baseType, Class<M> memberType, long baseId, long memberId) {
         getCache(baseType)
                 .getMemberCache(baseId, memberType)
                 .delete(memberId);
@@ -191,7 +191,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public <R extends Cacheable & Snowflake> Cache<R> getCache(Class<R> forType) {
+    public <R extends Cacheable> Cache<R> getCache(Class<R> forType) {
         return (Cache<R>) caches.compute(getKeyClass(forType),
                 (k, v) -> v == null ? new CacheImpl<>(forType, false) : v);
     }

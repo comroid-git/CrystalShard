@@ -119,11 +119,6 @@ public class GatewayImpl implements Gateway {
     }
 
     @Override
-    public <FE extends Event> CompletableFuture<Pair<FE, ListenerManager<? extends GatewayListener>>> attachListenerAsFuture(Class<FE> forEvent) {
-        return null;
-    }
-
-    @Override
     public Discord getAPI() {
         return api;
     }

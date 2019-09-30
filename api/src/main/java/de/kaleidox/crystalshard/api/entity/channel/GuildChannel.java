@@ -12,7 +12,6 @@ import de.kaleidox.crystalshard.api.model.permission.PermissionOverride;
 import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
-import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -24,11 +23,11 @@ import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identi
 
 public interface GuildChannel extends Channel {
     interface Trait extends Channel.Trait {
-        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonTrait<Integer, Integer> POSITION = identity("position");
+        JsonTrait<Long, Guild> GUILD = cache(JsonNode::asLong, "guild_id", CacheManager::getGuildByID);
+        JsonTrait<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
         JsonTrait<JsonNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
-        JsonTrait<String, String> NAME = identity("name");
-        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
+        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache(JsonNode::asLong, "parent_id",
                 (CacheManager cache, Long id) -> cache.getChannelByID(id)
                         .flatMap(Channel::asGuildChannelCategory));
         // todo
@@ -36,7 +35,7 @@ public interface GuildChannel extends Channel {
 
     @IntroducedBy(GETTER)
     default Guild getGuild() {
-        return getTrait(Trait.GUILD);
+        return getValue(Trait.GUILD);
     }
 
     @IntroducedBy(GETTER)

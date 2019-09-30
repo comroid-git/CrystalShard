@@ -17,7 +17,7 @@ public interface Snowflake extends ApiBound, JsonDeserializable {
 
     @IntroducedBy(API)
     default long getID() {
-        return getTrait(Trait.ID);
+        return getValue(Trait.ID);
     }
 
     @IntroducedBy(API)
