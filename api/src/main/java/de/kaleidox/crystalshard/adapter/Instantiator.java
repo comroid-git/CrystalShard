@@ -9,9 +9,8 @@ import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
 class Instantiator<T> implements Function<Object[], T> {
-    final Executable executable;
-
     private final Function<Object[], T> function;
+    final Executable executable;
 
     Instantiator(Executable executable) {
         this.executable = executable;

@@ -12,7 +12,6 @@ import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.model.guild.ban.Ban;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverridable;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;

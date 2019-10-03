@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.emoji.CustomEmoji;
-import de.kaleidox.crystalshard.api.entity.emoji.Emoji;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.user.User;

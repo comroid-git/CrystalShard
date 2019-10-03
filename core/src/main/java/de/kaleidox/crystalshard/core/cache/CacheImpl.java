@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import de.kaleidox.crystalshard.api.entity.Snowflake;
 import de.kaleidox.crystalshard.core.api.cache.Cache;
@@ -46,17 +45,6 @@ public class CacheImpl<T extends Cacheable> implements Cache<T> {
     }
 
     @Override
-    public void delete(long id) {
-        cache.remove(id);
-    }
-
-    @Override
-    public void close() {
-        cache.clear();
-        subCaches.clear();
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <M extends Cacheable> Optional<M> getSingleton(long baseId, Class<M> memberType) {
         return Optional.ofNullable((M) singletonMap.compute(baseId,
@@ -68,7 +56,7 @@ public class CacheImpl<T extends Cacheable> implements Cache<T> {
     @SuppressWarnings("unchecked")
     public <M extends Cacheable> Optional<M> setSingleton(long baseId, Class<M> memberType, M inst) {
         if (!inst.isSingletonType())
-            throw new IllegalArgumentException(inst+" is not a Singleton Cacheable type!");
+            throw new IllegalArgumentException(inst + " is not a Singleton Cacheable type!");
 
         return Optional.ofNullable((M) singletonMap.compute(baseId,
                 (keyBaseId, valueTypeMap) -> valueTypeMap == null ? new ConcurrentHashMap<>() : valueTypeMap)
@@ -118,5 +106,16 @@ public class CacheImpl<T extends Cacheable> implements Cache<T> {
         yields.addAll(singletonCacheResults);
 
         return Collections.unmodifiableCollection(yields);
+    }
+
+    @Override
+    public void delete(long id) {
+        cache.remove(id);
+    }
+
+    @Override
+    public void close() {
+        cache.clear();
+        subCaches.clear();
     }
 }

@@ -30,8 +30,7 @@ public interface NStream<T> extends Stream<T> {
     @Override
     NStream<T> filter(Predicate<? super T> predicate);
 
-    @Override
-    <R> NStream<R> map(Function<? super T, ? extends R> mapper);
+    @Override <R> NStream<R> map(Function<? super T, ? extends R> mapper);
 
     @Override
     @Contract("_ -> fail")
@@ -154,14 +153,11 @@ public interface NStream<T> extends Stream<T> {
     @Override
     Optional<T> reduce(BinaryOperator<T> accumulator);
 
-    @Override
-    <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner);
+    @Override <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner);
 
-    @Override
-    <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner);
+    @Override <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner);
 
-    @Override
-    <R, A> R collect(Collector<? super T, A, R> collector);
+    @Override <R, A> R collect(Collector<? super T, A, R> collector);
 
     @NotNull
     @Override

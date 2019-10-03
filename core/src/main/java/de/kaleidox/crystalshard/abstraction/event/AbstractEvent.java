@@ -21,12 +21,12 @@ public abstract class AbstractEvent extends AbstractJsonDeserializable implement
         affects(api);
     }
 
-    protected void affects(ListenerAttachable target) {
-        affected.add(target);
-    }
-
     @Override
     public ListenerAttachable[] getAffected() {
         return affected.toArray(ListenerAttachable[]::new);
+    }
+
+    protected void affects(ListenerAttachable target) {
+        affected.add(target);
     }
 }

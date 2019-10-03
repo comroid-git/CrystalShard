@@ -1,7 +1,6 @@
 package de.kaleidox.crystalshard.core.gateway.event.channel.pin;
 
 import java.time.Instant;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import de.kaleidox.crystalshard.abstraction.gateway.AbstractGatewayEvent;
@@ -9,12 +8,10 @@ import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
-import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.core.annotation.JsonData;
 import de.kaleidox.crystalshard.core.api.gateway.event.channel.pin.ChannelPinsUpdateEvent;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 

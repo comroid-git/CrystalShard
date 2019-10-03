@@ -15,14 +15,11 @@ import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.model.Mentionable;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;

@@ -7,7 +7,6 @@ import java.util.concurrent.CompletableFuture;
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.model.message.Messageable;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;

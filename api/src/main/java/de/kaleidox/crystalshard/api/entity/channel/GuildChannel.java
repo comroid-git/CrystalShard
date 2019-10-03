@@ -23,17 +23,6 @@ import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.collec
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
 
 public interface GuildChannel extends Channel {
-    interface Trait extends Channel.Trait {
-        JsonTrait<Long, Guild> GUILD = cache(JsonNode::asLong, "guild_id", CacheManager::getGuildByID);
-        JsonTrait<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
-        JsonTrait<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
-        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache(JsonNode::asLong, "parent_id",
-                (CacheManager cache, Long id) -> cache.getChannelByID(id)
-                        .flatMap(Channel::asGuildChannelCategory));
-        // todo
-    }
-
     @IntroducedBy(GETTER)
     default Guild getGuild() {
         return getTraitValue(Trait.GUILD);
@@ -56,6 +45,17 @@ public interface GuildChannel extends Channel {
 
     default Invite.Builder createInviteBuilder() {
         return Invite.builder(this);
+    }
+
+    interface Trait extends Channel.Trait {
+        JsonTrait<Long, Guild> GUILD = cache(JsonNode::asLong, "guild_id", CacheManager::getGuildByID);
+        JsonTrait<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
+        JsonTrait<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
+        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache(JsonNode::asLong, "parent_id",
+                (CacheManager cache, Long id) -> cache.getChannelByID(id)
+                        .flatMap(Channel::asGuildChannelCategory));
+        // todo
     }
 
     interface Builder<R extends GuildChannel, Self extends GuildChannel.Builder> extends Channel.Builder<R, Self> {

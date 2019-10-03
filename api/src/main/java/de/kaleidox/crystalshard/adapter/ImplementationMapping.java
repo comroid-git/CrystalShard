@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 
 import de.kaleidox.crystalshard.CrystalShard;
@@ -18,8 +17,7 @@ final class ImplementationMapping {
 
     private final Map<ClassSignature, Instantiator> map = new ConcurrentHashMap<>();
 
-    @SuppressWarnings("unchecked") 
-    <T> Optional<Instantiator<T>> find(Class<T> forClass, Class... signature) {
+    @SuppressWarnings("unchecked") <T> Optional<Instantiator<T>> find(Class<T> forClass, Class... signature) {
         ClassSignature<T> sig = new ClassSignature<>(forClass, signature);
 
         return map.entrySet()

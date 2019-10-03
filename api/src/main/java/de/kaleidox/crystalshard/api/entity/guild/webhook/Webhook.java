@@ -16,7 +16,6 @@ import de.kaleidox.crystalshard.api.event.guild.webhook.WebhookEvent;
 import de.kaleidox.crystalshard.api.listener.guild.WebhookAttachableListener;
 import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.api.model.message.MessageAuthor;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
@@ -58,20 +57,6 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
                         .delete(Webhook.class, getID()));
     }
 
-    @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/webhook#get-webhook")
-    static CompletableFuture<Webhook> requestWebhook(Discord api, long id) {
-        return Adapter.<Webhook>request(api)
-                .endpoint(DiscordEndpoint.WEBHOOK, id)
-                .method(RestMethod.GET)
-                .executeAs(data -> api.getCacheManager()
-                        .updateOrCreateAndGet(Webhook.class, id, data));
-    }
-
-    @IntroducedBy(PRODUCTION)
-    static Builder builder(Discord api) {
-        return Adapter.create(Builder.class, api);
-    }
-
     @Override
     // todo test this behavior
     default OptionalLong getCacheParentID() {
@@ -88,6 +73,20 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
     @Override
     default boolean isSubcacheMember() {
         return true;
+    }
+
+    @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/webhook#get-webhook")
+    static CompletableFuture<Webhook> requestWebhook(Discord api, long id) {
+        return Adapter.<Webhook>request(api)
+                .endpoint(DiscordEndpoint.WEBHOOK, id)
+                .method(RestMethod.GET)
+                .executeAs(data -> api.getCacheManager()
+                        .updateOrCreateAndGet(Webhook.class, id, data));
+    }
+
+    @IntroducedBy(PRODUCTION)
+    static Builder builder(Discord api) {
+        return Adapter.create(Builder.class, api);
     }
 
     @IntroducedBy(PRODUCTION)

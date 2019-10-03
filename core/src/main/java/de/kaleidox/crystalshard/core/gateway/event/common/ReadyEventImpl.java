@@ -9,12 +9,10 @@ import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.channel.PrivateChannel;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.user.User;
-import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.core.annotation.JsonData;
 import de.kaleidox.crystalshard.core.api.gateway.event.common.ReadyEvent;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;

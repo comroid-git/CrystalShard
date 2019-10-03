@@ -17,7 +17,6 @@ import de.kaleidox.crystalshard.api.listener.user.UserAttachableListener;
 import de.kaleidox.crystalshard.api.model.Mentionable;
 import de.kaleidox.crystalshard.api.model.message.MessageAuthor;
 import de.kaleidox.crystalshard.api.model.message.Messageable;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;

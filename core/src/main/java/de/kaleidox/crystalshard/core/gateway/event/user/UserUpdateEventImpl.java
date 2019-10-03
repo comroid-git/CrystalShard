@@ -1,7 +1,5 @@
 package de.kaleidox.crystalshard.core.gateway.event.user;
 
-import java.lang.annotation.Inherited;
-
 import de.kaleidox.crystalshard.abstraction.gateway.AbstractGatewayEvent;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.user.User;

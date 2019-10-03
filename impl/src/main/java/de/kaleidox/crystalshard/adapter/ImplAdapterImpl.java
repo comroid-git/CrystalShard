@@ -14,7 +14,7 @@ public final class ImplAdapterImpl extends ImplAdapter {
         mappingTool.implement(Discord.class, DiscordImpl.class.getConstructor(String.class)) // todo
                 .implement(Channel.class, ImplAdapterImpl.class.getDeclaredMethod("decideChannel", Discord.class, JsonNode.class));
     }
-    
+
     public static Channel decideChannel(Discord api, JsonNode data) {
         ChannelType type = ChannelType.valueOf((String) Channel.Trait.CHANNEL_TYPE.extract(data));
 

@@ -8,7 +8,6 @@ import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.core.annotation.JsonData;
 import de.kaleidox.crystalshard.core.api.gateway.event.voice.VoiceServerUpdateEvent;
-import de.kaleidox.crystalshard.core.api.gateway.event.voice.VoiceStateUpdateEvent;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
 import com.fasterxml.jackson.databind.JsonNode;

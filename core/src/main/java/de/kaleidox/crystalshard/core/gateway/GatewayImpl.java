@@ -21,7 +21,6 @@ import de.kaleidox.crystalshard.CrystalShard;
 import de.kaleidox.crystalshard.abstraction.listener.AbstractListenerManager;
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.Discord;
-import de.kaleidox.crystalshard.api.event.model.Event;
 import de.kaleidox.crystalshard.api.listener.model.AttachableListener;
 import de.kaleidox.crystalshard.api.listener.model.Listener;
 import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
@@ -35,7 +34,6 @@ import de.kaleidox.crystalshard.core.api.gateway.listener.GatewayListenerManager
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.ManagedBy;
-import de.kaleidox.crystalshard.util.model.Pair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

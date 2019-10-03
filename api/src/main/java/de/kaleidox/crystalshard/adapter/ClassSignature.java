@@ -7,20 +7,20 @@ import java.util.Arrays;
 class ClassSignature<T> {
     final Class<T> klass;
     final Class[] param;
-    
+
     final boolean methodBased;
 
     ClassSignature(Class<T> klass, Class[] param) {
         this.klass = klass;
         this.param = param;
-        
+
         this.methodBased = false;
     }
-    
+
     ClassSignature(Class<T> klass, Executable executable) {
         this.klass = klass;
         this.param = executable.getParameterTypes();
-        
+
         this.methodBased = executable instanceof Method;
     }
 

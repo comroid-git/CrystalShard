@@ -1,8 +1,5 @@
 package de.kaleidox.crystalshard.abstraction.serialization;
 
-import java.awt.Color;
-import java.net.URI;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -14,7 +11,6 @@ import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.flogger.FluentLogger;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractJsonDeserializable extends AbstractApiBound implements JsonDeserializable {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();

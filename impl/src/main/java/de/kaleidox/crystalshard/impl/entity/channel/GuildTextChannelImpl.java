@@ -9,26 +9,22 @@ import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.GuildChannelCategory;
 import de.kaleidox.crystalshard.api.entity.channel.GuildTextChannel;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
-import de.kaleidox.crystalshard.api.model.channel.MessagePrintStream;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverride;
 import de.kaleidox.crystalshard.core.annotation.JsonData;
-import de.kaleidox.crystalshard.impl.model.channel.ChannelOutputStream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 
 public class GuildTextChannelImpl extends AbstractTextChannel<GuildTextChannelImpl> implements GuildTextChannel {
+    protected final Guild guild;
+    protected final @Nullable GuildChannelCategory category;
     protected @JsonData("topic") String topic;
     protected @JsonData("nsfw") boolean nsfw;
-
     protected @JsonData("guild_id") long guildId;
     protected @JsonData("position") int position;
     protected @JsonData(value = "permission_overwrites", type = PermissionOverride.class) Collection<PermissionOverride> permissionOverrides;
     protected @JsonData("name") String name;
     protected @JsonData("parent_id") long categoryId;
-
-    protected final Guild guild;
-    protected final @Nullable GuildChannelCategory category;
 
     public GuildTextChannelImpl(Discord api, JsonNode data) {
         super(api, data);

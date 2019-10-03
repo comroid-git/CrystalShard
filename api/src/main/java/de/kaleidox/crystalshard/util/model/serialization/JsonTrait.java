@@ -8,22 +8,20 @@ import java.util.function.Function;
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.Snowflake;
-import de.kaleidox.crystalshard.api.model.ApiBound;
 import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.intellij.lang.annotations.JdkConstants;
 import org.jetbrains.annotations.Nullable;
 
 public interface JsonTrait<S, T> {
     void withApi(Discord api);
-    
+
     String fieldName();
-    
+
     Object extract(JsonNode from);
-    
+
     @Nullable T map(S value);
 
     default Optional<T> wrap(S value) {
@@ -52,7 +50,7 @@ public interface JsonTrait<S, T> {
     }
 
     static <T extends JsonDeserializable> JsonTrait<ArrayNode, Collection<T>> collective(
-            String fieldName, 
+            String fieldName,
             Class<T> targetClass
     ) {
         return Adapter.create(JsonTrait.class, fieldName, targetClass);

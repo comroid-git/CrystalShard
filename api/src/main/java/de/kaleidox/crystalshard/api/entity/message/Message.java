@@ -28,7 +28,6 @@ import de.kaleidox.crystalshard.api.model.message.MessageType;
 import de.kaleidox.crystalshard.api.model.message.TextDecoration;
 import de.kaleidox.crystalshard.api.model.message.embed.Embed;
 import de.kaleidox.crystalshard.api.model.message.reaction.Reaction;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
@@ -124,14 +123,6 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
 
     Editor editor();
 
-    static Composer createComposer(TextChannel channel) {
-        return Adapter.create(Composer.class, channel);
-    }
-
-    static BulkDeleter createBulkDeleter(TextChannel channel) {
-        return Adapter.create(BulkDeleter.class, channel);
-    }
-
     @Override
     default OptionalLong getCacheParentID() {
         return OptionalLong.of(getChannel().getID());
@@ -145,6 +136,14 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     @Override
     default boolean isSubcacheMember() {
         return true;
+    }
+
+    static Composer createComposer(TextChannel channel) {
+        return Adapter.create(Composer.class, channel);
+    }
+
+    static BulkDeleter createBulkDeleter(TextChannel channel) {
+        return Adapter.create(BulkDeleter.class, channel);
     }
 
     @IntroducedBy(PRODUCTION)

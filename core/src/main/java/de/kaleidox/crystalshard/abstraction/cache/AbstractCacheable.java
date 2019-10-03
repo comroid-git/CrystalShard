@@ -20,6 +20,11 @@ public abstract class AbstractCacheable<Self extends AbstractSnowflake<Self> & C
         initCacheable();
     }
 
+    @Override
+    public void update(JsonNode data) {
+        updateFromJson(data);
+    }
+
     protected void initCacheable() {
         if (isSubcacheMember()) {
             Optional<Class<? extends Cacheable>> parentTypeOpt = getCacheParentType();
@@ -42,10 +47,5 @@ public abstract class AbstractCacheable<Self extends AbstractSnowflake<Self> & C
                     hackCast(this)
             );
         } else api.getCacheManager().set(hackCast(this.getClass()), getID(), hackCast(this));
-    }
-
-    @Override
-    public void update(JsonNode data) {
-        updateFromJson(data);
     }
 }

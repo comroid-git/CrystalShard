@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
@@ -51,16 +50,6 @@ public class NStreamImpl<T> implements NStream<T>, Consumer<T> {
         if (continuationWrapper != null)
             continuationWrapper.accept(value);
         else earlies.add(value);
-    }
-
-    private void replay() {
-        if (earlies == null)
-            throw new IllegalStateException("Cannot reuse old NStream");
-
-        earlies.forEach(this);
-
-        // once replayed, there is always a ContinuationWrapper
-        earlies = null;
     }
 
     @Override
@@ -162,6 +151,16 @@ public class NStreamImpl<T> implements NStream<T>, Consumer<T> {
         continuationWrapper = null;
 
         closeHandlers.forEach(Runnable::run);
+    }
+
+    private void replay() {
+        if (earlies == null)
+            throw new IllegalStateException("Cannot reuse old NStream");
+
+        earlies.forEach(this);
+
+        // once replayed, there is always a ContinuationWrapper
+        earlies = null;
     }
 
     public static void main(String[] args) {

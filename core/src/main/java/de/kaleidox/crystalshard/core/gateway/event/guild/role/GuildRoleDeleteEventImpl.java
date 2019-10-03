@@ -4,7 +4,6 @@ import de.kaleidox.crystalshard.abstraction.gateway.AbstractGatewayEvent;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
-import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.core.annotation.JsonData;
 import de.kaleidox.crystalshard.core.api.gateway.event.guild.role.GuildRoleDeleteEvent;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;

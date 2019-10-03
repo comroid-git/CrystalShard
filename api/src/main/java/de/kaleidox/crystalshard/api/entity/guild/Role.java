@@ -14,7 +14,6 @@ import de.kaleidox.crystalshard.api.listener.role.RoleAttachableListener;
 import de.kaleidox.crystalshard.api.model.Mentionable;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverridable;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverride;
-import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;

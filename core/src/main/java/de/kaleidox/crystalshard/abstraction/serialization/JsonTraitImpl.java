@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -15,7 +14,6 @@ import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +25,8 @@ ComplexJsonTrait(Function<JsonNode, Object> extractor, String fieldName, BiFunct
 CollectiveJsonTrait(String fieldName, Class<T extends JsonDeserializable> targetClass)
  */
 public abstract class JsonTraitImpl<S, T> implements JsonTrait<S, T> {
-    private final Function<JsonNode, Object> extractor;
     protected final String fieldName;
-
+    private final Function<JsonNode, Object> extractor;
     protected @Nullable Discord api;
 
     public JsonTraitImpl(Function<JsonNode, Object> extractor, String fieldName) {
@@ -51,7 +48,7 @@ public abstract class JsonTraitImpl<S, T> implements JsonTrait<S, T> {
     public Object extract(JsonNode from) {
         if (from.isNull())
             return null;
-        
+
         return extractor.apply(from);
     }
 
@@ -96,28 +93,28 @@ public abstract class JsonTraitImpl<S, T> implements JsonTrait<S, T> {
         public Object extract(JsonNode from) {
             if (from.isNull())
                 return null;
-            
+
             JsonNode target = from.path(fieldName);
-            
+
             if (target.isArray())
                 //noinspection RedundantCast
                 return (ArrayNode) target;
-            
-            throw new NoSuchElementException("No JSON ArrayNode was found at path \""+fieldName+"\"");
+
+            throw new NoSuchElementException("No JSON ArrayNode was found at path \"" + fieldName + "\"");
         }
 
         @Override
         public @NotNull Collection<T> map(ArrayNode value) {
             if (value == null) return Collections.emptyList();
-            
+
             Collection<T> yields = new ArrayList<>();
 
             for (JsonNode data : value) {
                 T yield = Adapter.create(targetClass, api, data);
-                
+
                 yields.add(yield);
             }
-            
+
             return Collections.unmodifiableCollection(yields);
         }
     }
