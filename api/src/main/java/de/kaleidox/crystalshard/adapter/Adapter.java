@@ -3,8 +3,10 @@ package de.kaleidox.crystalshard.adapter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.logging.Level;
 
 import de.kaleidox.crystalshard.api.Discord;
@@ -15,9 +17,17 @@ import org.jetbrains.annotations.Contract;
 
 public abstract class Adapter {
     private static FluentLogger log = FluentLogger.forEnclosingClass();
-    
-    protected ImplementationMapping mappingTool = new ImplementationMapping();
+    private static Set<Adapter> implementations = new HashSet<>();
 
+    protected ImplementationMapping mappingTool;
+
+    public Adapter() {
+        implementations.add(this);
+
+        mappingTool = new ImplementationMapping();
+    }
+
+    @SuppressWarnings("unchecked")
     @Contract("null, _ -> null; _, _ -> _")
     public static <R> R create(Class<? super R> type, Object... args) {
         if (type == null) return null;
@@ -25,15 +35,15 @@ public abstract class Adapter {
         String pkg = type.getPackage().getName();
         Class[] types = getTypes(args);
 
-        if (pkg.startsWith("de.kaleidox.crystalshard.core."))
-            return instantiate(CoreAdapter.adapter.mappingTool.find(type, types), args);
-        else if (pkg.startsWith("de.kaleidox.crystalshard.api.")
-                || pkg.startsWith("de.kaleidox.crystalshard.impl."))
-            return instantiate(ImplAdapter.adapter.mappingTool.find(type, types), args);
-        else if (pkg.startsWith("de.kaleidox.crystalshard.util."))
-            return instantiate(UtilAdapter.adapter.mappingTool.find(type, types), args);
-
-        throw new AssertionError("Class " + type.getSimpleName() + " is not instantiable by CrystalShard!");
+        return implementations.stream()
+                .map(adapter -> adapter.mappingTool)
+                .map(tool -> tool.find(type, types))
+                .findFirst()
+                .flatMap(it -> it)
+                .map(inst -> inst.apply(args))
+                .map(r -> (R) r)
+                .orElseThrow(() -> new AssertionError("Class " + type.getName()
+                        + " is not instantiable by CrystalShard"));
     }
 
     @SuppressWarnings("RedundantTypeArguments")
@@ -44,54 +54,9 @@ public abstract class Adapter {
         return Adapter.<DiscordRequest<R>>create(DiscordRequest.class, api);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <R, T> R staticOverride(Class<T> targetClass, String method, Object... args) {
-        if (targetClass == null) return null;
-
-        String pkg = targetClass.getPackage().getName();
-        Constructor<? extends T> override;
-
-        if (pkg.startsWith("de.kaleidox.crystalshard.core."))
-            override = CoreAdapter.adapter.mappingTool.find(targetClass);
-        else if (pkg.startsWith("de.kaleidox.crystalshard.api.")
-                || pkg.startsWith("de.kaleidox.crystalshard.impl."))
-            override = ImplAdapter.adapter.mappingTool.find(targetClass);
-        else if (pkg.startsWith("de.kaleidox.crystalshard.util."))
-            override = UtilAdapter.adapter.mappingTool.find(targetClass);
-        else throw new AssertionError("Class " + targetClass.getSimpleName()
-                    + " is not instantiable by CrystalShard!");
-
-        Method declaredMethod = null;
-
-        try {
-            declaredMethod = override.getDeclaringClass()
-                    .getDeclaredMethod(method, getTypes(args));
-
-            return (R) declaredMethod.invoke(null, args);
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError("Class " + override + " does not implement static method " + method, e);
-        } catch (IllegalAccessException e) {
-            throw new AssertionError("Cannot access method: " + declaredMethod, e);
-        } catch (InvocationTargetException e) {
-            throw new AssertionError("Method threw an exception!", e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T, R extends T> R instantiate(Constructor<T> constructor, Object... args) {
-        Class[] types = getTypes(args);
-
-        try {
-            R inst = (R) constructor.newInstance(args);
-            log.at(Level.FINEST).log("New instance created: %s", inst);
-            return inst;
-        } catch (InstantiationException e) {
-            throw new AssertionError("Constructor " + constructor.getName() + " is abstract!", e);
-        } catch (IllegalAccessException e) {
-            throw new AssertionError("Cannot access constructor: " + constructor, e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException("Constructor threw an exception!", e);
-        }
+    public static <R, T> R staticOverride(Class<T> type, String method, Object... args) {
+        // todo
+        return null;
     }
 
     protected static <T extends Adapter> T loadAdapter(Class<T> adapter) {

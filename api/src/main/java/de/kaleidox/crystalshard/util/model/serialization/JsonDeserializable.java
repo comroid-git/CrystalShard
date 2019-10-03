@@ -34,9 +34,9 @@ public interface JsonDeserializable {
                 .collect(Collectors.toSet());
     }
 
-    <T> @Nullable T getValue(JsonTrait<?, T> trait);
+    <S, T> @Nullable T getTraitValue(JsonTrait<S, T> trait);
 
     default <T> Optional<T> wrapValue(JsonTrait<?, T> trait) {
-        return Optional.ofNullable(getValue(trait));
+        return Optional.ofNullable(getTraitValue(trait));
     }
 }

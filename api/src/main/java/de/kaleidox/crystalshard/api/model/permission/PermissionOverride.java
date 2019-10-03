@@ -7,8 +7,9 @@ import java.util.stream.Stream;
 
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.entity.channel.GuildChannel;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 
-public interface PermissionOverride {
+public interface PermissionOverride extends JsonDeserializable {
     Optional<? extends GuildChannel> getChannel();
 
     Optional<? extends PermissionOverridable> getTarget();

@@ -29,72 +29,25 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
     }
 
     @Override
-    public <T> T getValue(JsonTrait<?, T> trait) {
-        //noinspection unchecked
-        return (T) values.getOrDefault(trait, null);
+    @SuppressWarnings("unchecked")
+    public <S, T> T getTraitValue(JsonTrait<S, T> trait) {
+        S val;
+
+        return (val = (S) values.getOrDefault(trait, null)) == null ? null : trait.map(val);
     }
 
     protected void updateFromJson(final JsonNode data) {
         for (JsonTrait<?, ?> jsonTrait : possibleTraits()) {
             String fieldName = jsonTrait.fieldName();
-            
-            if (fieldName.equals("#root"))
-                values.put(jsonTrait, )
-        }
-    }
+            JsonNode field = data.path(fieldName);
 
-    private @Nullable Object chooseValue(Class<?> fieldType, String value) {
-        try {
-            if (String.class.isAssignableFrom(fieldType)) return value;
-            if (Integer.TYPE.isAssignableFrom(fieldType)) return Integer.parseInt(value);
-            if (Long.TYPE.isAssignableFrom(fieldType)) return Long.parseLong(value);
-            if (URL.class.isAssignableFrom(fieldType)) return new URL(value);
-            if (URI.class.isAssignableFrom(fieldType)) return new URI(value);
-            if (Color.class.isAssignableFrom(fieldType)) return Color.getColor(value);
-
-            throw new ClassNotFoundException("Unknown deserialization type: " + fieldType);
-        } catch (Exception e) {
-            throw new RuntimeException("Type Selection Exception", e);
-        }
-    }
-
-    private @Nullable Object chooseValue(Class<?> fieldType, final JsonNode fromNode, Object defaultValue) {
-        String str;
-
-        try {
-            if (String.class.isAssignableFrom(fieldType)) return fromNode.asText(defaultValue.toString());
-            if (Integer.TYPE.isAssignableFrom(fieldType)) return fromNode.asInt((int) defaultValue);
-            if (Long.TYPE.isAssignableFrom(fieldType)) return fromNode.asLong((long) defaultValue);
-            if (URL.class.isAssignableFrom(fieldType))
-                return (defaultValue instanceof URL)
-                        ? defaultValue.toString().equals(str = fromNode.asText(defaultValue.toString()))
-                        ? defaultValue
-                        : new URL(str)
-                        : new URL(fromNode.asText(defaultValue.toString()));
-            if (URI.class.isAssignableFrom(fieldType))
-                return (defaultValue instanceof URI)
-                        ? defaultValue.toString().equals(str = fromNode.asText(defaultValue.toString()))
-                        ? defaultValue
-                        : new URI(str)
-                        : new URI(fromNode.asText(defaultValue.toString()));
-            if (Color.class.isAssignableFrom(fieldType)) return new Color(fromNode.asInt((int) defaultValue));
-
-            /*
-             todo Implement entity generation
-
-             help annotation: SerializedCollection.class
-
-             include:
-             - int[]
-            */
-            if (AbstractJsonDeserializable.class.isAssignableFrom(fieldType)) {
-
+            if (field.isMissingNode()) {
+                log.at(Level.FINER).log("[%s] Field %s is missing; skipping!", toString(), fieldName);
+                continue;
             }
 
-            log.at(Level.FINEST).log("Unknown deserialization type: %s", fieldType);
-            return defaultValue;
-        } catch (Exception e) {
-            throw new RuntimeException("Type Selection Exception", e);
+            if (fieldName.equals("#root"))
+                values.put(jsonTrait, jsonTrait.extract(field));
         }
     }
 }

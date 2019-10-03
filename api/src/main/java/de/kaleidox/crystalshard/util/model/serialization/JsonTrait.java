@@ -13,6 +13,7 @@ import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.intellij.lang.annotations.JdkConstants;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +51,7 @@ public interface JsonTrait<S, T> {
                 .orElseThrow(() -> new AssertionError("No instance of " + fieldName + " was found in cache!")));
     }
 
-    static <T extends JsonDeserializable> JsonTrait<JsonNode, Collection<T>> collective(
+    static <T extends JsonDeserializable> JsonTrait<ArrayNode, Collection<T>> collective(
             String fieldName, 
             Class<T> targetClass
     ) {

@@ -1,5 +1,9 @@
 package de.kaleidox.crystalshard.adapter;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import de.kaleidox.crystalshard.abstraction.serialization.JsonTraitImpl;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.core.api.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.api.concurrent.WorkerThread;
@@ -13,14 +17,18 @@ import de.kaleidox.crystalshard.core.gateway.GatewayImpl;
 import de.kaleidox.crystalshard.core.rest.DiscordRequestImpl;
 import de.kaleidox.crystalshard.core.rest.RatelimiterImpl;
 import de.kaleidox.crystalshard.core.rest.WebRequestImpl;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
 public final class CoreAdapterImpl extends CoreAdapter {
-    public CoreAdapterImpl() {
-        mappingTool.implement(WebRequest.class, WebRequestImpl.class)
-                .implement(ThreadPool.class, ThreadPoolImpl.class, Discord.class)
-                .implement(WorkerThread.class, WorkerThreadImpl.class, Discord.class)
-                .implement(Gateway.class, GatewayImpl.class, Discord.class)
-                .implement(DiscordRequest.class, DiscordRequestImpl.class, Discord.class)
-                .implement(Ratelimiter.class, RatelimiterImpl.class, Discord.class);
+    public CoreAdapterImpl() throws NoSuchMethodException {
+        mappingTool.implement(WebRequest.class, WebRequestImpl.class.getConstructor())
+                .implement(ThreadPool.class, ThreadPoolImpl.class.getConstructor(Discord.class))
+                .implement(WorkerThread.class, WorkerThreadImpl.class.getConstructor(Discord.class))
+                .implement(Gateway.class, GatewayImpl.class.getConstructor(Discord.class))
+                .implement(DiscordRequest.class, DiscordRequestImpl.class.getConstructor(Discord.class))
+                .implement(Ratelimiter.class, RatelimiterImpl.class.getConstructor(Discord.class))
+                .implement(JsonTrait.class, JsonTraitImpl.SimpleJsonTrait.class.getConstructor(Function.class, String.class, Function.class))
+                .implement(JsonTrait.class, JsonTraitImpl.ComplexJsonTrait.class.getConstructor(Function.class, String.class, BiFunction.class))
+                .implement(JsonTrait.class, JsonTraitImpl.CollectiveJsonTrait.class.getConstructor(String.class, Class.class));
     }
 }

@@ -7,6 +7,8 @@ import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
@@ -17,7 +19,7 @@ public interface Snowflake extends ApiBound, JsonDeserializable {
 
     @IntroducedBy(API)
     default long getID() {
-        return getValue(Trait.ID);
+        return getTraitValue(Trait.ID);
     }
 
     @IntroducedBy(API)
@@ -26,6 +28,6 @@ public interface Snowflake extends ApiBound, JsonDeserializable {
     }
 
     interface Trait {
-        JsonTrait<Long, Long> ID = identity("id");
+        JsonTrait<Long, Long> ID = identity(JsonNode::asLong, "id");
     }
 }
