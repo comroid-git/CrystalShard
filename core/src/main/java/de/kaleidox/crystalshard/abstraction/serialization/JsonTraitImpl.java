@@ -49,6 +49,9 @@ public abstract class JsonTraitImpl<S, T> implements JsonTrait<S, T> {
 
     @Override
     public Object extract(JsonNode from) {
+        if (from.isNull())
+            return null;
+        
         return extractor.apply(from);
     }
 
@@ -91,6 +94,9 @@ public abstract class JsonTraitImpl<S, T> implements JsonTrait<S, T> {
 
         @Override
         public Object extract(JsonNode from) {
+            if (from.isNull())
+                return null;
+            
             JsonNode target = from.path(fieldName);
             
             if (target.isArray())
@@ -102,6 +108,8 @@ public abstract class JsonTraitImpl<S, T> implements JsonTrait<S, T> {
 
         @Override
         public @NotNull Collection<T> map(ArrayNode value) {
+            if (value == null) return Collections.emptyList();
+            
             Collection<T> yields = new ArrayList<>();
 
             for (JsonNode data : value) {
