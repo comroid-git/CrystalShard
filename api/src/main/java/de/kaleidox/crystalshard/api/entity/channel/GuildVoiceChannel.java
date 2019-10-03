@@ -1,11 +1,16 @@
 package de.kaleidox.crystalshard.api.entity.channel;
 
-import java.util.OptionalInt;
+import java.util.Optional;
 
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.entity.EntityType;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
 
 public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
     @Override
@@ -18,7 +23,13 @@ public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
         return EntityType.GUILD_VOICE_CHANNEL;
     }
 
-    OptionalInt getUserLimit();
+    default Optional<Integer> getUserLimit() {
+        return wrapTraitValue(Trait.USER_LIMIT);
+    }
+
+    interface Trait extends GuildChannel.Trait, VoiceChannel.Trait {
+        JsonTrait<Integer, Integer> USER_LIMIT = identity(JsonNode::asInt, "user_limit");
+    }
 
     Updater createUpdater();
 

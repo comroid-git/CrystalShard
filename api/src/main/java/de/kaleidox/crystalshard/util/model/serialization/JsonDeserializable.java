@@ -36,7 +36,7 @@ public interface JsonDeserializable {
 
     <S, T> @Nullable T getTraitValue(JsonTrait<S, T> trait);
 
-    default <T> Optional<T> wrapValue(JsonTrait<?, T> trait) {
+    default <T> Optional<T> wrapTraitValue(JsonTrait<?, T> trait) {
         return Optional.ofNullable(getTraitValue(trait));
     }
 }

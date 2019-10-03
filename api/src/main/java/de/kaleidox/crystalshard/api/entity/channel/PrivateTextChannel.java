@@ -1,13 +1,21 @@
 package de.kaleidox.crystalshard.api.entity.channel;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import de.kaleidox.crystalshard.api.entity.EntityType;
+import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.api.entity.message.Message;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
+import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Contract;
+
+import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 
 public interface PrivateTextChannel extends PrivateChannel, TextChannel {
     @Override
@@ -18,6 +26,9 @@ public interface PrivateTextChannel extends PrivateChannel, TextChannel {
     @Override
     default EntityType getEntityType() {
         return EntityType.PRIVATE_TEXT_CHANNEL;
+    }
+    
+    interface Trait extends PrivateChannel.Trait, TextChannel.Trait {
     }
 
     interface Builder extends

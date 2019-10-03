@@ -18,6 +18,8 @@ import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 import de.kaleidox.crystalshard.util.model.TypeGroup;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import static de.kaleidox.crystalshard.util.Util.hackCast;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
@@ -196,6 +198,9 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable, Lis
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, ChannelType> CHANNEL_TYPE = simple("type", ChannelType::valueOf);
+        JsonTrait<String, ChannelType> CHANNEL_TYPE = simple(JsonNode::asText, "type", ChannelType::valueOf);
+    }
+
+    interface Default {
     }
 }

@@ -18,11 +18,6 @@ public interface GuildChannelCategory extends GuildChannel {
         return EntityType.GUILD_CHANNEL_CATEGORY;
     }
 
-    @Override
-    default Optional<GuildChannelCategory> getCategory() {
-        return Optional.empty();
-    }
-
     interface Builder extends GuildChannel.Builder<GuildChannelCategory, GuildChannelCategory.Builder> {
         @Override
         default Optional<GuildChannelCategory> getCategory() {

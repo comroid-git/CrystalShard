@@ -12,7 +12,15 @@ import de.kaleidox.crystalshard.api.entity.EntityType;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.webhook.Webhook;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
+import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
 
 @JsonTraits(GuildTextChannel.Trait.class)
 public interface GuildTextChannel extends GuildChannel, TextChannel {
@@ -30,11 +38,21 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
         return EntityType.GUILD_TEXT_CHANNEL;
     }
 
-    Optional<String> getTopic();
+    @IntroducedBy(GETTER)
+    default Optional<String> getTopic() {
+        return wrapTraitValue(Trait.TOPIC);
+    }
 
-    boolean isNSFW();
 
-    OptionalInt getMessageRatelimit();
+    @IntroducedBy(GETTER)
+    default boolean isNSFW() {
+        return getTraitValue(Trait.NSFW);
+    }
+    
+    @IntroducedBy(GETTER)
+    default Optional<Integer> getMessageRatelimit() {
+        return wrapTraitValue(Trait.MESSAGE_RATELIMIT);
+    }
 
     Updater createUpdater();
 
@@ -43,6 +61,9 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
     }
 
     interface Trait extends GuildChannel.Trait, TextChannel.Trait {
+        JsonTrait<String, String> TOPIC = identity(JsonNode::asText, "topic");
+        JsonTrait<Boolean, Boolean> NSFW = identity(JsonNode::asBoolean, "nsfw");
+        JsonTrait<Integer, Integer> MESSAGE_RATELIMIT = identity(JsonNode::asInt, "rate_limit_per_user");
     }
 
     interface Builder extends

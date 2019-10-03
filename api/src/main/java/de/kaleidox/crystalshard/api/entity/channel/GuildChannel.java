@@ -29,16 +29,24 @@ public interface GuildChannel extends Channel {
     }
 
     @IntroducedBy(GETTER)
-    int getPosition();
+    default int getPosition() {
+        return getTraitValue(Trait.POSITION);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<PermissionOverride> getPermissionOverrides();
+    default Collection<PermissionOverride> getPermissionOverrides() {
+        return getTraitValue(Trait.PERMISSION_OVERRIDES);
+    }
 
     @IntroducedBy(GETTER)
-    String getName();
+    default String getName() {
+        return getTraitValue(Trait.NAME);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<GuildChannelCategory> getCategory();
+    default Optional<GuildChannelCategory> getCategory() {
+        return wrapTraitValue(Trait.CATEGORY);
+    }
 
     @IntroducedBy(API)
     CompletableFuture<Collection<Invite>> requestInvites();
@@ -49,13 +57,15 @@ public interface GuildChannel extends Channel {
 
     interface Trait extends Channel.Trait {
         JsonTrait<Long, Guild> GUILD = cache(JsonNode::asLong, "guild_id", CacheManager::getGuildByID);
+        
         JsonTrait<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
+        
         JsonTrait<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
+        
         JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+        
         JsonTrait<Long, GuildChannelCategory> CATEGORY = cache(JsonNode::asLong, "parent_id",
-                (CacheManager cache, Long id) -> cache.getChannelByID(id)
-                        .flatMap(Channel::asGuildChannelCategory));
-        // todo
+                (CacheManager cache, Long id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannelCategory));
     }
 
     interface Builder<R extends GuildChannel, Self extends GuildChannel.Builder> extends Channel.Builder<R, Self> {
