@@ -98,4 +98,12 @@ public interface CacheManager extends ApiBound {
     }
 
     Collection<Snowflake> getSnowflakesByID(long id);
+
+    default <T extends Snowflake> Optional<? extends T> getByID(Class<T> type, long id) {
+        return getSnowflakesByID(id)
+                .stream()
+                .filter(type::isInstance)
+                .findFirst()
+                .map(type::cast);
+    }
 }

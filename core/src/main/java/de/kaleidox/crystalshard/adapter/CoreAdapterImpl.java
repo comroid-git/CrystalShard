@@ -29,6 +29,7 @@ public final class CoreAdapterImpl extends CoreAdapter {
                 .implement(Ratelimiter.class, RatelimiterImpl.class.getConstructor(Discord.class))
                 .implement(JsonTrait.class, JsonTraitImpl.SimpleJsonTrait.class.getConstructor(Function.class, String.class, Function.class))
                 .implement(JsonTrait.class, JsonTraitImpl.ComplexJsonTrait.class.getConstructor(Function.class, String.class, BiFunction.class))
-                .implement(JsonTrait.class, JsonTraitImpl.CollectiveJsonTrait.class.getConstructor(String.class, Class.class));
+                .implement(JsonTrait.class, JsonTraitImpl.CollectiveJsonTrait.class.getConstructor(String.class, Class.class, int.class))
+                .implement(JsonTrait.class, JsonTraitImpl.UnderlyingObjectJsonTrait.class.getConstructor(String.class, Function.class, Class.class))
     }
 }

@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import de.kaleidox.crystalshard.api.entity.EntityType;
-import de.kaleidox.crystalshard.api.model.IconHelper;
+import de.kaleidox.crystalshard.api.model.ImageHelper;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
@@ -33,7 +33,7 @@ public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     }
     
     interface Trait extends PrivateChannel.Trait, TextChannel.Trait {
-        JsonTrait<String, URL> ICON = simple(JsonNode::asText, "icon", IconHelper.CHANNEL_ICON::urlFromHash);
+        JsonTrait<String, URL> ICON = simple(JsonNode::asText, "icon", ImageHelper.CHANNEL_ICON::urlFromHash);
     }
 
     interface Builder extends

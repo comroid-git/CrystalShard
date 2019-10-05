@@ -7,8 +7,12 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.entity.Snowflake;
 import de.kaleidox.crystalshard.core.api.rest.DiscordRequest;
+import de.kaleidox.crystalshard.util.Util;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.Contract;
 
@@ -23,15 +27,52 @@ public abstract class Adapter {
 
         mappingTool = new ImplementationMapping();
     }
+    
+    @SuppressWarnings("unchecked")
+    @Contract("null, null, _ -> null; _, null, _ -> null; _, _, _ -> _")
+    public static <R extends Snowflake> R access(
+            final Class<? super R> type,
+            final Discord api,
+            final Object... args
+    ) {
+        if (type == null) return null;
+
+        final Class[] types = getTypes(args);
+        
+        if (JsonDeserializable.class.isAssignableFrom(type)) {
+            final int locate = Util.arrayLocate(types, JsonNode.class, Class::isAssignableFrom);
+
+            if (locate != -1) {
+                final JsonNode node = (JsonNode) args[locate];
+                final long id = (long) Snowflake.Trait.ID.extract(node);
+                
+                return (R) api.getCacheManager()
+                        .getSnowflakesByID(id)
+                        .stream()
+                        .filter(type::isInstance)
+                        .findFirst()
+                        .map(json -> {
+                            json.updateFromJson(node);
+                            return json;
+                        })
+                        .map(type::cast)
+                        .orElseGet(() -> create(type, args));
+            }
+        }
+        
+        return create(type, args);
+    }
 
     @SuppressWarnings("unchecked")
     @Contract("null, _ -> null; _, _ -> _")
-    public static <R> R create(Class<? super R> type, Object... args) {
+    public static <R> R create(
+            final Class<? super R> type,
+            final Object... args
+    ) {
         if (type == null) return null;
 
-        String pkg = type.getPackage().getName();
-        Class[] types = getTypes(args);
-
+        final Class[] types = getTypes(args);
+        
         return implementations.stream()
                 .map(adapter -> adapter.mappingTool)
                 .map(tool -> tool.find(type, types))

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import de.kaleidox.crystalshard.adapter.Adapter;
@@ -17,6 +18,7 @@ import de.kaleidox.crystalshard.api.entity.channel.TextChannel;
 import de.kaleidox.crystalshard.api.entity.emoji.Emoji;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
+import de.kaleidox.crystalshard.api.entity.guild.webhook.Webhook;
 import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.event.message.MessageEvent;
 import de.kaleidox.crystalshard.api.listener.message.MessageAttachableListener;
@@ -28,83 +30,153 @@ import de.kaleidox.crystalshard.api.model.message.MessageType;
 import de.kaleidox.crystalshard.api.model.message.TextDecoration;
 import de.kaleidox.crystalshard.api.model.message.embed.Embed;
 import de.kaleidox.crystalshard.api.model.message.reaction.Reaction;
+import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.intellij.lang.annotations.MagicConstant;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.cache;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.collective;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlying;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
 
+@JsonTraits(Message.Trait.class)
 public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
     @IntroducedBy(GETTER)
-    TextChannel getChannel();
+    default TextChannel getChannel() {
+        return getTraitValue(Trait.CHANNEL);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<Guild> getGuild();
+    default Optional<Guild> getGuild() {
+        return wrapTraitValue(Trait.GUILD);
+    }
 
     @IntroducedBy(GETTER)
-    MessageAuthor getAuthor();
+    default MessageAuthor getAuthor() {
+        return getTraitValue(Trait.USER_AUTHOR);
+    }
 
     @IntroducedBy(GETTER)
-    String getContent();
+    default String getContent() {
+        return getTraitValue(Trait.CONTENT);
+    }
 
     @IntroducedBy(GETTER)
-    Instant getSentTimestamp();
+    default Instant getSentTimestamp() {
+        return getTraitValue(Trait.SENT_TIMESTAMP);
+    }
 
     @IntroducedBy(GETTER)
-    Instant getEditedTimestamp();
+    default Instant getEditedTimestamp() {
+        return getTraitValue(Trait.EDITED_TIMESTAMP);
+    }
+    
+    @IntroducedBy(GETTER)
+    default boolean isTTS() {
+        return getTraitValue(Trait.TTS);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isTTS();
+    default boolean isMentioningEveryone() {
+        return getTraitValue(Trait.MENTIONS_EVERYONE);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isMentioningEveryone();
+    default Collection<User> getMentionedUsers() {
+        return getTraitValue(Trait.MENTIONED_USERS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<User> getMentionedUsers();
+    default Collection<Role> getMentionedRoles() {
+        return getTraitValue(Trait.MENTIONED_ROLES);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Role> getMentionedRoles();
+    default Collection<Channel> getMentionedChannels() {
+        return getTraitValue(Trait.MENTIONED_CHANNELS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Channel> getMentionedChannels();
+    default Collection<MessageAttachment> getAttachments() {
+        return getTraitValue(Trait.ATTACHMENTS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<MessageAttachment> getAttachments();
+    default Collection<Embed> getEmbeds() {
+        return getTraitValue(Trait.EMBEDS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Embed> getEmbeds();
+    default Collection<Reaction> getCurrentReactions() {
+        return getTraitValue(Trait.CURRENT_REACTIONS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Reaction> getCurrentReactions();
+    default Optional<Snowflake> getNonce() {
+        return wrapTraitValue(Trait.NONCE);
+    }
 
     @IntroducedBy(GETTER)
-    Snowflake getNonce();
+    default boolean isPinned() {
+        return getTraitValue(Trait.PINNED);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isPinned();
+    default MessageType getMessageType() {
+        return getTraitValue(Trait.TYPE);
+    }
 
     @IntroducedBy(GETTER)
-    MessageType getMessageType();
+    default Optional<MessageActivity> getMessageActivity() {
+        return wrapTraitValue(Trait.ACTIVITY);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<MessageActivity> getMessageActivity();
+    default Optional<MessageApplication> getMessageApplication() {
+        return wrapTraitValue(Trait.APPLICATION);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<MessageApplication> getMessageApplication();
+    default Optional<Message> getReferencedMessage() {
+        return wrapTraitValue(Trait.REFERENCED_MESSAGE);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<Message> getReferencedMessage();
-
     @MagicConstant(flagsFromClass = MessageFlags.class)
-    @IntroducedBy(GETTER)
-    int getMessageFlags();
+    default int getMessageFlags() {
+        return getTraitValue(Trait.FLAGS);
+    }
 
+    interface Trait extends Snowflake.Trait {
+        JsonTrait<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
+        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonTrait<JsonNode, User> USER_AUTHOR = underlying("author", User.class);
+        JsonTrait<JsonNode, Webhook> WEBHOOK_AUTHOR = null; // todo
+        JsonTrait<String, String> CONTENT = identity(JsonNode::asText, "content");
+        JsonTrait<String, Instant> SENT_TIMESTAMP = simple(JsonNode::asText, "timestamp", Instant::parse);
+        JsonTrait<String, Instant> EDITED_TIMESTAMP = simple(JsonNode::asText, "edited_timestamp", Instant::parse);
+        JsonTrait<Boolean, Boolean> TTS = identity(JsonNode::asBoolean, "tts");
+        JsonTrait<Boolean, Boolean> MENTIONS_EVERYONE = identity(JsonNode::asBoolean, "mention_everyone");
+        JsonTrait<ArrayNode, Collection<User>> MENTIONED_USERS = underlyingCollective("mentions", User.class);
+        JsonTrait<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingCollective("mention_roles", Role.class, (api, data) -> api.getCacheManager()
+                .getByID(Role.class, data.asLong())
+                .orElseThrow());
+    }
+    
     @IntroducedBy(API)
     CompletableFuture<Reaction> addReaction(Emoji emoji);
 

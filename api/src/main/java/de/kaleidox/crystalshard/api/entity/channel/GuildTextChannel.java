@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
 
 @JsonTraits(GuildTextChannel.Trait.class)
 public interface GuildTextChannel extends GuildChannel, TextChannel {
