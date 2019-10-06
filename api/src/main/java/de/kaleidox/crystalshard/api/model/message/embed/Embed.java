@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-public interface Embed {
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+
+public interface Embed extends JsonDeserializable { // todo serialize
     Optional<String> getTitle();
 
     Optional<String> getDescription();

@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.api.model.channel;
 
+import org.jetbrains.annotations.Nullable;
+
 public enum ChannelType {
     GUILD_TEXT(0),
 
@@ -19,5 +21,13 @@ public enum ChannelType {
 
     ChannelType(int value) {
         this.value = value;
+    }
+
+    public static @Nullable ChannelType valueOf(int value) {
+        for (ChannelType type : values()) 
+            if (type.value == value)
+                return type;
+        
+        return null;
     }
 }

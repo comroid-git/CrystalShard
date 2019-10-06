@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.api.model.message;
 
+import org.jetbrains.annotations.Nullable;
+
 public enum MessageType {
     DEFAULT(0),
 
@@ -31,5 +33,13 @@ public enum MessageType {
 
     MessageType(int value) {
         this.value = value;
+    }
+
+    public static @Nullable MessageType valueOf(int value) {
+        for (MessageType type : values())
+            if (type.value == value)
+                return type;
+            
+        return null;
     }
 }

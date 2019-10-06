@@ -5,7 +5,9 @@ package de.kaleidox.crystalshard.api.model.message;
 
 import java.util.Optional;
 
-public interface MessageActivity {
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+
+public interface MessageActivity extends JsonDeserializable { // todo serialize
     Type getType();
 
     Optional<String> getPartyID();

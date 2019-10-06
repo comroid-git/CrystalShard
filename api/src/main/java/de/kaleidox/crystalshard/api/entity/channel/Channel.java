@@ -1,5 +1,6 @@
 package de.kaleidox.crystalshard.api.entity.channel;
 
+import java.io.Serializable;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -7,22 +8,29 @@ import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.EntityType;
 import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.listener.channel.ChannelAttachableListener;
 import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
 import de.kaleidox.crystalshard.api.model.Mentionable;
 import de.kaleidox.crystalshard.api.model.channel.ChannelType;
+import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 import de.kaleidox.crystalshard.util.model.TypeGroup;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.kaleidox.crystalshard.util.Util.hackCast;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
+import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.cache;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
 
 public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable, ListenerAttachable<ChannelAttachableListener>, Cacheable {

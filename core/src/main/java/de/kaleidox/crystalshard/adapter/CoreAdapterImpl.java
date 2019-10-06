@@ -3,8 +3,10 @@ package de.kaleidox.crystalshard.adapter;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import de.kaleidox.crystalshard.abstraction.serialization.AbstractJsonDeserializable;
 import de.kaleidox.crystalshard.abstraction.serialization.JsonTraitImpl;
 import de.kaleidox.crystalshard.api.Discord;
+import de.kaleidox.crystalshard.api.model.channel.ChannelMention;
 import de.kaleidox.crystalshard.core.api.concurrent.ThreadPool;
 import de.kaleidox.crystalshard.core.api.concurrent.WorkerThread;
 import de.kaleidox.crystalshard.core.api.gateway.Gateway;
@@ -19,6 +21,8 @@ import de.kaleidox.crystalshard.core.rest.RatelimiterImpl;
 import de.kaleidox.crystalshard.core.rest.WebRequestImpl;
 import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 public final class CoreAdapterImpl extends CoreAdapter {
     public CoreAdapterImpl() throws NoSuchMethodException {
         mappingTool.implement(WebRequest.class, WebRequestImpl.class.getConstructor())
@@ -30,6 +34,19 @@ public final class CoreAdapterImpl extends CoreAdapter {
                 .implement(JsonTrait.class, JsonTraitImpl.SimpleJsonTrait.class.getConstructor(Function.class, String.class, Function.class))
                 .implement(JsonTrait.class, JsonTraitImpl.ComplexJsonTrait.class.getConstructor(Function.class, String.class, BiFunction.class))
                 .implement(JsonTrait.class, JsonTraitImpl.CollectiveJsonTrait.class.getConstructor(String.class, Class.class, int.class))
-                .implement(JsonTrait.class, JsonTraitImpl.UnderlyingObjectJsonTrait.class.getConstructor(String.class, Function.class, Class.class))
+                .implement(JsonTrait.class, JsonTraitImpl.UnderlyingObjectJsonTrait.class.getConstructor(String.class, Class.class, BiFunction.class))
+                .implement(ChannelMention.class, ChannelMentionImpl.class.getConstructor(Discord.class, JsonNode.class));
+    }
+    
+    private static class ChannelMentionImpl extends BasicJsonDeserializable {
+        public ChannelMentionImpl(Discord api, JsonNode data) {
+            super(api, data);
+        }
+    }
+    
+    private abstract static class BasicJsonDeserializable extends AbstractJsonDeserializable {
+        public BasicJsonDeserializable(Discord api, JsonNode data) {
+            super(api, data);
+        }
     }
 }

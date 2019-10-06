@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.entity.Snowflake;
@@ -23,9 +23,11 @@ import de.kaleidox.crystalshard.api.entity.user.User;
 import de.kaleidox.crystalshard.api.event.message.MessageEvent;
 import de.kaleidox.crystalshard.api.listener.message.MessageAttachableListener;
 import de.kaleidox.crystalshard.api.listener.model.ListenerAttachable;
+import de.kaleidox.crystalshard.api.model.channel.ChannelMention;
 import de.kaleidox.crystalshard.api.model.message.MessageActivity;
 import de.kaleidox.crystalshard.api.model.message.MessageAuthor;
 import de.kaleidox.crystalshard.api.model.message.MessageFlags;
+import de.kaleidox.crystalshard.api.model.message.MessageReference;
 import de.kaleidox.crystalshard.api.model.message.MessageType;
 import de.kaleidox.crystalshard.api.model.message.TextDecoration;
 import de.kaleidox.crystalshard.api.model.message.embed.Embed;
@@ -47,7 +49,6 @@ import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.Implementati
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.cache;
-import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.collective;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlying;
@@ -107,8 +108,11 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
 
     @IntroducedBy(GETTER)
     default Collection<Channel> getMentionedChannels() {
-        return getTraitValue(Trait.MENTIONED_CHANNELS);
-    }
+        return getTraitValue(Trait.MENTIONED_CHANNELS)
+                .stream()
+                .map(ChannelMention::getChannel)
+                .collect(Collectors.toList());
+    } // TODO do this with regexp
 
     @IntroducedBy(GETTER)
     default Collection<MessageAttachment> getAttachments() {
@@ -152,7 +156,8 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
 
     @IntroducedBy(GETTER)
     default Optional<Message> getReferencedMessage() {
-        return wrapTraitValue(Trait.REFERENCED_MESSAGE);
+        return wrapTraitValue(Trait.REFERENCED_MESSAGE)
+                .flatMap(MessageReference::getMessage);
     }
 
     @IntroducedBy(GETTER)
@@ -175,6 +180,17 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
         JsonTrait<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingCollective("mention_roles", Role.class, (api, data) -> api.getCacheManager()
                 .getByID(Role.class, data.asLong())
                 .orElseThrow());
+        JsonTrait<ArrayNode, Collection<ChannelMention>> MENTIONED_CHANNELS = underlyingCollective("mention_channels", ChannelMention.class);
+        JsonTrait<ArrayNode, Collection<MessageAttachment>> ATTACHMENTS = underlyingCollective("attachments", MessageAttachment.class);
+        JsonTrait<ArrayNode, Collection<Embed>> EMBEDS = underlyingCollective("embeds", Embed.class);
+        JsonTrait<ArrayNode, Collection<Reaction>> CURRENT_REACTIONS = underlyingCollective("reactions", Reaction.class);
+        JsonTrait<Long, Snowflake> NONCE = simple(JsonNode::asLong, "nonce", id -> Adapter.create(Snowflake.class, id));
+        JsonTrait<Boolean, Boolean> PINNED = identity(JsonNode::asBoolean, "pinned");
+        JsonTrait<Integer, MessageType> TYPE = simple(JsonNode::asInt, "type", MessageType::valueOf);
+        JsonTrait<JsonNode, MessageActivity> ACTIVITY = underlying("activity", MessageActivity.class);
+        JsonTrait<JsonNode, MessageApplication> APPLICATION = underlying("application", MessageApplication.class);
+        JsonTrait<JsonNode, MessageReference> REFERENCED_MESSAGE = underlying("message_reference", MessageReference.class);
+        JsonTrait<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
     }
     
     @IntroducedBy(API)
