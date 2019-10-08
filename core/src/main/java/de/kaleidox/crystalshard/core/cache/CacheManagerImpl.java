@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.kaleidox.crystalshard.abstraction.AbstractApiBound;
 import de.kaleidox.crystalshard.adapter.Adapter;
@@ -196,12 +197,11 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
     }
 
     @Override
-    public Collection<Snowflake> getSnowflakesByID(long id) {
+    public Stream<Snowflake> streamSnowflakesByID(long id) {
         return caches.values()
                 .stream()
                 .map(cache -> cache.getSnowflakesByID(id))
-                .flatMap(Collection::stream)
-                .collect(Collectors.toUnmodifiableList());
+                .flatMap(Collection::stream);
     }
 
     // todo Inspect behavior of this

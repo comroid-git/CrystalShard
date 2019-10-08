@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 import de.kaleidox.crystalshard.CrystalShard;
@@ -52,6 +53,20 @@ final class ImplementationMapping {
                     Arrays.toString(sign.param), CrystalShard.ISSUES_URL));
 
         map.put(sign, new Instantiator(executable));
+
+        return this;
+    }
+    
+    <T> ImplementationMapping implement(Class<T> type, final Class[] types, Function<Object[], T> construction) {
+        ClassSignature<T> sign = new ClassSignature<>(type, types);
+
+        if (map.containsKey(sign))
+            throw new IllegalStateException(String.format("Illegal implementation declaration: implement %s with " +
+                            "%s(%s) -> Duplicate Implementation Signature!\n\t\tPlease open an issue at %s",
+                    type.getSimpleName(), sign.klass.getSimpleName(),
+                    Arrays.toString(sign.param), CrystalShard.ISSUES_URL));
+
+        map.put(sign, new Instantiator<>(construction));
 
         return this;
     }

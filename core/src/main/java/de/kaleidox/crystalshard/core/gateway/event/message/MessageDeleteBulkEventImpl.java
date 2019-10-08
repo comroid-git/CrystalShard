@@ -46,7 +46,7 @@ public class MessageDeleteBulkEventImpl extends AbstractGatewayEvent implements 
         affects(channel);
         Util.quickStream(50, messageIds)
                 .flatMap(id -> api.getCacheManager()
-                        .getSnowflakesByID(id)
+                        .streamSnowflakesByID(id)
                         .stream())
                 .filter(flake -> flake.getEntityType() == EntityType.MESSAGE)
                 .map(Message.class::cast)

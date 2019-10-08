@@ -1,5 +1,7 @@
 package de.kaleidox.crystalshard.util;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiFunction;
@@ -7,6 +9,14 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public final class Util {
+    public static URL url_rethrow(String spec) {
+        try {
+            return new URL(spec);
+        } catch (MalformedURLException e) {
+            throw new AssertionError("Unexpected MalformedURLException", e);
+        }
+    }
+
     public static <T, R> R hackCast(T var) {
         //noinspection unchecked,RedundantCast
         return (R) (Object) var;

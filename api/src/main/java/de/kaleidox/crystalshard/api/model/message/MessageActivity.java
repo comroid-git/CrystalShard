@@ -6,11 +6,29 @@ package de.kaleidox.crystalshard.api.model.message;
 import java.util.Optional;
 
 import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
-public interface MessageActivity extends JsonDeserializable { // todo serialize
-    Type getType();
+import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.Nullable;
 
-    Optional<String> getPartyID();
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+
+@JsonTraits(MessageActivity.Trait.class)
+public interface MessageActivity extends JsonDeserializable {
+    default Type getType() {
+        return getTraitValue(Trait.TYPE);
+    }
+
+    default Optional<String> getPartyID() {
+        return wrapTraitValue(Trait.PARTY_ID);
+    }
+
+    interface Trait {
+        JsonTrait<Integer, Type> TYPE = simple(JsonNode::asInt, "type", Type::valueOf);
+        JsonTrait<String, String> PARTY_ID = identity(JsonNode::asText, "party_id");
+    }
 
     enum Type {
         JOIN(1),
@@ -22,6 +40,14 @@ public interface MessageActivity extends JsonDeserializable { // todo serialize
 
         Type(int value) {
             this.value = value;
+        }
+
+        public static @Nullable Type valueOf(int value) {
+            for (Type type : values())
+                if (type.value == value)
+                    return type;
+
+            return null;
         }
     }
 }

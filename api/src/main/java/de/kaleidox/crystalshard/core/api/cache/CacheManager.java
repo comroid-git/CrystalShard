@@ -1,7 +1,7 @@
 package de.kaleidox.crystalshard.core.api.cache;
 
-import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import de.kaleidox.crystalshard.api.entity.Snowflake;
 import de.kaleidox.crystalshard.api.entity.channel.Channel;
@@ -78,11 +78,19 @@ public interface CacheManager extends ApiBound {
                 .getMemberCache(guildId, GuildMember.class)
                 .getByID(id);
     }
+    
+    default Optional<Role> getRoleByID(long id) {
+        return getByID(Role.class, id);
+    }
 
     default Optional<Role> getRoleByID(long guildId, long id) {
         return getCache(Guild.class)
                 .getMemberCache(guildId, Role.class)
                 .getByID(id);
+    }
+    
+    default Optional<Message> getMessageByID(long id) {
+        return getByID(Message.class, id);
     }
 
     default Optional<Message> getMessageByID(long channelId, long id) {
@@ -97,11 +105,16 @@ public interface CacheManager extends ApiBound {
                 .getByID(userId);
     }
 
-    Collection<Snowflake> getSnowflakesByID(long id);
+    default <T extends Snowflake> Stream<T> streamSnowflakesByID(Class<T> type, long id) {
+        return streamSnowflakesByID(id)
+                .filter(type::isInstance)
+                .map(type::cast);
+    }
 
-    default <T extends Snowflake> Optional<? extends T> getByID(Class<T> type, long id) {
-        return getSnowflakesByID(id)
-                .stream()
+    Stream<Snowflake> streamSnowflakesByID(long id);
+
+    default <T extends Snowflake> Optional<T> getByID(Class<T> type, long id) {
+        return streamSnowflakesByID(id)
                 .filter(type::isInstance)
                 .findFirst()
                 .map(type::cast);

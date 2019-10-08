@@ -1,44 +1,103 @@
 package de.kaleidox.crystalshard.api.model.permission;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.kaleidox.crystalshard.adapter.Adapter;
+import de.kaleidox.crystalshard.api.entity.Snowflake;
 import de.kaleidox.crystalshard.api.entity.channel.GuildChannel;
+import de.kaleidox.crystalshard.api.entity.guild.Role;
+import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.Nullable;
+
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
 
 public interface PermissionOverride extends JsonDeserializable {
-    Optional<? extends GuildChannel> getChannel();
+    default <X extends Snowflake & Cacheable & PermissionOverridable> X getTarget() {
+        long targetId = getTraitValue(Trait.TARGET_ID);
 
-    Optional<? extends PermissionOverridable> getTarget();
+        return (X) (switch (getTargetType()) {
+            case ROLE -> getAPI().getCacheManager()
+                    .streamSnowflakesByID(Role.class, targetId);
+            case MEMBER -> getAPI().getCacheManager()
+                    .streamSnowflakesByID(User.class, targetId);
+        }).findAny().orElseThrow();
+    }
 
-    State getState(Permission permission);
+    default TargetType getTargetType() {
+        return getTraitValue(Trait.TARGET_TYPE);
+    }
+
+    default int getAllowedBitmask() {
+        return getTraitValue(Trait.ALLOWED);
+    }
+
+    default int getDeniedBitmask() {
+        return getTraitValue(Trait.DENIED);
+    }
+
+    GuildChannel getChannel();
+
+    default State getState(Permission permission) {
+        final int allowedBitmask = getAllowedBitmask();
+        final int deniedBitmask = getDeniedBitmask();
+
+        // local var to save 1 bitwise operation TODO lol is this even worth?
+        boolean isDenied;
+
+        if (permission.isSet(allowedBitmask) & !(isDenied = permission.isSet(deniedBitmask)))
+            return State.ALLOWED;
+        else if (isDenied) return State.DENIED;
+
+        return State.UNSET;
+    }
+
+    default State[] getStates(Permission... permissions) {
+        State[] yields = new State[permissions.length];
+
+        for (int i = 0; i < permissions.length; i++)
+            yields[i] = getState(permissions[i]);
+
+        return yields;
+    }
 
     default boolean isTargetUser() {
-        return getTarget().flatMap(PermissionOverridable::asGuildMember).isPresent();
+        return getTarget().asGuildMember().isPresent();
     }
 
     default boolean isTargetRole() {
-        return getTarget().flatMap(PermissionOverridable::asRole).isPresent();
+        return getTarget().asRole().isPresent();
     }
 
     default Set<Permission> getAllowedPermissions() {
+        final int allowedBitmask = getAllowedBitmask();
+
         return Stream.of(Permission.values())
-                .filter(permission -> getState(permission) == State.ALLOWED)
+                .filter(permission -> permission.isSet(allowedBitmask))
                 .collect(Collectors.toSet());
     }
 
     default Set<Permission> getDeniedPermissions() {
+        final int deniedBitmask = getDeniedBitmask();
+
         return Stream.of(Permission.values())
-                .filter(permission -> getState(permission) == State.DENIED)
+                .filter(permission -> permission.isSet(deniedBitmask))
                 .collect(Collectors.toSet());
     }
 
     default Set<Permission> getUnsetPermissions() {
+        final int allowedBitmask = getAllowedBitmask();
+        final int deniedBitmask = getDeniedBitmask();
+
         return Stream.of(Permission.values())
-                .filter(permission -> getState(permission) == State.UNSET)
+                .filter(permission -> !(permission.isSet(allowedBitmask) || permission.isSet(deniedBitmask)))
                 .collect(Collectors.toSet());
     }
 
@@ -78,6 +137,13 @@ public interface PermissionOverride extends JsonDeserializable {
         return builder.build();
     }
 
+    interface Trait {
+        JsonTrait<Long, Long> TARGET_ID = identity(JsonNode::asLong, "id");
+        JsonTrait<String, TargetType> TARGET_TYPE = simple(JsonNode::asText, "type", TargetType::from);
+        JsonTrait<Integer, Integer> ALLOWED = identity(JsonNode::asInt, "allow");
+        JsonTrait<Integer, Integer> DENIED = identity(JsonNode::asInt, "deny");
+    }
+
     interface Builder {
         State getState(Permission permission);
 
@@ -113,5 +179,15 @@ public interface PermissionOverride extends JsonDeserializable {
         DENIED,
 
         UNSET
+    }
+
+    enum TargetType {
+        ROLE,
+
+        MEMBER;
+
+        private static @Nullable TargetType from(String value) {
+            return valueOf(TargetType.class, value.toUpperCase());
+        }
     }
 }

@@ -66,7 +66,7 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
     public <S, T> T getTraitValue(JsonTrait<S, T> trait) {
         S val;
 
-        return (val = (S) values.getOrDefault(trait, null)) == null ? null : trait.map(val);
+        return (val = (S) values.getOrDefault(trait, null)) == null ? null : trait.apply(val);
     }
 
     @Override

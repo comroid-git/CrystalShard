@@ -47,7 +47,7 @@ public abstract class Adapter {
                 final long id = (long) Snowflake.Trait.ID.extract(node);
                 
                 return (R) api.getCacheManager()
-                        .getSnowflakesByID(id)
+                        .streamSnowflakesByID(id)
                         .stream()
                         .filter(type::isInstance)
                         .findFirst()
@@ -113,7 +113,7 @@ public abstract class Adapter {
         return impl;
     }
 
-    private static Class[] getTypes(Object... args) {
+    static Class[] getTypes(Object... args) {
         Class[] types = new Class[args.length];
 
         for (int i = 0; i < args.length; i++)

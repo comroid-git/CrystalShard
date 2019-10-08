@@ -15,17 +15,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Nullable;
 
-public interface JsonTrait<J, T> {
+public interface JsonTrait<J, T> extends Function<J, T> {
     JsonTrait<J, T> withApi(Discord api);
 
     String fieldName();
 
     Object extract(JsonNode from);
 
-    @Nullable T map(J value);
+    @Override
+    @Nullable T apply(J value);
 
     default Optional<T> wrap(J value) {
-        return Optional.ofNullable(map(value));
+        return Optional.ofNullable(apply(value));
     }
 
     static <X> JsonTrait<X, X> identity(Function<JsonNode, X> extractor, String fieldName) {

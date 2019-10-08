@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface Cacheable {
     void update(JsonNode data);
 
-    default OptionalLong getCacheParentID() {
+    default Optional<Long> getCacheParentID() {
         return OptionalLong.empty();
     }
 

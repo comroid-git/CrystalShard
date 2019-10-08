@@ -12,7 +12,7 @@ public interface Ban extends Cacheable {
     User getBannedUser();
 
     @Override
-    default OptionalLong getCacheParentID() {
+    default Optional<Long> getCacheParentID() {
         return OptionalLong.of(getBannedUser().getID());
     }
 

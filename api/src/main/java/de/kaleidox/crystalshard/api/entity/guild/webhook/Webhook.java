@@ -59,7 +59,7 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
 
     @Override
     // todo test this behavior
-    default OptionalLong getCacheParentID() {
+    default Optional<Long> getCacheParentID() {
         return getGuild().map(Snowflake::getID)
                 .map(OptionalLong::of)
                 .orElseGet(OptionalLong::empty);

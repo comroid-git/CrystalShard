@@ -7,10 +7,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 @SuppressWarnings("unchecked")
 class Instantiator<T> implements Function<Object[], T> {
     private final Function<Object[], T> function;
-    final Executable executable;
+    final @Nullable Executable executable;
 
     Instantiator(Executable executable) {
         this.executable = executable;
@@ -51,6 +53,11 @@ class Instantiator<T> implements Function<Object[], T> {
             };
         } else throw new IllegalArgumentException("Unexpected subclass of java.lang.reflect.Executable: "
                 + executable.getClass().getName());
+    }
+
+    public Instantiator(Function<Object[], T> construction) {
+        this.executable = null;
+        this.function = construction;
     }
 
     @Override

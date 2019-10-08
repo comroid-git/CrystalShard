@@ -9,7 +9,7 @@ import java.util.OptionalInt;
 
 import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 
-public interface Embed extends JsonDeserializable { // todo serialize
+public interface Embed {
     Optional<String> getTitle();
 
     Optional<String> getDescription();
@@ -20,19 +20,19 @@ public interface Embed extends JsonDeserializable { // todo serialize
 
     Optional<Color> getColor();
 
-    Optional<Footer> getFooter();
+    Optional<? extends Footer> getFooter();
 
-    Optional<Image> getImage();
+    Optional<? extends Image> getImage();
 
-    Optional<Thumbnail> getThumbnail();
+    Optional<? extends Thumbnail> getThumbnail();
 
-    Optional<Video> getVideo();
+    Optional<? extends Video> getVideo();
 
-    Optional<Provider> getProvider();
+    Optional<? extends Provider> getProvider();
 
-    Optional<Author> getAuthor();
+    Optional<? extends Author> getAuthor();
 
-    Collection<Field> getFields();
+    Collection<? extends Field> getFields();
 
     interface Footer {
         String getText();

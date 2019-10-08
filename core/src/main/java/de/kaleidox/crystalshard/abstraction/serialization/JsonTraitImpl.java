@@ -1,6 +1,5 @@
 package de.kaleidox.crystalshard.abstraction.serialization;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +33,7 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
 
     protected final String fieldName;
     protected @Nullable Discord api;
+    protected @Nullable T val;
 
     public JsonTraitImpl(Function<JsonNode, J> extractor, String fieldName) {
         super();
@@ -64,12 +64,28 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
     }
 
     @Override
+    public T apply(final J from) {
+        // if val EXISTS & IS deserializable & from IS node 
+        if (val instanceof JsonDeserializable && from instanceof JsonNode) {
+            // then update old val
+            ((JsonDeserializable) val).updateFromJson((JsonNode) from);
+
+            return val;
+        }
+
+        // otherwise simply remap and store
+        return (val = map(from));
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof JsonTraitImpl)
             return super.equals(obj);
 
         return false;
     }
+
+    protected abstract T map(J with);
 
     public static class SimpleJsonTrait<J, T> extends JsonTraitImpl<J, T> {
         private final Function<J, T> mapper;
@@ -115,7 +131,7 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
 
     public static class CollectiveJsonTrait<T extends JsonDeserializable> extends JsonTraitImpl<ArrayNode, Collection<T>> {
         private final Class<T> targetClass;
-        
+
         // unused argument for adapter compatibility
         public CollectiveJsonTrait(String fieldName, Class<T> targetClass, int unused) {
             super(null, fieldName);
@@ -139,7 +155,7 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
         public @NotNull Collection<T> map(ArrayNode value) {
             if (api == null)
                 throw new IllegalStateException("API is null! Please open a bug report at " + CrystalShard.ISSUES_URL);
-            
+
             if (value == null) return Collections.emptyList();
 
             Collection<T> yields = new ArrayList<>();

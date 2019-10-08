@@ -9,11 +9,12 @@ import java.util.stream.Collectors;
 import de.kaleidox.crystalshard.CrystalShard;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.api.model.ApiBound;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 
-public interface JsonDeserializable extends Cloneable {
+public interface JsonDeserializable extends ApiBound, Cloneable {
     Set<JsonTrait> possibleTraits();
 
     <S, T> @Nullable T getTraitValue(JsonTrait<S, T> trait);

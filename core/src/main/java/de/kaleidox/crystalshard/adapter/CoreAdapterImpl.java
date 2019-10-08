@@ -1,5 +1,8 @@
 package de.kaleidox.crystalshard.adapter;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -35,18 +38,23 @@ public final class CoreAdapterImpl extends CoreAdapter {
                 .implement(JsonTrait.class, JsonTraitImpl.ComplexJsonTrait.class.getConstructor(Function.class, String.class, BiFunction.class))
                 .implement(JsonTrait.class, JsonTraitImpl.CollectiveJsonTrait.class.getConstructor(String.class, Class.class, int.class))
                 .implement(JsonTrait.class, JsonTraitImpl.UnderlyingObjectJsonTrait.class.getConstructor(String.class, Class.class, BiFunction.class))
-                .implement(ChannelMention.class, ChannelMentionImpl.class.getConstructor(Discord.class, JsonNode.class));
+                .implement(ChannelMention.class, new Class[]{Discord.class, JsonNode.class}, args -> patchInterface(AbstractJsonDeserializable.class, ChannelMention.class, args));
     }
-    
-    private static class ChannelMentionImpl extends BasicJsonDeserializable {
-        public ChannelMentionImpl(Discord api, JsonNode data) {
-            super(api, data);
-        }
-    }
-    
-    private abstract static class BasicJsonDeserializable extends AbstractJsonDeserializable {
-        public BasicJsonDeserializable(Discord api, JsonNode data) {
-            super(api, data);
+
+    @SuppressWarnings("unchecked")
+    public <T> T patchInterface(final Class<?> baseClass, final Class<T> interfaceClass, Object... baseArgs) {
+        try {
+            Class[] types = Adapter.getTypes(baseArgs);
+            final Object base = baseClass.getConstructor(types).newInstance(baseArgs);
+
+            return (T) Proxy.newProxyInstance(
+                    baseClass.getClassLoader(),
+                    new Class[]{interfaceClass},
+                    (proxy, method, args) -> baseClass.getMethod(method.getName(), method.getParameterTypes())
+                            .invoke(base, args)
+            );
+        } catch (Throwable any) {
+            throw new RuntimeException(any);
         }
     }
 }

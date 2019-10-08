@@ -212,7 +212,7 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     Editor editor();
 
     @Override
-    default OptionalLong getCacheParentID() {
+    default Optional<Long> getCacheParentID() {
         return OptionalLong.of(getChannel().getID());
     }
 

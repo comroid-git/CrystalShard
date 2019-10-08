@@ -41,7 +41,7 @@ public class PresenceUpdateEventImpl extends AbstractGatewayEvent implements Pre
                 .orElseThrow(() -> new AssertionError("No valid Guild ID was sent with this PresenceUpdateEvent!"));
         roles = roleIds.stream()
                 .flatMap(id -> api.getCacheManager()
-                        .getSnowflakesByID(id)
+                        .streamSnowflakesByID(id)
                         .stream())
                 .filter(flake -> flake.getEntityType() == EntityType.ROLE)
                 .map(Role.class::cast)

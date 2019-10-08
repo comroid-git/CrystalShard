@@ -61,7 +61,7 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
     }
 
     @Override
-    default OptionalLong getCacheParentID() {
+    default Optional<Long> getCacheParentID() {
         return OptionalLong.of(getGuild().getID());
     }
 
