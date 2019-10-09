@@ -52,8 +52,4 @@ public class GuildTextChannelImpl extends AbstractTextChannel<GuildTextChannelIm
     public OptionalInt getMessageRatelimit() {
         return rateLimitPerUser == -1 ? OptionalInt.empty() : OptionalInt.of(rateLimitPerUser);
     }
-
-    @Override public void update(JsonNode data) {
-
-    }
 }

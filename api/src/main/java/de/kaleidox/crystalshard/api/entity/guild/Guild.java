@@ -8,8 +8,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -19,6 +17,7 @@ import javax.swing.plaf.synth.Region;
 import de.kaleidox.crystalshard.adapter.Adapter;
 import de.kaleidox.crystalshard.api.Discord;
 import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.GuildChannel;
 import de.kaleidox.crystalshard.api.entity.channel.GuildTextChannel;
 import de.kaleidox.crystalshard.api.entity.channel.GuildVoiceChannel;
@@ -33,16 +32,34 @@ import de.kaleidox.crystalshard.api.model.guild.invite.Invite;
 import de.kaleidox.crystalshard.api.model.user.Presence;
 import de.kaleidox.crystalshard.api.model.voice.VoiceRegion;
 import de.kaleidox.crystalshard.api.model.voice.VoiceState;
+import de.kaleidox.crystalshard.core.api.cache.CacheManager;
 import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
+import de.kaleidox.crystalshard.util.Util;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.FileType;
+import de.kaleidox.crystalshard.util.model.ImageHelper;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.jetbrains.annotations.Nullable;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.api;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.cache;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlying;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
 
+@JsonTraits(Guild.Trait.class)
 public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableListener>, Cacheable {
     @IntroducedBy(API)
     CompletableFuture<Collection<Webhook>> requestWebhooks();
@@ -59,112 +76,193 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
     }
 
     @IntroducedBy(GETTER)
-    String getName();
+    default String getName() {
+        return getTraitValue(Trait.NAME);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<URL> getIconURL();
+    default Optional<URL> getIconURL() {
+        return wrapTraitValue(Trait.ICON_HASH)
+                .map(hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, getID(), hash));
+    }
 
     @IntroducedBy(GETTER)
-    Optional<URL> getSplashURL();
+    default Optional<URL> getSplashURL() {
+        return wrapTraitValue(Trait.SPLASH_HASH)
+                .map(hash -> ImageHelper.GUILD_SPLASH.url(FileType.PNG, getID(), hash));
+    }
 
     @IntroducedBy(GETTER)
-    Optional<GuildMember> getOwner();
+    default Optional<GuildMember> getOwner() {
+        return wrapTraitValue(Trait.OWNER)
+                .flatMap(this::getMember);
+    }
 
     @IntroducedBy(GETTER)
-    Region getRegion();
+    default Region getRegion() {
+        return getTraitValue(Trait.REGION);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<GuildVoiceChannel> getAFKChannel();
+    default Optional<GuildVoiceChannel> getAFKChannel() {
+        return wrapTraitValue(Trait.AFK_CHANNEL);
+    }
 
     @IntroducedBy(GETTER)
-    int getAFKTimeout();
+    default Duration getAFKTimeout() {
+        return getTraitValue(Trait.AFK_TIMEOUT);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isEmbeddable();
+    default boolean isEmbeddable() {
+        return getTraitValue(Trait.EMBEDDABLE);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<GuildChannel> getEmbedChannel();
+    default Optional<GuildChannel> getEmbedChannel() {
+        return wrapTraitValue(Trait.EMBED_CHANNEL);
+    }
 
     @IntroducedBy(GETTER)
-    VerificationLevel getVerificationLevel();
+    default VerificationLevel getVerificationLevel() {
+        return getTraitValue(Trait.VERIFICATION_LEVEL);
+    }
 
     @IntroducedBy(GETTER)
-    DefaultMessageNotificationLevel getDefaultMessageNotificationLevel();
+    default DefaultMessageNotificationLevel getDefaultMessageNotificationLevel() {
+        return getTraitValue(Trait.DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
+    }
 
     @IntroducedBy(GETTER)
-    ExplicitContentFilterLevel getExplicitContentFilterLevel();
+    default ExplicitContentFilterLevel getExplicitContentFilterLevel() {
+        return getTraitValue(Trait.EXPLICIT_CONTENT_FILTER_LEVEL);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Role> getRoles();
+    default Collection<Role> getRoles() {
+        return getTraitValue(Trait.ROLES);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<CustomEmoji> getEmojis();
+    default Collection<CustomEmoji> getEmojis() {
+        return getTraitValue(Trait.EMOJIS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Feature> getGuildFeatures();
+    default Collection<Feature> getGuildFeatures() {
+        return getTraitValue(Trait.FEATURES);
+    }
 
     @IntroducedBy(GETTER)
-    MFALevel getMFALevel();
+    default MFALevel getMFALevel() {
+        return getTraitValue(Trait.MFA_LEVEL);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<Snowflake> getOwnerApplicationID();
+    default Optional<Snowflake> getOwnerApplicationID() {
+        return wrapTraitValue(Trait.OWNER_APPLICATION_ID);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isWidgetable();
+    default boolean isWidgetable() {
+        return getTraitValue(Trait.WIDGETABLE);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<GuildChannel> getWidgetChannel();
+    default Optional<GuildChannel> getWidgetChannel() {
+        return wrapTraitValue(Trait.WIDGET_CHANNEL);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<GuildTextChannel> getSystemChannel();
+    default Optional<GuildTextChannel> getSystemChannel() {
+        return wrapTraitValue(Trait.SYSTEM_CHANNEL);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<Instant> getJoinedAt(); // ?
+    default Optional<Instant> getJoinedAt() {
+        return wrapTraitValue(Trait.JOINED_AT);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isConsideredLarge();
+    default boolean isConsideredLarge() {
+        return getTraitValue(Trait.LARGE);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isUnavailable();
+    default boolean isUnavailable() {
+        return getTraitValue(Trait.UNAVAILABLE);
+    }
 
     @IntroducedBy(GETTER)
-    int getMemberCount();
+    default int getMemberCount() {
+        return getTraitValue(Trait.MEMBER_COUNT);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<VoiceState> getCurrentVoiceStates();
+    default Collection<VoiceState> getCurrentVoiceStates() {
+        return getTraitValue(Trait.VOICE_STATES);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<GuildMember> getMembers();
+    default Collection<GuildMember> getMembers() {
+        return getTraitValue(Trait.MEMBERS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<GuildChannel> getChannels();
+    default Collection<GuildChannel> getChannels() {
+        return getTraitValue(Trait.CHANNELS);
+    }
 
     @IntroducedBy(GETTER)
-    Collection<Presence> getPresences();
+    default Collection<Presence> getPresences() {
+        return getTraitValue(Trait.PRESENCES);
+    }
 
     @IntroducedBy(GETTER)
-    OptionalInt getMaximumPresences();
+    default Optional<Integer> getMaximumPresences() {
+        return wrapTraitValue(Trait.MAXIMUM_PRESENCES);
+    }
 
     @IntroducedBy(GETTER)
-    OptionalInt getMaximumMembers();
+    default Optional<Integer> getMaximumMembers() {
+        return wrapTraitValue(Trait.MAXIMUM_MEMBERS);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<URL> getVanityInviteURL();
+    default Optional<URL> getVanityInviteURL() {
+        return wrapTraitValue(Trait.VANITY_INVITE_URL);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<String> getDescription();
+    default Optional<String> getDescription() {
+        return wrapTraitValue(Trait.DESCRIPTION);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<URL> getBannerURL();
+    default Optional<URL> getBannerURL() {
+        return wrapTraitValue(Trait.BANNER_HASH)
+                .map(hash -> ImageHelper.GUILD_BANNER.url(FileType.PNG, getID(), hash));
+    }
 
     @IntroducedBy(GETTER)
-    PremiumTier getPremiumTier();
+    default PremiumTier getPremiumTier() {
+        return getTraitValue(Trait.PREMIUM_TIER);
+    }
 
     @IntroducedBy(GETTER)
-    OptionalInt getPremiumSubscriptionCount();
+    default int getPremiumSubscriptionCount() {
+        return wrapTraitValue(Trait.PREMIUM_SUB_COUNT)
+                .orElse(0);
+    }
 
     @IntroducedBy(GETTER)
-    Locale getPreferredLocale();
+    default Optional<Locale> getPreferredLocale() {
+        return wrapTraitValue(Trait.PREFERRED_LOCALE);
+    }
+
+    default Optional<GuildMember> getMember(User user) {
+        return user.asGuildMember(this);
+    }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild")
     default CompletableFuture<Void> delete() {
@@ -259,16 +357,65 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         return Adapter.create(Builder.class, api);
     }
 
-    interface Embed extends Cacheable {
+    interface Trait extends Snowflake.Trait {
+        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonTrait<String, String> ICON_HASH = identity(JsonNode::asText, "icon");
+        JsonTrait<String, String> SPLASH_HASH = identity(JsonNode::asText, "splash");
+        JsonTrait<Long, User> OWNER = cache("owner_id", CacheManager::getUserByID);
+        JsonTrait<String, Region> REGION = simple(JsonNode::asText, "region", null/*todo find voice region from str*/);
+        JsonTrait<Long, GuildVoiceChannel> AFK_CHANNEL = cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
+        JsonTrait<Integer, Duration> AFK_TIMEOUT = simple(JsonNode::asInt, "afk_timeout", Duration::ofSeconds);
+        JsonTrait<Boolean, Boolean> EMBEDDABLE = identity(JsonNode::asBoolean, "embed_enabled");
+        JsonTrait<Long, GuildChannel> EMBED_CHANNEL = cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JsonTrait<Integer, VerificationLevel> VERIFICATION_LEVEL = simple(JsonNode::asInt, "verification_level", VerificationLevel::valueOf);
+        JsonTrait<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple(JsonNode::asInt, "default_message_notifications", DefaultMessageNotificationLevel::valueOf);
+        JsonTrait<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple(JsonNode::asInt, "explicit_content_filter", ExplicitContentFilterLevel::valueOf);
+        JsonTrait<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class);
+        JsonTrait<ArrayNode, Collection<CustomEmoji>> EMOJIS = underlyingCollective("emojis", CustomEmoji.class);
+        JsonTrait<ArrayNode, Collection<Feature>> FEATURES = underlyingCollective("features", Feature.class, (api, data) -> Feature.valueOf(data.asText()));
+        JsonTrait<Integer, MFALevel> MFA_LEVEL = simple(JsonNode::asInt, "mfa_level", MFALevel::valueOf);
+        JsonTrait<Long, Snowflake> OWNER_APPLICATION_ID = api(JsonNode::asLong, "application_id", (api, id) -> Adapter.create(Snowflake.class, api, id));
+        JsonTrait<Boolean, Boolean> WIDGETABLE = identity(JsonNode::asBoolean, "widget_enabled");
+        JsonTrait<Long, GuildChannel> WIDGET_CHANNEL = cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JsonTrait<Long, GuildTextChannel> SYSTEM_CHANNEL = cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JsonTrait<String, Instant> JOINED_AT = simple(JsonNode::asText, "joined_at", Instant::parse);
+        JsonTrait<Boolean, Boolean> LARGE = identity(JsonNode::asBoolean, "large");
+        JsonTrait<Boolean, Boolean> UNAVAILABLE = identity(JsonNode::asBoolean, "unavailable");
+        JsonTrait<Integer, Integer> MEMBER_COUNT = identity(JsonNode::asInt, "member_count");
+        JsonTrait<ArrayNode, Collection<VoiceState>> VOICE_STATES = underlyingCollective("voice_states", VoiceState.class);
+        JsonTrait<ArrayNode, Collection<GuildMember>> MEMBERS = underlyingCollective("members", GuildMember.class);
+        JsonTrait<ArrayNode, Collection<GuildChannel>> CHANNELS = underlyingCollective("channels", GuildChannel.class);
+        JsonTrait<ArrayNode, Collection<Presence>> PRESENCES = underlyingCollective("presences", Presence.class);
+        JsonTrait<Integer, Integer> MAXIMUM_PRESENCES = identity(JsonNode::asInt, "max_presences");
+        JsonTrait<Integer, Integer> MAXIMUM_MEMBERS = identity(JsonNode::asInt, "max_members");
+        JsonTrait<String, URL> VANITY_INVITE_URL = simple(JsonNode::asText, "vanity_url_code", code -> Util.url_rethrow("https://discord.gg/" + code));
+        JsonTrait<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
+        JsonTrait<String, String> BANNER_HASH = identity(JsonNode::asText, "banner");
+        JsonTrait<Integer, PremiumTier> PREMIUM_TIER = simple(JsonNode::asInt, "premium_tier", PremiumTier::valueOf);
+        JsonTrait<Integer, Integer> PREMIUM_SUB_COUNT = identity(JsonNode::asInt, "premium_subscription_count");
+        JsonTrait<String, Locale> PREFERRED_LOCALE = simple(JsonNode::asText, "preferred_locale", Locale::forLanguageTag);
+    }
+
+    @JsonTraits(Embed.Trait.class)
+    interface Embed extends Cacheable, JsonDeserializable {
         Guild getGuild();
 
-        boolean isEnabled();
+        default boolean isEnabled() {
+            return getTraitValue(Trait.ENABLED);
+        }
 
-        Optional<GuildChannel> getChannel();
+        default Optional<GuildChannel> getChannel() {
+            return wrapTraitValue(Trait.CHANNEL);
+        }
+
+        interface Trait {
+            JsonTrait<Boolean, Boolean> ENABLED = identity(JsonNode::asBoolean, "enabled");
+            JsonTrait<Long, GuildChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        }
 
         @Override
         default Optional<Long> getCacheParentID() {
-            return OptionalLong.of(getGuild().getID());
+            return Optional.of(getGuild().getID());
         }
 
         @Override
@@ -295,38 +442,72 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         }
     }
 
-    interface Integration extends Snowflake, Cacheable {
+    @JsonTraits(Integration.Trait.class)
+    interface Integration extends Snowflake, JsonDeserializable, Cacheable {
         Guild getGuild();
 
         @IntroducedBy(GETTER)
-        String getName();
+        default String getName() {
+            return getTraitValue(Trait.NAME);
+        }
 
         @IntroducedBy(GETTER)
-        String getType();
+        default String getType() {
+            return getTraitValue(Trait.TYPE);
+        }
 
         @IntroducedBy(GETTER)
-        boolean isEnabled();
+        default boolean isEnabled() {
+            return getTraitValue(Trait.ENABLED);
+        }
 
         @IntroducedBy(GETTER)
-        boolean isSyncing();
+        default boolean isSyncing() {
+            return getTraitValue(Trait.IS_SYNCING);
+        }
 
         @IntroducedBy(GETTER)
-        Role getSubscriberRole();
+        default Role getSubscriberRole() {
+            return getTraitValue(Trait.PREMIUM_ROLE);
+        }
 
         @IntroducedBy(GETTER)
-        int getExpireBehavior();
+        default int getExpireBehavior() {
+            return getTraitValue(Trait.EXPIRE_BEHAVIOR);
+        }
 
         @IntroducedBy(GETTER)
-        int getExpireGracePeriod();
+        default int getExpireGracePeriod() {
+            return getTraitValue(Trait.EXPIRE_GRACE_PERIOD);
+        }
 
         @IntroducedBy(GETTER)
-        User getUser();
+        default User getUser() {
+            return getTraitValue(Trait.USER);
+        }
 
         @IntroducedBy(GETTER)
-        Account getAccount();
+        default Account getAccount() {
+            return getTraitValue(Trait.ACCOUNT);
+        }
 
         @IntroducedBy(GETTER)
-        Instant getSyncedAtTimestamp();
+        default Instant getSyncedAtTimestamp() {
+            return getTraitValue(Trait.SYNCED_AT);
+        }
+
+        interface Trait extends Snowflake.Trait {
+            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonTrait<String, String> TYPE = identity(JsonNode::asText, "type");
+            JsonTrait<Boolean, Boolean> ENABLED = identity(JsonNode::asBoolean, "enabled");
+            JsonTrait<Boolean, Boolean> IS_SYNCING = identity(JsonNode::asBoolean, "syncing");
+            JsonTrait<Long, Role> PREMIUM_ROLE = cache("role_id", CacheManager::getRoleByID);
+            JsonTrait<Integer, Integer> EXPIRE_BEHAVIOR = identity(JsonNode::asInt, "expire_behavior");
+            JsonTrait<Integer, Integer> EXPIRE_GRACE_PERIOD = identity(JsonNode::asInt, "expire_grace_period");
+            JsonTrait<JsonNode, User> USER = underlying("user", User.class);
+            JsonTrait<JsonNode, Account> ACCOUNT = underlying("account", Account.class);
+            JsonTrait<String, Instant> SYNCED_AT = simple(JsonNode::asText, "synced_at", Instant::parse);
+        }
 
         @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-integration")
         default CompletableFuture<Void> delete() {
@@ -350,7 +531,7 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
 
         @Override
         default Optional<Long> getCacheParentID() {
-            return OptionalLong.of(getGuild().getID());
+            return Optional.of(getGuild().getID());
         }
 
         @Override
@@ -363,10 +544,20 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
             return true;
         }
 
-        interface Account {
-            String getID();
+        @JsonTraits(Account.Trait.class)
+        interface Account extends JsonDeserializable {
+            default String getID() {
+                return getTraitValue(Trait.ID);
+            }
 
-            String getName();
+            default String getName() {
+                return getTraitValue(Trait.NAME);
+            }
+
+            interface Trait {
+                JsonTrait<String, String> ID = identity(JsonNode::asText, "id");
+                JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+            }
         }
 
         interface Builder { // todo
@@ -537,6 +728,14 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         DefaultMessageNotificationLevel(int value) {
             this.value = value;
         }
+
+        public static @Nullable DefaultMessageNotificationLevel valueOf(int value) {
+            for (DefaultMessageNotificationLevel level : values())
+                if (level.value == value)
+                    return level;
+
+            return null;
+        }
     }
 
     enum ExplicitContentFilterLevel {
@@ -551,6 +750,14 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         ExplicitContentFilterLevel(int value) {
             this.value = value;
         }
+
+        public static @Nullable ExplicitContentFilterLevel valueOf(int value) {
+            for (ExplicitContentFilterLevel level : values())
+                if (level.value == value)
+                    return level;
+
+            return null;
+        }
     }
 
     enum MFALevel {
@@ -562,6 +769,14 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
 
         MFALevel(int value) {
             this.value = value;
+        }
+
+        public static @Nullable MFALevel valueOf(int value) {
+            for (MFALevel level : values())
+                if (level.value == value)
+                    return level;
+
+            return null;
         }
     }
 
@@ -596,6 +811,14 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         VerificationLevel(int value) {
             this.value = value;
         }
+
+        public static @Nullable VerificationLevel valueOf(int value) {
+            for (VerificationLevel level : values())
+                if (level.value == value)
+                    return level;
+
+            return null;
+        }
     }
 
     enum PremiumTier {
@@ -608,6 +831,14 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
 
         PremiumTier(int value) {
             this.value = value;
+        }
+
+        public static @Nullable PremiumTier valueOf(int value) {
+            for (PremiumTier tier : values())
+                if (tier.value == value)
+                    return tier;
+
+            return null;
         }
     }
 

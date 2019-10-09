@@ -9,10 +9,11 @@ import java.util.OptionalInt;
 
 import de.kaleidox.crystalshard.api.entity.Snowflake;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 
 import org.intellij.lang.annotations.MagicConstant;
 
-public interface Presence {
+public interface Presence extends JsonDeserializable { // todo serialize
     Guild getGuild();
 
     Activity getActivity();

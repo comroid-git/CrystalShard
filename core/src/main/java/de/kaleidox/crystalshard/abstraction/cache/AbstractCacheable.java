@@ -20,11 +20,6 @@ public abstract class AbstractCacheable<Self extends AbstractSnowflake<Self> & C
         initCacheable();
     }
 
-    @Override
-    public void update(JsonNode data) {
-        updateFromJson(data);
-    }
-
     protected void initCacheable() {
         if (isSubcacheMember()) {
             Optional<Class<? extends Cacheable>> parentTypeOpt = getCacheParentType();

@@ -71,7 +71,7 @@ public interface JsonTrait<J, T> extends Function<J, T> {
         return underlyingCollective(fieldName, targetClass, (api, id) -> Adapter.access(targetClass, api, api, id));
     }
 
-    static <T extends JsonDeserializable> JsonTrait<ArrayNode, Collection<T>> underlyingCollective(
+    static <T> JsonTrait<ArrayNode, Collection<T>> underlyingCollective(
             String fieldName,
             Class<T> targetClass,
             BiFunction<Discord, JsonNode, T> eachMapper

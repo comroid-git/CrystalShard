@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.adapter;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.logging.Level;
@@ -28,6 +29,28 @@ public abstract class Adapter {
         mappingTool = new ImplementationMapping();
     }
     
+    public static Optional<Class<?>> getApiClass(final Object from) {
+        final Class<?> impl = from.getClass();
+
+        return Optional.ofNullable(getApiClass_r(impl));
+    }
+
+    private static <T> Class<?> getApiClass_r(Class<?> impl) {
+        final Class<?>[] interfaces = impl.getInterfaces();
+
+        for (Class<?> anInterface : interfaces) {
+            if (anInterface.isAnnotationPresent(MainAPI.class))
+                return anInterface;
+            else {
+                final Class<?> yield = getApiClass_r(anInterface);
+                
+                if (yield != null) return yield;
+            }
+        }
+        
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     @Contract("null, null, _ -> null; _, null, _ -> null; _, _, _ -> _")
     public static <R extends Snowflake> R access(
@@ -48,7 +71,6 @@ public abstract class Adapter {
                 
                 return (R) api.getCacheManager()
                         .streamSnowflakesByID(id)
-                        .stream()
                         .filter(type::isInstance)
                         .findFirst()
                         .map(json -> {

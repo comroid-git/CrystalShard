@@ -1,20 +1,50 @@
 package de.kaleidox.crystalshard.api.entity.message;
 
 import java.net.URL;
-import java.util.OptionalInt;
+import java.util.Optional;
 
 import de.kaleidox.crystalshard.api.entity.Snowflake;
+import de.kaleidox.crystalshard.util.Util;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+
+@JsonTraits(MessageAttachment.Trait.class)
 public interface MessageAttachment extends Snowflake {
-    String getFilename();
+    default String getFilename() {
+        return getTraitValue(Trait.FILENAME);
+    }
 
-    int getFilesize();
+    default int getFilesize() {
+        return getTraitValue(Trait.SIZE);
+    }
 
-    URL getURL();
+    default URL getURL() {
+        return getTraitValue(Trait.URL);
+    }
 
-    URL getProxyURL();
+    default URL getProxyURL() {
+        return getTraitValue(Trait.PROXY_URL);
+    }
 
-    OptionalInt getHeight();
+    default Optional<Integer> getHeight() {
+        return wrapTraitValue(Trait.HEIGHT);
+    }
 
-    OptionalInt getWidth();
+    default Optional<Integer> getWidth() {
+        return wrapTraitValue(Trait.WIDTH);
+    }
+
+    interface Trait extends Snowflake.Trait {
+        JsonTrait<String, String> FILENAME = identity(JsonNode::asText, "filename");
+        JsonTrait<Integer, Integer> SIZE = identity(JsonNode::asInt, "size");
+        JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
+        JsonTrait<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::url_rethrow);
+        JsonTrait<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
+        JsonTrait<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
+    }
 }

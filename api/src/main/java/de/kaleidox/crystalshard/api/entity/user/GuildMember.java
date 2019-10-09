@@ -2,6 +2,7 @@ package de.kaleidox.crystalshard.api.entity.user;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -12,35 +13,51 @@ import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.guild.Role;
 import de.kaleidox.crystalshard.api.model.guild.ban.Ban;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverridable;
-import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Nullable;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
 
-public interface GuildMember extends User, PermissionOverridable, Cacheable {
-    @IntroducedBy(PRODUCTION)
-    User getUnderlyingUser();
-
+@JsonTraits(GuildMember.Trait.class)
+public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
-    Optional<String> getNickname();
+    default Optional<String> getNickname() {
+        return wrapTraitValue(Trait.NICKNAME);
+    }
 
-    Collection<Role> getRoles();
+    default Collection<Role> getRoles() {
+        return getTraitValue(Trait.ROLES);
+    }
 
-    Instant getJoinTimestamp();
+    default Instant getJoinTimestamp() {
+        return getTraitValue(Trait.JOINED_TIMESTAMP);    }
 
-    Optional<Instant> getNitroBoostTimestamp();
+    default Optional<Instant> getNitroBoostTimestamp() {
+        return wrapTraitValue(Trait.NITRO_BOOST_TIMESTAMP);
+    }
 
-    boolean isDeafened();
+    default boolean isDeafened() {
+        return getTraitValue(Trait.DEAFENED);
+    }
 
-    boolean isMuted();
+    default boolean isMuted() {
+        return getTraitValue(Trait.MUTED);
+    }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#create-guild-ban")
     CompletableFuture<Ban> ban(int deleteMessageOfLastDays, String reason);
@@ -53,6 +70,17 @@ public interface GuildMember extends User, PermissionOverridable, Cacheable {
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
                 .executeAs(data -> getAPI().getCacheManager()
                         .deleteMember(Guild.class, Ban.class, getGuild().getID(), getID()));
+    }
+
+    interface Trait extends User.Trait {
+        JsonTrait<String, String> NICKNAME = identity(JsonNode::asText, "nick");
+        JsonTrait<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
+                .getRoleByID(data.asLong())
+                .orElseThrow());
+        JsonTrait<String, Instant> JOINED_TIMESTAMP = simple(JsonNode::asText, "joined_at", Instant::parse);
+        JsonTrait<String, Instant> NITRO_BOOST_TIMESTAMP = simple(JsonNode::asText, "premium_since", Instant::parse);
+        JsonTrait<Boolean, Boolean> DEAFENED = identity(JsonNode::asBoolean, "deaf");
+        JsonTrait<Boolean, Boolean> MUTED = identity(JsonNode::asBoolean, "mute");
     }
 
     @IntroducedBy(PRODUCTION)

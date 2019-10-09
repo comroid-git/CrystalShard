@@ -5,9 +5,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.OptionalInt;
-
-import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
 
 public interface Embed {
     Optional<String> getTitle();
@@ -47,9 +44,9 @@ public interface Embed {
 
         Optional<URL> getProxyURL();
 
-        OptionalInt getHeight();
+        Optional<Integer> getHeight();
 
-        OptionalInt getWidth();
+        Optional<Integer> getWidth();
     }
 
     interface Thumbnail {
@@ -57,17 +54,17 @@ public interface Embed {
 
         Optional<URL> getProxyURL();
 
-        OptionalInt getHeight();
+        Optional<Integer> getHeight();
 
-        OptionalInt getWidth();
+        Optional<Integer> getWidth();
     }
 
     interface Video {
         Optional<URL> getURL();
 
-        OptionalInt getHeight();
+        Optional<Integer> getHeight();
 
-        OptionalInt getWidth();
+        Optional<Integer> getWidth();
     }
 
     interface Provider {

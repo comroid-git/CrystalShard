@@ -21,32 +21,65 @@ import de.kaleidox.crystalshard.core.api.cache.Cacheable;
 import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.FileType;
+import de.kaleidox.crystalshard.util.model.ImageHelper;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.Nullable;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
 
-public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<UserAttachableListener<? extends UserEvent>> {
-    String getUsername();
+@JsonTraits(User.Trait.class)
+public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<UserAttachableListener<? extends UserEvent>>, JsonDeserializable {
+    default String getUsername() {
+        return getTraitValue(Trait.USERNAME);
+    }
 
-    String getDiscriminator();
+    default String getDiscriminator() {
+        return getTraitValue(Trait.DISCRIMINATOR);
+    }
 
-    URL getAvatarURL();
+    default URL getAvatarURL() {
+        return wrapTraitValue(Trait.AVATAR_HASH)
+                .map(hash -> ImageHelper.USER_AVATAR.url(FileType.PNG, getID(), hash))
+                .orElseGet(() -> ImageHelper.DEFAULT_USER_AVATAR.url(FileType.PNG, getDiscriminator()));
+    }
 
-    boolean isBot();
+    default boolean isBot() {
+        return getTraitValue(Trait.BOT);
+    }
 
-    boolean hasMFA();
+    default boolean hasMFA() {
+        return getTraitValue(Trait.MFA);
+    }
 
-    Optional<Locale> getLocale();
+    default Optional<Locale> getLocale() {
+        return wrapTraitValue(Trait.LOCALE);
+    }
 
-    Optional<Boolean> isVerified();
+    default Optional<Boolean> isVerified() {
+        return wrapTraitValue(Trait.VERIFIED);
+    }
 
-    Optional<String> getEMailAddress();
+    default Optional<String> getEMailAddress() {
+        return wrapTraitValue(Trait.EMAIL);
+    }
 
-    @MagicConstant(flagsFromClass = Flags.class)
-    int getFlags();
+    default @MagicConstant(flagsFromClass = Flags.class) int getFlags() {
+        return getTraitValue(Trait.FLAGS);
+    }
 
-    Optional<PremiumType> getPremiumType();
+    default Optional<PremiumType> getPremiumType() {
+        return wrapTraitValue(Trait.PREMIUM_TYPE);
+    }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/user#create-dm")
     CompletableFuture<PrivateTextChannel> openPrivateMessageChannel();
@@ -62,24 +95,68 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
                         .updateOrCreateAndGet(User.class, id, data));
     }
 
-    interface Connection {
-        String getID();
+    interface Trait extends Snowflake.Trait {
+        JsonTrait<String, String> USERNAME = identity(JsonNode::asText, "username");
+        JsonTrait<String, String> DISCRIMINATOR = identity(JsonNode::asText, "discriminator");
+        JsonTrait<String, String> AVATAR_HASH = identity(JsonNode::asText, "avatar");
+        JsonTrait<Boolean, Boolean> BOT = identity(JsonNode::asBoolean, "bot");
+        JsonTrait<Boolean, Boolean> MFA = identity(JsonNode::asBoolean, "mfa_enabled");
+        JsonTrait<String, Locale> LOCALE = simple(JsonNode::asText, "locale", Locale::forLanguageTag);
+        JsonTrait<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
+        JsonTrait<String, String> EMAIL = identity(JsonNode::asText, "email");
+        JsonTrait<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
+        JsonTrait<Integer, PremiumType> PREMIUM_TYPE = simple(JsonNode::asInt, "premium_type", PremiumType::valueOf);
+    }
 
-        String getName();
+    @JsonTraits(Connection.Trait.class)
+    interface Connection extends JsonDeserializable {
+        default String getID() {
+            return getTraitValue(Trait.ID);
+        }
 
-        String getType();
+        default String getName() {
+            return getTraitValue(Trait.NAME);
+        }
 
-        boolean isRevoked();
+        default String getType() {
+            return getTraitValue(Trait.TYPE);
+        }
 
-        Collection<Guild.Integration> getIntegrations();
+        default boolean isRevoked() {
+            return getTraitValue(Trait.REVOKED);
+        }
 
-        boolean isVerified();
+        default Collection<Guild.Integration> getIntegrations() {
+            return getTraitValue(Trait.INTEGRATIONS);
+        }
 
-        boolean hasFriendSync();
+        default boolean isVerified() {
+            return getTraitValue(Trait.VERIFIED);
+        }
 
-        boolean showActivities();
+        default boolean hasFriendSync() {
+            return getTraitValue(Trait.FRIEND_SYNC);
+        }
 
-        Visibility getVisibility();
+        default boolean showActivities() {
+            return getTraitValue(Trait.SHOW_ACTIVITY);
+        }
+
+        default Visibility getVisibility() {
+            return getTraitValue(Trait.VISIBILITY);
+        }
+
+        interface Trait {
+            JsonTrait<String, String> ID = identity(JsonNode::asText, "id");
+            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonTrait<String, String> TYPE = identity(JsonNode::asText, "type");
+            JsonTrait<Boolean, Boolean> REVOKED = identity(JsonNode::asBoolean, "revoked");
+            JsonTrait<ArrayNode, Collection<Guild.Integration>> INTEGRATIONS = underlyingCollective("integrations", Guild.Integration.class);
+            JsonTrait<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
+            JsonTrait<Boolean, Boolean> FRIEND_SYNC = identity(JsonNode::asBoolean, "friend_sync");
+            JsonTrait<Boolean, Boolean> SHOW_ACTIVITY = identity(JsonNode::asBoolean, "show_activity");
+            JsonTrait<Integer, Visibility> VISIBILITY = simple(JsonNode::asInt, "visibility", Visibility::valueOf);
+        }
 
         enum Visibility {
             NONE(0),
@@ -90,6 +167,14 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
 
             Visibility(int value) {
                 this.value = value;
+            }
+
+            public static @Nullable Visibility valueOf(int value) {
+                for (Visibility visibility : values())
+                    if (visibility.value == value)
+                        return visibility;
+
+                return null;
             }
         }
     }
@@ -125,6 +210,14 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
 
         PremiumType(int value) {
             this.value = value;
+        }
+
+        public static @Nullable PremiumType valueOf(int value) {
+            for (PremiumType type : values())
+                if (type.value == value)
+                    return type;
+
+            return null;
         }
     }
 }

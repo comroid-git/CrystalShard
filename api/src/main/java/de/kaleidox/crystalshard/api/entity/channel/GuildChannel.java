@@ -1,11 +1,13 @@
 package de.kaleidox.crystalshard.api.entity.channel;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
+import de.kaleidox.crystalshard.api.entity.Snowflake;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.model.guild.invite.Invite;
 import de.kaleidox.crystalshard.api.model.permission.PermissionOverride;
@@ -15,6 +17,8 @@ import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
@@ -23,6 +27,17 @@ import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.collec
 import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
 
 public interface GuildChannel extends Channel {
+    Comparator<GuildChannel> GUILD_CHANNEL_COMPARATOR = Comparator.comparingInt(GuildChannel::getPosition);
+
+    @Override
+    @Contract(pure = true)
+    default int compareTo(@NotNull Snowflake other) {
+        if (other instanceof GuildChannel)
+            return GUILDCHANNEL_COMPARATOR.compare(this, (GuildChannel) other);
+
+        return ((Snowflake) this).compareTo(other);
+    }
+
     @IntroducedBy(GETTER)
     default Guild getGuild() {
         return getTraitValue(Trait.GUILD);
@@ -56,15 +71,15 @@ public interface GuildChannel extends Channel {
     }
 
     interface Trait extends Channel.Trait {
-        JsonTrait<Long, Guild> GUILD = cache(JsonNode::asLong, "guild_id", CacheManager::getGuildByID);
-        
+        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+
         JsonTrait<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
-        
+
         JsonTrait<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
-        
+
         JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-        
-        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache(JsonNode::asLong, "parent_id",
+
+        JsonTrait<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
                 (CacheManager cache, Long id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannelCategory));
     }
 

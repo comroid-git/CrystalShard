@@ -1,6 +1,7 @@
 package de.kaleidox.crystalshard.api.entity.guild;
 
 import java.awt.Color;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
@@ -20,12 +21,26 @@ import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
 public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<RoleAttachableListener<? extends RoleEvent>> {
+    Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(Role::getPosition);
+
+    @Override
+    @Contract(pure = true)
+    default int compareTo(@NotNull Snowflake other) {
+        if (other instanceof Role)
+            return ROLE_COMPARATOR.compare(this, (Role) other);
+
+        return ((Snowflake) this).compareTo(other);
+    }
+
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 

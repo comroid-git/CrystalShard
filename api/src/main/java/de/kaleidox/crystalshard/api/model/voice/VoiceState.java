@@ -2,31 +2,82 @@ package de.kaleidox.crystalshard.api.model.voice;
 
 import java.util.Optional;
 
+import de.kaleidox.crystalshard.api.entity.channel.Channel;
 import de.kaleidox.crystalshard.api.entity.channel.VoiceChannel;
 import de.kaleidox.crystalshard.api.entity.guild.Guild;
 import de.kaleidox.crystalshard.api.entity.user.GuildMember;
 import de.kaleidox.crystalshard.api.entity.user.User;
+import de.kaleidox.crystalshard.core.api.cache.CacheManager;
+import de.kaleidox.crystalshard.util.model.serialization.JsonDeserializable;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
 
-public interface VoiceState {
-    Optional<Guild> getGuild();
+import com.fasterxml.jackson.databind.JsonNode;
 
-    Optional<VoiceChannel> getChannel();
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.cache;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlying;
 
-    User getUser();
-
-    default Optional<GuildMember> getGuildMember() {
-        return getGuild().flatMap(getUser()::asGuildMember);
+@JsonTraits(VoiceState.Trait.class)
+public interface VoiceState extends JsonDeserializable {
+    default Optional<Guild> getGuild() {
+        return wrapTraitValue(Trait.GUILD);
     }
 
-    String getSessionID();
+    default Optional<VoiceChannel> getChannel() {
+        return wrapTraitValue(Trait.CHANNEL);
+    }
 
-    boolean isDeafened();
+    default User getUser() {
+        return getTraitValue(Trait.USER);
+    }
 
-    boolean isMuted();
+    default Optional<GuildMember> getGuildMember() {
+        return wrapTraitValue(Trait.MEMBER);
+    }
 
-    boolean isSelfDeafened();
+    default String getSessionID() {
+        return getTraitValue(Trait.SESSION);
+    }
 
-    boolean isSelfMuted();
+    default boolean isDeafened() {
+        return getTraitValue(Trait.DEAFENED);
+    }
 
-    boolean isSuppressed();
+    default boolean isMuted() {
+        return getTraitValue(Trait.MUTED);
+    }
+
+    default boolean isSelfDeafened() {
+        return getTraitValue(Trait.SELF_DEAFENED);
+    }
+
+    default boolean isSelfMuted() {
+        return getTraitValue(Trait.SELF_MUTED);
+    }
+
+    default boolean isSuppressed() {
+        return getTraitValue(Trait.SUPPRESSED);
+    }
+
+    interface Trait {
+        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonTrait<Long, VoiceChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asVoiceChannel));
+        JsonTrait<Long, User> USER = cache("user_id", CacheManager::getUserByID);
+        JsonTrait<JsonNode, GuildMember> MEMBER = underlying("member", GuildMember.class);
+        JsonTrait<String, String> SESSION = identity(JsonNode::asText, "session_id");
+        JsonTrait<Boolean, Boolean> DEAFENED = identity(JsonNode::asBoolean, "deaf");
+        JsonTrait<Boolean, Boolean> MUTED = identity(JsonNode::asBoolean, "mute");
+        JsonTrait<Boolean, Boolean> SELF_DEAFENED = identity(JsonNode::asBoolean, "self_deaf");
+        JsonTrait<Boolean, Boolean> SELF_MUTED = identity(JsonNode::asBoolean, "self_mute");
+        JsonTrait<Boolean, Boolean> SUPPRESSED = identity(JsonNode::asBoolean, "suppress");
+    }
+    
+    default boolean isEffectivelyDeafened() {
+        return isSelfDeafened() || isDeafened();
+    }
+    
+    default boolean isEffectivelyMuted() {
+        return isSelfMuted() || isMuted();
+    }
 }

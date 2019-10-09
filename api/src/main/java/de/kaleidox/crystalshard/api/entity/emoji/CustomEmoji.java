@@ -20,29 +20,62 @@ import de.kaleidox.crystalshard.core.api.rest.DiscordEndpoint;
 import de.kaleidox.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.kaleidox.crystalshard.core.api.rest.RestMethod;
 import de.kaleidox.crystalshard.util.annotation.IntroducedBy;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTrait;
+import de.kaleidox.crystalshard.util.model.serialization.JsonTraits;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.kaleidox.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.collective;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlying;
+import static de.kaleidox.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
 
+@JsonTraits(CustomEmoji.Trait.class)
 public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
-    @IntroducedBy(GETTER)
-    CompletableFuture<Collection<Role>> requestWhitelistedRoles();
+    default String getName() {
+        return getTraitValue(Trait.NAME);
+    }
 
-    @IntroducedBy(GETTER)
-    CompletableFuture<User> requestCreator();
+    default Collection<Role> getRoles() {
+        return getTraitValue(Trait.WHITELISTED_ROLES);
+    }
 
-    @IntroducedBy(GETTER)
-    CompletableFuture<Boolean> requestRequiresColons();
+    default Optional<User> getCreator() {
+        return wrapTraitValue(Trait.CREATOR);
+    }
 
-    @IntroducedBy(GETTER)
-    CompletableFuture<Boolean> requestIsManaged();
+    default Optional<Boolean> requiresColons() {
+        return wrapTraitValue(Trait.REQUIRE_COLONS);
+    }
 
-    @IntroducedBy(GETTER)
-    CompletableFuture<Boolean> requestIsAnimated();
+    default Optional<Boolean> isManaged() {
+        return wrapTraitValue(Trait.MANAGED);
+    }
+
+    default Optional<Boolean> isAnimated() {
+        return wrapTraitValue(Trait.ANIMATED);
+    }
+
+    interface Trait extends Snowflake.Trait {
+        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonTrait<ArrayNode, Collection<Role>> WHITELISTED_ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
+                .getRoleByID(data.asLong())
+                .orElseThrow());
+        JsonTrait<JsonNode, User> CREATOR = underlying("user", User.class);
+        JsonTrait<Boolean, Boolean> REQUIRE_COLONS = identity(JsonNode::asBoolean, "require_colons");
+        JsonTrait<Boolean, Boolean> MANAGED = identity(JsonNode::asBoolean, "managed");
+        JsonTrait<Boolean, Boolean> ANIMATED = identity(JsonNode::asBoolean, "animated");
+    }
+    
+    CompletableFuture<CustomEmoji> requestMetadata();
 
     @Override
     default String getDiscordPrintableString() {
