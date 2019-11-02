@@ -6,6 +6,7 @@ import de.comroid.crystalshard.api.event.message.MessageSentEvent;
 import de.comroid.crystalshard.api.listener.DiscordAttachableListener;
 import de.comroid.crystalshard.api.listener.channel.ChannelAttachableListener;
 import de.comroid.crystalshard.api.listener.guild.GuildAttachableListener;
+import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.api.listener.role.RoleAttachableListener;
 import de.comroid.crystalshard.api.listener.user.UserAttachableListener;
@@ -21,20 +22,14 @@ public interface MessageSentListener extends
         ChannelAttachableListener<MessageSentEvent>,
         RoleAttachableListener<MessageSentEvent>,
         UserAttachableListener<MessageSentEvent> {
-    class Initializer implements ListenerManager.Initializer<MessageSentListener> {
+    final class Initializer implements ListenerManager.Initializer<MessageSentListener> {
         @Override
-        public void initialize(Gateway gateway, MessageSentListener listener) {
-            class Handler implements MessageCreateListener {
-                private final MessageSentListener trigger = listener;
-                private final Discord api = gateway.getAPI();
-
-                @Override 
-                public void onEvent(MessageCreateEvent event) {
-                    trigger.onEvent(Adapter.create(MessageSentEvent.class, event.getAffected(), event.getMessage()));
-                }
-            }
-            
-            gateway.attachListener(new Handler());
+        public void initialize(Gateway gateway, final MessageSentListener listener) {
+            gateway.listenInStream(MessageCreateEvent.class)
+                    .map(ListenerAttachable.EventPair::getEvent)
+                    .map(event -> Adapter.<MessageSentEvent>create(MessageSentEvent.class, event.getAffected(), event.getMessage()))
+                    .map(event -> (Runnable) () -> listener.onEvent(event))
+                    .forEach(gateway.getAPI().getListenerThreadPool()::submit);
         }
     }
 }

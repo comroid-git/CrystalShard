@@ -41,7 +41,7 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
         Class<ListenerManager.Initializer<TL>> initializerClass = getInitializer((Class<TL>) listener.getClass());
 
         ListenerManager.Initializer<TL> initializer = Adapter.create(initializerClass, api, this, listener);
-        initializer.initialize(listener);
+        initializer.initialize(getAPI().getGateway(), listener);
 
         return new AbstractListenerManager<TL, Event>(api, (ListenerAttachable<TL>) this, listener.eventClass(), listener) {};
     }

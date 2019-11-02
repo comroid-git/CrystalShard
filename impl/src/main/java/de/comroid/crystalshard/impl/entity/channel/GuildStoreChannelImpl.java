@@ -6,15 +6,16 @@ import java.util.concurrent.CompletableFuture;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.channel.Channel;
-import de.comroid.crystalshard.api.entity.channel.GuildVoiceChannel;
+import de.comroid.crystalshard.api.entity.channel.GuildStoreChannel;
 import de.comroid.crystalshard.api.model.guild.invite.Invite;
 
-public class GuildVoiceChannelImpl extends VoiceChannelAbst<GuildVoiceChannelImpl> implements GuildVoiceChannel {
-    public GuildVoiceChannelImpl(Discord api, JsonNode data) {
+public class GuildStoreChannelImpl extends ChannelAbst<GuildStoreChannelImpl> implements GuildStoreChannel {
+    public GuildStoreChannelImpl(Discord api, JsonNode data) {
         super(api, data);
+        
     }
-// todo
-    @Override public GuildVoiceChannel.Updater createUpdater() {
+//todo
+    @Override public GuildStoreChannel.Updater createUpdater() {
         return null;
     }
 
