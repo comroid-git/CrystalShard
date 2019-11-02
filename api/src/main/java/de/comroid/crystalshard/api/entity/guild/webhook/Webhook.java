@@ -24,7 +24,7 @@ import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,9 +33,9 @@ import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableI
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
 
 @MainAPI
 @JsonTraits(Webhook.Trait.class)
@@ -102,12 +102,12 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
     }
 
     interface Trait {
-        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonTrait<Long, GuildTextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
-        JsonTrait<JsonNode, User> CREATOR = underlying("user", User.class);
-        JsonTrait<String, String> DEFAULT_NAME = identity(JsonNode::asText, "name");
-        JsonTrait<String, String> AVATAR_HASH = identity(JsonNode::asText, "avatar");
-        JsonTrait<String, String> TOKEN = identity(JsonNode::asText, "token");
+        JsonBinding<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonBinding<Long, GuildTextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JsonBinding<JsonNode, User> CREATOR = underlying("user", User.class);
+        JsonBinding<String, String> DEFAULT_NAME = identity(JsonNode::asText, "name");
+        JsonBinding<String, String> AVATAR_HASH = identity(JsonNode::asText, "avatar");
+        JsonBinding<String, String> TOKEN = identity(JsonNode::asText, "token");
     }
 
     @IntroducedBy(PRODUCTION)

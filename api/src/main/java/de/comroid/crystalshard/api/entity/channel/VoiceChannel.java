@@ -1,12 +1,12 @@
 package de.comroid.crystalshard.api.entity.channel;
 
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 
 public interface VoiceChannel extends Channel {
     @IntroducedBy(GETTER)
@@ -19,7 +19,7 @@ public interface VoiceChannel extends Channel {
     }
     
     interface Trait extends Channel.Trait {
-        JsonTrait<Integer, Integer> BITRATE = identity(JsonNode::asInt, "bitrate");
+        JsonBinding<Integer, Integer> BITRATE = identity(JsonNode::asInt, "bitrate");
     }
 
     interface Builder<R extends VoiceChannel, Self extends VoiceChannel.Builder> extends Channel.Builder<R, Self> {

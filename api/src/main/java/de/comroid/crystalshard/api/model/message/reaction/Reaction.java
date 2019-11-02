@@ -12,18 +12,22 @@ import de.comroid.crystalshard.api.listener.role.RoleAttachableListener;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
 
 @JsonTraits(Reaction.Trait.class)
 public interface Reaction extends JsonDeserializable, Cacheable, ListenerAttachable<RoleAttachableListener<? extends RoleEvent>> {
+    @CacheInformation.Marker
+    CacheInformation<Message> CACHE_INFORMATION = makeSubcacheableInfo(Message.class, Reaction::getMessage);
+    
     @IntroducedBy(GETTER)
     default int getCount() {
         return getTraitValue(Trait.COUNT);
@@ -43,28 +47,8 @@ public interface Reaction extends JsonDeserializable, Cacheable, ListenerAttacha
     Message getMessage();
 
     interface Trait {
-        JsonTrait<Integer, Integer> COUNT = identity(JsonNode::asInt, "count");
-        JsonTrait<Boolean, Boolean> ME = identity(JsonNode::asBoolean, "me");
-        JsonTrait<JsonNode, Emoji> EMOJI = underlying("emoji", Emoji.class);
-    }
-
-    @Override 
-    default Optional<Long> getCacheParentID() {
-        return Optional.of(getMessage().getID());
-    }
-
-    @Override
-    default Optional<Class<? extends Cacheable>> getCacheParentType() {
-        return Optional.of(Message.class);
-    }
-
-    @Override
-    default boolean isSingletonType() {
-        return false;
-    }
-
-    @Override
-    default boolean isSubcacheMember() {
-        return true;
+        JsonBinding<Integer, Integer> COUNT = identity(JsonNode::asInt, "count");
+        JsonBinding<Boolean, Boolean> ME = identity(JsonNode::asBoolean, "me");
+        JsonBinding<JsonNode, Emoji> EMOJI = underlying("emoji", Emoji.class);
     }
 }

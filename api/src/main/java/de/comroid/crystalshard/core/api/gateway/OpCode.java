@@ -27,7 +27,7 @@ public enum OpCode {
 
     HEARTBEAT_ACK(11);
 
-    private final int value;
+    public final int value;
 
     OpCode(int value) {
         this.value = value;

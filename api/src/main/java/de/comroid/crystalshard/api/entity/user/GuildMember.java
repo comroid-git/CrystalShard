@@ -1,7 +1,10 @@
 package de.comroid.crystalshard.api.entity.user;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -17,7 +20,7 @@ import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,9 +29,9 @@ import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(GuildMember.Trait.class)
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
@@ -39,8 +42,10 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
         return wrapTraitValue(Trait.NICKNAME);
     }
 
-    default Collection<Role> getRoles() {
-        return getTraitValue(Trait.ROLES);
+    default List<Role> getRoles() {
+        final ArrayList<Role> list = new ArrayList<>(getTraitValue(Trait.ROLES));
+        Collections.sort(list);
+        return list;
     }
 
     default Instant getJoinTimestamp() {
@@ -72,14 +77,14 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
     }
 
     interface Trait extends User.Trait {
-        JsonTrait<String, String> NICKNAME = identity(JsonNode::asText, "nick");
-        JsonTrait<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
+        JsonBinding<String, String> NICKNAME = identity(JsonNode::asText, "nick");
+        JsonBinding<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
                 .getRoleByID(data.asLong())
                 .orElseThrow());
-        JsonTrait<String, Instant> JOINED_TIMESTAMP = simple(JsonNode::asText, "joined_at", Instant::parse);
-        JsonTrait<String, Instant> NITRO_BOOST_TIMESTAMP = simple(JsonNode::asText, "premium_since", Instant::parse);
-        JsonTrait<Boolean, Boolean> DEAFENED = identity(JsonNode::asBoolean, "deaf");
-        JsonTrait<Boolean, Boolean> MUTED = identity(JsonNode::asBoolean, "mute");
+        JsonBinding<String, Instant> JOINED_TIMESTAMP = simple(JsonNode::asText, "joined_at", Instant::parse);
+        JsonBinding<String, Instant> NITRO_BOOST_TIMESTAMP = simple(JsonNode::asText, "premium_since", Instant::parse);
+        JsonBinding<Boolean, Boolean> DEAFENED = identity(JsonNode::asBoolean, "deaf");
+        JsonBinding<Boolean, Boolean> MUTED = identity(JsonNode::asBoolean, "mute");
     }
 
     @IntroducedBy(PRODUCTION)

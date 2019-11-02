@@ -6,9 +6,8 @@ import de.comroid.crystalshard.api.entity.channel.GuildTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.webhook.WebhooksUpdateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(WebhooksUpdateListener.Manager.class)
 public interface WebhooksUpdateEvent extends GatewayEvent {
     String NAME = "WEBHOOKS_UPDATE";
 

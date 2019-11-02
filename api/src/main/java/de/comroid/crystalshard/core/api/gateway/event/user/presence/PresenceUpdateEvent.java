@@ -11,9 +11,8 @@ import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.api.model.user.Presence;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.user.presence.PresenceUpdateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(PresenceUpdateListener.Manager.class)
 public interface PresenceUpdateEvent extends GatewayEvent {
     String NAME = "PRESENCE_UPDATE_EVENT";
 

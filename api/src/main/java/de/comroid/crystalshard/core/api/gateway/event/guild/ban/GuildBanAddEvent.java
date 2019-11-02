@@ -6,9 +6,8 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.ban.GuildBanAddListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildBanAddListener.Manager.class)
 public interface GuildBanAddEvent extends GatewayEvent {
     String NAME = "GUILD_BAN_ADD";
 

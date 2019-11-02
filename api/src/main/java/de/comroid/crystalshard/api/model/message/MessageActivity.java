@@ -6,14 +6,14 @@ package de.comroid.crystalshard.api.model.message;
 import java.util.Optional;
 
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 @JsonTraits(MessageActivity.Trait.class)
 public interface MessageActivity extends JsonDeserializable {
@@ -26,8 +26,8 @@ public interface MessageActivity extends JsonDeserializable {
     }
 
     interface Trait {
-        JsonTrait<Integer, Type> TYPE = simple(JsonNode::asInt, "type", Type::valueOf);
-        JsonTrait<String, String> PARTY_ID = identity(JsonNode::asText, "party_id");
+        JsonBinding<Integer, Type> TYPE = simple(JsonNode::asInt, "type", Type::valueOf);
+        JsonBinding<String, String> PARTY_ID = identity(JsonNode::asText, "party_id");
     }
 
     enum Type {

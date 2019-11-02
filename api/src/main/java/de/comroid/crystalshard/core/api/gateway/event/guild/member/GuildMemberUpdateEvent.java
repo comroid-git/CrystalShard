@@ -10,9 +10,8 @@ import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.member.GuildMemberUpdateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildMemberUpdateListener.Manager.class)
 public interface GuildMemberUpdateEvent extends GatewayEvent {
     String NAME = "GUILD_MEMBER_UPDATE";
 

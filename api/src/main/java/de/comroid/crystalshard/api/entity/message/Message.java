@@ -6,7 +6,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -30,6 +29,7 @@ import de.comroid.crystalshard.api.model.message.MessageFlags;
 import de.comroid.crystalshard.api.model.message.MessageReference;
 import de.comroid.crystalshard.api.model.message.MessageType;
 import de.comroid.crystalshard.api.model.message.TextDecoration;
+import de.comroid.crystalshard.api.model.message.embed.ActiveEmbed;
 import de.comroid.crystalshard.api.model.message.embed.Embed;
 import de.comroid.crystalshard.api.model.message.reaction.Reaction;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
@@ -38,24 +38,28 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.intellij.lang.annotations.MagicConstant;
 
+import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(Message.Trait.class)
 public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
+    @CacheInformation.Marker
+    CacheInformation<TextChannel> CACHE_INFORMATION = makeSubcacheableInfo(TextChannel.class, Message::getChannel);
+    
     @IntroducedBy(GETTER)
     default TextChannel getChannel() {
         return getTraitValue(Trait.CHANNEL);
@@ -120,7 +124,7 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     }
 
     @IntroducedBy(GETTER)
-    default Collection<Embed> getEmbeds() {
+    default Collection<ActiveEmbed> getEmbeds() {
         return getTraitValue(Trait.EMBEDS);
     }
 
@@ -167,30 +171,30 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
-        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonTrait<JsonNode, User> USER_AUTHOR = underlying("author", User.class);
-        JsonTrait<JsonNode, Webhook> WEBHOOK_AUTHOR = null; // todo
-        JsonTrait<String, String> CONTENT = identity(JsonNode::asText, "content");
-        JsonTrait<String, Instant> SENT_TIMESTAMP = simple(JsonNode::asText, "timestamp", Instant::parse);
-        JsonTrait<String, Instant> EDITED_TIMESTAMP = simple(JsonNode::asText, "edited_timestamp", Instant::parse);
-        JsonTrait<Boolean, Boolean> TTS = identity(JsonNode::asBoolean, "tts");
-        JsonTrait<Boolean, Boolean> MENTIONS_EVERYONE = identity(JsonNode::asBoolean, "mention_everyone");
-        JsonTrait<ArrayNode, Collection<User>> MENTIONED_USERS = underlyingCollective("mentions", User.class);
-        JsonTrait<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingCollective("mention_roles", Role.class, (api, data) -> api.getCacheManager()
+        JsonBinding<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
+        JsonBinding<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonBinding<JsonNode, User> USER_AUTHOR = underlying("author", User.class);
+        JsonBinding<JsonNode, Webhook> WEBHOOK_AUTHOR = null; // todo
+        JsonBinding<String, String> CONTENT = identity(JsonNode::asText, "content");
+        JsonBinding<String, Instant> SENT_TIMESTAMP = simple(JsonNode::asText, "timestamp", Instant::parse);
+        JsonBinding<String, Instant> EDITED_TIMESTAMP = simple(JsonNode::asText, "edited_timestamp", Instant::parse);
+        JsonBinding<Boolean, Boolean> TTS = identity(JsonNode::asBoolean, "tts");
+        JsonBinding<Boolean, Boolean> MENTIONS_EVERYONE = identity(JsonNode::asBoolean, "mention_everyone");
+        JsonBinding<ArrayNode, Collection<User>> MENTIONED_USERS = underlyingCollective("mentions", User.class);
+        JsonBinding<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingCollective("mention_roles", Role.class, (api, data) -> api.getCacheManager()
                 .getByID(Role.class, data.asLong())
                 .orElseThrow());
-        JsonTrait<ArrayNode, Collection<ChannelMention>> MENTIONED_CHANNELS = underlyingCollective("mention_channels", ChannelMention.class);
-        JsonTrait<ArrayNode, Collection<MessageAttachment>> ATTACHMENTS = underlyingCollective("attachments", MessageAttachment.class);
-        JsonTrait<ArrayNode, Collection<Embed>> EMBEDS = underlyingCollective("embeds", Embed.class);
-        JsonTrait<ArrayNode, Collection<Reaction>> CURRENT_REACTIONS = underlyingCollective("reactions", Reaction.class);
-        JsonTrait<Long, Snowflake> NONCE = simple(JsonNode::asLong, "nonce", id -> Adapter.create(Snowflake.class, id));
-        JsonTrait<Boolean, Boolean> PINNED = identity(JsonNode::asBoolean, "pinned");
-        JsonTrait<Integer, MessageType> TYPE = simple(JsonNode::asInt, "type", MessageType::valueOf);
-        JsonTrait<JsonNode, MessageActivity> ACTIVITY = underlying("activity", MessageActivity.class);
-        JsonTrait<JsonNode, MessageApplication> APPLICATION = underlying("application", MessageApplication.class);
-        JsonTrait<JsonNode, MessageReference> REFERENCED_MESSAGE = underlying("message_reference", MessageReference.class);
-        JsonTrait<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
+        JsonBinding<ArrayNode, Collection<ChannelMention>> MENTIONED_CHANNELS = underlyingCollective("mention_channels", ChannelMention.class);
+        JsonBinding<ArrayNode, Collection<MessageAttachment>> ATTACHMENTS = underlyingCollective("attachments", MessageAttachment.class);
+        JsonBinding<ArrayNode, Collection<ActiveEmbed>> EMBEDS = underlyingCollective("embeds", ActiveEmbed.class);
+        JsonBinding<ArrayNode, Collection<Reaction>> CURRENT_REACTIONS = underlyingCollective("reactions", Reaction.class);
+        JsonBinding<Long, Snowflake> NONCE = simple(JsonNode::asLong, "nonce", id -> Adapter.create(Snowflake.class, id));
+        JsonBinding<Boolean, Boolean> PINNED = identity(JsonNode::asBoolean, "pinned");
+        JsonBinding<Integer, MessageType> TYPE = simple(JsonNode::asInt, "type", MessageType::valueOf);
+        JsonBinding<JsonNode, MessageActivity> ACTIVITY = underlying("activity", MessageActivity.class);
+        JsonBinding<JsonNode, MessageApplication> APPLICATION = underlying("application", MessageApplication.class);
+        JsonBinding<JsonNode, MessageReference> REFERENCED_MESSAGE = underlying("message_reference", MessageReference.class);
+        JsonBinding<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
     }
     
     @IntroducedBy(API)
@@ -210,21 +214,6 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     CompletableFuture<Void> togglePinned();
 
     Editor editor();
-
-    @Override
-    default Optional<Long> getCacheParentID() {
-        return OptionalLong.of(getChannel().getID());
-    }
-
-    @Override
-    default Optional<Class<? extends Cacheable>> getCacheParentType() {
-        return Optional.of(TextChannel.class);
-    }
-
-    @Override
-    default boolean isSubcacheMember() {
-        return true;
-    }
 
     static Composer createComposer(TextChannel channel) {
         return Adapter.create(Composer.class, channel);

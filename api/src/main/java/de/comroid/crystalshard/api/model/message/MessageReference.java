@@ -7,10 +7,10 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.cache;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
 
 @JsonTraits(MessageReference.Trait.class)
 public interface MessageReference extends JsonDeserializable {
@@ -27,8 +27,8 @@ public interface MessageReference extends JsonDeserializable {
     }
 
     interface Trait {
-        JsonTrait<Long, Message> MESSAGE = cache("message_id", CacheManager::getMessageByID);
-        JsonTrait<Long, Channel> CHANNEL = cache("channel_id", CacheManager::getChannelByID);
-        JsonTrait<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonBinding<Long, Message> MESSAGE = cache("message_id", CacheManager::getMessageByID);
+        JsonBinding<Long, Channel> CHANNEL = cache("channel_id", CacheManager::getChannelByID);
+        JsonBinding<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
     }
 }

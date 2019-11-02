@@ -8,9 +8,8 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.member.GuildMembersChunkListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildMembersChunkListener.Manager.class)
 public interface GuildMembersChunkEvent extends GatewayEvent {
     String NAME = "GUILD_MEMBERS_CHUNK";
 

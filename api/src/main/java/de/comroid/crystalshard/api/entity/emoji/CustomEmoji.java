@@ -20,7 +20,7 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,9 +28,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(CustomEmoji.Trait.class)
 public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
@@ -62,14 +62,14 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-        JsonTrait<ArrayNode, Collection<Role>> WHITELISTED_ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
+        JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonBinding<ArrayNode, Collection<Role>> WHITELISTED_ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
                 .getRoleByID(data.asLong())
                 .orElseThrow());
-        JsonTrait<JsonNode, User> CREATOR = underlying("user", User.class);
-        JsonTrait<Boolean, Boolean> REQUIRE_COLONS = identity(JsonNode::asBoolean, "require_colons");
-        JsonTrait<Boolean, Boolean> MANAGED = identity(JsonNode::asBoolean, "managed");
-        JsonTrait<Boolean, Boolean> ANIMATED = identity(JsonNode::asBoolean, "animated");
+        JsonBinding<JsonNode, User> CREATOR = underlying("user", User.class);
+        JsonBinding<Boolean, Boolean> REQUIRE_COLONS = identity(JsonNode::asBoolean, "require_colons");
+        JsonBinding<Boolean, Boolean> MANAGED = identity(JsonNode::asBoolean, "managed");
+        JsonBinding<Boolean, Boolean> ANIMATED = identity(JsonNode::asBoolean, "animated");
     }
     
     CompletableFuture<CustomEmoji> requestMetadata();

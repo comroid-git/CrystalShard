@@ -13,7 +13,7 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
 
 @JsonTraits(Invite.Trait.class)
 public interface Invite extends JsonDeserializable {
@@ -70,13 +70,13 @@ public interface Invite extends JsonDeserializable {
     }
 
     interface Trait {
-        JsonTrait<String, String> INVITE_CODE = identity(JsonNode::asText, "code");
-        JsonTrait<JsonNode, Guild> GUILD = underlying("guild", Guild.class);
-        JsonTrait<JsonNode, Channel> CHANNEL = underlying("channel", Channel.class);
-        JsonTrait<JsonNode, User> TARGET_USER = underlying("target_user", User.class);
-        JsonTrait<Integer, TargetType> TARGET_USER_TYPE = simple(JsonNode::asInt, "target_user_type", TargetType::valueOf);
-        JsonTrait<Integer, Integer> APPROXIMATE_PRESENCE_COUNT = identity(JsonNode::asInt, "approximate_presence_count");
-        JsonTrait<Integer, Integer> APPROXIMATE_MEMBER_COUNT = identity(JsonNode::asInt, "approximate_member_count");
+        JsonBinding<String, String> INVITE_CODE = identity(JsonNode::asText, "code");
+        JsonBinding<JsonNode, Guild> GUILD = underlying("guild", Guild.class);
+        JsonBinding<JsonNode, Channel> CHANNEL = underlying("channel", Channel.class);
+        JsonBinding<JsonNode, User> TARGET_USER = underlying("target_user", User.class);
+        JsonBinding<Integer, TargetType> TARGET_USER_TYPE = simple(JsonNode::asInt, "target_user_type", TargetType::valueOf);
+        JsonBinding<Integer, Integer> APPROXIMATE_PRESENCE_COUNT = identity(JsonNode::asInt, "approximate_presence_count");
+        JsonBinding<Integer, Integer> APPROXIMATE_MEMBER_COUNT = identity(JsonNode::asInt, "approximate_member_count");
     }
 
     @JsonTraits(Metadata.Trait.class)
@@ -106,12 +106,12 @@ public interface Invite extends JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<JsonNode, User> INVITER = underlying("inviter", User.class);
-            JsonTrait<Integer, Integer> USES = identity(JsonNode::asInt, "uses");
-            JsonTrait<Integer, Integer> MAXIMUM_USES = identity(JsonNode::asInt, "max_uses");
-            JsonTrait<Integer, Duration> MAXIMUM_AGE = simple(JsonNode::asInt, "max_age", Duration::ofSeconds);
-            JsonTrait<Boolean, Boolean> TEMPORARY = identity(JsonNode::asBoolean, "temporary");
-            JsonTrait<String, Instant> CREATED_TIMESTAMP = simple(JsonNode::asText, "created_at", Instant::parse);
+            JsonBinding<JsonNode, User> INVITER = underlying("inviter", User.class);
+            JsonBinding<Integer, Integer> USES = identity(JsonNode::asInt, "uses");
+            JsonBinding<Integer, Integer> MAXIMUM_USES = identity(JsonNode::asInt, "max_uses");
+            JsonBinding<Integer, Duration> MAXIMUM_AGE = simple(JsonNode::asInt, "max_age", Duration::ofSeconds);
+            JsonBinding<Boolean, Boolean> TEMPORARY = identity(JsonNode::asBoolean, "temporary");
+            JsonBinding<String, Instant> CREATED_TIMESTAMP = simple(JsonNode::asText, "created_at", Instant::parse);
         }
         
         default Instant expiresAt() {

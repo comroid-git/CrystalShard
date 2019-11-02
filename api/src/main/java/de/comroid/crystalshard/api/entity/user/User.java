@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
@@ -24,18 +26,16 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
+import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(User.Trait.class)
 public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<UserAttachableListener<? extends UserEvent>>, JsonDeserializable {
@@ -86,6 +86,11 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
 
     Optional<GuildMember> asGuildMember(Guild guild);
 
+    @IntroducedBy(PRODUCTION)
+    default String getDiscriminatedName() {
+        return getUsername() +'#'+ getDiscriminator();
+    }
+
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/user#get-user")
     static CompletableFuture<User> requestUser(Discord api, long id) {
         return Adapter.<User>request(api)
@@ -96,16 +101,16 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, String> USERNAME = identity(JsonNode::asText, "username");
-        JsonTrait<String, String> DISCRIMINATOR = identity(JsonNode::asText, "discriminator");
-        JsonTrait<String, String> AVATAR_HASH = identity(JsonNode::asText, "avatar");
-        JsonTrait<Boolean, Boolean> BOT = identity(JsonNode::asBoolean, "bot");
-        JsonTrait<Boolean, Boolean> MFA = identity(JsonNode::asBoolean, "mfa_enabled");
-        JsonTrait<String, Locale> LOCALE = simple(JsonNode::asText, "locale", Locale::forLanguageTag);
-        JsonTrait<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
-        JsonTrait<String, String> EMAIL = identity(JsonNode::asText, "email");
-        JsonTrait<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
-        JsonTrait<Integer, PremiumType> PREMIUM_TYPE = simple(JsonNode::asInt, "premium_type", PremiumType::valueOf);
+        JsonBinding<String, String> USERNAME = identity(JsonNode::asText, "username");
+        JsonBinding<String, String> DISCRIMINATOR = identity(JsonNode::asText, "discriminator");
+        JsonBinding<String, String> AVATAR_HASH = identity(JsonNode::asText, "avatar");
+        JsonBinding<Boolean, Boolean> BOT = identity(JsonNode::asBoolean, "bot");
+        JsonBinding<Boolean, Boolean> MFA = identity(JsonNode::asBoolean, "mfa_enabled");
+        JsonBinding<String, Locale> LOCALE = simple(JsonNode::asText, "locale", Locale::forLanguageTag);
+        JsonBinding<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
+        JsonBinding<String, String> EMAIL = identity(JsonNode::asText, "email");
+        JsonBinding<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
+        JsonBinding<Integer, PremiumType> PREMIUM_TYPE = simple(JsonNode::asInt, "premium_type", PremiumType::valueOf);
     }
 
     @JsonTraits(Connection.Trait.class)
@@ -147,15 +152,15 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
         }
 
         interface Trait {
-            JsonTrait<String, String> ID = identity(JsonNode::asText, "id");
-            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-            JsonTrait<String, String> TYPE = identity(JsonNode::asText, "type");
-            JsonTrait<Boolean, Boolean> REVOKED = identity(JsonNode::asBoolean, "revoked");
-            JsonTrait<ArrayNode, Collection<Guild.Integration>> INTEGRATIONS = underlyingCollective("integrations", Guild.Integration.class);
-            JsonTrait<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
-            JsonTrait<Boolean, Boolean> FRIEND_SYNC = identity(JsonNode::asBoolean, "friend_sync");
-            JsonTrait<Boolean, Boolean> SHOW_ACTIVITY = identity(JsonNode::asBoolean, "show_activity");
-            JsonTrait<Integer, Visibility> VISIBILITY = simple(JsonNode::asInt, "visibility", Visibility::valueOf);
+            JsonBinding<String, String> ID = identity(JsonNode::asText, "id");
+            JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonBinding<String, String> TYPE = identity(JsonNode::asText, "type");
+            JsonBinding<Boolean, Boolean> REVOKED = identity(JsonNode::asBoolean, "revoked");
+            JsonBinding<ArrayNode, Collection<Guild.Integration>> INTEGRATIONS = underlyingCollective("integrations", Guild.Integration.class);
+            JsonBinding<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
+            JsonBinding<Boolean, Boolean> FRIEND_SYNC = identity(JsonNode::asBoolean, "friend_sync");
+            JsonBinding<Boolean, Boolean> SHOW_ACTIVITY = identity(JsonNode::asBoolean, "show_activity");
+            JsonBinding<Integer, Visibility> VISIBILITY = simple(JsonNode::asInt, "visibility", Visibility::valueOf);
         }
 
         enum Visibility {

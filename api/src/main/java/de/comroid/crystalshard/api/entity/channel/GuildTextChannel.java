@@ -13,13 +13,13 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 
 @JsonTraits(GuildTextChannel.Trait.class)
 public interface GuildTextChannel extends GuildChannel, TextChannel {
@@ -60,9 +60,9 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
     }
 
     interface Trait extends GuildChannel.Trait, TextChannel.Trait {
-        JsonTrait<String, String> TOPIC = identity(JsonNode::asText, "topic");
-        JsonTrait<Boolean, Boolean> NSFW = identity(JsonNode::asBoolean, "nsfw");
-        JsonTrait<Integer, Integer> MESSAGE_RATELIMIT = identity(JsonNode::asInt, "rate_limit_per_user");
+        JsonBinding<String, String> TOPIC = identity(JsonNode::asText, "topic");
+        JsonBinding<Boolean, Boolean> NSFW = identity(JsonNode::asBoolean, "nsfw");
+        JsonBinding<Integer, Integer> MESSAGE_RATELIMIT = identity(JsonNode::asInt, "rate_limit_per_user");
     }
 
     interface Builder extends

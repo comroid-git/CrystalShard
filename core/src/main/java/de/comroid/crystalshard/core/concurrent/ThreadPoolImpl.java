@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -15,12 +18,26 @@ import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
 import org.jetbrains.annotations.NotNull;
 
 public class ThreadPoolImpl implements ThreadPool {
-    @Override public Executor getExecutor() {
-        return null;
-    }
+    private final String name;
+    
+    private final ExecutorService executorService;
 
-    @Override public ScheduledExecutorService getScheduler() {
-        return null;
+    public ThreadPoolImpl(String name) {
+        this.name = name;
+        
+        new Factory();
+        
+        executorService = Executors.newCachedThreadPool();
+    }
+    
+    @Override 
+    public Executor getExecutor() {
+        return this;
+    }
+    
+    @Override 
+    public ScheduledExecutorService getScheduler() {
+        
     }
 
     @Override public void shutdown() {
@@ -81,5 +98,11 @@ public class ThreadPoolImpl implements ThreadPool {
 
     @Override public Thread newThread(@NotNull Runnable r) {
         return null;
+    }
+
+    private class Factory implements ThreadFactory {
+        @Override
+        public Thread newThread(@NotNull Runnable r) {
+        }
     }
 }

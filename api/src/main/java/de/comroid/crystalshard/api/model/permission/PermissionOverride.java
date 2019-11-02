@@ -11,13 +11,13 @@ import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 public interface PermissionOverride extends JsonDeserializable {
     default <X extends Snowflake & Cacheable & PermissionOverridable> X getTarget() {
@@ -138,10 +138,10 @@ public interface PermissionOverride extends JsonDeserializable {
     }
 
     interface Trait {
-        JsonTrait<Long, Long> TARGET_ID = identity(JsonNode::asLong, "id");
-        JsonTrait<String, TargetType> TARGET_TYPE = simple(JsonNode::asText, "type", TargetType::from);
-        JsonTrait<Integer, Integer> ALLOWED = identity(JsonNode::asInt, "allow");
-        JsonTrait<Integer, Integer> DENIED = identity(JsonNode::asInt, "deny");
+        JsonBinding<Long, Long> TARGET_ID = identity(JsonNode::asLong, "id");
+        JsonBinding<String, TargetType> TARGET_TYPE = simple(JsonNode::asText, "type", TargetType::from);
+        JsonBinding<Integer, Integer> ALLOWED = identity(JsonNode::asInt, "allow");
+        JsonBinding<Integer, Integer> DENIED = identity(JsonNode::asInt, "deny");
     }
 
     interface Builder {

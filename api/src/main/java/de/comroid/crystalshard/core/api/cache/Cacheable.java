@@ -27,11 +27,13 @@ public interface Cacheable extends JsonDeserializable {
                 final CacheInformation.Marker annotation = field.getAnnotation(CacheInformation.Marker.class);
 
                 if (annotation != null)
-                    return field.get(null);
+                    //noinspection unchecked
+                    return Optional.ofNullable((CacheInformation<P>) field.get(null));
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException ignored) {
         }
+        
+        return Optional.empty();
     } 
 
     static <S extends Cacheable, P extends Cacheable & Snowflake> CacheInformation<P> makeSubcacheableInfo(

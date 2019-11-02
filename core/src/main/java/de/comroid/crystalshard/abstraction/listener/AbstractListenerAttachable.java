@@ -17,7 +17,7 @@ import de.comroid.crystalshard.api.listener.model.Listener;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.util.NStreamImpl;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 import de.comroid.crystalshard.util.model.NStream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,12 +38,12 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
     @Override
     @SuppressWarnings("unchecked")
     public <TL extends AL> ListenerManager<TL> attachListener(TL listener) {
-        Class<ListenerManager<TL>> managerClass = getManagerClass((Class<TL>) listener.getClass());
+        Class<ListenerManager.Initializer<TL>> initializerClass = getInitializer((Class<TL>) listener.getClass());
 
-        ListenerManager<TL> manager = Adapter.create(managerClass, api, this, listener);
-        listenerManagers.add(manager);
+        ListenerManager.Initializer<TL> initializer = Adapter.create(initializerClass, api, this, listener);
+        initializer.initialize(listener);
 
-        return manager;
+        return new AbstractListenerManager<TL, Event>(api, (ListenerAttachable<TL>) this, listener.eventClass(), listener) {};
     }
 
     @Override
@@ -141,12 +141,12 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
     }
 
     @SuppressWarnings("unchecked")
-    private <TL extends AL> Class<ListenerManager<TL>> getManagerClass(Class<TL> aClass) {
-        ManagedBy managedBy = aClass.getAnnotation(ManagedBy.class);
+    private <TL extends AL> Class<ListenerManager.Initializer<TL>> getInitializer(Class<TL> aClass) {
+        InitializedBy initializedBy = aClass.getAnnotation(InitializedBy.class);
 
-        Objects.requireNonNull(managedBy, "Internal Error: Listener class " + aClass + " does not have a " +
+        Objects.requireNonNull(initializedBy, "Internal Error: Listener class " + aClass + " does not have a " +
                 "@ManagedBy definition. Please open an issue at " + CrystalShard.ISSUES_URL);
 
-        return (Class<ListenerManager<TL>>) managedBy.value();
+        return (Class<ListenerManager.Initializer<TL>>) initializedBy.value();
     }
 }

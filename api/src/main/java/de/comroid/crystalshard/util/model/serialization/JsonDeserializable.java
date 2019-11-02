@@ -9,11 +9,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Nullable;
 
 public interface JsonDeserializable extends ApiBound, Cloneable {
-    Set<JsonTrait> possibleTraits();
+    Set<JsonBinding> possibleTraits();
 
-    <S, T> @Nullable T getTraitValue(JsonTrait<S, T> trait);
+    <S, T> @Nullable T getTraitValue(JsonBinding<S, T> trait);
 
-    default <T> Optional<T> wrapTraitValue(JsonTrait<?, T> trait) {
+    default <T> Optional<T> wrapTraitValue(JsonBinding<?, T> trait) {
         return Optional.ofNullable(getTraitValue(trait));
     }
     

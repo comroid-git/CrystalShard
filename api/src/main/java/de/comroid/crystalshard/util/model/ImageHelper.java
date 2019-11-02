@@ -64,7 +64,7 @@ public enum ImageHelper {
         formats[args.length + 1] = type.name().toLowerCase();
         if (resize) formats[formats.length] = desiredSquareSize;
 
-        return Util.url_rethrow(String.format(unformattedPath + (resize ? "?size=%d" : ""), formats));
+        return Util.createUrl$rethrow(String.format(unformattedPath + (resize ? "?size=%d" : ""), formats));
     }
 
     public int getArgumentCount() {

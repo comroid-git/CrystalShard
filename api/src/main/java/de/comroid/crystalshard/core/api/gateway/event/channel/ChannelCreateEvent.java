@@ -5,9 +5,8 @@ package de.comroid.crystalshard.core.api.gateway.event.channel;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.channel.ChannelCreateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(ChannelCreateListener.Manager.class)
 public interface ChannelCreateEvent extends GatewayEvent {
     String NAME = "CHANNEL_CREATE";
 

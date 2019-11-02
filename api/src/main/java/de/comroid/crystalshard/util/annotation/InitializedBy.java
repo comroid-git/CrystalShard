@@ -9,6 +9,6 @@ import de.comroid.crystalshard.api.listener.model.ListenerManager;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ManagedBy {
-    Class<? extends ListenerManager> value();
+public @interface InitializedBy {
+    Class<? extends ListenerManager.Initializer> value();
 }

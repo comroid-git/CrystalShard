@@ -9,6 +9,7 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.channel.PrivateChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.User;
+import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.core.annotation.JsonData;
 import de.comroid.crystalshard.core.api.gateway.event.common.ReadyEvent;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
@@ -36,7 +37,7 @@ public class ReadyEventImpl extends AbstractGatewayEvent implements ReadyEvent {
     }
 
     @Override
-    public User getYourself() {
+    public Yourself getYourself() {
         return yourself;
     }
 

@@ -5,9 +5,8 @@ package de.comroid.crystalshard.core.api.gateway.event.message;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.message.MessageCreateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(MessageCreateListener.Manager.class)
 public interface MessageCreateEvent extends GatewayEvent {
     String NAME = "MESSAGE_CREATE";
 

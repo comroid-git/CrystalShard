@@ -5,9 +5,8 @@ package de.comroid.crystalshard.core.api.gateway.event.user;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.user.UserUpdateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(UserUpdateListener.Manager.class)
 public interface UserUpdateEvent extends GatewayEvent {
     String NAME = "USER_UPDATE";
 

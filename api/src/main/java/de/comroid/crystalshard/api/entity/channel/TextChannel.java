@@ -13,13 +13,13 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 public interface TextChannel extends Channel, Messageable {
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/channel#get-channel-message")
@@ -54,8 +54,8 @@ public interface TextChannel extends Channel, Messageable {
     }
     
     interface Trait extends Channel.Trait {
-        JsonTrait<String, Instant> LAST_PINNED_TIMESTAMP = simple(JsonNode::asText, "last_pin_timestamp", Instant::parse);
-        JsonTrait<Long, Message> LAST_MESSAGE_ID = JsonTrait.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
+        JsonBinding<String, Instant> LAST_PINNED_TIMESTAMP = simple(JsonNode::asText, "last_pin_timestamp", Instant::parse);
+        JsonBinding<Long, Message> LAST_MESSAGE_ID = JsonBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
     }
 
     interface Builder<R extends TextChannel, Self extends Builder> extends Channel.Builder<R, Self> {

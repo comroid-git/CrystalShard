@@ -6,7 +6,7 @@ import java.util.Comparator;
 import de.comroid.crystalshard.api.model.ApiBound;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Contract;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 
 public interface Snowflake extends ApiBound, JsonDeserializable, Comparable<Snowflake> {
     Comparator<Snowflake> SNOWFLAKE_COMPARATOR = Comparator.comparingLong(flake -> flake.getID() >> 22);
@@ -39,6 +39,6 @@ public interface Snowflake extends ApiBound, JsonDeserializable, Comparable<Snow
     }
 
     interface Trait {
-        JsonTrait<Long, Long> ID = identity(JsonNode::asLong, "id");
+        JsonBinding<Long, Long> ID = identity(JsonNode::asLong, "id");
     }
 }

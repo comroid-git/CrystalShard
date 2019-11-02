@@ -7,13 +7,13 @@ import java.net.URL;
 import java.util.Optional;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 @JsonTraits(MessageApplication.Trait.class)
 public interface MessageApplication extends Snowflake {
@@ -34,21 +34,21 @@ public interface MessageApplication extends Snowflake {
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, URL> COVER_IMAGE_URL = simple(JsonNode::asText, "cover_image", spec -> {
+        JsonBinding<String, URL> COVER_IMAGE_URL = simple(JsonNode::asText, "cover_image", spec -> {
             try {
                 return new URL(spec);
             } catch (MalformedURLException e) {
                 throw new AssertionError(e);
             } // Todo use imagehelper?
         });
-        JsonTrait<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
-        JsonTrait<String, URL> ICON_URL = simple(JsonNode::asText, "icon", spec -> {
+        JsonBinding<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
+        JsonBinding<String, URL> ICON_URL = simple(JsonNode::asText, "icon", spec -> {
             try {
                 return new URL(spec);
             } catch (MalformedURLException e) {
                 throw new AssertionError(e);
             } // Todo use imagehelper?
         });
-        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
     }
 }

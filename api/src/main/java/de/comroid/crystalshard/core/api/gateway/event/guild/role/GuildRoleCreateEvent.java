@@ -6,9 +6,8 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.role.GuildRoleCreateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildRoleCreateListener.Manager.class)
 public interface GuildRoleCreateEvent extends GatewayEvent {
     String NAME = "GUILD_ROLE_CREATE";
 

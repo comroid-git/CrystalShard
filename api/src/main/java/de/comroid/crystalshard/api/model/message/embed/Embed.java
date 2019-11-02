@@ -6,6 +6,15 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import de.comroid.crystalshard.util.Util;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+
 public interface Embed {
     Optional<String> getTitle();
 

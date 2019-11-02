@@ -5,9 +5,8 @@ package de.comroid.crystalshard.core.api.gateway.event.guild;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.GuildDeleteListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildDeleteListener.Manager.class)
 public interface GuildDeleteEvent extends GatewayEvent {
     String NAME = "GUILD_DELETE";
 

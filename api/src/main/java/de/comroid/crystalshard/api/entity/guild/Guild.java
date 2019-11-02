@@ -42,22 +42,23 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Nullable;
 
+import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSingletonCacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.api;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.api;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(Guild.Trait.class)
 public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableListener>, Cacheable {
@@ -353,51 +354,61 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
                         .delete(Guild.class, getID()));
     }
 
+    default Role getEveryoneRole() {
+        return getRoles().stream()
+                .filter(role -> role.getName().equals("@everyone"))
+                .findFirst()
+                .orElseThrow(AssertionError::new);
+    }
+
     static Builder builder(Discord api) {
         return Adapter.create(Builder.class, api);
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-        JsonTrait<String, String> ICON_HASH = identity(JsonNode::asText, "icon");
-        JsonTrait<String, String> SPLASH_HASH = identity(JsonNode::asText, "splash");
-        JsonTrait<Long, User> OWNER = cache("owner_id", CacheManager::getUserByID);
-        JsonTrait<String, Region> REGION = simple(JsonNode::asText, "region", null/*todo find voice region from str*/);
-        JsonTrait<Long, GuildVoiceChannel> AFK_CHANNEL = cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
-        JsonTrait<Integer, Duration> AFK_TIMEOUT = simple(JsonNode::asInt, "afk_timeout", Duration::ofSeconds);
-        JsonTrait<Boolean, Boolean> EMBEDDABLE = identity(JsonNode::asBoolean, "embed_enabled");
-        JsonTrait<Long, GuildChannel> EMBED_CHANNEL = cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        JsonTrait<Integer, VerificationLevel> VERIFICATION_LEVEL = simple(JsonNode::asInt, "verification_level", VerificationLevel::valueOf);
-        JsonTrait<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple(JsonNode::asInt, "default_message_notifications", DefaultMessageNotificationLevel::valueOf);
-        JsonTrait<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple(JsonNode::asInt, "explicit_content_filter", ExplicitContentFilterLevel::valueOf);
-        JsonTrait<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class);
-        JsonTrait<ArrayNode, Collection<CustomEmoji>> EMOJIS = underlyingCollective("emojis", CustomEmoji.class);
-        JsonTrait<ArrayNode, Collection<Feature>> FEATURES = underlyingCollective("features", Feature.class, (api, data) -> Feature.valueOf(data.asText()));
-        JsonTrait<Integer, MFALevel> MFA_LEVEL = simple(JsonNode::asInt, "mfa_level", MFALevel::valueOf);
-        JsonTrait<Long, Snowflake> OWNER_APPLICATION_ID = api(JsonNode::asLong, "application_id", (api, id) -> Adapter.create(Snowflake.class, api, id));
-        JsonTrait<Boolean, Boolean> WIDGETABLE = identity(JsonNode::asBoolean, "widget_enabled");
-        JsonTrait<Long, GuildChannel> WIDGET_CHANNEL = cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        JsonTrait<Long, GuildTextChannel> SYSTEM_CHANNEL = cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
-        JsonTrait<String, Instant> JOINED_AT = simple(JsonNode::asText, "joined_at", Instant::parse);
-        JsonTrait<Boolean, Boolean> LARGE = identity(JsonNode::asBoolean, "large");
-        JsonTrait<Boolean, Boolean> UNAVAILABLE = identity(JsonNode::asBoolean, "unavailable");
-        JsonTrait<Integer, Integer> MEMBER_COUNT = identity(JsonNode::asInt, "member_count");
-        JsonTrait<ArrayNode, Collection<VoiceState>> VOICE_STATES = underlyingCollective("voice_states", VoiceState.class);
-        JsonTrait<ArrayNode, Collection<GuildMember>> MEMBERS = underlyingCollective("members", GuildMember.class);
-        JsonTrait<ArrayNode, Collection<GuildChannel>> CHANNELS = underlyingCollective("channels", GuildChannel.class);
-        JsonTrait<ArrayNode, Collection<Presence>> PRESENCES = underlyingCollective("presences", Presence.class);
-        JsonTrait<Integer, Integer> MAXIMUM_PRESENCES = identity(JsonNode::asInt, "max_presences");
-        JsonTrait<Integer, Integer> MAXIMUM_MEMBERS = identity(JsonNode::asInt, "max_members");
-        JsonTrait<String, URL> VANITY_INVITE_URL = simple(JsonNode::asText, "vanity_url_code", code -> Util.url_rethrow("https://discord.gg/" + code));
-        JsonTrait<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
-        JsonTrait<String, String> BANNER_HASH = identity(JsonNode::asText, "banner");
-        JsonTrait<Integer, PremiumTier> PREMIUM_TIER = simple(JsonNode::asInt, "premium_tier", PremiumTier::valueOf);
-        JsonTrait<Integer, Integer> PREMIUM_SUB_COUNT = identity(JsonNode::asInt, "premium_subscription_count");
-        JsonTrait<String, Locale> PREFERRED_LOCALE = simple(JsonNode::asText, "preferred_locale", Locale::forLanguageTag);
+        JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+        JsonBinding<String, String> ICON_HASH = identity(JsonNode::asText, "icon");
+        JsonBinding<String, String> SPLASH_HASH = identity(JsonNode::asText, "splash");
+        JsonBinding<Long, User> OWNER = cache("owner_id", CacheManager::getUserByID);
+        JsonBinding<String, Region> REGION = simple(JsonNode::asText, "region", null/*todo find voice region from str*/);
+        JsonBinding<Long, GuildVoiceChannel> AFK_CHANNEL = cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
+        JsonBinding<Integer, Duration> AFK_TIMEOUT = simple(JsonNode::asInt, "afk_timeout", Duration::ofSeconds);
+        JsonBinding<Boolean, Boolean> EMBEDDABLE = identity(JsonNode::asBoolean, "embed_enabled");
+        JsonBinding<Long, GuildChannel> EMBED_CHANNEL = cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JsonBinding<Integer, VerificationLevel> VERIFICATION_LEVEL = simple(JsonNode::asInt, "verification_level", VerificationLevel::valueOf);
+        JsonBinding<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple(JsonNode::asInt, "default_message_notifications", DefaultMessageNotificationLevel::valueOf);
+        JsonBinding<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple(JsonNode::asInt, "explicit_content_filter", ExplicitContentFilterLevel::valueOf);
+        JsonBinding<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class);
+        JsonBinding<ArrayNode, Collection<CustomEmoji>> EMOJIS = underlyingCollective("emojis", CustomEmoji.class);
+        JsonBinding<ArrayNode, Collection<Feature>> FEATURES = underlyingCollective("features", Feature.class, (api, data) -> Feature.valueOf(data.asText()));
+        JsonBinding<Integer, MFALevel> MFA_LEVEL = simple(JsonNode::asInt, "mfa_level", MFALevel::valueOf);
+        JsonBinding<Long, Snowflake> OWNER_APPLICATION_ID = api(JsonNode::asLong, "application_id", (api, id) -> Adapter.create(Snowflake.class, api, id));
+        JsonBinding<Boolean, Boolean> WIDGETABLE = identity(JsonNode::asBoolean, "widget_enabled");
+        JsonBinding<Long, GuildChannel> WIDGET_CHANNEL = cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JsonBinding<Long, GuildTextChannel> SYSTEM_CHANNEL = cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JsonBinding<String, Instant> JOINED_AT = simple(JsonNode::asText, "joined_at", Instant::parse);
+        JsonBinding<Boolean, Boolean> LARGE = identity(JsonNode::asBoolean, "large");
+        JsonBinding<Boolean, Boolean> UNAVAILABLE = identity(JsonNode::asBoolean, "unavailable");
+        JsonBinding<Integer, Integer> MEMBER_COUNT = identity(JsonNode::asInt, "member_count");
+        JsonBinding<ArrayNode, Collection<VoiceState>> VOICE_STATES = underlyingCollective("voice_states", VoiceState.class);
+        JsonBinding<ArrayNode, Collection<GuildMember>> MEMBERS = underlyingCollective("members", GuildMember.class);
+        JsonBinding<ArrayNode, Collection<GuildChannel>> CHANNELS = underlyingCollective("channels", GuildChannel.class);
+        JsonBinding<ArrayNode, Collection<Presence>> PRESENCES = underlyingCollective("presences", Presence.class);
+        JsonBinding<Integer, Integer> MAXIMUM_PRESENCES = identity(JsonNode::asInt, "max_presences");
+        JsonBinding<Integer, Integer> MAXIMUM_MEMBERS = identity(JsonNode::asInt, "max_members");
+        JsonBinding<String, URL> VANITY_INVITE_URL = simple(JsonNode::asText, "vanity_url_code", code -> Util.createUrl$rethrow("https://discord.gg/" + code));
+        JsonBinding<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
+        JsonBinding<String, String> BANNER_HASH = identity(JsonNode::asText, "banner");
+        JsonBinding<Integer, PremiumTier> PREMIUM_TIER = simple(JsonNode::asInt, "premium_tier", PremiumTier::valueOf);
+        JsonBinding<Integer, Integer> PREMIUM_SUB_COUNT = identity(JsonNode::asInt, "premium_subscription_count");
+        JsonBinding<String, Locale> PREFERRED_LOCALE = simple(JsonNode::asText, "preferred_locale", Locale::forLanguageTag);
     }
 
     @JsonTraits(Embed.Trait.class)
     interface Embed extends Cacheable, JsonDeserializable {
+        @CacheInformation.Marker
+        CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Embed::getGuild);
+        
         Guild getGuild();
 
         default boolean isEnabled() {
@@ -409,23 +420,8 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         }
 
         interface Trait {
-            JsonTrait<Boolean, Boolean> ENABLED = identity(JsonNode::asBoolean, "enabled");
-            JsonTrait<Long, GuildChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        }
-
-        @Override
-        default Optional<Long> getCacheParentID() {
-            return Optional.of(getGuild().getID());
-        }
-
-        @Override
-        default Optional<Class<? extends Cacheable>> getCacheParentType() {
-            return Optional.of(Guild.class);
-        }
-
-        @Override
-        default boolean isSingletonType() {
-            return true;
+            JsonBinding<Boolean, Boolean> ENABLED = identity(JsonNode::asBoolean, "enabled");
+            JsonBinding<Long, GuildChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
         }
 
         interface Updater {
@@ -444,6 +440,9 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
 
     @JsonTraits(Integration.Trait.class)
     interface Integration extends Snowflake, JsonDeserializable, Cacheable {
+        @CacheInformation.Marker
+        CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Integration::getGuild);
+        
         Guild getGuild();
 
         @IntroducedBy(GETTER)
@@ -497,16 +496,16 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
         }
 
         interface Trait extends Snowflake.Trait {
-            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-            JsonTrait<String, String> TYPE = identity(JsonNode::asText, "type");
-            JsonTrait<Boolean, Boolean> ENABLED = identity(JsonNode::asBoolean, "enabled");
-            JsonTrait<Boolean, Boolean> IS_SYNCING = identity(JsonNode::asBoolean, "syncing");
-            JsonTrait<Long, Role> PREMIUM_ROLE = cache("role_id", CacheManager::getRoleByID);
-            JsonTrait<Integer, Integer> EXPIRE_BEHAVIOR = identity(JsonNode::asInt, "expire_behavior");
-            JsonTrait<Integer, Integer> EXPIRE_GRACE_PERIOD = identity(JsonNode::asInt, "expire_grace_period");
-            JsonTrait<JsonNode, User> USER = underlying("user", User.class);
-            JsonTrait<JsonNode, Account> ACCOUNT = underlying("account", Account.class);
-            JsonTrait<String, Instant> SYNCED_AT = simple(JsonNode::asText, "synced_at", Instant::parse);
+            JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonBinding<String, String> TYPE = identity(JsonNode::asText, "type");
+            JsonBinding<Boolean, Boolean> ENABLED = identity(JsonNode::asBoolean, "enabled");
+            JsonBinding<Boolean, Boolean> IS_SYNCING = identity(JsonNode::asBoolean, "syncing");
+            JsonBinding<Long, Role> PREMIUM_ROLE = cache("role_id", CacheManager::getRoleByID);
+            JsonBinding<Integer, Integer> EXPIRE_BEHAVIOR = identity(JsonNode::asInt, "expire_behavior");
+            JsonBinding<Integer, Integer> EXPIRE_GRACE_PERIOD = identity(JsonNode::asInt, "expire_grace_period");
+            JsonBinding<JsonNode, User> USER = underlying("user", User.class);
+            JsonBinding<JsonNode, Account> ACCOUNT = underlying("account", Account.class);
+            JsonBinding<String, Instant> SYNCED_AT = simple(JsonNode::asText, "synced_at", Instant::parse);
         }
 
         @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-integration")
@@ -529,21 +528,6 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
                     .executeAs(data -> null);
         }
 
-        @Override
-        default Optional<Long> getCacheParentID() {
-            return Optional.of(getGuild().getID());
-        }
-
-        @Override
-        default Optional<Class<? extends Cacheable>> getCacheParentType() {
-            return Optional.of(Guild.class);
-        }
-
-        @Override
-        default boolean isSingletonType() {
-            return true;
-        }
-
         @JsonTraits(Account.Trait.class)
         interface Account extends JsonDeserializable {
             default String getID() {
@@ -555,8 +539,8 @@ public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableList
             }
 
             interface Trait {
-                JsonTrait<String, String> ID = identity(JsonNode::asText, "id");
-                JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
+                JsonBinding<String, String> ID = identity(JsonNode::asText, "id");
+                JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
             }
         }
 

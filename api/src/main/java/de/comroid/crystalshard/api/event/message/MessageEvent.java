@@ -12,5 +12,5 @@ public interface MessageEvent extends Event {
     - attached to a Message
     - fired by something else than a Message
      */
-    @NotNull Message getMessage();
+    @NotNull Message getTriggeringMessage();
 }

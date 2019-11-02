@@ -16,15 +16,15 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.TypeGroup;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.comroid.crystalshard.util.Util.hackCast;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable, ListenerAttachable<ChannelAttachableListener>, Cacheable {
     @IntroducedBy(API)
@@ -199,7 +199,7 @@ public interface Channel extends Snowflake, TypeGroup<Channel>, Mentionable, Lis
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, ChannelType> CHANNEL_TYPE = simple(JsonNode::asText, "type", ChannelType::valueOf);
+        JsonBinding<String, ChannelType> CHANNEL_TYPE = simple(JsonNode::asText, "type", ChannelType::valueOf);
     }
 
     interface Default {

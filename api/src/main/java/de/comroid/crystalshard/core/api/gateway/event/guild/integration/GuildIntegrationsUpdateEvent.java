@@ -5,9 +5,8 @@ package de.comroid.crystalshard.core.api.gateway.event.guild.integration;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.integration.GuildIntegrationsUpdateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildIntegrationsUpdateListener.Manager.class)
 public interface GuildIntegrationsUpdateEvent extends GatewayEvent {
     String NAME = "GUILD_INTEGRATIONS_UPDATE";
 

@@ -4,9 +4,8 @@ package de.comroid.crystalshard.core.api.gateway.event.common;
 
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.common.InvalidSessionListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(InvalidSessionListener.Manager.class)
 public interface InvalidSessionEvent extends GatewayEvent {
     String NAME = "INVALID_SESSION";
 

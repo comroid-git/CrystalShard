@@ -6,9 +6,8 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.guild.member.GuildMemberAddListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(GuildMemberAddListener.Manager.class)
 public interface GuildMemberAddEvent extends GatewayEvent {
     String NAME = "GUILD_MEMBER_ADD";
 

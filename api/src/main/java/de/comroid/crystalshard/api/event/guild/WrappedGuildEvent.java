@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface WrappedGuildEvent extends GuildEvent {
     @Override
-    @Nullable Guild getGuild();
-
-    default Optional<Guild> wrapGuild() {
-        return Optional.ofNullable(getGuild());
+    default @Nullable Guild getTriggeringGuild() {
+        return wrapTriggeringGuild().orElse(null);
     }
+
+    Optional<Guild> wrapTriggeringGuild();
 }

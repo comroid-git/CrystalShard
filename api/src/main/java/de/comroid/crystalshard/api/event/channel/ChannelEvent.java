@@ -12,5 +12,5 @@ public interface ChannelEvent<C extends Channel> extends Event {
     - attached to a Channel
     - fired by something else than a Channel
      */
-    @NotNull C getChannel();
+    @NotNull C getTriggeringChannel();
 }

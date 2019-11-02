@@ -24,6 +24,10 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
 public interface Discord extends ListenerAttachable<DiscordAttachableListener<? extends DiscordEvent>> {
+    String getToken();
+    
+    int getShardID();
+
     ThreadPool getCommonThreadPool();
 
     ThreadPool getGatewayThreadPool();
@@ -39,8 +43,6 @@ public interface Discord extends ListenerAttachable<DiscordAttachableListener<? 
     CacheManager getCacheManager();
 
     Yourself getYourself();
-
-    String getToken();
 
     @IntroducedBy(PRODUCTION)
     default CompletableFuture<Collection<Guild>> requestYourGuilds() {

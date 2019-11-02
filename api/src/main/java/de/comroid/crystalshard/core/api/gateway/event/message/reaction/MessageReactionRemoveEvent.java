@@ -11,9 +11,8 @@ import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.message.reaction.MessageReactionRemoveListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(MessageReactionRemoveListener.Manager.class)
 public interface MessageReactionRemoveEvent extends GatewayEvent {
     String NAME = "MESSAGE_REACTION_REMOVE";
 

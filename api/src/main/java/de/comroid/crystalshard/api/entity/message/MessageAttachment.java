@@ -5,13 +5,13 @@ import java.util.Optional;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.Util;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 @JsonTraits(MessageAttachment.Trait.class)
 public interface MessageAttachment extends Snowflake {
@@ -40,11 +40,11 @@ public interface MessageAttachment extends Snowflake {
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonTrait<String, String> FILENAME = identity(JsonNode::asText, "filename");
-        JsonTrait<Integer, Integer> SIZE = identity(JsonNode::asInt, "size");
-        JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
-        JsonTrait<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::url_rethrow);
-        JsonTrait<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
-        JsonTrait<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
+        JsonBinding<String, String> FILENAME = identity(JsonNode::asText, "filename");
+        JsonBinding<Integer, Integer> SIZE = identity(JsonNode::asInt, "size");
+        JsonBinding<String, URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
+        JsonBinding<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::createUrl$rethrow);
+        JsonBinding<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
+        JsonBinding<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
     }
 }

@@ -4,9 +4,8 @@ package de.comroid.crystalshard.core.api.gateway.event.common;
 
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.common.ResumedListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(ResumedListener.Manager.class)
 public interface ResumedEvent extends GatewayEvent {
     String NAME = "RESUMED";
 }

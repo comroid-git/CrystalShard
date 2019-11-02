@@ -5,16 +5,17 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import de.comroid.crystalshard.api.entity.EntityType;
-import de.comroid.crystalshard.api.model.ImageHelper;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.FileType;
+import de.comroid.crystalshard.util.model.ImageHelper;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     @Override
@@ -33,7 +34,7 @@ public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     }
     
     interface Trait extends PrivateChannel.Trait, TextChannel.Trait {
-        JsonTrait<String, URL> ICON = simple(JsonNode::asText, "icon", ImageHelper.CHANNEL_ICON::urlFromHash);
+        JsonBinding<String, URL> ICON = simple(JsonNode::asText, "icon", hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
     }
 
     interface Builder extends

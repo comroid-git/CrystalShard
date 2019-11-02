@@ -8,16 +8,16 @@ import java.util.Optional;
 
 import de.comroid.crystalshard.util.Util;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonTrait.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(ActiveEmbed.Trait.class)
 public interface ActiveEmbed extends Embed, JsonDeserializable {
@@ -82,18 +82,18 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
     }
 
     interface Trait {
-        JsonTrait<String, String> TITLE = identity(JsonNode::asText, "title");
-        JsonTrait<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
-        JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
-        JsonTrait<String, Instant> TIMESTAMP = simple(JsonNode::asText, "timestamp", Instant::parse);
-        JsonTrait<Integer, Color> COLOR = simple(JsonNode::asInt, "color", Color::new);
-        JsonTrait<JsonNode, Footer> FOOTER = underlying("footer", Footer.class);
-        JsonTrait<JsonNode, Image> IMAGE = underlying("image", Image.class);
-        JsonTrait<JsonNode, Thumbnail> THUMBNAIL = underlying("thumbnail", Thumbnail.class);
-        JsonTrait<JsonNode, Video> VIDEO = underlying("video", Video.class);
-        JsonTrait<JsonNode, Provider> PROVIDER = underlying("provider", Provider.class);
-        JsonTrait<JsonNode, Author> AUTHOR = underlying("author", Author.class);
-        JsonTrait<ArrayNode, Collection<Field>> FIELDS = underlyingCollective("fields", Field.class);
+        JsonBinding<String, String> TITLE = identity(JsonNode::asText, "title");
+        JsonBinding<String, String> DESCRIPTION = identity(JsonNode::asText, "description");
+        JsonBinding<String, URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
+        JsonBinding<String, Instant> TIMESTAMP = simple(JsonNode::asText, "timestamp", Instant::parse);
+        JsonBinding<Integer, Color> COLOR = simple(JsonNode::asInt, "color", Color::new);
+        JsonBinding<JsonNode, Footer> FOOTER = underlying("footer", Footer.class);
+        JsonBinding<JsonNode, Image> IMAGE = underlying("image", Image.class);
+        JsonBinding<JsonNode, Thumbnail> THUMBNAIL = underlying("thumbnail", Thumbnail.class);
+        JsonBinding<JsonNode, Video> VIDEO = underlying("video", Video.class);
+        JsonBinding<JsonNode, Provider> PROVIDER = underlying("provider", Provider.class);
+        JsonBinding<JsonNode, Author> AUTHOR = underlying("author", Author.class);
+        JsonBinding<ArrayNode, Collection<Field>> FIELDS = underlyingCollective("fields", Field.class);
     }
 
     @JsonTraits(Footer.Trait.class)
@@ -114,9 +114,9 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, String> TEXT = identity(JsonNode::asText, "text");
-            JsonTrait<String, URL> ICON_URL = simple(JsonNode::asText, "icon_url", Util::url_rethrow);
-            JsonTrait<String, URL> PROXY_ICON_URL = simple(JsonNode::asText, "proxy_icon_url", Util::url_rethrow);
+            JsonBinding<String, String> TEXT = identity(JsonNode::asText, "text");
+            JsonBinding<String, URL> ICON_URL = simple(JsonNode::asText, "icon_url", Util::createUrl$rethrow);
+            JsonBinding<String, URL> PROXY_ICON_URL = simple(JsonNode::asText, "proxy_icon_url", Util::createUrl$rethrow);
         }
     }
 
@@ -143,10 +143,10 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
-            JsonTrait<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::url_rethrow);
-            JsonTrait<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
-            JsonTrait<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
+            JsonBinding<String, URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
+            JsonBinding<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::createUrl$rethrow);
+            JsonBinding<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
+            JsonBinding<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
         }
     }
 
@@ -173,10 +173,10 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
-            JsonTrait<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::url_rethrow);
-            JsonTrait<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
-            JsonTrait<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
+            JsonBinding<String, URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
+            JsonBinding<String, URL> PROXY_URL = simple(JsonNode::asText, "proxy_url", Util::createUrl$rethrow);
+            JsonBinding<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
+            JsonBinding<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
         }
     }
 
@@ -198,9 +198,9 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
-            JsonTrait<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
-            JsonTrait<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
+            JsonBinding<String, URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
+            JsonBinding<Integer, Integer> HEIGHT = identity(JsonNode::asInt, "height");
+            JsonBinding<Integer, Integer> WIDTH = identity(JsonNode::asInt, "width");
         }
     }
 
@@ -217,8 +217,8 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-            JsonTrait<String, URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
+            JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonBinding<String, URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
         }
     }
 
@@ -245,10 +245,10 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-            JsonTrait<String,URL> URL = simple(JsonNode::asText, "url", Util::url_rethrow);
-            JsonTrait<String, URL> ICON_URL = simple(JsonNode::asText, "icon_url", Util::url_rethrow);
-            JsonTrait<String,URL> PROXY_ICON_URL = simple(JsonNode::asText, "proxy_icon_url", Util::url_rethrow);
+            JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonBinding<String,URL> URL = simple(JsonNode::asText, "url", Util::createUrl$rethrow);
+            JsonBinding<String, URL> ICON_URL = simple(JsonNode::asText, "icon_url", Util::createUrl$rethrow);
+            JsonBinding<String,URL> PROXY_ICON_URL = simple(JsonNode::asText, "proxy_icon_url", Util::createUrl$rethrow);
         }
     }
 
@@ -270,9 +270,9 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
 
         interface Trait {
-            JsonTrait<String, String> NAME = identity(JsonNode::asText, "name");
-            JsonTrait<String, String> VALUE = identity(JsonNode::asText, "value");
-            JsonTrait<Boolean, Boolean> INLINE = identity(JsonNode::asBoolean, "inline");
+            JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
+            JsonBinding<String, String> VALUE = identity(JsonNode::asText, "value");
+            JsonBinding<Boolean, Boolean> INLINE = identity(JsonNode::asBoolean, "inline");
         }
     }
 }

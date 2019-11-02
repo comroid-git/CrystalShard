@@ -24,6 +24,7 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
@@ -31,6 +32,9 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
 public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<RoleAttachableListener<? extends RoleEvent>> {
     Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(Role::getPosition);
+    
+    @CacheInformation.Marker
+    CacheInformation<Guild> CACHE_INFORMATION = makeSubcacheableInfo(Guild.class, Role::getGuild);
 
     @Override
     @Contract(pure = true)
@@ -73,21 +77,6 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
                 .executeAs(data -> getAPI().getCacheManager()
                         .deleteMember(Guild.class, Role.class, getGuild().getID(), getID()));
-    }
-
-    @Override
-    default Optional<Long> getCacheParentID() {
-        return OptionalLong.of(getGuild().getID());
-    }
-
-    @Override
-    default Optional<Class<? extends Cacheable>> getCacheParentType() {
-        return Optional.of(Guild.class);
-    }
-
-    @Override
-    default boolean isSubcacheMember() {
-        return true;
     }
 
     interface Builder {

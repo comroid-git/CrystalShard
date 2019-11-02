@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.jetbrains.annotations.Nullable;
 
-public interface JsonTrait<J, T> extends Function<J, T> {
-    JsonTrait<J, T> withApi(Discord api);
+public interface JsonBinding<J, T> extends Function<J, T> {
+    JsonBinding<J, T> withApi(Discord api);
 
     String fieldName();
 
@@ -29,19 +29,19 @@ public interface JsonTrait<J, T> extends Function<J, T> {
         return Optional.ofNullable(apply(value));
     }
 
-    static <X> JsonTrait<X, X> identity(Function<JsonNode, X> extractor, String fieldName) {
+    static <X> JsonBinding<X, X> identity(Function<JsonNode, X> extractor, String fieldName) {
         return simple(extractor, fieldName, Function.identity());
     }
 
-    static <J, T> JsonTrait<J, T> simple(Function<JsonNode, J> extractor, String fieldName, Function<J, T> mapper) {
-        return Adapter.create(JsonTrait.class, extractor, fieldName, mapper);
+    static <J, T> JsonBinding<J, T> simple(Function<JsonNode, J> extractor, String fieldName, Function<J, T> mapper) {
+        return Adapter.create(JsonBinding.class, extractor, fieldName, mapper);
     }
 
-    static <J, T> JsonTrait<J, T> api(Function<JsonNode, J> extractor, String fieldName, BiFunction<Discord, J, T> apiMapper) {
-        return Adapter.create(JsonTrait.class, extractor, fieldName, apiMapper);
+    static <J, T> JsonBinding<J, T> api(Function<JsonNode, J> extractor, String fieldName, BiFunction<Discord, J, T> apiMapper) {
+        return Adapter.create(JsonBinding.class, extractor, fieldName, apiMapper);
     }
 
-    static <T extends Cacheable & Snowflake> JsonTrait<Long, T> cache(
+    static <T extends Cacheable & Snowflake> JsonBinding<Long, T> cache(
             String fieldName,
             BiFunction<CacheManager, Long, Optional<T>> cacheMapper
     ) {
@@ -49,21 +49,21 @@ public interface JsonTrait<J, T> extends Function<J, T> {
                 .orElseThrow(() -> new AssertionError("No instance of " + fieldName + " was found in cache!")));
     }
 
-    static <T extends JsonDeserializable> JsonTrait<ArrayNode, Collection<T>> collective(
+    static <T extends JsonDeserializable> JsonBinding<ArrayNode, Collection<T>> collective(
             String fieldName,
             Class<T> targetClass
     ) {
-        return Adapter.create(JsonTrait.class, fieldName, targetClass, 0);
+        return Adapter.create(JsonBinding.class, fieldName, targetClass, 0);
     }
 
-    static <T extends JsonDeserializable> JsonTrait<JsonNode, T> underlying(
+    static <T extends JsonDeserializable> JsonBinding<JsonNode, T> underlying(
             String fieldName,
             Class<T> targetClass
     ) {
-        return Adapter.create(JsonTrait.class, fieldName, targetClass);
+        return Adapter.create(JsonBinding.class, fieldName, targetClass);
     }
 
-    static <T extends JsonDeserializable> JsonTrait<ArrayNode, Collection<T>> underlyingCollective(
+    static <T extends JsonDeserializable> JsonBinding<ArrayNode, Collection<T>> underlyingCollective(
             String fieldName,
             Class<T> targetClass
     ) {
@@ -71,11 +71,11 @@ public interface JsonTrait<J, T> extends Function<J, T> {
         return underlyingCollective(fieldName, targetClass, (api, id) -> Adapter.access(targetClass, api, api, id));
     }
 
-    static <T> JsonTrait<ArrayNode, Collection<T>> underlyingCollective(
+    static <T> JsonBinding<ArrayNode, Collection<T>> underlyingCollective(
             String fieldName,
             Class<T> targetClass,
             BiFunction<Discord, JsonNode, T> eachMapper
     ) {
-        return Adapter.create(JsonTrait.class, fieldName, eachMapper, targetClass);
+        return Adapter.create(JsonBinding.class, fieldName, eachMapper, targetClass);
     }
 }

@@ -13,11 +13,10 @@ import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.channel.pin.ChannelPinsUpdateListener;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-@ManagedBy(ChannelPinsUpdateListener.Manager.class)
 public interface ChannelPinsUpdateEvent extends GatewayEvent {
     String NAME = "CHANNEL_PINS_UPDATE";
 

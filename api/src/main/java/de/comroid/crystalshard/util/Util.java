@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public final class Util {
-    public static URL url_rethrow(String spec) {
+    public static URL createUrl$rethrow(String spec) {
         try {
             return new URL(spec);
         } catch (MalformedURLException e) {

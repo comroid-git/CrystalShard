@@ -13,7 +13,7 @@ import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTrait;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,14 +28,14 @@ ComplexJsonTrait(Function<JsonNode, Object> extractor, String fieldName, BiFunct
 CollectiveJsonTrait(String fieldName, Class<T extends JsonDeserializable> targetClass)
 UnderlyingObjectJsonTrait(String fieldName, Function<T, O> outputMapper, Class<T> targetClass)
  */
-public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J, T>> implements JsonTrait<J, T> {
+public abstract class JsonBindingImpl<J, T> extends AbstractCloneable<JsonBinding<J, T>> implements JsonBinding<J, T> {
     protected final Function<JsonNode, J> extractor;
 
     protected final String fieldName;
     protected @Nullable Discord api;
     protected @Nullable T val;
 
-    public JsonTraitImpl(Function<JsonNode, J> extractor, String fieldName) {
+    public JsonBindingImpl(Function<JsonNode, J> extractor, String fieldName) {
         super();
 
         this.extractor = extractor;
@@ -43,9 +43,9 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
     }
 
     @Override
-    public JsonTrait<J, T> withApi(Discord api) {
-        JsonTrait<J, T> clone = clone();
-        ((JsonTraitImpl) clone).api = api;
+    public JsonBinding<J, T> withApi(Discord api) {
+        JsonBinding<J, T> clone = clone();
+        ((JsonBindingImpl) clone).api = api;
 
         return clone;
     }
@@ -79,7 +79,7 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof JsonTraitImpl)
+        if (obj instanceof JsonBindingImpl)
             return super.equals(obj);
 
         return false;
@@ -87,10 +87,10 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
 
     protected abstract T map(J with);
 
-    public static class SimpleJsonTrait<J, T> extends JsonTraitImpl<J, T> {
+    public static class SimpleJsonBinding<J, T> extends JsonBindingImpl<J, T> {
         private final Function<J, T> mapper;
 
-        public SimpleJsonTrait(Function<JsonNode, J> extractor, String fieldName, Function<J, T> mapper) {
+        public SimpleJsonBinding(Function<JsonNode, J> extractor, String fieldName, Function<J, T> mapper) {
             super(extractor, fieldName);
 
             this.mapper = mapper;
@@ -102,15 +102,15 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
         }
 
         @Override
-        public JsonTrait<J, T> clone() {
-            return new SimpleJsonTrait<>(extractor, fieldName, mapper).equalize(this);
+        public JsonBinding<J, T> clone() {
+            return new SimpleJsonBinding<>(extractor, fieldName, mapper).equalize(this);
         }
     }
 
-    public static class ComplexJsonTrait<J, T> extends JsonTraitImpl<J, T> {
+    public static class ComplexJsonBinding<J, T> extends JsonBindingImpl<J, T> {
         private final BiFunction<Discord, J, T> apiMapper;
 
-        public ComplexJsonTrait(Function<JsonNode, J> extractor, String fieldName, BiFunction<Discord, J, T> apiMapper) {
+        public ComplexJsonBinding(Function<JsonNode, J> extractor, String fieldName, BiFunction<Discord, J, T> apiMapper) {
             super(extractor, fieldName);
             this.apiMapper = apiMapper;
         }
@@ -124,16 +124,16 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
         }
 
         @Override
-        public JsonTrait<J, T> clone() {
-            return new ComplexJsonTrait<>(extractor, fieldName, apiMapper).equalize(this);
+        public JsonBinding<J, T> clone() {
+            return new ComplexJsonBinding<>(extractor, fieldName, apiMapper).equalize(this);
         }
     }
 
-    public static class CollectiveJsonTrait<T extends JsonDeserializable> extends JsonTraitImpl<ArrayNode, Collection<T>> {
+    public static class CollectiveJsonBinding<T extends JsonDeserializable> extends JsonBindingImpl<ArrayNode, Collection<T>> {
         private final Class<T> targetClass;
 
         // unused argument for adapter compatibility
-        public CollectiveJsonTrait(String fieldName, Class<T> targetClass, int unused) {
+        public CollectiveJsonBinding(String fieldName, Class<T> targetClass, int unused) {
             super(null, fieldName);
             this.targetClass = targetClass;
         }
@@ -170,16 +170,16 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
         }
 
         @Override
-        public JsonTrait<ArrayNode, Collection<T>> clone() {
-            return new CollectiveJsonTrait<>(fieldName, targetClass, 0).equalize(this);
+        public JsonBinding<ArrayNode, Collection<T>> clone() {
+            return new CollectiveJsonBinding<>(fieldName, targetClass, 0).equalize(this);
         }
     }
 
-    public static class UnderlyingCollectionJsonTrait<T extends Snowflake> extends JsonTraitImpl<ArrayNode, Collection<T>> {
+    public static class UnderlyingCollectionJsonBinding<T extends Snowflake> extends JsonBindingImpl<ArrayNode, Collection<T>> {
         private final Class<T> targetClass;
 
         // unused argument for adapter compatibility
-        public UnderlyingCollectionJsonTrait(String fieldName, Class<T> targetClass, char unused) {
+        public UnderlyingCollectionJsonBinding(String fieldName, Class<T> targetClass, char unused) {
             super(null, fieldName);
             this.targetClass = targetClass;
         }
@@ -216,16 +216,16 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
         }
 
         @Override
-        public JsonTrait<ArrayNode, Collection<T>> clone() {
-            return new UnderlyingCollectionJsonTrait<>(fieldName, targetClass, (char) 0).equalize(this);
+        public JsonBinding<ArrayNode, Collection<T>> clone() {
+            return new UnderlyingCollectionJsonBinding<>(fieldName, targetClass, (char) 0).equalize(this);
         }
     }
 
-    public static class UnderlyingObjectJsonTrait<T extends Snowflake> extends JsonTraitImpl<JsonNode, T> {
+    public static class UnderlyingObjectJsonBinding<T extends Snowflake> extends JsonBindingImpl<JsonNode, T> {
         private final BiFunction<Discord, JsonNode, T> eachMapper;
         private final Class<T> targetClass;
 
-        public UnderlyingObjectJsonTrait(String fieldName, Class<T> targetClass, BiFunction<Discord, JsonNode, T> eachMapper) {
+        public UnderlyingObjectJsonBinding(String fieldName, Class<T> targetClass, BiFunction<Discord, JsonNode, T> eachMapper) {
             super(null, fieldName);
             this.eachMapper = eachMapper;
             this.targetClass = targetClass;
@@ -245,8 +245,8 @@ public abstract class JsonTraitImpl<J, T> extends AbstractCloneable<JsonTrait<J,
         }
 
         @Override
-        public JsonTrait<JsonNode, T> clone() {
-            return new UnderlyingObjectJsonTrait<>(fieldName, targetClass, eachMapper).equalize(this);
+        public JsonBinding<JsonNode, T> clone() {
+            return new UnderlyingObjectJsonBinding<>(fieldName, targetClass, eachMapper).equalize(this);
         }
     }
 }

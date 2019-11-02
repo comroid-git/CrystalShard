@@ -9,9 +9,8 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.message.reaction.MessageReactionRemoveAllListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(MessageReactionRemoveAllListener.Manager.class)
 public interface MessageReactionRemoveAllEvent extends GatewayEvent {
     String NAME = "MESSAGE_REACTION_REMOVE_ALL";
 

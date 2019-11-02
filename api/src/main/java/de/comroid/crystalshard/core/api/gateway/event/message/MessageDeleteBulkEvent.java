@@ -9,9 +9,8 @@ import de.comroid.crystalshard.api.entity.channel.TextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.message.MessageDeleteBulkListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(MessageDeleteBulkListener.Manager.class)
 public interface MessageDeleteBulkEvent extends GatewayEvent {
     String NAME = "MESSAGE_DELETE_BULK";
 

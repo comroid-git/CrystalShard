@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface WrappedRoleEvent extends RoleEvent {
     @Override
-    @Nullable Role getRole();
-
-    default Optional<Role> wrapRole() {
-        return Optional.ofNullable(getRole());
+    default @Nullable Role getTriggeringRole() {
+        return wrapTriggeringRole().orElse(null);
     }
+
+    Optional<Role> wrapTriggeringRole();
 }

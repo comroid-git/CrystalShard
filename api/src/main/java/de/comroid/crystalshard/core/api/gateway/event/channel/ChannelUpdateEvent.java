@@ -5,9 +5,8 @@ package de.comroid.crystalshard.core.api.gateway.event.channel;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.channel.ChannelUpdateListener;
-import de.comroid.crystalshard.util.annotation.ManagedBy;
+import de.comroid.crystalshard.util.annotation.InitializedBy;
 
-@ManagedBy(ChannelUpdateListener.Manager.class)
 public interface ChannelUpdateEvent extends GatewayEvent {
     String NAME = "CHANNEL_UPDATE";
 
