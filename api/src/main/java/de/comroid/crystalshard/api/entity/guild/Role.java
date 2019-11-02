@@ -4,14 +4,13 @@ import java.awt.Color;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.event.role.RoleEvent;
+import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
-import de.comroid.crystalshard.api.listener.role.RoleAttachableListener;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.permission.PermissionOverridable;
 import de.comroid.crystalshard.api.model.permission.PermissionOverride;
@@ -30,11 +29,11 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
-public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<RoleAttachableListener<? extends RoleEvent>> {
-    Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(Role::getPosition);
+public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<AttachableTo.Role<? extends RoleEvent>> {
+    Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(de.comroid.crystalshard.api.entity.guild.Role::getPosition);
     
     @CacheInformation.Marker
-    CacheInformation<Guild> CACHE_INFORMATION = makeSubcacheableInfo(Guild.class, Role::getGuild);
+    CacheInformation<Guild> CACHE_INFORMATION = makeSubcacheableInfo(Guild.class, de.comroid.crystalshard.api.entity.guild.Role::getGuild);
 
     @Override
     @Contract(pure = true)

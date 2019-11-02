@@ -14,8 +14,8 @@ import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.event.user.UserEvent;
+import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
-import de.comroid.crystalshard.api.listener.user.UserAttachableListener;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.api.model.message.Messageable;
@@ -38,7 +38,7 @@ import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simpl
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(User.Trait.class)
-public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<UserAttachableListener<? extends UserEvent>>, JsonDeserializable {
+public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<AttachableTo.User<? extends UserEvent>>, JsonDeserializable {
     default String getUsername() {
         return getTraitValue(Trait.USERNAME);
     }

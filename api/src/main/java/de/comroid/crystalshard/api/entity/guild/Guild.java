@@ -25,7 +25,7 @@ import de.comroid.crystalshard.api.entity.emoji.CustomEmoji;
 import de.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.listener.guild.GuildAttachableListener;
+import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.guild.ban.Ban;
 import de.comroid.crystalshard.api.model.guild.invite.Invite;
@@ -61,7 +61,7 @@ import static de.comroid.crystalshard.util.model.serialization.JsonBinding.under
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
 
 @JsonTraits(Guild.Trait.class)
-public interface Guild extends Snowflake, ListenerAttachable<GuildAttachableListener>, Cacheable {
+public interface Guild extends Snowflake, ListenerAttachable<AttachableTo.Guild>, Cacheable {
     @IntroducedBy(API)
     CompletableFuture<Collection<Webhook>> requestWebhooks();
 

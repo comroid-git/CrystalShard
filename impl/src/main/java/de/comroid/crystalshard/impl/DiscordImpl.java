@@ -1,20 +1,15 @@
 package de.comroid.crystalshard.impl;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.adapter.Adapter;
-import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.event.DiscordEvent;
 import de.comroid.crystalshard.api.event.model.Event;
-import de.comroid.crystalshard.api.listener.DiscordAttachableListener;
+import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.Listener;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.api.model.user.Yourself;
@@ -22,14 +17,12 @@ import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
 import de.comroid.crystalshard.core.api.gateway.Gateway;
 import de.comroid.crystalshard.core.api.gateway.OpCode;
-import de.comroid.crystalshard.core.api.gateway.event.common.HelloEvent;
 import de.comroid.crystalshard.core.api.gateway.event.common.ReadyEvent;
-import de.comroid.crystalshard.core.api.gateway.listener.common.HelloListener;
 import de.comroid.crystalshard.core.api.rest.Ratelimiter;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;
 import de.comroid.crystalshard.util.model.NStream;
 
-public class DiscordImpl implements Discord {
+public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
     private final String token;
     private final int shardId;
 
@@ -136,17 +129,17 @@ public class DiscordImpl implements Discord {
     }
 
     @Override
-    public <TL extends DiscordAttachableListener<? extends DiscordEvent>> ListenerManager<TL> attachListener(TL listener) {
+    public <TL extends AttachableTo.Discord<? extends DiscordEvent>> ListenerManager<TL> attachListener(TL listener) {
         return null;
     }
 
     @Override
-    public <TL extends DiscordAttachableListener<? extends DiscordEvent>> boolean detachListener(TL listener) {
+    public <TL extends AttachableTo.Discord<? extends DiscordEvent>> boolean detachListener(TL listener) {
         return false;
     }
 
     @Override
-    public Collection<ListenerManager<? extends DiscordAttachableListener<? extends DiscordEvent>>> getAttachedListenerManagers() {
+    public Collection<ListenerManager<? extends AttachableTo.Discord<? extends DiscordEvent>>> getAttachedListenerManagers() {
         return null;
     }
 

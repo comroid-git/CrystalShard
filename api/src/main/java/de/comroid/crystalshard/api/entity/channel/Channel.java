@@ -8,7 +8,7 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.event.channel.ChannelEvent;
-import de.comroid.crystalshard.api.listener.channel.ChannelAttachableListener;
+import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
@@ -31,7 +31,7 @@ public interface Channel extends
         Snowflake, 
         TypeGroup<Channel>, 
         Mentionable, 
-        ListenerAttachable<ChannelAttachableListener<? extends ChannelEvent<? extends Channel>>>,
+        ListenerAttachable<AttachableTo.Channel<? extends ChannelEvent<? extends Channel>>>,
         Cacheable {
     @IntroducedBy(API)
     default ChannelType getChannelType() {

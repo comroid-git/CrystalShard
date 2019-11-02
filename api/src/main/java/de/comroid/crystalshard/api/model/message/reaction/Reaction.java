@@ -2,13 +2,11 @@ package de.comroid.crystalshard.api.model.message.reaction;
 
 // https://discordapp.com/developers/docs/resources/channel#reaction-object-reaction-structure
 
-import java.util.Optional;
-
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.event.role.RoleEvent;
+import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
-import de.comroid.crystalshard.api.listener.role.RoleAttachableListener;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
@@ -24,7 +22,7 @@ import static de.comroid.crystalshard.util.model.serialization.JsonBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
 
 @JsonTraits(Reaction.Trait.class)
-public interface Reaction extends JsonDeserializable, Cacheable, ListenerAttachable<RoleAttachableListener<? extends RoleEvent>> {
+public interface Reaction extends JsonDeserializable, Cacheable, ListenerAttachable<AttachableTo.Role<? extends RoleEvent>> {
     @CacheInformation.Marker
     CacheInformation<Message> CACHE_INFORMATION = makeSubcacheableInfo(Message.class, Reaction::getMessage);
     
