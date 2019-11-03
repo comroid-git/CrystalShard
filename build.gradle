@@ -83,7 +83,7 @@ project(":api") {
     version = '2.0.0'
 
     dependencies {
-        compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
+        compileOnly 'com.alibaba:fastjson:1.2.61'
 
         testImplementation 'org.reflections:reflections:0.9.11'
     }
@@ -95,7 +95,7 @@ project(":core") {
     dependencies {
         api project(':api')
 
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
+        implementation 'com.alibaba:fastjson:1.2.61'
 
         runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
@@ -108,7 +108,7 @@ project(":impl") {
         api project(':api')
         api project(':core')
 
-        implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.0.pr1'
+        implementation 'com.alibaba:fastjson:1.2.61'
 
         runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
