@@ -5,17 +5,17 @@ import java.util.Set;
 
 import de.comroid.crystalshard.api.model.ApiBound;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 public interface JsonDeserializable extends ApiBound, Cloneable {
     Set<JsonBinding> possibleTraits();
 
-    <S, T> @Nullable T getTraitValue(JsonBinding<S, T> trait);
+    <S, T> @Nullable T getTraitValue(JsonBinding<?, S, ?, T> trait);
 
-    default <T> Optional<T> wrapTraitValue(JsonBinding<?, T> trait) {
+    default <T> Optional<T> wrapTraitValue(JsonBinding<?, ?, ?, T> trait) {
         return Optional.ofNullable(getTraitValue(trait));
     }
     
-    Set<JsonBinding<?, ?>> updateFromJson(final JsonNode data);
+    Set<JsonBinding> updateFromJson(final JSONObject data);
 }

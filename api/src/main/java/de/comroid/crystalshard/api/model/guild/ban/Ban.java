@@ -2,7 +2,6 @@ package de.comroid.crystalshard.api.model.guild.ban;
 
 import java.util.Optional;
 
-import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;

@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.collective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCacheable;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 
 public interface GuildChannel extends Channel {
@@ -75,7 +75,7 @@ public interface GuildChannel extends Channel {
 
         JsonBinding<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
 
-        JsonBinding<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = collective("permission_overwrites", PermissionOverride.class);
+        JsonBinding<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = underlyingCacheable("permission_overwrites", PermissionOverride.class);
 
         JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
 

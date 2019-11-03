@@ -25,7 +25,8 @@ public abstract class AbstractCloneable<T> implements Cloneable {
         return uuid.hashCode();
     }
 
-    @Override 
+    @Override
+    @Contract(pure = true)
     public abstract T clone();
     
     @Contract(value = "null -> fail; _ -> this", mutates = "this")

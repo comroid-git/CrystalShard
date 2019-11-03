@@ -12,4 +12,6 @@ public final class CrystalShard {
     public static final String URL = "https://github.com/CrystalShardDiscord/CrystalShard";
 
     public static final String ISSUES_URL = URL + "/issues";
+    
+    public static final String PLEASE_REPORT = " Please open an issue including information about this crash at " + ISSUES_URL;
 }

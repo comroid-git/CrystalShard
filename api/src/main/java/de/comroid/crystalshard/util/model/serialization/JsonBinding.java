@@ -1,9 +1,12 @@
 package de.comroid.crystalshard.util.model.serialization;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
@@ -11,54 +14,42 @@ import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.jetbrains.annotations.Nullable;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-public interface JsonBinding<J, T> extends Function<J, T> {
-    JsonBinding<J, T> withApi(Discord api);
+public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT> extends Function<JSON_TYPE, TYPE_OUT> {
+    @NotNull String fieldName();
 
-    String fieldName();
+    @Contract("null -> fail; _ -> _")
+    JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> cloneWithApi(Discord api);
 
-    Object extract(JsonNode from);
+    STAGE_ONE extractValue(JSON_TYPE from);
 
-    @Override
-    @Nullable T apply(J value);
-
-    default Optional<T> wrap(J value) {
-        return Optional.ofNullable(apply(value));
+    static <T> OneStage<T> identity(String fieldName, BiFunction<JSONObject, String, S> extractor) {
+        return Adapter.create(JsonBinding.OneStage.class, fieldName, extractor);
     }
 
-    static <X> JsonBinding<X, X> identity(Function<JsonNode, X> extractor, String fieldName) {
-        return simple(extractor, fieldName, Function.identity());
+    static <S, T> TwoStage<S, T> simple(String fieldName, BiFunction<JSONObject, String, S> extractor, Function<S, T> mapper) {
+        return Adapter.create(JsonBinding.TwoStage.class, fieldName, extractor, mapper);
     }
 
-    static <J, T> JsonBinding<J, T> simple(Function<JsonNode, J> extractor, String fieldName, Function<J, T> mapper) {
-        return Adapter.create(JsonBinding.class, extractor, fieldName, mapper);
+    static <S, T> TwoStage<S, T> api(String fieldName, BiFunction<JSONObject, String, S> extractor, BiFunction<Discord, S, T> apiMapper) {
+        return Adapter.create(JsonBinding.TwoStage.class, fieldName, extractor, apiMapper);
     }
 
-    static <J, T> JsonBinding<J, T> api(Function<JsonNode, J> extractor, String fieldName, BiFunction<Discord, J, T> apiMapper) {
-        return Adapter.create(JsonBinding.class, extractor, fieldName, apiMapper);
-    }
-
-    static <T extends Cacheable & Snowflake> JsonBinding<Long, T> cache(
-            String fieldName,
-            BiFunction<CacheManager, Long, Optional<T>> cacheMapper
-    ) {
-        return api(JsonNode::asLong, fieldName, (api, id) -> cacheMapper.apply(api.getCacheManager(), id)
+    static <T extends Cacheable & Snowflake> TwoStage<Long, T> cache(String fieldName, BiFunction<CacheManager, Long, Optional<T>> cacheMapper) {
+        return api(fieldName, JSONObject::getLong, (api, id) -> cacheMapper.apply(api.getCacheManager(), id)
                 .orElseThrow(() -> new AssertionError("No instance of " + fieldName + " was found in cache!")));
     }
 
-    static <T extends JsonDeserializable> JsonBinding<ArrayNode, Collection<T>> collective(
-            String fieldName,
-            Class<T> targetClass
-    ) {
-        return Adapter.create(JsonBinding.class, fieldName, targetClass, 0);
+    static <S, T extends JsonDeserializable> TriStage<Collection<T>> underlyingCacheable(String fieldName, Class<T> targetClass) {
+        return Adapter.create(JsonBinding.TriStage.class, fieldName, targetClass);
     }
 
-    static <T extends JsonDeserializable> JsonBinding<JsonNode, T> underlying(
-            String fieldName,
-            Class<T> targetClass
+    static <T extends JsonDeserializable>  underlyingObject(String fieldName, Class<T> targetClass
     ) {
         return Adapter.create(JsonBinding.class, fieldName, targetClass);
     }
@@ -77,5 +68,13 @@ public interface JsonBinding<J, T> extends Function<J, T> {
             BiFunction<Discord, JsonNode, T> eachMapper
     ) {
         return Adapter.create(JsonBinding.class, fieldName, eachMapper, targetClass);
+    }
+    
+    interface OneStage<T> extends JsonBinding<JSONObject, T, T, T> {
+    }
+
+    interface TwoStage<S, T> extends JsonBinding<JSONObject, S, S, T> {
+    }
+    interface TriStage<S, T> extends JsonBinding<JSONArray, S, Stream<S>, T> {
     }
 }

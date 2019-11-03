@@ -13,11 +13,11 @@ import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.abstraction.AbstractApiBound;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
 public abstract class AbstractJsonDeserializable extends AbstractApiBound implements JsonDeserializable {
@@ -27,7 +27,7 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
     
     private Map<JsonBinding, Object> values;
 
-    protected AbstractJsonDeserializable(Discord api, JsonNode data) {
+    protected AbstractJsonDeserializable(Discord api, JSONObject data) {
         super(api);
         
         JsonTraits traitsClass = getClass().getAnnotation(JsonTraits.class);
@@ -48,7 +48,7 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
                     }
                 })
                 .map(JsonBinding.class::cast)
-                .map(trait -> trait.withApi(api))
+                .map(trait -> trait.cloneWithApi(api))
                 .collect(Collectors.toSet());
         
 
@@ -64,17 +64,17 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
 
     @Override
     @SuppressWarnings("unchecked")
-    public <S, T> T getTraitValue(JsonBinding<S, T> trait) {
+    public <S, T> T getTraitValue(JsonBinding<?, S, ?, T> trait) {
         S val;
 
         return (val = (S) values.getOrDefault(trait, null)) == null ? null : trait.apply(val);
     }
 
     @Override
-    public Set<JsonBinding<?, ?>> updateFromJson(final JsonNode data) {
-        Set<JsonBinding<?, ?>> changed = new HashSet<>();
+    public Set<JsonBinding> updateFromJson(final JSONObject data) {
+        Set<JsonBinding> changed = new HashSet<>();
         
-        for (JsonBinding<?, ?> binding : possibleTraits()) {
+        for (JsonBinding binding : possibleTraits()) {
             final String fieldName = binding.fieldName();
             final JsonNode field = data.path(fieldName);
 

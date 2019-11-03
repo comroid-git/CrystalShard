@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import de.comroid.crystalshard.abstraction.serialization.AbstractJsonDeserializable;
-import de.comroid.crystalshard.abstraction.serialization.JsonBindingImpl;
+import de.comroid.crystalshard.abstraction.serialization.JsonBindings;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.model.channel.ChannelMention;
 import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
@@ -22,6 +22,7 @@ import de.comroid.crystalshard.core.rest.RatelimiterImpl;
 import de.comroid.crystalshard.core.rest.WebRequestImpl;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public final class CoreAdapterImpl extends CoreAdapter {
@@ -32,10 +33,9 @@ public final class CoreAdapterImpl extends CoreAdapter {
                 .implement(Gateway.class, GatewayImpl.class.getConstructor(Discord.class))
                 .implement(DiscordRequest.class, DiscordRequestImpl.class.getConstructor(Discord.class))
                 .implement(Ratelimiter.class, RatelimiterImpl.class.getConstructor(Discord.class))
-                .implement(JsonBinding.class, JsonBindingImpl.SimpleJsonBinding.class.getConstructor(Function.class, String.class, Function.class))
-                .implement(JsonBinding.class, JsonBindingImpl.ComplexJsonBinding.class.getConstructor(Function.class, String.class, BiFunction.class))
-                .implement(JsonBinding.class, JsonBindingImpl.CollectiveJsonBinding.class.getConstructor(String.class, Class.class, int.class))
-                .implement(JsonBinding.class, JsonBindingImpl.UnderlyingObjectJsonBinding.class.getConstructor(String.class, Class.class, BiFunction.class))
+                .implement(JsonBinding.OneStage.class, JsonBindings.OneStageImpl$Identity.class.getConstructor(String.class, BiFunction.class))
+                .implement(JsonBinding.TwoStage.class, JsonBindings.TwoStageImpl$Simple.class.getConstructor(String.class, BiFunction.class, Function.class))
+                .implement(JsonBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingObjects.class.getConstructor(String.class, Class.class))
                 .implement(ChannelMention.class, new Class[]{Discord.class, JsonNode.class}, args -> patchInterface(AbstractJsonDeserializable.class, ChannelMention.class, args));
     }
 
