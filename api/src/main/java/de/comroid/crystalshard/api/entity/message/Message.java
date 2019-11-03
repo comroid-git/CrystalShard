@@ -53,7 +53,7 @@ import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
 @JsonTraits(Message.Trait.class)
 public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
@@ -180,15 +180,15 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
         JsonBinding<String, Instant> EDITED_TIMESTAMP = simple(JsonNode::asText, "edited_timestamp", Instant::parse);
         JsonBinding<Boolean, Boolean> TTS = identity(JsonNode::asBoolean, "tts");
         JsonBinding<Boolean, Boolean> MENTIONS_EVERYONE = identity(JsonNode::asBoolean, "mention_everyone");
-        JsonBinding<ArrayNode, Collection<User>> MENTIONED_USERS = underlyingCollective("mentions", User.class);
-        JsonBinding<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingCollective("mention_roles", Role.class, (api, data) -> api.getCacheManager()
+        JsonBinding<ArrayNode, Collection<User>> MENTIONED_USERS = underlyingMappingCollection("mentions", User.class);
+        JsonBinding<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingMappingCollection("mention_roles", Role.class, (api, data) -> api.getCacheManager()
                 .getByID(Role.class, data.asLong())
                 .orElseThrow());
-        JsonBinding<ArrayNode, Collection<ChannelMention>> MENTIONED_CHANNELS = underlyingCollective("mention_channels", ChannelMention.class);
-        JsonBinding<ArrayNode, Collection<MessageAttachment>> ATTACHMENTS = underlyingCollective("attachments", MessageAttachment.class);
-        JsonBinding<ArrayNode, Collection<ActiveEmbed>> EMBEDS = underlyingCollective("embeds", ActiveEmbed.class);
-        JsonBinding<ArrayNode, Collection<Reaction>> CURRENT_REACTIONS = underlyingCollective("reactions", Reaction.class);
-        JsonBinding<Long, Snowflake> NONCE = simple(JsonNode::asLong, "nonce", id -> Adapter.create(Snowflake.class, id));
+        JsonBinding<ArrayNode, Collection<ChannelMention>> MENTIONED_CHANNELS = underlyingMappingCollection("mention_channels", ChannelMention.class);
+        JsonBinding<ArrayNode, Collection<MessageAttachment>> ATTACHMENTS = underlyingMappingCollection("attachments", MessageAttachment.class);
+        JsonBinding<ArrayNode, Collection<ActiveEmbed>> EMBEDS = underlyingMappingCollection("embeds", ActiveEmbed.class);
+        JsonBinding<ArrayNode, Collection<Reaction>> CURRENT_REACTIONS = underlyingMappingCollection("reactions", Reaction.class);
+        JsonBinding<Long, Snowflake> NONCE = simple(JsonNode::asLong, "nonce", id -> Adapter.require(Snowflake.class, id));
         JsonBinding<Boolean, Boolean> PINNED = identity(JsonNode::asBoolean, "pinned");
         JsonBinding<Integer, MessageType> TYPE = simple(JsonNode::asInt, "type", MessageType::valueOf);
         JsonBinding<JsonNode, MessageActivity> ACTIVITY = underlying("activity", MessageActivity.class);
@@ -216,11 +216,11 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     Editor editor();
 
     static Composer createComposer(TextChannel channel) {
-        return Adapter.create(Composer.class, channel);
+        return Adapter.require(Composer.class, channel);
     }
 
     static BulkDeleter createBulkDeleter(TextChannel channel) {
-        return Adapter.create(BulkDeleter.class, channel);
+        return Adapter.require(BulkDeleter.class, channel);
     }
 
     @IntroducedBy(PRODUCTION)

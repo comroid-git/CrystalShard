@@ -81,7 +81,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
                 })
                 .or(() -> {
                     try {
-                        return Optional.of(Adapter.create(type, api, node));
+                        return Optional.of(Adapter.require(type, api, node));
                     } catch (Throwable t) { // any throwable, possibly by Adapter.create
                         // unrecoverable situation. developer action needs to be taken if this is reached.
                         throw new RuntimeException("Could not create instance of "
@@ -125,7 +125,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
                 })
                 .or(() -> {
                     try {
-                        return Optional.of(Adapter.create(memberType, api, node));
+                        return Optional.of(Adapter.require(memberType, api, node));
                     } catch (Throwable t) { // any throwable, possibly by Adapter.create
                         // unrecoverable situation. developer action needs to be taken if this is reached.
                         throw new RuntimeException("Could not create instance of "
@@ -162,7 +162,7 @@ public class CacheManagerImpl extends AbstractApiBound implements CacheManager {
                 .or(() -> {
                     try {
                         // all AbstractCacheable
-                        return Optional.of(Adapter.create(memberType, api, node));
+                        return Optional.of(Adapter.require(memberType, api, node));
                     } catch (Throwable t) { // any throwable, possibly by Adapter.create
                         // unrecoverable situation. developer action needs to be taken if this is reached.
                         throw new RuntimeException("Could not create instance of "

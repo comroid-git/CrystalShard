@@ -20,7 +20,7 @@ public interface GuildStoreChannel extends GuildChannel {
 
     @Deprecated
     static Builder builder(Guild guild) {
-        return Adapter.create(Builder.class, guild);
+        return Adapter.require(Builder.class, guild);
     }
 
     interface Builder extends GuildChannel.Builder<GuildStoreChannel, GuildStoreChannel.Builder> {

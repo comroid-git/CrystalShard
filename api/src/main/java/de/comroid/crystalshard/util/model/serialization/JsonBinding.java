@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
@@ -20,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT> extends Function<JSON_TYPE, TYPE_OUT> {
+public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT> extends Function<STAGE_ONE, TYPE_OUT> {
     @NotNull String fieldName();
 
     @Contract("null -> fail; _ -> _")
@@ -28,16 +26,16 @@ public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_
 
     STAGE_ONE extractValue(JSON_TYPE from);
 
-    static <T> OneStage<T> identity(String fieldName, BiFunction<JSONObject, String, S> extractor) {
-        return Adapter.create(JsonBinding.OneStage.class, fieldName, extractor);
+    static <T> OneStage<T> identity(String fieldName, BiFunction<JSONObject, String, T> extractor) {
+        return Adapter.require(JsonBinding.OneStage.class, fieldName, extractor);
     }
 
     static <S, T> TwoStage<S, T> simple(String fieldName, BiFunction<JSONObject, String, S> extractor, Function<S, T> mapper) {
-        return Adapter.create(JsonBinding.TwoStage.class, fieldName, extractor, mapper);
+        return Adapter.require(JsonBinding.TwoStage.class, fieldName, extractor, mapper);
     }
 
     static <S, T> TwoStage<S, T> api(String fieldName, BiFunction<JSONObject, String, S> extractor, BiFunction<Discord, S, T> apiMapper) {
-        return Adapter.create(JsonBinding.TwoStage.class, fieldName, extractor, apiMapper);
+        return Adapter.require(JsonBinding.TwoStage.class, fieldName, extractor, apiMapper);
     }
 
     static <T extends Cacheable & Snowflake> TwoStage<Long, T> cache(String fieldName, BiFunction<CacheManager, Long, Optional<T>> cacheMapper) {
@@ -45,29 +43,8 @@ public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_
                 .orElseThrow(() -> new AssertionError("No instance of " + fieldName + " was found in cache!")));
     }
 
-    static <S, T extends JsonDeserializable> TriStage<Collection<T>> underlyingCacheable(String fieldName, Class<T> targetClass) {
-        return Adapter.create(JsonBinding.TriStage.class, fieldName, targetClass);
-    }
-
-    static <T extends JsonDeserializable>  underlyingObject(String fieldName, Class<T> targetClass
-    ) {
-        return Adapter.create(JsonBinding.class, fieldName, targetClass);
-    }
-
-    static <T extends JsonDeserializable> JsonBinding<ArrayNode, Collection<T>> underlyingCollective(
-            String fieldName,
-            Class<T> targetClass
-    ) {
-        //noinspection unchecked
-        return underlyingCollective(fieldName, targetClass, (api, id) -> Adapter.access(targetClass, api, api, id));
-    }
-
-    static <T> JsonBinding<ArrayNode, Collection<T>> underlyingCollective(
-            String fieldName,
-            Class<T> targetClass,
-            BiFunction<Discord, JsonNode, T> eachMapper
-    ) {
-        return Adapter.create(JsonBinding.class, fieldName, eachMapper, targetClass);
+    static <S, T> TriStage<S, Collection<T>> underlyingMappingCollection(String fieldName, BiFunction<JSONObject, String, S> extractor, BiFunction<Discord, S, T> eachMapper) {
+        return Adapter.require(JsonBinding.class, fieldName, extractor, eachMapper);
     }
     
     interface OneStage<T> extends JsonBinding<JSONObject, T, T, T> {
@@ -75,6 +52,7 @@ public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_
 
     interface TwoStage<S, T> extends JsonBinding<JSONObject, S, S, T> {
     }
-    interface TriStage<S, T> extends JsonBinding<JSONArray, S, Stream<S>, T> {
+
+    interface TriStage<S, T> extends JsonBinding<JSONArray, List<S>, List<S>, Collection<T>> {
     }
 }

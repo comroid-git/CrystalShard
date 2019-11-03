@@ -50,7 +50,6 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
                 .map(JsonBinding.class::cast)
                 .map(trait -> trait.cloneWithApi(api))
                 .collect(Collectors.toSet());
-        
 
         values = new ConcurrentHashMap<>();
 
@@ -74,20 +73,10 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
     public Set<JsonBinding> updateFromJson(final JSONObject data) {
         Set<JsonBinding> changed = new HashSet<>();
         
-        for (JsonBinding binding : possibleTraits()) {
+        for (JsonBinding binding : values.keySet()) {
             final String fieldName = binding.fieldName();
-            final JsonNode field = data.path(fieldName);
-
-            if (field.isMissingNode()) {
-                log.at(Level.FINER).log("[%s] Field %s is missing; skipping!", toString(), fieldName);
-                continue;
-            }
-
-            final Object after = binding.extract(field);
-            final Object before = values.put(binding, after);
             
-            if (!before.equals(after))
-                changed.add(binding);
+            
         }
         
         return changed;

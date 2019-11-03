@@ -1,19 +1,15 @@
 package de.comroid.crystalshard.abstraction.serialization;
 
-import java.lang.constant.Constable;
-import java.lang.constant.ConstantDesc;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-import java.util.stream.Stream;
 
 import de.comroid.crystalshard.abstraction.AbstractCloneable;
-import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
+import de.comroid.crystalshard.util.Util;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
 import com.alibaba.fastjson.JSON;
@@ -26,15 +22,15 @@ import org.jetbrains.annotations.Nullable;
 import static de.comroid.crystalshard.CrystalShard.PLEASE_REPORT;
 
 public class JsonBindings {
-    private static abstract class Abstract<EXTR_DEF extends Comparable<EXTR_DEF> & Constable & ConstantDesc, JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT>
+    private static abstract class Abstract<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT>
             extends AbstractCloneable<JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT>>
             implements JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> {
         protected final String fieldName;
-        protected final BiFunction<JSON_TYPE, EXTR_DEF, STAGE_ONE> extractor;
+        protected final BiFunction<JSON_TYPE, String, STAGE_ONE> extractor;
 
         protected @Nullable Discord api;
 
-        private Abstract(String fieldName, BiFunction<JSON_TYPE, EXTR_DEF, STAGE_ONE> extractor) {
+        private Abstract(String fieldName, BiFunction<JSON_TYPE, String, STAGE_ONE> extractor) {
             this.fieldName = fieldName;
             this.extractor = extractor;
         }
@@ -59,15 +55,9 @@ public class JsonBindings {
             return clone;
         }
 
-        /**
-         * Default method stub. This stub fails for every object that is not contraint to {@code Abstract&lb;String, ?, ?, ?, ?&rb;}
-         *
-         * @return {@link #fieldName} by default.
-         */
         @Override
-        @SuppressWarnings("unchecked")
         public STAGE_ONE extractValue(JSON_TYPE from) {
-            return extractor.apply(from, (EXTR_DEF) fieldName);
+            return extractor.apply(from, fieldName);
         }
         
         protected STAGE_TWO mapStages(JSON_TYPE from) {
@@ -76,7 +66,7 @@ public class JsonBindings {
     }
 
     public static class OneStageImpl$Identity<T>
-            extends Abstract<String, JSONObject, T, T, T>
+            extends Abstract<JSONObject, T, T, T>
             implements JsonBinding.OneStage<T> {
 
         public OneStageImpl$Identity(String fieldName, BiFunction<JSONObject, String, T> extractor) {
@@ -91,13 +81,13 @@ public class JsonBindings {
 
         @Override
         @Contract("null -> null; _ -> _")
-        public T apply(JSONObject type_in) {
-            return extractValue(type_in);
+        public T apply(T type_in) {
+            return type_in;
         }
     }
 
     public static class TwoStageImpl$Simple<S, T>
-            extends Abstract<String, JSONObject, S, S, T>
+            extends Abstract<JSONObject, S, S, T>
             implements JsonBinding.TwoStage<S, T> {
         private final Function<S, T> mapper;
 
@@ -115,13 +105,13 @@ public class JsonBindings {
 
         @Override
         @Contract("null -> null; _ -> _")
-        public T apply(JSONObject type_in) {
-            return mapper.apply(extractValue(type_in));
+        public T apply(S type_in) {
+            return mapper.apply(type_in);
         }
     }
 
     public static class TwoStageImpl$Api<S, T>
-            extends Abstract<String, JSONObject, S, S, T>
+            extends Abstract<JSONObject, S, S, T>
             implements JsonBinding.TwoStage<S, T> {
         private final BiFunction<Discord, S, T> apiMapper;
 
@@ -139,39 +129,36 @@ public class JsonBindings {
 
         @Override
         @Contract("null -> null; _ -> _")
-        public T apply(JSONObject type_in) {
-            return apiMapper.apply(api, extractValue(type_in));
+        public T apply(S type_in) {
+            return apiMapper.apply(api, type_in);
         }
     }
 
-    public static class TriStageImpl$UnderlyingObjects<T>
-            extends Abstract<Integer, JSONArray, JSONObject, Stream<JSONObject>, Collection<T>>
-            implements JsonBinding.TriStage<JSONObject, Collection<T>> {
+    public static class TriStageImpl$UnderlyingMapped<S, T>
+            extends Abstract<JSONArray, List<S>, List<S>, Collection<T>>
+            implements JsonBinding.TriStage<S, T> {
+        private final BiFunction<Discord, S, T> eachMapper;
 
-        public TriStageImpl$UnderlyingObjects(String fieldName, Class<T> targetClass) {
-            super(fieldName, JSONArray::getJSONObject);
-            
-            this.targetClass = targetClass;
+        public TriStageImpl$UnderlyingMapped(String fieldName, BiFunction<JSONArray, String, List<S>> extractor, BiFunction<Discord, S, T> eachMapper) {
+            super(fieldName, (json, unused) -> new ArrayList<>() {{
+                //noinspection unchecked
+                json.forEach(it -> add((S) it));
+            }});
+
+            this.eachMapper = eachMapper;
         }
 
-        @Override 
+        @Override
         @Contract(pure = true)
-        public JsonBinding<JSONArray, JSONObject, Stream<JSONObject>, Collection<T>> clone() {
-            return new TriStageImpl$UnderlyingObjects<>(fieldName, targetClass);
+        public JsonBinding<JSONArray, List<S>, List<S>, Collection<T>> clone() {
+            return new TriStageImpl$UnderlyingMapped<>(fieldName, extractor, eachMapper);
         }
 
-        private final Class<T> targetClass;
-        
         @Override
-        public Collection<T> apply(JSONArray objects) {
-            return mapStages(objects)
-                    .map(json -> Adapter.create(targetClass, api, json))
+        public Collection<T> apply(List<S> type_in) {
+            return Util.quickStream(250, type_in)
+                    .map(it -> eachMapper.apply(api, it))
                     .collect(Collectors.toList());
-        }
-
-        @Override
-        protected Stream<JSONObject> mapStages(JSONArray from) {
-            return from.stream().map(JSONObject.class::cast);
         }
     }
 }

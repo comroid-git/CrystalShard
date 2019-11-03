@@ -114,7 +114,7 @@ public interface PermissionOverride extends JsonDeserializable {
     }
 
     static Builder builder() {
-        return Adapter.create(Builder.class);
+        return Adapter.require(Builder.class);
     }
 
     static PermissionOverride fromBitmask(int allowedBitmask) {

@@ -21,7 +21,7 @@ public interface MessageSentListener extends
         public void initialize(Gateway gateway, final MessageSentListener listener) {
             gateway.listenInStream(MessageCreateEvent.class)
                     .map(ListenerAttachable.EventPair::getEvent)
-                    .map(event -> Adapter.<MessageSentEvent>create(MessageSentEvent.class, event.getAffected(), event.getMessage()))
+                    .map(event -> Adapter.<MessageSentEvent>require(MessageSentEvent.class, event.getAffected(), event.getMessage()))
                     .map(event -> (Runnable) () -> listener.onEvent(event))
                     .forEach(gateway.getAPI().getListenerThreadPool()::submit);
         }

@@ -61,7 +61,7 @@ public interface Invite extends JsonDeserializable {
     CompletableFuture<Void> delete();
 
     static Builder builder(GuildChannel channel) {
-        return Adapter.create(Builder.class, channel);
+        return Adapter.require(Builder.class, channel);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/invite#get-invite")

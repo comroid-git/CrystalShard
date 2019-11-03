@@ -5,15 +5,17 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
+import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.core.api.rest.DiscordRequest;
-import de.comroid.crystalshard.util.Util;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.Contract;
 
@@ -30,9 +32,10 @@ public abstract class Adapter {
     }
     
     public static Optional<Class<?>> getApiClass(final Object from) {
-        final Class<?> impl = from.getClass();
+        if (from instanceof Class)
+            return Optional.ofNullable(getApiClass_r((Class<?>) from));
 
-        return Optional.ofNullable(getApiClass_r(impl));
+        return Optional.ofNullable(getApiClass_r(from.getClass()));
     }
 
     private static <T> Class<?> getApiClass_r(Class<?> impl) {
@@ -52,58 +55,34 @@ public abstract class Adapter {
     }
 
     @SuppressWarnings("unchecked")
-    @Contract("null, null, _ -> null; _, null, _ -> null; _, _, _ -> _")
-    public static <R extends Snowflake> R access(
-            final Class<? super R> type,
-            final Discord api,
-            final Object... args
-    ) {
-        if (type == null) return null;
+    @Contract("null, _ -> fail; _, _ -> _")
+    public static <R> R require(final Class<? super R> type, final Object... param) {
+        return ((Cacheable.class.isAssignableFrom(type) && param.length == 2 && (param[0] instanceof Discord & (param[1] instanceof JSON || param[1] instanceof Long)))
+                ? Optional.of(param)
+                : Optional.<Object[]>empty())
+                .flatMap((Function<Object[], Optional<R>>) args -> {
+                    long id;
 
-        final Class[] types = getTypes(args);
-        
-        if (JsonDeserializable.class.isAssignableFrom(type)) {
-            final int locate = Util.arrayLocate(types, JsonNode.class, Class::isAssignableFrom);
+                    if (args[1] instanceof Long)
+                        id = (long) args[1];
+                    else {
+                        if (args[1] instanceof JSONArray)
+                            throw new IllegalArgumentException("Cannot instantiate from JSONArray!");
+                        id = Snowflake.Trait.ID.extractValue((JSONObject) args[1]);
+                    }
 
-            if (locate != -1) {
-                final JsonNode node = (JsonNode) args[locate];
-                final long id = (long) Snowflake.Trait.ID.extract(node);
-                
-                return (R) api.getCacheManager()
-                        .streamSnowflakesByID(id)
-                        .filter(type::isInstance)
+                    return ((Discord) args[0]).getCacheManager()
+                            .getByID((Class<? extends Snowflake>) getApiClass_r(type), id)
+                            .map(it -> (R) it);
+                })
+                .or(() -> implementations.stream()
+                        .map(adapter -> adapter.mappingTool)
+                        .map(tool -> tool.find(type, getTypes(param)))
                         .findFirst()
-                        .map(json -> {
-                            json.updateFromJson(node);
-                            return json;
-                        })
-                        .map(type::cast)
-                        .orElseGet(() -> create(type, args));
-            }
-        }
-        
-        return create(type, args);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Contract("null, _ -> null; _, _ -> _")
-    public static <R> R create(
-            final Class<? super R> type,
-            final Object... args
-    ) {
-        if (type == null) return null;
-
-        final Class[] types = getTypes(args);
-        
-        return implementations.stream()
-                .map(adapter -> adapter.mappingTool)
-                .map(tool -> tool.find(type, types))
-                .findFirst()
-                .flatMap(it -> it)
-                .map(inst -> inst.apply(args))
-                .map(r -> (R) r)
-                .orElseThrow(() -> new AssertionError("Class " + type.getName()
-                        + " is not instantiable by CrystalShard"));
+                        .flatMap(it -> it)
+                        .map(inst -> inst.apply(param))
+                        .map(it -> (R) it))
+                .orElseThrow(() -> new AssertionError("Class " + type.getName() + " is not instantiable by CrystalShard"));
     }
 
     @SuppressWarnings("RedundantTypeArguments")
@@ -111,7 +90,7 @@ public abstract class Adapter {
     public static <R> DiscordRequest<R> request(Discord api) {
         if (api == null) throw new NullPointerException("API is null!");
 
-        return Adapter.<DiscordRequest<R>>create(DiscordRequest.class, api);
+        return Adapter.<DiscordRequest<R>>require(DiscordRequest.class, api);
     }
 
     public static <R, T> R staticOverride(Class<T> type, String method, Object... args) {

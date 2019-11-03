@@ -98,7 +98,7 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
 
     @IntroducedBy(PRODUCTION)
     static Builder builder(Discord api) {
-        return Adapter.create(Builder.class, api);
+        return Adapter.require(Builder.class, api);
     }
 
     interface Trait {

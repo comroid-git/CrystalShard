@@ -31,7 +31,7 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
 @JsonTraits(GuildMember.Trait.class)
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
@@ -78,7 +78,7 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
 
     interface Trait extends User.Trait {
         JsonBinding<String, String> NICKNAME = identity(JsonNode::asText, "nick");
-        JsonBinding<ArrayNode, Collection<Role>> ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
+        JsonBinding<ArrayNode, Collection<Role>> ROLES = underlyingMappingCollection("roles", Role.class, (api, data) -> api.getCacheManager()
                 .getRoleByID(data.asLong())
                 .orElseThrow());
         JsonBinding<String, Instant> JOINED_TIMESTAMP = simple(JsonNode::asText, "joined_at", Instant::parse);

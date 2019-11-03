@@ -41,15 +41,15 @@ public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
         this.token = token;
         this.shardId = shardId;
         
-        this.cacheManager = Adapter.create(CacheManager.class, this);
+        this.cacheManager = Adapter.require(CacheManager.class, this);
         
-        this.commonThreadPool = Adapter.create(ThreadPool.class, this, "Common");
-        this.gatewayThreadPool = Adapter.create(ThreadPool.class, this, "Gateway");
-        this.listenerThreadPool = Adapter.create(ThreadPool.class, this, "Listener");
-        this.ratelimiterThreadPool = Adapter.create(ThreadPool.class, this, "Ratelimiter");
+        this.commonThreadPool = Adapter.require(ThreadPool.class, this, "Common");
+        this.gatewayThreadPool = Adapter.require(ThreadPool.class, this, "Gateway");
+        this.listenerThreadPool = Adapter.require(ThreadPool.class, this, "Listener");
+        this.ratelimiterThreadPool = Adapter.require(ThreadPool.class, this, "Ratelimiter");
         
-        this.ratelimiter = Adapter.create(Ratelimiter.class, this, ratelimiterThreadPool);
-        this.gateway = Adapter.create(Gateway.class, this, gatewayThreadPool);
+        this.ratelimiter = Adapter.require(Ratelimiter.class, this, ratelimiterThreadPool);
+        this.gateway = Adapter.require(Gateway.class, this, gatewayThreadPool);
         
         this.yourself = ((GatewayImpl) gateway).helloFuture
                 .thenCompose(nil -> {

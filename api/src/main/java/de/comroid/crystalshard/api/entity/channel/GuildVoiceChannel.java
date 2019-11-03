@@ -34,7 +34,7 @@ public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
     Updater createUpdater();
 
     static Builder builder(Guild guild) {
-        return Adapter.create(Builder.class, guild);
+        return Adapter.require(Builder.class, guild);
     }
 
     interface Builder extends

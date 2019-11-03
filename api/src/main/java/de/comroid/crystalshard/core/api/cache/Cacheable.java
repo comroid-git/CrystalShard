@@ -40,14 +40,14 @@ public interface Cacheable extends JsonDeserializable {
             Class<P> parentClass,
             Function<S, P> parentExtractor
     ) {
-        return Adapter.create(CacheInformation.class, 1, parentClass, parentExtractor);
+        return Adapter.require(CacheInformation.class, 1, parentClass, parentExtractor);
     }
 
     static <S extends Cacheable, P extends Cacheable & Snowflake> CacheInformation<P> makeSingletonCacheableInfo(
             Class<P> parentClass,
             Function<S, P> parentExtractor
     ) {
-        return Adapter.create(CacheInformation.class, 2, parentClass, parentExtractor);
+        return Adapter.require(CacheInformation.class, 2, parentClass, parentExtractor);
     }
 
     interface CacheInformation<P extends Cacheable & Snowflake> {

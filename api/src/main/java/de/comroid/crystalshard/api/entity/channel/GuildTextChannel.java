@@ -56,7 +56,7 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
     Updater createUpdater();
 
     static Builder builder(Guild guild) {
-        return Adapter.create(Builder.class, guild);
+        return Adapter.require(Builder.class, guild);
     }
 
     interface Trait extends GuildChannel.Trait, TextChannel.Trait {

@@ -30,7 +30,7 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
 @JsonTraits(CustomEmoji.Trait.class)
 public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
@@ -63,7 +63,7 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
 
     interface Trait extends Snowflake.Trait {
         JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
-        JsonBinding<ArrayNode, Collection<Role>> WHITELISTED_ROLES = underlyingCollective("roles", Role.class, (api, data) -> api.getCacheManager()
+        JsonBinding<ArrayNode, Collection<Role>> WHITELISTED_ROLES = underlyingMappingCollection("roles", Role.class, (api, data) -> api.getCacheManager()
                 .getRoleByID(data.asLong())
                 .orElseThrow());
         JsonBinding<JsonNode, User> CREATOR = underlying("user", User.class);
@@ -92,7 +92,7 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     }
 
     static Builder builder(Guild guild) {
-        return Adapter.create(Builder.class);
+        return Adapter.require(Builder.class);
     }
 
     @IntroducedBy(PRODUCTION)

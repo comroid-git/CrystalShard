@@ -69,7 +69,7 @@ public interface Discord extends ListenerAttachable<AttachableTo.Discord<? exten
     }
 
     static Builder builder() {
-        return Adapter.create(Builder.class);
+        return Adapter.require(Builder.class);
     }
 
     interface Builder {

@@ -8,6 +8,7 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,6 @@ public interface Snowflake extends ApiBound, JsonDeserializable, Comparable<Snow
     }
 
     interface Trait {
-        JsonBinding<Long, Long> ID = identity(JsonNode::asLong, "id");
+        JsonBinding.OneStage<Long> ID = identity("id", JSONObject::getLong);
     }
 }

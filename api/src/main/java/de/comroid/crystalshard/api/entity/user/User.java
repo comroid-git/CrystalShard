@@ -35,7 +35,7 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
 @JsonTraits(User.Trait.class)
 public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<AttachableTo.User<? extends UserEvent>>, JsonDeserializable {
@@ -156,7 +156,7 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
             JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
             JsonBinding<String, String> TYPE = identity(JsonNode::asText, "type");
             JsonBinding<Boolean, Boolean> REVOKED = identity(JsonNode::asBoolean, "revoked");
-            JsonBinding<ArrayNode, Collection<Guild.Integration>> INTEGRATIONS = underlyingCollective("integrations", Guild.Integration.class);
+            JsonBinding<ArrayNode, Collection<Guild.Integration>> INTEGRATIONS = underlyingMappingCollection("integrations", Guild.Integration.class);
             JsonBinding<Boolean, Boolean> VERIFIED = identity(JsonNode::asBoolean, "verified");
             JsonBinding<Boolean, Boolean> FRIEND_SYNC = identity(JsonNode::asBoolean, "friend_sync");
             JsonBinding<Boolean, Boolean> SHOW_ACTIVITY = identity(JsonNode::asBoolean, "show_activity");

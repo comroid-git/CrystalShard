@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCacheable;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollection;
 
 public interface PrivateChannel extends Channel {
     @Override
@@ -39,7 +39,7 @@ public interface PrivateChannel extends Channel {
     }
     
     interface Trait extends Channel.Trait {
-        JsonBinding<ArrayNode, Collection<User>> RECIPIENTS = underlyingCacheable("recipients", User.class);
+        JsonBinding<ArrayNode, Collection<User>> RECIPIENTS = underlyingCollection("recipients", User.class);
         JsonBinding<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
         JsonBinding<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);
     }

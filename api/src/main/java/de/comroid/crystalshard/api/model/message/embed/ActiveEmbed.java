@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollective;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
 @JsonTraits(ActiveEmbed.Trait.class)
 public interface ActiveEmbed extends Embed, JsonDeserializable {
@@ -93,7 +93,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         JsonBinding<JsonNode, Video> VIDEO = underlying("video", Video.class);
         JsonBinding<JsonNode, Provider> PROVIDER = underlying("provider", Provider.class);
         JsonBinding<JsonNode, Author> AUTHOR = underlying("author", Author.class);
-        JsonBinding<ArrayNode, Collection<Field>> FIELDS = underlyingCollective("fields", Field.class);
+        JsonBinding<ArrayNode, Collection<Field>> FIELDS = underlyingMappingCollection("fields", Field.class);
     }
 
     @JsonTraits(Footer.Trait.class)
