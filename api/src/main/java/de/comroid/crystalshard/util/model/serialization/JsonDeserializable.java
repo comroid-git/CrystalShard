@@ -17,5 +17,5 @@ public interface JsonDeserializable extends ApiBound, Cloneable {
         return Optional.ofNullable(getTraitValue(trait));
     }
     
-    void updateFromJson(final JsonNode data);
+    Set<JsonBinding<?, ?>> updateFromJson(final JsonNode data);
 }

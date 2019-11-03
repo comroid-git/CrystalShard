@@ -2,6 +2,7 @@ package de.comroid.crystalshard.abstraction.serialization;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,9 +71,11 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
     }
 
     @Override
-    public void updateFromJson(final JsonNode data) {
-        for (JsonBinding<?, ?> jsonBinding : possibleTraits()) {
-            final String fieldName = jsonBinding.fieldName();
+    public Set<JsonBinding<?, ?>> updateFromJson(final JsonNode data) {
+        Set<JsonBinding<?, ?>> changed = new HashSet<>();
+        
+        for (JsonBinding<?, ?> binding : possibleTraits()) {
+            final String fieldName = binding.fieldName();
             final JsonNode field = data.path(fieldName);
 
             if (field.isMissingNode()) {
@@ -80,7 +83,13 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
                 continue;
             }
 
-            values.put(jsonBinding, jsonBinding.extract(field));
+            final Object after = binding.extract(field);
+            final Object before = values.put(binding, after);
+            
+            if (!before.equals(after))
+                changed.add(binding);
         }
+        
+        return changed;
     }
 }
