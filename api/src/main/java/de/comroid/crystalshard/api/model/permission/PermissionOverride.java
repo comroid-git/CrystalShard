@@ -10,18 +10,18 @@ import de.comroid.crystalshard.api.entity.channel.GuildChannel;
 import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 public interface PermissionOverride extends JsonDeserializable {
     default <X extends Snowflake & Cacheable & PermissionOverridable> X getTarget() {
-        long targetId = getTraitValue(Trait.TARGET_ID);
+        long targetId = getBindingValue(JSON.TARGET_ID);
 
         return (X) (switch (getTargetType()) {
             case ROLE -> getAPI().getCacheManager()
@@ -32,15 +32,15 @@ public interface PermissionOverride extends JsonDeserializable {
     }
 
     default TargetType getTargetType() {
-        return getTraitValue(Trait.TARGET_TYPE);
+        return getBindingValue(JSON.TARGET_TYPE);
     }
 
     default int getAllowedBitmask() {
-        return getTraitValue(Trait.ALLOWED);
+        return getBindingValue(JSON.ALLOWED);
     }
 
     default int getDeniedBitmask() {
-        return getTraitValue(Trait.DENIED);
+        return getBindingValue(JSON.DENIED);
     }
 
     GuildChannel getChannel();
@@ -137,11 +137,11 @@ public interface PermissionOverride extends JsonDeserializable {
         return builder.build();
     }
 
-    interface Trait {
-        JsonBinding.OneStage<Long> TARGET_ID = identity("id", JSONObject::getLong);
-        JsonBinding.TwoStage<String, TargetType> TARGET_TYPE = simple("type", JSONObject::getString, TargetType::from);
-        JsonBinding.OneStage<Integer> ALLOWED = identity("allow", JSONObject::getInteger);
-        JsonBinding.OneStage<Integer> DENIED = identity("deny", JSONObject::getInteger);
+    interface JSON {
+        JSONBinding.OneStage<Long> TARGET_ID = identity("id", JSONObject::getLong);
+        JSONBinding.TwoStage<String, TargetType> TARGET_TYPE = simple("type", JSONObject::getString, TargetType::from);
+        JSONBinding.OneStage<Integer> ALLOWED = identity("allow", JSONObject::getInteger);
+        JSONBinding.OneStage<Integer> DENIED = identity("deny", JSONObject::getInteger);
     }
 
     interface Builder {

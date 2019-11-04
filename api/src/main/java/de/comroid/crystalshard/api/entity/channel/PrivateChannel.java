@@ -8,14 +8,14 @@ import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 
 public interface PrivateChannel extends Channel {
     @Override
@@ -25,23 +25,23 @@ public interface PrivateChannel extends Channel {
 
     @IntroducedBy(GETTER)
     default Collection<User> getRecipients() {
-        return getTraitValue(Trait.RECIPIENTS);
+        return getBindingValue(JSON.RECIPIENTS);
     }
     
     @IntroducedBy(GETTER)
     default Optional<User> getUserOwner() {
-        return wrapTraitValue(Trait.USER_OWNER);
+        return wrapBindingValue(JSON.USER_OWNER);
     }
     
     @IntroducedBy(GETTER)
     default Optional<User> getApplicationOwner() {
-        return wrapTraitValue(Trait.APPLICATION_OWNER);
+        return wrapBindingValue(JSON.APPLICATION_OWNER);
     }
     
-    interface Trait extends Channel.Trait {
-        JsonBinding.TriStage<JSONObject, User> RECIPIENTS = serializableCollection("recipients", User.class);
-        JsonBinding.TwoStage<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
-        JsonBinding.TwoStage<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);
+    interface JSON extends Channel.Trait {
+        JSONBinding.TriStage<JSONObject, User> RECIPIENTS = serializableCollection("recipients", User.class);
+        JSONBinding.TwoStage<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
+        JSONBinding.TwoStage<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);
     }
 
     interface Builder<R extends PrivateChannel, Self extends PrivateChannel.Builder>

@@ -6,7 +6,7 @@ import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.gateway.event.message.MessageCreateEvent;
+import de.comroid.crystalshard.core.api.gateway.event.MESSAGE_CREATE;
 import de.comroid.crystalshard.util.annotation.InitializedBy;
 
 @InitializedBy(MessageSentListener.Initializer.class)
@@ -19,7 +19,7 @@ public interface MessageSentListener extends
     final class Initializer implements ListenerManager.Initializer<MessageSentListener> {
         @Override
         public void initialize(Gateway gateway, final MessageSentListener listener) {
-            gateway.listenInStream(MessageCreateEvent.class)
+            gateway.listenInStream(MESSAGE_CREATE.class)
                     .map(ListenerAttachable.EventPair::getEvent)
                     .map(event -> Adapter.<MessageSentEvent>require(MessageSentEvent.class, event.getAffected(), event.getMessage()))
                     .map(event -> (Runnable) () -> listener.onEvent(event))

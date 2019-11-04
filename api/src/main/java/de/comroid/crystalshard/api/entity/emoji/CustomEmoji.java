@@ -21,56 +21,56 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.mappingCollection;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappingCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JsonTraits(CustomEmoji.Trait.class)
+@JSONBindingLocation(CustomEmoji.Trait.class)
 public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
     default String getName() {
-        return getTraitValue(Trait.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
     default Collection<Role> getRoles() {
-        return getTraitValue(Trait.WHITELISTED_ROLES);
+        return getBindingValue(JSON.WHITELISTED_ROLES);
     }
 
     default Optional<User> getCreator() {
-        return wrapTraitValue(Trait.CREATOR);
+        return wrapBindingValue(JSON.CREATOR);
     }
 
     default Optional<Boolean> requiresColons() {
-        return wrapTraitValue(Trait.REQUIRE_COLONS);
+        return wrapBindingValue(JSON.REQUIRE_COLONS);
     }
 
     default Optional<Boolean> isManaged() {
-        return wrapTraitValue(Trait.MANAGED);
+        return wrapBindingValue(JSON.MANAGED);
     }
 
     default Optional<Boolean> isAnimated() {
-        return wrapTraitValue(Trait.ANIMATED);
+        return wrapBindingValue(JSON.ANIMATED);
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-        JsonBinding.TriStage<Long, Role> WHITELISTED_ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+        JSONBinding.TriStage<Long, Role> WHITELISTED_ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getByID(Role.class, id)
                 .orElseThrow());
-        JsonBinding.TwoStage<JSONObject, User> CREATOR = serialize("user", User.class);
-        JsonBinding.OneStage<Boolean> REQUIRE_COLONS = identity("require_colons", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> MANAGED = identity("managed", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> ANIMATED = identity("animated", JSONObject::getBoolean);
+        JSONBinding.TwoStage<JSONObject, User> CREATOR = require("user", User.class);
+        JSONBinding.OneStage<Boolean> REQUIRE_COLONS = identity("require_colons", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> MANAGED = identity("managed", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> ANIMATED = identity("animated", JSONObject::getBoolean);
     }
     
     CompletableFuture<CustomEmoji> requestMetadata();

@@ -24,8 +24,8 @@ import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
@@ -33,46 +33,46 @@ import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableI
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JsonTraits(Webhook.Trait.class)
+@JSONBindingLocation(Webhook.Trait.class)
 public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAttachable<WebhookAttachableListener<? extends WebhookEvent>> {
     @CacheInformation.Marker
     CacheInformation<GuildTextChannel> CACHE_INFORMATION = makeSubcacheableInfo(GuildTextChannel.class, Webhook::getChannel);
 
     @IntroducedBy(GETTER)
     default Optional<Guild> getGuild() {
-        return wrapTraitValue(Trait.GUILD);
+        return wrapBindingValue(JSON.GUILD);
     }
 
     @IntroducedBy(GETTER)
     default GuildTextChannel getChannel() {
-        return getTraitValue(Trait.CHANNEL);
+        return getBindingValue(JSON.CHANNEL);
     }
 
     @IntroducedBy(GETTER)
     default Optional<User> getCreator() {
-        return wrapTraitValue(Trait.CREATOR);
+        return wrapBindingValue(JSON.CREATOR);
     }
 
     @IntroducedBy(GETTER)
     default Optional<String> getDefaultName() {
-        return wrapTraitValue(Trait.DEFAULT_NAME);
+        return wrapBindingValue(JSON.DEFAULT_NAME);
     }
 
     @IntroducedBy(GETTER)
     default URL getAvatarURL() {
-        return wrapTraitValue(Trait.AVATAR_HASH)
+        return wrapBindingValue(JSON.AVATAR_HASH)
                 .map(hash -> ImageHelper.USER_AVATAR.url(FileType.PNG, getID(), hash))
                 .orElseGet(() -> ImageHelper.DEFAULT_USER_AVATAR.url(FileType.PNG, getID()));
     }
 
     @IntroducedBy(GETTER)
     default String getToken() {
-        return getTraitValue(Trait.TOKEN);
+        return getBindingValue(JSON.TOKEN);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/webhook#delete-webhook")
@@ -101,13 +101,13 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
         return Adapter.require(Builder.class, api);
     }
 
-    interface Trait {
-        JsonBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonBinding.TwoStage<Long, GuildTextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
-        JsonBinding.TwoStage<JSONObject, User> CREATOR = serialize("user", User.class);
-        JsonBinding.OneStage<String> DEFAULT_NAME = identity("name", JSONObject::getString);
-        JsonBinding.OneStage<String> AVATAR_HASH = identity("avatar", JSONObject::getString);
-        JsonBinding.OneStage<String> TOKEN = identity("token", JSONObject::getString);
+    interface JSON {
+        JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JSONBinding.TwoStage<Long, GuildTextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JSONBinding.TwoStage<JSONObject, User> CREATOR = require("user", User.class);
+        JSONBinding.OneStage<String> DEFAULT_NAME = identity("name", JSONObject::getString);
+        JSONBinding.OneStage<String> AVATAR_HASH = identity("avatar", JSONObject::getString);
+        JSONBinding.OneStage<String> TOKEN = identity("token", JSONObject::getString);
     }
 
     @IntroducedBy(PRODUCTION)

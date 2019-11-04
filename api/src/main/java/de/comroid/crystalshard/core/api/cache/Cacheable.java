@@ -13,6 +13,7 @@ import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
+import org.intellij.lang.annotations.MagicConstant;
 
 public interface Cacheable extends JsonDeserializable {
     default void update(JSONObject data) {
@@ -58,6 +59,12 @@ public interface Cacheable extends JsonDeserializable {
         default long getIDfromParent() {
             return getParent().getID();
         }
+        
+        @MagicConstant(intValues = {
+                0, // subcache
+                1  // singleton
+        })
+        int type();
         
         @Target(ElementType.FIELD)
         @Retention(RetentionPolicy.RUNTIME)

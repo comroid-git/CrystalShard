@@ -1,6 +1,6 @@
 package de.comroid.crystalshard.core.api.gateway.listener.voice;
 
-import de.comroid.crystalshard.core.api.gateway.event.voice.VoiceServerUpdateEvent;
+import de.comroid.crystalshard.core.api.gateway.event.VoiceServerUpdateEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.GatewayListener;
 import de.comroid.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 

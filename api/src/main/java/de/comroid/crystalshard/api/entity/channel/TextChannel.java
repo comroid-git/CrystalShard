@@ -13,13 +13,13 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 public interface TextChannel extends Channel, Messageable {
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/channel#get-channel-message")
@@ -45,17 +45,17 @@ public interface TextChannel extends Channel, Messageable {
     
     @IntroducedBy(GETTER)
     default Optional<Instant> getLastPinnedTimestamp() {
-        return wrapTraitValue(Trait.LAST_PINNED_TIMESTAMP);
+        return wrapBindingValue(JSON.LAST_PINNED_TIMESTAMP);
     }
     
     @IntroducedBy(GETTER)
     default Optional<Message> getLastMessage() {
-        return wrapTraitValue(Trait.LAST_MESSAGE_ID);
+        return wrapBindingValue(JSON.LAST_MESSAGE_ID);
     }
     
-    interface Trait extends Channel.Trait {
-        JsonBinding.TwoStage<String, Instant> LAST_PINNED_TIMESTAMP = simple("last_pin_timestamp", JSONObject::getString, Instant::parse);
-        JsonBinding.TwoStage<Long, Message> LAST_MESSAGE_ID = JsonBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
+    interface JSON extends Channel.Trait {
+        JSONBinding.TwoStage<String, Instant> LAST_PINNED_TIMESTAMP = simple("last_pin_timestamp", JSONObject::getString, Instant::parse);
+        JSONBinding.TwoStage<Long, Message> LAST_MESSAGE_ID = JSONBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
     }
 
     interface Builder<R extends TextChannel, Self extends Builder> extends Channel.Builder<R, Self> {

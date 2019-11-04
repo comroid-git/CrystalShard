@@ -18,7 +18,7 @@ import de.comroid.crystalshard.core.gateway.GatewayImpl;
 import de.comroid.crystalshard.core.rest.DiscordRequestImpl;
 import de.comroid.crystalshard.core.rest.RatelimiterImpl;
 import de.comroid.crystalshard.core.rest.WebRequestImpl;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 public final class CoreAdapterImpl extends CoreAdapter {
     public CoreAdapterImpl() throws NoSuchMethodException {
@@ -28,10 +28,10 @@ public final class CoreAdapterImpl extends CoreAdapter {
                 .implement(Gateway.class, GatewayImpl.class.getConstructor(Discord.class, ThreadPool.class))
                 .implement(DiscordRequest.class, DiscordRequestImpl.class.getConstructor(Discord.class))
                 .implement(Ratelimiter.class, RatelimiterImpl.class.getConstructor(Discord.class))
-                .implement(JsonBinding.OneStage.class, JsonBindings.OneStageImpl$Identity.class.getConstructor(String.class, BiFunction.class))
-                .implement(JsonBinding.TwoStage.class, JsonBindings.TwoStageImpl$Simple.class.getConstructor(String.class, BiFunction.class, Function.class))
-                .implement(JsonBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingObjects.class.getConstructor(String.class, Class.class))
-                .implement(JsonBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingMapped.class.getConstructor(String.class, BiFunction.class, BiFunction.class));
+                .implement(JSONBinding.OneStage.class, JsonBindings.OneStageImpl$Identity.class.getConstructor(String.class, BiFunction.class))
+                .implement(JSONBinding.TwoStage.class, JsonBindings.TwoStageImpl$Simple.class.getConstructor(String.class, BiFunction.class, Function.class))
+                .implement(JSONBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingObjects.class.getConstructor(String.class, Class.class))
+                .implement(JSONBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingMapped.class.getConstructor(String.class, BiFunction.class, BiFunction.class));
     }
 
     @SuppressWarnings("unchecked")

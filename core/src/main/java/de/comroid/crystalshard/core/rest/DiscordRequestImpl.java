@@ -13,7 +13,8 @@ import de.comroid.crystalshard.core.api.rest.DiscordRequest;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
 import static de.comroid.crystalshard.CrystalShard.URL;
@@ -73,7 +74,7 @@ public class DiscordRequestImpl<T> implements DiscordRequest<T> {
     }
 
     @Override
-    public CompletableFuture<T> executeAs(Function<JsonNode, T> mapper) {
+    public CompletableFuture<T> executeAs(Function<JSONObject, T> mapper) {
         final HttpRequest request = this.request.uri(endpoint.uri(endpointArgs))
                 .method(method.toString(), publisher)
                 .build();
@@ -89,7 +90,7 @@ public class DiscordRequestImpl<T> implements DiscordRequest<T> {
                 return response;
             })
                     .thenApply(HttpResponse::body)
-                    .thenApply(WebRequestImpl::jsonDeserialize_rethrow)
+                    .thenApply(JSON::parseObject)
                     .thenApply(mapper)
                     .thenAccept(future::complete);
         } catch (Exception e) {

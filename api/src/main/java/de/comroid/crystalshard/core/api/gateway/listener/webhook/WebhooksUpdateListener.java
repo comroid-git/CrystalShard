@@ -1,6 +1,6 @@
 package de.comroid.crystalshard.core.api.gateway.listener.webhook;
 
-import de.comroid.crystalshard.core.api.gateway.event.webhook.WebhooksUpdateEvent;
+import de.comroid.crystalshard.core.api.gateway.event.WebhooksUpdateEvent;
 import de.comroid.crystalshard.core.api.gateway.listener.GatewayListener;
 import de.comroid.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 

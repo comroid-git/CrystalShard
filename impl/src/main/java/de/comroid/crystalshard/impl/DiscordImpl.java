@@ -17,7 +17,7 @@ import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
 import de.comroid.crystalshard.core.api.gateway.Gateway;
 import de.comroid.crystalshard.core.api.gateway.OpCode;
-import de.comroid.crystalshard.core.api.gateway.event.common.ReadyEvent;
+import de.comroid.crystalshard.core.api.gateway.event.READY;
 import de.comroid.crystalshard.core.api.rest.Ratelimiter;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;
 import de.comroid.crystalshard.util.model.NStream;
@@ -64,7 +64,7 @@ public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
                     properties.put("$browser", "CrystalShard " + CrystalShard.VERSION);
                     properties.put("$device", "CrystalShard " + CrystalShard.VERSION);
 
-                    final CompletableFuture<EventPair<ReadyEvent, ListenerManager<Listener<? extends ReadyEvent>>>> readyFuture = gateway.listenOnceTo(ReadyEvent.class);
+                    final CompletableFuture<EventPair<READY, ListenerManager<Listener<? extends READY>>>> readyFuture = gateway.listenOnceTo(READY.class);
                     gateway.sendRequest(OpCode.IDENTIFY, identify);
                     
                     return readyFuture;

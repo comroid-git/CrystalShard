@@ -13,15 +13,15 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 
-@JsonTraits(GuildTextChannel.Trait.class)
+@JSONBindingLocation(GuildTextChannel.Trait.class)
 public interface GuildTextChannel extends GuildChannel, TextChannel {
     // direct api methods
     CompletableFuture<Collection<Webhook>> requestWebhooks();
@@ -39,18 +39,18 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
 
     @IntroducedBy(GETTER)
     default Optional<String> getTopic() {
-        return wrapTraitValue(Trait.TOPIC);
+        return wrapBindingValue(JSON.TOPIC);
     }
 
 
     @IntroducedBy(GETTER)
     default boolean isNSFW() {
-        return getTraitValue(Trait.NSFW);
+        return getBindingValue(JSON.NSFW);
     }
     
     @IntroducedBy(GETTER)
     default Optional<Integer> getMessageRatelimit() {
-        return wrapTraitValue(Trait.MESSAGE_RATELIMIT);
+        return wrapBindingValue(JSON.MESSAGE_RATELIMIT);
     }
 
     Updater createUpdater();
@@ -59,10 +59,10 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
         return Adapter.require(Builder.class, guild);
     }
 
-    interface Trait extends GuildChannel.Trait, TextChannel.Trait {
-        JsonBinding.OneStage<String> TOPIC = identity("topic", JSONObject::getString);
-        JsonBinding.OneStage<Boolean> NSFW = identity("nsfw", JSONObject::getBoolean);
-        JsonBinding.OneStage<Integer> MESSAGE_RATELIMIT = identity("rate_limit_per_user", JSONObject::getInteger);
+    interface JSON extends GuildChannel.Trait, TextChannel.Trait {
+        JSONBinding.OneStage<String> TOPIC = identity("topic", JSONObject::getString);
+        JSONBinding.OneStage<Boolean> NSFW = identity("nsfw", JSONObject::getBoolean);
+        JSONBinding.OneStage<Integer> MESSAGE_RATELIMIT = identity("rate_limit_per_user", JSONObject::getInteger);
     }
 
     interface Builder extends

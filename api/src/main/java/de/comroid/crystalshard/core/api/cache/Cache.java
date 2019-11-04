@@ -1,8 +1,8 @@
 package de.comroid.crystalshard.core.api.cache;
 
 import java.io.Closeable;
-import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
 
@@ -17,7 +17,7 @@ public interface Cache<T extends Cacheable> extends Closeable {
 
     <M extends Cacheable> Cache<M> getMemberCache(long baseId, Class<M> type);
 
-    Collection<Snowflake> getSnowflakesByID(long id);
+    Stream<Snowflake> streamSnowflakesByID(long id);
 
     void delete(long id);
 

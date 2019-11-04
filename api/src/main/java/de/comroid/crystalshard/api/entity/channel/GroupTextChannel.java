@@ -9,13 +9,13 @@ import de.comroid.crystalshard.api.model.channel.ChannelType;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     @Override
@@ -30,11 +30,11 @@ public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     
     @IntroducedBy(GETTER)
     default Optional<URL> getIconUrl() {
-        return wrapTraitValue(Trait.ICON);
+        return wrapBindingValue(JSON.ICON);
     }
     
-    interface Trait extends PrivateChannel.Trait, TextChannel.Trait {
-        JsonBinding.TwoStage<String, URL> ICON = simple("icon", JSONObject::getString, hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
+    interface JSON extends PrivateChannel.Trait, TextChannel.Trait {
+        JSONBinding.TwoStage<String, URL> ICON = simple("icon", JSONObject::getString, hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
     }
 
     interface Builder extends

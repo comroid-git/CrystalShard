@@ -8,12 +8,12 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.event.model.Event;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class AbstractEvent extends AbstractJsonDeserializable implements Event {
     private final Collection<ListenerAttachable> affected;
 
-    protected AbstractEvent(Discord api, JsonNode data) {
+    protected AbstractEvent(Discord api, JSONObject data) {
         super(api, data);
 
         this.affected = new ArrayList<>();

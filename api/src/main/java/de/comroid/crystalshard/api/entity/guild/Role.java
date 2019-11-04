@@ -20,8 +20,8 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Contract;
@@ -31,11 +31,11 @@ import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableI
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JsonTraits(Role.Trait.class)
+@JSONBindingLocation(Role.Trait.class)
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
 public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.Role<? extends RoleEvent>> {
     Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(de.comroid.crystalshard.api.entity.guild.Role::getPosition);
@@ -57,37 +57,37 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
 
     @IntroducedBy(GETTER)
     default String getName() {
-        return getTraitValue(Trait.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Color> getColor() {
-        return wrapTraitValue(Trait.COLOR);
+        return wrapBindingValue(JSON.COLOR);
     }
 
     @IntroducedBy(GETTER)
     default boolean isHoisted() {
-        return getTraitValue(Trait.HOIST);
+        return getBindingValue(JSON.HOIST);
     }
 
     @IntroducedBy(GETTER)
     default int getPosition() {
-        return getTraitValue(Trait.POSITION);
+        return getBindingValue(JSON.POSITION);
     }
 
     @IntroducedBy(GETTER)
     default PermissionOverride getPermissions() {
-        return getTraitValue(Trait.PERMISSIONS);
+        return getBindingValue(JSON.PERMISSIONS);
     }
 
     @IntroducedBy(GETTER)
     default boolean isManaged() {
-        return getTraitValue(Trait.MANAGED);
+        return getBindingValue(JSON.MANAGED);
     }
 
     @IntroducedBy(GETTER)
     default boolean isMentionable() {
-        return getTraitValue(Trait.MENTIONABLE);
+        return getBindingValue(JSON.MENTIONABLE);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-role")
@@ -100,14 +100,14 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
                         .deleteMember(Guild.class, Role.class, getGuild().getID(), getID()));
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-        JsonBinding.TwoStage<Integer, Color> COLOR = simple("color", JSONObject::getInteger, Color::new);
-        JsonBinding.OneStage<Boolean> HOIST = identity("hoist", JSONObject::getBoolean);
-        JsonBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
-        JsonBinding.TwoStage<Integer, PermissionOverride> PERMISSIONS = simple("permissions", JSONObject::getInteger, PermissionOverride::fromBitmask);
-        JsonBinding.OneStage<Boolean> MANAGED = identity("managed", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> MENTIONABLE = identity("mentionable", JSONObject::getBoolean);
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+        JSONBinding.TwoStage<Integer, Color> COLOR = simple("color", JSONObject::getInteger, Color::new);
+        JSONBinding.OneStage<Boolean> HOIST = identity("hoist", JSONObject::getBoolean);
+        JSONBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
+        JSONBinding.TwoStage<Integer, PermissionOverride> PERMISSIONS = simple("permissions", JSONObject::getInteger, PermissionOverride::fromBitmask);
+        JSONBinding.OneStage<Boolean> MANAGED = identity("managed", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> MENTIONABLE = identity("mentionable", JSONObject::getBoolean);
     }
 
     interface Builder {

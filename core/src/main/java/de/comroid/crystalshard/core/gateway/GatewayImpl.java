@@ -17,12 +17,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.flogger.FluentLogger;
 import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.abstraction.listener.AbstractListenerManager;
 import de.comroid.crystalshard.adapter.Adapter;
@@ -36,8 +30,8 @@ import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
 import de.comroid.crystalshard.core.api.gateway.Gateway;
 import de.comroid.crystalshard.core.api.gateway.GatewayStatusCodes;
 import de.comroid.crystalshard.core.api.gateway.OpCode;
-import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
-import de.comroid.crystalshard.core.api.gateway.event.common.HelloEvent;
+import de.comroid.crystalshard.core.api.gateway.event.GatewayEventBase;
+import de.comroid.crystalshard.core.api.gateway.event.HELLO;
 import de.comroid.crystalshard.core.api.gateway.listener.GatewayListener;
 import de.comroid.crystalshard.core.api.gateway.listener.GatewayListenerManager;
 import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
@@ -45,12 +39,16 @@ import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.InitializedBy;
 import de.comroid.crystalshard.util.model.NStream;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.flogger.FluentLogger;
+
 import static de.comroid.crystalshard.CrystalShard.URL;
 import static de.comroid.crystalshard.CrystalShard.VERSION;
 
 public class GatewayImpl implements Gateway {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     private final Discord api;
     public final CompletableFuture<Void> helloFuture;
@@ -66,12 +64,12 @@ public class GatewayImpl implements Gateway {
         this.threadPool = threadPool;
 
         // prepare receiving HELLO
-        helloFuture = listenOnceTo(HelloEvent.class)
+        helloFuture = listenOnceTo(HELLO.class)
                 .thenAccept(pair -> {
                     final int interval = pair.getEvent().getHeartbeatInterval();
 
                     threadPool.getScheduler()
-                            .scheduleAtFixedRate(() -> this.sendRequest(OpCode.HEARTBEAT, JsonNodeFactory.instance.nullNode()),
+                            .scheduleAtFixedRate(() -> this.sendRequest(OpCode.HEARTBEAT, JSON.parseObject("{}")),
                                     interval, interval, TimeUnit.MILLISECONDS);
                 });
 
@@ -90,7 +88,7 @@ public class GatewayImpl implements Gateway {
                             .buildAsync(Adapter.<String>request(api)
                                     .endpoint(DiscordEndpoint.GATEWAY)
                                     .method(RestMethod.GET)
-                                    .executeAs(node -> node.get("url").asText())
+                                    .executeAs(node -> node.getString("url"))
                                     .thenApply(str -> {
                                         try {
                                             return new URI(str);
@@ -113,9 +111,9 @@ public class GatewayImpl implements Gateway {
     }
 
     @Override
-    public CompletableFuture<Void> sendRequest(OpCode code, JsonNode payload) {
+    public CompletableFuture<Void> sendRequest(OpCode code, JSONObject payload) {
         return CompletableFuture.supplyAsync(() -> {
-            final ObjectNode json = JsonNodeFactory.instance.objectNode();
+            JSONObject json = new JSONObject();
 
             json.put("op", code.value);
             json.put("d", payload);
@@ -155,7 +153,7 @@ public class GatewayImpl implements Gateway {
         return api;
     }
 
-    private <L extends GatewayListener<E>, E extends GatewayEvent> ListenerManager<L> attachListener_impl(L listener) {
+    private <L extends GatewayListener<E>, E extends GatewayEventBase> ListenerManager<L> attachListener_impl(L listener) {
         BasicGatewayListener<L, E> gatewayListener = new BasicGatewayListener<>(listener);
 
         listenerManagers.add(gatewayListener);
@@ -163,19 +161,19 @@ public class GatewayImpl implements Gateway {
         return gatewayListener;
     }
 
-    private <L extends GatewayListener<E>, E extends GatewayEvent> void dispatch(final String json) {
-        log.at(Level.FINER).log("Dispatching data: " + json);
+    private <L extends GatewayListener<E>, E extends GatewayEventBase> void dispatch(final String jsonStr) {
+        log.at(Level.FINER).log("Dispatching data: " + jsonStr);
 
         threadPool.submit(() -> {
             try {
-                JsonNode node = mapper.readTree(json);
+                final JSONObject json = JSON.parseObject(jsonStr);
 
-                OpCode op = OpCode.getByValue(node.get("op").asInt());
-                JsonNode data = node.path("d");
-                int seq = node.get("s").asInt();
-                String type = node.get("t").asText();
+                OpCode op = OpCode.getByValue(json.getInteger("op"));
+                final JSONObject data = json.getJSONObject("d");
+                int seq = json.getInteger("s");
+                String type = json.getString("t");
 
-                GatewayEvent event = null;
+                GatewayEventBase event = null;
 
                 (listenerManagers.size() > 200
                         ? listenerManagers.parallelStream()
@@ -185,8 +183,8 @@ public class GatewayImpl implements Gateway {
                             Class<? extends ListenerManager<? extends GatewayListener>> managerClass
                                     = getManagerClass(basicGatewayListener.underlyingListener.getClass());
                             @SuppressWarnings("unchecked")
-                            Class<? extends Listener<? extends GatewayEvent>> declaringClass
-                                    = (Class<? extends Listener<? extends GatewayEvent>>) managerClass.getDeclaringClass();
+                            Class<? extends Listener<? extends GatewayEventBase>> declaringClass
+                                    = (Class<? extends Listener<? extends GatewayEventBase>>) managerClass.getDeclaringClass();
 
                             Objects.requireNonNull(declaringClass,
                                     managerClass + " should be declared by its listener class!");
@@ -197,7 +195,7 @@ public class GatewayImpl implements Gateway {
                             return () -> basicGatewayListener.accept(eventData);
                         })
                         .forEachOrdered(api.getListenerThreadPool()::submit);
-            } catch (JsonProcessingException e) {
+            } catch (JSONException e) {
                 throw new RuntimeException("JSON Deserialization Exception", e);
             }
         });
@@ -213,7 +211,7 @@ public class GatewayImpl implements Gateway {
         return (Class<ListenerManager<TL>>) initializedBy.value();
     }
 
-    class BasicGatewayListener<L extends GatewayListener<E>, E extends GatewayEvent>
+    class BasicGatewayListener<L extends GatewayListener<E>, E extends GatewayEventBase>
             implements GatewayListener<EventData<L, E>>, GatewayListenerManager<L>, Predicate<String>, Consumer<EventData<L, E>> {
         private final GatewayListener<E> underlyingListener;
 
@@ -321,12 +319,12 @@ public class GatewayImpl implements Gateway {
         }
     }
 
-    static class EventData<L extends Listener<? extends GatewayEvent>, E extends GatewayEvent> implements GatewayEvent {
+    static class EventData<L extends Listener<? extends GatewayEventBase>, E extends GatewayEventBase> implements GatewayEventBase {
         final Class<L> listenerClass;
         final E event;
 
         @SuppressWarnings("unchecked")
-        EventData(Class<? extends Listener<? extends GatewayEvent>> listenerClass, GatewayEvent event) {
+        EventData(Class<? extends Listener<? extends GatewayEventBase>> listenerClass, GatewayEventBase event) {
             this.listenerClass = (Class<L>) listenerClass;
             this.event = (E) event;
         }

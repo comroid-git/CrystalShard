@@ -6,30 +6,30 @@ package de.comroid.crystalshard.api.model.message;
 import java.util.Optional;
 
 import de.comroid.crystalshard.adapter.MainAPI;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JsonTraits(MessageActivity.Trait.class)
+@JSONBindingLocation(MessageActivity.Trait.class)
 public interface MessageActivity extends JsonDeserializable {
     default Type getType() {
-        return getTraitValue(Trait.TYPE);
+        return getBindingValue(JSON.TYPE);
     }
 
     default Optional<String> getPartyID() {
-        return wrapTraitValue(Trait.PARTY_ID);
+        return wrapBindingValue(JSON.PARTY_ID);
     }
 
-    interface Trait {
-        JsonBinding.TwoStage<Integer, Type> TYPE = simple("type", JSONObject::getInteger, Type::valueOf);
-        JsonBinding.OneStage<String> PARTY_ID = identity("party_id", JSONObject::getString);
+    interface JSON {
+        JSONBinding.TwoStage<Integer, Type> TYPE = simple("type", JSONObject::getInteger, Type::valueOf);
+        JSONBinding.OneStage<String> PARTY_ID = identity("party_id", JSONObject::getString);
     }
 
     enum Type {

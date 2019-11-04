@@ -1,6 +1,6 @@
 package de.kaleidox.test.crystalshard.core.api.gateway.event;
 
-import de.comroid.crystalshard.core.api.gateway.event.GatewayEvent;
+import de.comroid.crystalshard.core.api.gateway.event.GatewayEventBase;
 
 import org.junit.Test;
 import org.reflections.Reflections;
@@ -13,12 +13,12 @@ public class GatewayEventTest {
     public void testAllDeclareNameField() throws Exception {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setScanners(new SubTypesScanner())
-                .addUrls(ClasspathHelper.forClass(GatewayEvent.class))
+                .addUrls(ClasspathHelper.forClass(GatewayEventBase.class))
         );
 
         int c = 0;
 
-        for (Class<? extends GatewayEvent> klass : reflections.getSubTypesOf(GatewayEvent.class)) {
+        for (Class<? extends GatewayEventBase> klass : reflections.getSubTypesOf(GatewayEventBase.class)) {
             c++;
 
             try {

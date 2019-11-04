@@ -20,48 +20,48 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.mappingCollection;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappingCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JsonTraits(GuildMember.Trait.class)
+@JSONBindingLocation(GuildMember.Trait.class)
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
     default Optional<String> getNickname() {
-        return wrapTraitValue(Trait.NICKNAME);
+        return wrapBindingValue(JSON.NICKNAME);
     }
 
     default List<Role> getRoles() {
-        final ArrayList<Role> list = new ArrayList<>(getTraitValue(Trait.ROLES));
+        final ArrayList<Role> list = new ArrayList<>(getBindingValue(JSON.ROLES));
         Collections.sort(list);
         return list;
     }
 
     default Instant getJoinTimestamp() {
-        return getTraitValue(Trait.JOINED_TIMESTAMP);    }
+        return getBindingValue(JSON.JOINED_TIMESTAMP);    }
 
     default Optional<Instant> getNitroBoostTimestamp() {
-        return wrapTraitValue(Trait.NITRO_BOOST_TIMESTAMP);
+        return wrapBindingValue(JSON.NITRO_BOOST_TIMESTAMP);
     }
 
     default boolean isDeafened() {
-        return getTraitValue(Trait.DEAFENED);
+        return getBindingValue(JSON.DEAFENED);
     }
 
     default boolean isMuted() {
-        return getTraitValue(Trait.MUTED);
+        return getBindingValue(JSON.MUTED);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#create-guild-ban")
@@ -77,15 +77,15 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
                         .deleteMember(Guild.class, Ban.class, getGuild().getID(), getID()));
     }
 
-    interface Trait extends User.Trait {
-        JsonBinding.OneStage<String> NICKNAME = identity("nick", JSONObject::getString);
-        JsonBinding.TriStage<Long, Role> ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
+    interface JSON extends User.Trait {
+        JSONBinding.OneStage<String> NICKNAME = identity("nick", JSONObject::getString);
+        JSONBinding.TriStage<Long, Role> ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getRoleByID(id)
                 .orElseThrow());
-        JsonBinding.TwoStage<String, Instant> JOINED_TIMESTAMP = simple("joined_at", JSONObject::getString, Instant::parse);
-        JsonBinding.TwoStage<String, Instant> NITRO_BOOST_TIMESTAMP = simple("premium_since", JSONObject::getString, Instant::parse);
-        JsonBinding.OneStage<Boolean> DEAFENED = identity("deaf", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> MUTED = identity("mute", JSONObject::getBoolean);
+        JSONBinding.TwoStage<String, Instant> JOINED_TIMESTAMP = simple("joined_at", JSONObject::getString, Instant::parse);
+        JSONBinding.TwoStage<String, Instant> NITRO_BOOST_TIMESTAMP = simple("premium_since", JSONObject::getString, Instant::parse);
+        JSONBinding.OneStage<Boolean> DEAFENED = identity("deaf", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> MUTED = identity("mute", JSONObject::getBoolean);
     }
 
     @IntroducedBy(PRODUCTION)

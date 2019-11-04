@@ -12,14 +12,12 @@ import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.core.api.rest.WebRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
 public class WebRequestImpl<T> implements WebRequest<T> {
     private final static FluentLogger log = FluentLogger.forEnclosingClass();
-    private final static ObjectMapper objectMapper = new ObjectMapper();
     private final static HttpClient client;
 
     private HttpRequest.Builder request;
@@ -72,7 +70,7 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     }
 
     @Override
-    public CompletableFuture<T> executeAs(Function<JsonNode, T> mapper) {
+    public CompletableFuture<T> executeAs(Function<JSONObject, T> mapper) {
         return client.sendAsync(
                 request.method(method.toString(), publisher).build(),
                 HttpResponse.BodyHandlers.ofString())
@@ -83,15 +81,7 @@ public class WebRequestImpl<T> implements WebRequest<T> {
 
                     return response.body();
                 })
-                .thenApply(WebRequestImpl::jsonDeserialize_rethrow)
+                .thenApply(JSON::parseObject)
                 .thenApply(mapper);
-    }
-
-    protected static JsonNode jsonDeserialize_rethrow(String data) {
-        try {
-            return objectMapper.readTree(data);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("JSON Deserialization Exception");
-        }
     }
 }

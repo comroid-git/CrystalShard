@@ -13,8 +13,6 @@ import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.api.model.ApiBound;
 import de.comroid.crystalshard.api.model.guild.ban.Ban;
 
-import com.alibaba.fastjson.JSONObject;
-
 public interface CacheManager extends ApiBound {
     <R extends Cacheable> Optional<R> set(Class<R> type, long id, R instance);
 
@@ -31,23 +29,6 @@ public interface CacheManager extends ApiBound {
             Class<M> memberType,
             long baseId,
             M instance
-    );
-
-    <R extends Cacheable> R updateOrCreateAndGet(Class<R> type, long id, JSONObject data);
-
-    <M extends Cacheable, B extends Cacheable> M updateOrCreateMemberAndGet(
-            Class<B> baseType,
-            Class<M> memberType,
-            long baseId,
-            long memberId,
-            JSONObject data
-    );
-
-    <M extends Cacheable, B extends Cacheable> M updateOrCreateSingletonMemberAndGet(
-            Class<B> baseType,
-            Class<M> memberType,
-            long baseId,
-            JSONObject data
     );
 
     <R extends Cacheable> Void delete(Class<R> type, long id);

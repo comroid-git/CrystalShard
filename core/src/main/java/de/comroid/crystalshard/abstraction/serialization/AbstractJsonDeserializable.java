@@ -14,9 +14,9 @@ import de.comroid.crystalshard.abstraction.AbstractApiBound;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
@@ -26,16 +26,16 @@ import static de.comroid.crystalshard.CrystalShard.PLEASE_REPORT;
 public abstract class AbstractJsonDeserializable extends AbstractApiBound implements JsonDeserializable {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 
-    protected final Set<JsonBinding> possibleTraits;
+    protected final Set<JSONBinding> possibleTraits;
     
-    private Map<JsonBinding, Object> values;
+    private Map<JSONBinding, Object> values;
 
     protected AbstractJsonDeserializable(Discord api, JSONObject data) {
         super(api);
 
-        JsonTraits traitsClass = Adapter.getApiClass(getClass())
+        JSONBindingLocation traitsClass = Adapter.getApiClass(getClass())
                 .orElseThrow(() -> new NoSuchElementException("Could not find API class of " + this + "." + PLEASE_REPORT))
-                .getAnnotation(JsonTraits.class);
+                .getAnnotation(JSONBindingLocation.class);
 
         if (traitsClass == null)
             throw new AssertionError("Could not determine @JsonTraits annotation for "
@@ -52,7 +52,7 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
                         throw new AssertionError("Could not access Traits", e);
                     }
                 })
-                .map(JsonBinding.class::cast)
+                .map(JSONBinding.class::cast)
                 .collect(Collectors.toSet());
 
         values = new ConcurrentHashMap<>();
@@ -61,23 +61,23 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
     }
 
     @Override
-    public Set<JsonBinding> bindings() {
+    public Set<JSONBinding> bindings() {
         return possibleTraits;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <S, T> T getTraitValue(JsonBinding<?, S, ?, T> binding) {
+    public <S, T> T getBindingValue(JSONBinding<?, S, ?, T> binding) {
         S val;
         return (val = (S) values.getOrDefault(binding, null)) == null ? null : binding.apply(api, val);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Set<JsonBinding> updateFromJson(final JSONObject json) {
-        Set<JsonBinding> changed = new HashSet<>();
+    public Set<JSONBinding> updateFromJson(final JSONObject json) {
+        Set<JSONBinding> changed = new HashSet<>();
 
-        for (JsonBinding binding : bindings()) {
+        for (JSONBinding binding : bindings()) {
             final String key = binding.fieldName();
 
             if (json.containsKey(key))

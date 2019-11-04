@@ -20,7 +20,7 @@ public interface PrivateTextChannel extends PrivateChannel, TextChannel {
         return EntityType.PRIVATE_TEXT_CHANNEL;
     }
     
-    interface Trait extends PrivateChannel.Trait, TextChannel.Trait {
+    interface JSON extends PrivateChannel.Trait, TextChannel.Trait {
     }
 
     interface Builder extends

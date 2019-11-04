@@ -8,69 +8,69 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
-@JsonTraits(VoiceState.Trait.class)
+@JSONBindingLocation(VoiceState.Trait.class)
 public interface VoiceState extends JsonDeserializable {
     default Optional<Guild> getGuild() {
-        return wrapTraitValue(Trait.GUILD);
+        return wrapBindingValue(JSON.GUILD);
     }
 
     default Optional<VoiceChannel> getChannel() {
-        return wrapTraitValue(Trait.CHANNEL);
+        return wrapBindingValue(JSON.CHANNEL);
     }
 
     default User getUser() {
-        return getTraitValue(Trait.USER);
+        return getBindingValue(JSON.USER);
     }
 
     default Optional<GuildMember> getGuildMember() {
-        return wrapTraitValue(Trait.MEMBER);
+        return wrapBindingValue(JSON.MEMBER);
     }
 
     default String getSessionID() {
-        return getTraitValue(Trait.SESSION);
+        return getBindingValue(JSON.SESSION);
     }
 
     default boolean isDeafened() {
-        return getTraitValue(Trait.DEAFENED);
+        return getBindingValue(JSON.DEAFENED);
     }
 
     default boolean isMuted() {
-        return getTraitValue(Trait.MUTED);
+        return getBindingValue(JSON.MUTED);
     }
 
     default boolean isSelfDeafened() {
-        return getTraitValue(Trait.SELF_DEAFENED);
+        return getBindingValue(JSON.SELF_DEAFENED);
     }
 
     default boolean isSelfMuted() {
-        return getTraitValue(Trait.SELF_MUTED);
+        return getBindingValue(JSON.SELF_MUTED);
     }
 
     default boolean isSuppressed() {
-        return getTraitValue(Trait.SUPPRESSED);
+        return getBindingValue(JSON.SUPPRESSED);
     }
 
-    interface Trait {
-        JsonBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonBinding.TwoStage<Long, VoiceChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asVoiceChannel));
-        JsonBinding.TwoStage<Long, User> USER = cache("user_id", CacheManager::getUserByID);
-        JsonBinding.TwoStage<JSONObject, GuildMember> MEMBER = serialize("member", GuildMember.class);
-        JsonBinding.OneStage<String> SESSION = identity("session_id", JSONObject::getString);
-        JsonBinding.OneStage<Boolean> DEAFENED = identity("deaf", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> MUTED = identity("mute", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> SELF_DEAFENED = identity("self_deaf", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> SELF_MUTED = identity("self_mute", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> SUPPRESSED = identity("suppress", JSONObject::getBoolean);
+    interface JSON {
+        JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JSONBinding.TwoStage<Long, VoiceChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asVoiceChannel));
+        JSONBinding.TwoStage<Long, User> USER = cache("user_id", CacheManager::getUserByID);
+        JSONBinding.TwoStage<JSONObject, GuildMember> MEMBER = require("member", GuildMember.class);
+        JSONBinding.OneStage<String> SESSION = identity("session_id", JSONObject::getString);
+        JSONBinding.OneStage<Boolean> DEAFENED = identity("deaf", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> MUTED = identity("mute", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> SELF_DEAFENED = identity("self_deaf", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> SELF_MUTED = identity("self_mute", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> SUPPRESSED = identity("suppress", JSONObject::getBoolean);
     }
     
     default boolean isEffectivelyDeafened() {

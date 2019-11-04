@@ -42,8 +42,8 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
@@ -52,15 +52,15 @@ import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSingletonCach
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.api;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.mappingCollection;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.api;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappingCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 
-@JsonTraits(Guild.Trait.class)
+@JSONBindingLocation(Guild.Trait.class)
 public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.AttachableTo.Guild>, Cacheable {
     @IntroducedBy(API)
     CompletableFuture<Collection<Webhook>> requestWebhooks();
@@ -78,187 +78,187 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
 
     @IntroducedBy(GETTER)
     default String getName() {
-        return getTraitValue(Trait.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
     @IntroducedBy(GETTER)
     default Optional<URL> getIconURL() {
-        return wrapTraitValue(Trait.ICON_HASH)
+        return wrapBindingValue(JSON.ICON_HASH)
                 .map(hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, getID(), hash));
     }
 
     @IntroducedBy(GETTER)
     default Optional<URL> getSplashURL() {
-        return wrapTraitValue(Trait.SPLASH_HASH)
+        return wrapBindingValue(JSON.SPLASH_HASH)
                 .map(hash -> ImageHelper.GUILD_SPLASH.url(FileType.PNG, getID(), hash));
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildMember> getOwner() {
-        return wrapTraitValue(Trait.OWNER)
+        return wrapBindingValue(JSON.OWNER)
                 .flatMap(this::getMember);
     }
 
     @IntroducedBy(GETTER)
     default Region getRegion() {
-        return getTraitValue(Trait.REGION);
+        return getBindingValue(JSON.REGION);
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildVoiceChannel> getAFKChannel() {
-        return wrapTraitValue(Trait.AFK_CHANNEL);
+        return wrapBindingValue(JSON.AFK_CHANNEL);
     }
 
     @IntroducedBy(GETTER)
     default Duration getAFKTimeout() {
-        return getTraitValue(Trait.AFK_TIMEOUT);
+        return getBindingValue(JSON.AFK_TIMEOUT);
     }
 
     @IntroducedBy(GETTER)
     default boolean isEmbeddable() {
-        return getTraitValue(Trait.EMBEDDABLE);
+        return getBindingValue(JSON.EMBEDDABLE);
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildChannel> getEmbedChannel() {
-        return wrapTraitValue(Trait.EMBED_CHANNEL);
+        return wrapBindingValue(JSON.EMBED_CHANNEL);
     }
 
     @IntroducedBy(GETTER)
     default VerificationLevel getVerificationLevel() {
-        return getTraitValue(Trait.VERIFICATION_LEVEL);
+        return getBindingValue(JSON.VERIFICATION_LEVEL);
     }
 
     @IntroducedBy(GETTER)
     default DefaultMessageNotificationLevel getDefaultMessageNotificationLevel() {
-        return getTraitValue(Trait.DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
+        return getBindingValue(JSON.DEFAULT_MESSAGE_NOTIFICATION_LEVEL);
     }
 
     @IntroducedBy(GETTER)
     default ExplicitContentFilterLevel getExplicitContentFilterLevel() {
-        return getTraitValue(Trait.EXPLICIT_CONTENT_FILTER_LEVEL);
+        return getBindingValue(JSON.EXPLICIT_CONTENT_FILTER_LEVEL);
     }
 
     @IntroducedBy(GETTER)
     default Collection<Role> getRoles() {
-        return getTraitValue(Trait.ROLES);
+        return getBindingValue(JSON.ROLES);
     }
 
     @IntroducedBy(GETTER)
     default Collection<CustomEmoji> getEmojis() {
-        return getTraitValue(Trait.EMOJIS);
+        return getBindingValue(JSON.EMOJIS);
     }
 
     @IntroducedBy(GETTER)
     default Collection<Feature> getGuildFeatures() {
-        return getTraitValue(Trait.FEATURES);
+        return getBindingValue(JSON.FEATURES);
     }
 
     @IntroducedBy(GETTER)
     default MFALevel getMFALevel() {
-        return getTraitValue(Trait.MFA_LEVEL);
+        return getBindingValue(JSON.MFA_LEVEL);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Snowflake> getOwnerApplicationID() {
-        return wrapTraitValue(Trait.OWNER_APPLICATION_ID);
+        return wrapBindingValue(JSON.OWNER_APPLICATION_ID);
     }
 
     @IntroducedBy(GETTER)
     default boolean isWidgetable() {
-        return getTraitValue(Trait.WIDGETABLE);
+        return getBindingValue(JSON.WIDGETABLE);
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildChannel> getWidgetChannel() {
-        return wrapTraitValue(Trait.WIDGET_CHANNEL);
+        return wrapBindingValue(JSON.WIDGET_CHANNEL);
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildTextChannel> getSystemChannel() {
-        return wrapTraitValue(Trait.SYSTEM_CHANNEL);
+        return wrapBindingValue(JSON.SYSTEM_CHANNEL);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Instant> getJoinedAt() {
-        return wrapTraitValue(Trait.JOINED_AT);
+        return wrapBindingValue(JSON.JOINED_AT);
     }
 
     @IntroducedBy(GETTER)
     default boolean isConsideredLarge() {
-        return getTraitValue(Trait.LARGE);
+        return getBindingValue(JSON.LARGE);
     }
 
     @IntroducedBy(GETTER)
     default boolean isUnavailable() {
-        return getTraitValue(Trait.UNAVAILABLE);
+        return getBindingValue(JSON.UNAVAILABLE);
     }
 
     @IntroducedBy(GETTER)
     default int getMemberCount() {
-        return getTraitValue(Trait.MEMBER_COUNT);
+        return getBindingValue(JSON.MEMBER_COUNT);
     }
 
     @IntroducedBy(GETTER)
     default Collection<VoiceState> getCurrentVoiceStates() {
-        return getTraitValue(Trait.VOICE_STATES);
+        return getBindingValue(JSON.VOICE_STATES);
     }
 
     @IntroducedBy(GETTER)
     default Collection<GuildMember> getMembers() {
-        return getTraitValue(Trait.MEMBERS);
+        return getBindingValue(JSON.MEMBERS);
     }
 
     @IntroducedBy(GETTER)
     default Collection<GuildChannel> getChannels() {
-        return getTraitValue(Trait.CHANNELS);
+        return getBindingValue(JSON.CHANNELS);
     }
 
     @IntroducedBy(GETTER)
     default Collection<Presence> getPresences() {
-        return getTraitValue(Trait.PRESENCES);
+        return getBindingValue(JSON.PRESENCES);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Integer> getMaximumPresences() {
-        return wrapTraitValue(Trait.MAXIMUM_PRESENCES);
+        return wrapBindingValue(JSON.MAXIMUM_PRESENCES);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Integer> getMaximumMembers() {
-        return wrapTraitValue(Trait.MAXIMUM_MEMBERS);
+        return wrapBindingValue(JSON.MAXIMUM_MEMBERS);
     }
 
     @IntroducedBy(GETTER)
     default Optional<URL> getVanityInviteURL() {
-        return wrapTraitValue(Trait.VANITY_INVITE_URL);
+        return wrapBindingValue(JSON.VANITY_INVITE_URL);
     }
 
     @IntroducedBy(GETTER)
     default Optional<String> getDescription() {
-        return wrapTraitValue(Trait.DESCRIPTION);
+        return wrapBindingValue(JSON.DESCRIPTION);
     }
 
     @IntroducedBy(GETTER)
     default Optional<URL> getBannerURL() {
-        return wrapTraitValue(Trait.BANNER_HASH)
+        return wrapBindingValue(JSON.BANNER_HASH)
                 .map(hash -> ImageHelper.GUILD_BANNER.url(FileType.PNG, getID(), hash));
     }
 
     @IntroducedBy(GETTER)
     default PremiumTier getPremiumTier() {
-        return getTraitValue(Trait.PREMIUM_TIER);
+        return getBindingValue(JSON.PREMIUM_TIER);
     }
 
     @IntroducedBy(GETTER)
     default int getPremiumSubscriptionCount() {
-        return wrapTraitValue(Trait.PREMIUM_SUB_COUNT)
+        return wrapBindingValue(JSON.PREMIUM_SUB_COUNT)
                 .orElse(0);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Locale> getPreferredLocale() {
-        return wrapTraitValue(Trait.PREFERRED_LOCALE);
+        return wrapBindingValue(JSON.PREFERRED_LOCALE);
     }
 
     default Optional<GuildMember> getMember(User user) {
@@ -365,46 +365,46 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.require(Builder.class, api);
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-        JsonBinding.OneStage<String> ICON_HASH = identity("icon", JSONObject::getString);
-        JsonBinding.OneStage<String> SPLASH_HASH = identity("splash", JSONObject::getString);
-        JsonBinding.TwoStage<Long, User> OWNER = cache("owner_id", CacheManager::getUserByID);
-        JsonBinding.TwoStage<String, Region> REGION = simple("region", JSONObject::getString, key -> Adapter.require(VoiceRegion.class, key));
-        JsonBinding.TwoStage<Long, GuildVoiceChannel> AFK_CHANNEL = cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
-        JsonBinding.TwoStage<Integer, Duration> AFK_TIMEOUT = simple("afk_timeout", JSONObject::getInteger, Duration::ofSeconds);
-        JsonBinding.OneStage<Boolean> EMBEDDABLE = identity("embed_enabled", JSONObject::getBoolean);
-        JsonBinding.TwoStage<Long, GuildChannel> EMBED_CHANNEL = cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        JsonBinding.TwoStage<Integer, VerificationLevel> VERIFICATION_LEVEL = simple("verification_level", JSONObject::getInteger, VerificationLevel::valueOf);
-        JsonBinding.TwoStage<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple("default_message_notifications", JSONObject::getInteger, DefaultMessageNotificationLevel::valueOf);
-        JsonBinding.TwoStage<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple("explicit_content_filter", JSONObject::getInteger, ExplicitContentFilterLevel::valueOf);
-        JsonBinding.TriStage<JSONObject, Role> ROLES = serializableCollection("roles", Role.class);
-        JsonBinding.TriStage<JSONObject, CustomEmoji> EMOJIS = serializableCollection("emojis", CustomEmoji.class);
-        JsonBinding.TriStage<String, Feature> FEATURES = mappingCollection("features", JSONObject::getString, (api, key) -> Feature.valueOf(key));
-        JsonBinding.TwoStage<Integer, MFALevel> MFA_LEVEL = simple("mfa_level", JSONObject::getInteger, MFALevel::valueOf);
-        JsonBinding.TwoStage<Long, Snowflake> OWNER_APPLICATION_ID = api("application_id", JSONObject::getLong, (api, id) -> Adapter.require(Snowflake.class, api, id));
-        JsonBinding.OneStage<Boolean> WIDGETABLE = identity("widget_enabled", JSONObject::getBoolean);
-        JsonBinding.TwoStage<Long, GuildChannel> WIDGET_CHANNEL = cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        JsonBinding.TwoStage<Long, GuildTextChannel> SYSTEM_CHANNEL = cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
-        JsonBinding.TwoStage<String, Instant> JOINED_AT = simple("joined_at", JSONObject::getString, Instant::parse);
-        JsonBinding.OneStage<Boolean> LARGE = identity("large", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> UNAVAILABLE = identity("unavailable", JSONObject::getBoolean);
-        JsonBinding.OneStage<Integer> MEMBER_COUNT = identity("member_count", JSONObject::getInteger);
-        JsonBinding.TriStage<JSONObject, VoiceState> VOICE_STATES = serializableCollection("voice_states", VoiceState.class);
-        JsonBinding.TriStage<JSONObject, GuildMember> MEMBERS = serializableCollection("members", GuildMember.class);
-        JsonBinding.TriStage<JSONObject, GuildChannel> CHANNELS = serializableCollection("channels", GuildChannel.class);
-        JsonBinding.TriStage<JSONObject, Presence> PRESENCES = serializableCollection("presences", Presence.class);
-        JsonBinding.OneStage<Integer> MAXIMUM_PRESENCES = identity("max_presences", JSONObject::getInteger);
-        JsonBinding.OneStage<Integer> MAXIMUM_MEMBERS = identity("max_members", JSONObject::getInteger);
-        JsonBinding.TwoStage<String, URL> VANITY_INVITE_URL = simple("vanity_url_code", JSONObject::getString, code -> Util.createUrl$rethrow("https://discord.gg/" + code));
-        JsonBinding.OneStage<String> DESCRIPTION = identity("description", JSONObject::getString);
-        JsonBinding.OneStage<String> BANNER_HASH = identity("banner", JSONObject::getString);
-        JsonBinding.TwoStage<Integer, PremiumTier> PREMIUM_TIER = simple("premium_tier", JSONObject::getInteger, PremiumTier::valueOf);
-        JsonBinding.OneStage<Integer> PREMIUM_SUB_COUNT = identity("premium_subscription_count", JSONObject::getInteger);
-        JsonBinding.TwoStage<String, Locale> PREFERRED_LOCALE = simple("preferred_locale", JSONObject::getString, Locale::forLanguageTag);
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+        JSONBinding.OneStage<String> ICON_HASH = identity("icon", JSONObject::getString);
+        JSONBinding.OneStage<String> SPLASH_HASH = identity("splash", JSONObject::getString);
+        JSONBinding.TwoStage<Long, User> OWNER = cache("owner_id", CacheManager::getUserByID);
+        JSONBinding.TwoStage<String, Region> REGION = simple("region", JSONObject::getString, key -> Adapter.require(VoiceRegion.class, key));
+        JSONBinding.TwoStage<Long, GuildVoiceChannel> AFK_CHANNEL = cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
+        JSONBinding.TwoStage<Integer, Duration> AFK_TIMEOUT = simple("afk_timeout", JSONObject::getInteger, Duration::ofSeconds);
+        JSONBinding.OneStage<Boolean> EMBEDDABLE = identity("embed_enabled", JSONObject::getBoolean);
+        JSONBinding.TwoStage<Long, GuildChannel> EMBED_CHANNEL = cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JSONBinding.TwoStage<Integer, VerificationLevel> VERIFICATION_LEVEL = simple("verification_level", JSONObject::getInteger, VerificationLevel::valueOf);
+        JSONBinding.TwoStage<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple("default_message_notifications", JSONObject::getInteger, DefaultMessageNotificationLevel::valueOf);
+        JSONBinding.TwoStage<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple("explicit_content_filter", JSONObject::getInteger, ExplicitContentFilterLevel::valueOf);
+        JSONBinding.TriStage<JSONObject, Role> ROLES = serializableCollection("roles", Role.class);
+        JSONBinding.TriStage<JSONObject, CustomEmoji> EMOJIS = serializableCollection("emojis", CustomEmoji.class);
+        JSONBinding.TriStage<String, Feature> FEATURES = mappingCollection("features", JSONObject::getString, (api, key) -> Feature.valueOf(key));
+        JSONBinding.TwoStage<Integer, MFALevel> MFA_LEVEL = simple("mfa_level", JSONObject::getInteger, MFALevel::valueOf);
+        JSONBinding.TwoStage<Long, Snowflake> OWNER_APPLICATION_ID = api("application_id", JSONObject::getLong, (api, id) -> Adapter.require(Snowflake.class, api, id));
+        JSONBinding.OneStage<Boolean> WIDGETABLE = identity("widget_enabled", JSONObject::getBoolean);
+        JSONBinding.TwoStage<Long, GuildChannel> WIDGET_CHANNEL = cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JSONBinding.TwoStage<Long, GuildTextChannel> SYSTEM_CHANNEL = cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JSONBinding.TwoStage<String, Instant> JOINED_AT = simple("joined_at", JSONObject::getString, Instant::parse);
+        JSONBinding.OneStage<Boolean> LARGE = identity("large", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> UNAVAILABLE = identity("unavailable", JSONObject::getBoolean);
+        JSONBinding.OneStage<Integer> MEMBER_COUNT = identity("member_count", JSONObject::getInteger);
+        JSONBinding.TriStage<JSONObject, VoiceState> VOICE_STATES = serializableCollection("voice_states", VoiceState.class);
+        JSONBinding.TriStage<JSONObject, GuildMember> MEMBERS = serializableCollection("members", GuildMember.class);
+        JSONBinding.TriStage<JSONObject, GuildChannel> CHANNELS = serializableCollection("channels", GuildChannel.class);
+        JSONBinding.TriStage<JSONObject, Presence> PRESENCES = serializableCollection("presences", Presence.class);
+        JSONBinding.OneStage<Integer> MAXIMUM_PRESENCES = identity("max_presences", JSONObject::getInteger);
+        JSONBinding.OneStage<Integer> MAXIMUM_MEMBERS = identity("max_members", JSONObject::getInteger);
+        JSONBinding.TwoStage<String, URL> VANITY_INVITE_URL = simple("vanity_url_code", JSONObject::getString, code -> Util.createUrl$rethrow("https://discord.gg/" + code));
+        JSONBinding.OneStage<String> DESCRIPTION = identity("description", JSONObject::getString);
+        JSONBinding.OneStage<String> BANNER_HASH = identity("banner", JSONObject::getString);
+        JSONBinding.TwoStage<Integer, PremiumTier> PREMIUM_TIER = simple("premium_tier", JSONObject::getInteger, PremiumTier::valueOf);
+        JSONBinding.OneStage<Integer> PREMIUM_SUB_COUNT = identity("premium_subscription_count", JSONObject::getInteger);
+        JSONBinding.TwoStage<String, Locale> PREFERRED_LOCALE = simple("preferred_locale", JSONObject::getString, Locale::forLanguageTag);
     }
 
-    @JsonTraits(Embed.Trait.class)
+    @JSONBindingLocation(Embed.Trait.class)
     interface Embed extends Cacheable, JsonDeserializable {
         @CacheInformation.Marker
         CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Embed::getGuild);
@@ -412,16 +412,16 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         Guild getGuild();
 
         default boolean isEnabled() {
-            return getTraitValue(Trait.ENABLED);
+            return getBindingValue(JSON.ENABLED);
         }
 
         default Optional<GuildChannel> getChannel() {
-            return wrapTraitValue(Trait.CHANNEL);
+            return wrapBindingValue(JSON.CHANNEL);
         }
 
-        interface Trait {
-            JsonBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
-            JsonBinding.TwoStage<Long, GuildChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        interface JSON {
+            JSONBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
+            JSONBinding.TwoStage<Long, GuildChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
         }
 
         interface Updater {
@@ -438,7 +438,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         }
     }
 
-    @JsonTraits(Integration.Trait.class)
+    @JSONBindingLocation(Integration.Trait.class)
     interface Integration extends Snowflake, JsonDeserializable, Cacheable {
         @CacheInformation.Marker
         CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Integration::getGuild);
@@ -447,65 +447,65 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
 
         @IntroducedBy(GETTER)
         default String getName() {
-            return getTraitValue(Trait.NAME);
+            return getBindingValue(JSON.NAME);
         }
 
         @IntroducedBy(GETTER)
         default String getType() {
-            return getTraitValue(Trait.TYPE);
+            return getBindingValue(JSON.TYPE);
         }
 
         @IntroducedBy(GETTER)
         default boolean isEnabled() {
-            return getTraitValue(Trait.ENABLED);
+            return getBindingValue(JSON.ENABLED);
         }
 
         @IntroducedBy(GETTER)
         default boolean isSyncing() {
-            return getTraitValue(Trait.IS_SYNCING);
+            return getBindingValue(JSON.IS_SYNCING);
         }
 
         @IntroducedBy(GETTER)
         default Role getSubscriberRole() {
-            return getTraitValue(Trait.PREMIUM_ROLE);
+            return getBindingValue(JSON.PREMIUM_ROLE);
         }
 
         @IntroducedBy(GETTER)
         default int getExpireBehavior() {
-            return getTraitValue(Trait.EXPIRE_BEHAVIOR);
+            return getBindingValue(JSON.EXPIRE_BEHAVIOR);
         }
 
         @IntroducedBy(GETTER)
         default int getExpireGracePeriod() {
-            return getTraitValue(Trait.EXPIRE_GRACE_PERIOD);
+            return getBindingValue(JSON.EXPIRE_GRACE_PERIOD);
         }
 
         @IntroducedBy(GETTER)
         default User getUser() {
-            return getTraitValue(Trait.USER);
+            return getBindingValue(JSON.USER);
         }
 
         @IntroducedBy(GETTER)
         default Account getAccount() {
-            return getTraitValue(Trait.ACCOUNT);
+            return getBindingValue(JSON.ACCOUNT);
         }
 
         @IntroducedBy(GETTER)
         default Instant getSyncedAtTimestamp() {
-            return getTraitValue(Trait.SYNCED_AT);
+            return getBindingValue(JSON.SYNCED_AT);
         }
 
-        interface Trait extends Snowflake.Trait {
-            JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-            JsonBinding.OneStage<String> TYPE = identity("type", JSONObject::getString);
-            JsonBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
-            JsonBinding.OneStage<Boolean> IS_SYNCING = identity("syncing", JSONObject::getBoolean);
-            JsonBinding.TwoStage<Long, Role> PREMIUM_ROLE = cache("role_id", CacheManager::getRoleByID);
-            JsonBinding.OneStage<Integer> EXPIRE_BEHAVIOR = identity("expire_behavior", JSONObject::getInteger);
-            JsonBinding.OneStage<Integer> EXPIRE_GRACE_PERIOD = identity("expire_grace_period", JSONObject::getInteger);
-            JsonBinding.TwoStage<JSONObject, User> USER = serialize("user", User.class);
-            JsonBinding.TwoStage<JSONObject, Account> ACCOUNT = serialize("account", Account.class);
-            JsonBinding.TwoStage<String, Instant> SYNCED_AT = simple("synced_at", JSONObject::getString, Instant::parse);
+        interface JSON extends Snowflake.Trait {
+            JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+            JSONBinding.OneStage<String> TYPE = identity("type", JSONObject::getString);
+            JSONBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
+            JSONBinding.OneStage<Boolean> IS_SYNCING = identity("syncing", JSONObject::getBoolean);
+            JSONBinding.TwoStage<Long, Role> PREMIUM_ROLE = cache("role_id", CacheManager::getRoleByID);
+            JSONBinding.OneStage<Integer> EXPIRE_BEHAVIOR = identity("expire_behavior", JSONObject::getInteger);
+            JSONBinding.OneStage<Integer> EXPIRE_GRACE_PERIOD = identity("expire_grace_period", JSONObject::getInteger);
+            JSONBinding.TwoStage<JSONObject, User> USER = require("user", User.class);
+            JSONBinding.TwoStage<JSONObject, Account> ACCOUNT = require("account", Account.class);
+            JSONBinding.TwoStage<String, Instant> SYNCED_AT = simple("synced_at", JSONObject::getString, Instant::parse);
         }
 
         @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-integration")
@@ -528,19 +528,19 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                     .executeAs(data -> null);
         }
 
-        @JsonTraits(Account.Trait.class)
+        @JSONBindingLocation(Account.Trait.class)
         interface Account extends JsonDeserializable {
             default String getID() {
-                return getTraitValue(Trait.ID);
+                return getBindingValue(JSON.ID);
             }
 
             default String getName() {
-                return getTraitValue(Trait.NAME);
+                return getBindingValue(JSON.NAME);
             }
 
-            interface Trait {
-                JsonBinding.OneStage<String> ID = identity("id", JSONObject::getString);
-                JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+            interface JSON {
+                JSONBinding.OneStage<String> ID = identity("id", JSONObject::getString);
+                JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
             }
         }
 

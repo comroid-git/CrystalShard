@@ -9,13 +9,13 @@ import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 public interface JsonDeserializable extends ApiBound, Cloneable {
-    Set<JsonBinding> bindings();
+    Set<JSONBinding> bindings();
 
-    <S, T> @Nullable T getTraitValue(JsonBinding<?, S, ?, T> trait);
+    <S, T> @Nullable T getBindingValue(JSONBinding<?, S, ?, T> trait);
 
-    default <T> Optional<T> wrapTraitValue(JsonBinding<?, ?, ?, T> trait) {
-        return Optional.ofNullable(getTraitValue(trait));
+    default <T> Optional<T> wrapBindingValue(JSONBinding<?, ?, ?, T> trait) {
+        return Optional.ofNullable(getBindingValue(trait));
     }
     
-    Set<JsonBinding> updateFromJson(final JSONObject data);
+    Set<JSONBinding> updateFromJson(final JSONObject data);
 }

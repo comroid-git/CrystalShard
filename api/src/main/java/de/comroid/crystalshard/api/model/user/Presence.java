@@ -9,6 +9,7 @@ import java.util.OptionalInt;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import org.intellij.lang.annotations.MagicConstant;
@@ -24,7 +25,7 @@ public interface Presence extends JsonDeserializable { // todo serialize
 
     ClientStatus getClientStatus();
 
-    interface ClientStatus {
+    interface ClientStatus extends JsonDeserializable { // todo serialize
         Status getDesktopStatus();
 
         Status getMobileStatus();
@@ -32,7 +33,7 @@ public interface Presence extends JsonDeserializable { // todo serialize
         Status getWebStatus();
     }
 
-    interface Activity {
+    interface Activity extends JsonDeserializable { // todo serialize
         String getName();
 
         Type getType();

@@ -13,7 +13,7 @@ import de.comroid.crystalshard.api.model.guild.invite.Invite;
 import de.comroid.crystalshard.api.model.permission.PermissionOverride;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Contract;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.NotNull;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 
 public interface GuildChannel extends Channel {
     Comparator<GuildChannel> GUILD_CHANNEL_COMPARATOR = Comparator.comparingInt(GuildChannel::getPosition);
@@ -39,27 +39,27 @@ public interface GuildChannel extends Channel {
 
     @IntroducedBy(GETTER)
     default Guild getGuild() {
-        return getTraitValue(Trait.GUILD);
+        return getBindingValue(JSON.GUILD);
     }
 
     @IntroducedBy(GETTER)
     default int getPosition() {
-        return getTraitValue(Trait.POSITION);
+        return getBindingValue(JSON.POSITION);
     }
 
     @IntroducedBy(GETTER)
     default Collection<PermissionOverride> getPermissionOverrides() {
-        return getTraitValue(Trait.PERMISSION_OVERRIDES);
+        return getBindingValue(JSON.PERMISSION_OVERRIDES);
     }
 
     @IntroducedBy(GETTER)
     default String getName() {
-        return getTraitValue(Trait.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildChannelCategory> getCategory() {
-        return wrapTraitValue(Trait.CATEGORY);
+        return wrapBindingValue(JSON.CATEGORY);
     }
 
     @IntroducedBy(API)
@@ -69,12 +69,12 @@ public interface GuildChannel extends Channel {
         return Invite.builder(this);
     }
 
-    interface Trait extends Channel.Trait {
-        JsonBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
-        JsonBinding.TriStage<JSONObject, PermissionOverride> PERMISSION_OVERRIDES = serializableCollection("permission_overwrites", PermissionOverride.class);
-        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-        JsonBinding.TwoStage<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
+    interface JSON extends Channel.Trait {
+        JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JSONBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
+        JSONBinding.TriStage<JSONObject, PermissionOverride> PERMISSION_OVERRIDES = serializableCollection("permission_overwrites", PermissionOverride.class);
+        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+        JSONBinding.TwoStage<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
                 (CacheManager cache, Long id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannelCategory));
     }
 

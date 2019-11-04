@@ -6,11 +6,11 @@ import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSONObject;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 
 public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
     @Override
@@ -24,11 +24,11 @@ public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
     }
 
     default Optional<Integer> getUserLimit() {
-        return wrapTraitValue(Trait.USER_LIMIT);
+        return wrapBindingValue(JSON.USER_LIMIT);
     }
 
-    interface Trait extends GuildChannel.Trait, VoiceChannel.Trait {
-        JsonBinding.OneStage<Integer> USER_LIMIT = identity("user_limit", JSONObject::getInteger);
+    interface JSON extends GuildChannel.Trait, VoiceChannel.Trait {
+        JSONBinding.OneStage<Integer> USER_LIMIT = identity("user_limit", JSONObject::getInteger);
     }
 
     Updater createUpdater();

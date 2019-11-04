@@ -24,9 +24,9 @@ import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
@@ -34,53 +34,53 @@ import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JsonTraits(User.Trait.class)
+@JSONBindingLocation(User.Trait.class)
 public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.User<? extends UserEvent>>, JsonDeserializable {
     default String getUsername() {
-        return getTraitValue(Trait.USERNAME);
+        return getBindingValue(JSON.USERNAME);
     }
 
     default String getDiscriminator() {
-        return getTraitValue(Trait.DISCRIMINATOR);
+        return getBindingValue(JSON.DISCRIMINATOR);
     }
 
     default URL getAvatarURL() {
-        return wrapTraitValue(Trait.AVATAR_HASH)
+        return wrapBindingValue(JSON.AVATAR_HASH)
                 .map(hash -> ImageHelper.USER_AVATAR.url(FileType.PNG, getID(), hash))
                 .orElseGet(() -> ImageHelper.DEFAULT_USER_AVATAR.url(FileType.PNG, getDiscriminator()));
     }
 
     default boolean isBot() {
-        return getTraitValue(Trait.BOT);
+        return getBindingValue(JSON.BOT);
     }
 
     default boolean hasMFA() {
-        return getTraitValue(Trait.MFA);
+        return getBindingValue(JSON.MFA);
     }
 
     default Optional<Locale> getLocale() {
-        return wrapTraitValue(Trait.LOCALE);
+        return wrapBindingValue(JSON.LOCALE);
     }
 
     default Optional<Boolean> isVerified() {
-        return wrapTraitValue(Trait.VERIFIED);
+        return wrapBindingValue(JSON.VERIFIED);
     }
 
     default Optional<String> getEMailAddress() {
-        return wrapTraitValue(Trait.EMAIL);
+        return wrapBindingValue(JSON.EMAIL);
     }
 
     default @MagicConstant(flagsFromClass = Flags.class) int getFlags() {
-        return getTraitValue(Trait.FLAGS);
+        return getBindingValue(JSON.FLAGS);
     }
 
     default Optional<PremiumType> getPremiumType() {
-        return wrapTraitValue(Trait.PREMIUM_TYPE);
+        return wrapBindingValue(JSON.PREMIUM_TYPE);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/user#create-dm")
@@ -102,68 +102,68 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
                         .updateOrCreateAndGet(User.class, id, data));
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.OneStage<String> USERNAME = identity("username", JSONObject::getString);
-        JsonBinding.OneStage<String> DISCRIMINATOR = identity("discriminator", JSONObject::getString);
-        JsonBinding.OneStage<String> AVATAR_HASH = identity("avatar", JSONObject::getString);
-        JsonBinding.OneStage<Boolean> BOT = identity("bot", JSONObject::getBoolean);
-        JsonBinding.OneStage<Boolean> MFA = identity("mfa_enabled", JSONObject::getBoolean);
-        JsonBinding.TwoStage<String, Locale> LOCALE = simple("locale", JSONObject::getString, Locale::forLanguageTag);
-        JsonBinding.OneStage<Boolean> VERIFIED = identity("verified", JSONObject::getBoolean);
-        JsonBinding.OneStage<String> EMAIL = identity("email", JSONObject::getString);
-        JsonBinding.OneStage<Integer> FLAGS = identity("flags", JSONObject::getInteger);
-        JsonBinding.TwoStage<Integer, PremiumType> PREMIUM_TYPE = simple("premium_type", JSONObject::getInteger, PremiumType::valueOf);
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.OneStage<String> USERNAME = identity("username", JSONObject::getString);
+        JSONBinding.OneStage<String> DISCRIMINATOR = identity("discriminator", JSONObject::getString);
+        JSONBinding.OneStage<String> AVATAR_HASH = identity("avatar", JSONObject::getString);
+        JSONBinding.OneStage<Boolean> BOT = identity("bot", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> MFA = identity("mfa_enabled", JSONObject::getBoolean);
+        JSONBinding.TwoStage<String, Locale> LOCALE = simple("locale", JSONObject::getString, Locale::forLanguageTag);
+        JSONBinding.OneStage<Boolean> VERIFIED = identity("verified", JSONObject::getBoolean);
+        JSONBinding.OneStage<String> EMAIL = identity("email", JSONObject::getString);
+        JSONBinding.OneStage<Integer> FLAGS = identity("flags", JSONObject::getInteger);
+        JSONBinding.TwoStage<Integer, PremiumType> PREMIUM_TYPE = simple("premium_type", JSONObject::getInteger, PremiumType::valueOf);
     }
 
     @MainAPI
-    @JsonTraits(Connection.Trait.class)
+    @JSONBindingLocation(Connection.Trait.class)
     interface Connection extends JsonDeserializable {
         default String getID() {
-            return getTraitValue(Trait.ID);
+            return getBindingValue(JSON.ID);
         }
 
         default String getName() {
-            return getTraitValue(Trait.NAME);
+            return getBindingValue(JSON.NAME);
         }
 
         default String getType() {
-            return getTraitValue(Trait.TYPE);
+            return getBindingValue(JSON.TYPE);
         }
 
         default boolean isRevoked() {
-            return getTraitValue(Trait.REVOKED);
+            return getBindingValue(JSON.REVOKED);
         }
 
         default Collection<Guild.Integration> getIntegrations() {
-            return getTraitValue(Trait.INTEGRATIONS);
+            return getBindingValue(JSON.INTEGRATIONS);
         }
 
         default boolean isVerified() {
-            return getTraitValue(Trait.VERIFIED);
+            return getBindingValue(JSON.VERIFIED);
         }
 
         default boolean hasFriendSync() {
-            return getTraitValue(Trait.FRIEND_SYNC);
+            return getBindingValue(JSON.FRIEND_SYNC);
         }
 
         default boolean showActivities() {
-            return getTraitValue(Trait.SHOW_ACTIVITY);
+            return getBindingValue(JSON.SHOW_ACTIVITY);
         }
 
         default Visibility getVisibility() {
-            return getTraitValue(Trait.VISIBILITY);
+            return getBindingValue(JSON.VISIBILITY);
         }
 
-        interface Trait {
-            JsonBinding.OneStage<String> ID = identity("id", JSONObject::getString);
-            JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-            JsonBinding.OneStage<String> TYPE = identity("type", JSONObject::getString);
-            JsonBinding.OneStage<Boolean> REVOKED = identity("revoked", JSONObject::getBoolean);
-            JsonBinding.TriStage<JSONObject, Guild.Integration> INTEGRATIONS = serializableCollection("integrations", Guild.Integration.class);
-            JsonBinding.OneStage<Boolean> VERIFIED = identity("verified", JSONObject::getBoolean);
-            JsonBinding.OneStage<Boolean> FRIEND_SYNC = identity("friend_sync", JSONObject::getBoolean);
-            JsonBinding.OneStage<Boolean> SHOW_ACTIVITY = identity("show_activity", JSONObject::getBoolean);
-            JsonBinding.TwoStage<Integer, Visibility> VISIBILITY = simple("visibility", JSONObject::getInteger, Visibility::valueOf);
+        interface JSON {
+            JSONBinding.OneStage<String> ID = identity("id", JSONObject::getString);
+            JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+            JSONBinding.OneStage<String> TYPE = identity("type", JSONObject::getString);
+            JSONBinding.OneStage<Boolean> REVOKED = identity("revoked", JSONObject::getBoolean);
+            JSONBinding.TriStage<JSONObject, Guild.Integration> INTEGRATIONS = serializableCollection("integrations", Guild.Integration.class);
+            JSONBinding.OneStage<Boolean> VERIFIED = identity("verified", JSONObject::getBoolean);
+            JSONBinding.OneStage<Boolean> FRIEND_SYNC = identity("friend_sync", JSONObject::getBoolean);
+            JSONBinding.OneStage<Boolean> SHOW_ACTIVITY = identity("show_activity", JSONObject::getBoolean);
+            JSONBinding.TwoStage<Integer, Visibility> VISIBILITY = simple("visibility", JSONObject::getInteger, Visibility::valueOf);
         }
 
         enum Visibility {

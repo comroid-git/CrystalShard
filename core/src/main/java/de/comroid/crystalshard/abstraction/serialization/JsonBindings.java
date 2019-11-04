@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.util.Util;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -20,7 +20,7 @@ import static de.comroid.crystalshard.CrystalShard.PLEASE_REPORT;
 
 public class JsonBindings {
     private static abstract class Abstract<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT>
-            implements JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> {
+            implements JSONBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> {
         protected final String fieldName;
         protected final BiFunction<JSON_TYPE, String, STAGE_ONE> extractor;
 
@@ -46,7 +46,7 @@ public class JsonBindings {
 
     public static class OneStageImpl$Identity<T>
             extends Abstract<JSONObject, T, T, T>
-            implements JsonBinding.OneStage<T> {
+            implements JSONBinding.OneStage<T> {
 
         public OneStageImpl$Identity(String fieldName, BiFunction<JSONObject, String, T> extractor) {
             super(fieldName, extractor);
@@ -60,7 +60,7 @@ public class JsonBindings {
 
     public static class TwoStageImpl$Simple<S, T>
             extends Abstract<JSONObject, S, S, T>
-            implements JsonBinding.TwoStage<S, T> {
+            implements JSONBinding.TwoStage<S, T> {
         private final Function<S, T> mapper;
 
         public TwoStageImpl$Simple(String fieldName, BiFunction<JSONObject, String, S> extractor, Function<S, T> mapper) {
@@ -77,7 +77,7 @@ public class JsonBindings {
 
     public static class TwoStageImpl$Api<S, T>
             extends Abstract<JSONObject, S, S, T>
-            implements JsonBinding.TwoStage<S, T> {
+            implements JSONBinding.TwoStage<S, T> {
         private final BiFunction<Discord, S, T> apiMapper;
 
         private TwoStageImpl$Api(String fieldName, BiFunction<JSONObject, String, S> extractor, BiFunction<Discord, S, T> apiMapper) {
@@ -94,7 +94,7 @@ public class JsonBindings {
 
     public static class TriStageImpl$UnderlyingMapped<S, T>
             extends Abstract<JSONArray, List<S>, List<S>, Collection<T>>
-            implements JsonBinding.TriStage<S, T> {
+            implements JSONBinding.TriStage<S, T> {
         private final BiFunction<Discord, S, T> eachMapper;
 
         public TriStageImpl$UnderlyingMapped(String fieldName, BiFunction<JSONArray, String, List<S>> extractor, BiFunction<Discord, S, T> eachMapper) {

@@ -1,13 +1,10 @@
 package de.comroid.crystalshard.core.cache;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.core.api.cache.Cache;
@@ -55,7 +52,7 @@ public class CacheImpl<T extends Cacheable> implements Cache<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <M extends Cacheable> Optional<M> setSingleton(long baseId, Class<M> memberType, M inst) {
-        if (!inst.isSingletonType())
+        if (Cacheable.getCacheInfo(inst).map(cacheInformation -> cacheInformation.type() == 1).orElse(true))
             throw new IllegalArgumentException(inst + " is not a Singleton Cacheable type!");
 
         return Optional.ofNullable((M) singletonMap.compute(baseId,
@@ -81,31 +78,24 @@ public class CacheImpl<T extends Cacheable> implements Cache<T> {
     }
 
     @Override
-    public Collection<Snowflake> getSnowflakesByID(long id) {
+    public Stream<Snowflake> streamSnowflakesByID(long id) {
         @Nullable T baseCacheResult = cache.get(id);
 
-        List<Snowflake> subCacheResults = subCaches.values()
+        @SuppressWarnings("unchecked")
+        Stream<Snowflake> subCacheResults = subCaches.values()
                 .stream()
                 .flatMap(map -> map.values().stream())
-                .map(cache -> cache.getSnowflakesByID(id))
-                .flatMap(Collection::stream)
-                .map(Snowflake.class::cast)
-                .filter(flake -> flake.getID() == id)
-                .collect(Collectors.toList());
+                .<Snowflake>flatMap(cache -> cache.streamSnowflakesByID(id))
+                .filter(flake -> flake.getID() == id);
 
-        List<Snowflake> singletonCacheResults = singletonMap.values()
+        Stream<Snowflake> singletonCacheResults = singletonMap.values()
                 .stream()
                 .flatMap(map -> map.values().stream())
                 .map(Snowflake.class::cast)
-                .filter(flake -> flake.getID() == id)
-                .collect(Collectors.toList());
+                .filter(flake -> flake.getID() == id);
 
-        Collection<Snowflake> yields = new ArrayList<>();
-        if (baseCacheResult != null) yields.add((Snowflake) baseCacheResult);
-        yields.addAll(subCacheResults);
-        yields.addAll(singletonCacheResults);
-
-        return Collections.unmodifiableCollection(yields);
+        return Stream.concat(Stream.of((Snowflake) baseCacheResult), Stream.concat(subCacheResults, singletonCacheResults))
+                .filter(Objects::nonNull);
     }
 
     @Override

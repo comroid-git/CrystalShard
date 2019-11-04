@@ -8,37 +8,37 @@ import java.util.Optional;
 import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.Util;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JsonTraits(MessageApplication.Trait.class)
+@JSONBindingLocation(MessageApplication.Trait.class)
 public interface MessageApplication extends Snowflake {
     default Optional<URL> getCoverImageURL() {
-        return wrapTraitValue(Trait.COVER_IMAGE_URL);
+        return wrapBindingValue(JSON.COVER_IMAGE_URL);
     }
 
     default String getDescription() {
-        return getTraitValue(Trait.DESCRIPTION);
+        return getBindingValue(JSON.DESCRIPTION);
     }
 
     default Optional<URL> getIconURL() {
-        return wrapTraitValue(Trait.ICON_URL);
+        return wrapBindingValue(JSON.ICON_URL);
     }
 
     default String getName() {
-        return getTraitValue(Trait.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.TwoStage<String, URL> COVER_IMAGE_URL = simple("cover_image", JSONObject::getString, Util::createUrl$rethrow);
-        JsonBinding.OneStage<String> DESCRIPTION = identity("description", JSONObject::getString);
-        JsonBinding.TwoStage<String, URL> ICON_URL = simple("icon", JSONObject::getString, Util::createUrl$rethrow);
-        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.TwoStage<String, URL> COVER_IMAGE_URL = simple("cover_image", JSONObject::getString, Util::createUrl$rethrow);
+        JSONBinding.OneStage<String> DESCRIPTION = identity("description", JSONObject::getString);
+        JSONBinding.TwoStage<String, URL> ICON_URL = simple("icon", JSONObject::getString, Util::createUrl$rethrow);
+        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
     }
 }

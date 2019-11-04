@@ -7,45 +7,45 @@ import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JsonTraits(Reaction.Trait.class)
+@JSONBindingLocation(Reaction.Trait.class)
 public interface Reaction extends JsonDeserializable, Cacheable {
     @CacheInformation.Marker
     CacheInformation<Message> CACHE_INFORMATION = makeSubcacheableInfo(Message.class, Reaction::getMessage);
     
     @IntroducedBy(GETTER)
     default int getCount() {
-        return getTraitValue(Trait.COUNT);
+        return getBindingValue(JSON.COUNT);
     }
 
     @IntroducedBy(GETTER)
     default boolean haveYouReacted() {
-        return getTraitValue(Trait.ME);
+        return getBindingValue(JSON.ME);
     }
 
     @IntroducedBy(GETTER)
     default Emoji getEmoji() {
-        return getTraitValue(Trait.EMOJI);
+        return getBindingValue(JSON.EMOJI);
     }
     
     @IntroducedBy(PRODUCTION)
     Message getMessage();
 
-    interface Trait {
-        JsonBinding.OneStage<Integer> COUNT = identity("count", JSONObject::getInteger);
-        JsonBinding.OneStage<Boolean> ME = identity("me", JSONObject::getBoolean);
-        JsonBinding.TwoStage<JSONObject, Emoji> EMOJI = serialize("emoji", Emoji.class);
+    interface JSON {
+        JSONBinding.OneStage<Integer> COUNT = identity("count", JSONObject::getInteger);
+        JSONBinding.OneStage<Boolean> ME = identity("me", JSONObject::getBoolean);
+        JSONBinding.TwoStage<JSONObject, Emoji> EMOJI = require("emoji", Emoji.class);
     }
 }

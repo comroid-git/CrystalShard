@@ -17,14 +17,14 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.TypeGroup;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.Util.hackCast;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 public interface Channel extends 
         Snowflake, 
@@ -34,7 +34,7 @@ public interface Channel extends
         Cacheable {
     @IntroducedBy(API)
     default ChannelType getChannelType() {
-        return getTraitValue(Trait.CHANNEL_TYPE);
+        return getBindingValue(JSON.CHANNEL_TYPE);
     }
 
     @Override
@@ -110,8 +110,7 @@ public interface Channel extends
         return Adapter.<Channel>request(api)
                 .endpoint(DiscordEndpoint.CHANNEL, id)
                 .method(RestMethod.GET)
-                .executeAs(data -> api.getCacheManager()
-                        .updateOrCreateAndGet(Channel.class, id, data));
+                .executeAs(json -> Adapter.require(Channel.class, api, json));
     }
 
     interface Builder<R extends Channel, Self extends Channel.Builder> extends TypeGroup<Builder<R, Self>> {
@@ -203,8 +202,8 @@ public interface Channel extends
         }
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.TwoStage<String, ChannelType> CHANNEL_TYPE = simple("type", JSONObject::getString, ChannelType::valueOf);
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.TwoStage<String, ChannelType> CHANNEL_TYPE = simple("type", JSONObject::getString, ChannelType::valueOf);
     }
 
     interface Default {

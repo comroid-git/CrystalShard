@@ -6,47 +6,47 @@ import java.util.Optional;
 import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.Util;
-import de.comroid.crystalshard.util.model.serialization.JsonBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonTraits;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JsonTraits(MessageAttachment.Trait.class)
+@JSONBindingLocation(MessageAttachment.Trait.class)
 public interface MessageAttachment extends Snowflake {
     default String getFilename() {
-        return getTraitValue(Trait.FILENAME);
+        return getBindingValue(JSON.FILENAME);
     }
 
     default int getFilesize() {
-        return getTraitValue(Trait.SIZE);
+        return getBindingValue(JSON.SIZE);
     }
 
     default URL getURL() {
-        return getTraitValue(Trait.URL);
+        return getBindingValue(JSON.URL);
     }
 
     default URL getProxyURL() {
-        return getTraitValue(Trait.PROXY_URL);
+        return getBindingValue(JSON.PROXY_URL);
     }
 
     default Optional<Integer> getHeight() {
-        return wrapTraitValue(Trait.HEIGHT);
+        return wrapBindingValue(JSON.HEIGHT);
     }
 
     default Optional<Integer> getWidth() {
-        return wrapTraitValue(Trait.WIDTH);
+        return wrapBindingValue(JSON.WIDTH);
     }
 
-    interface Trait extends Snowflake.Trait {
-        JsonBinding.OneStage<String> FILENAME = identity("filename", JSONObject::getString);
-        JsonBinding.OneStage<Integer> SIZE = identity("size", JSONObject::getInteger);
-        JsonBinding.TwoStage<String, URL> URL = simple("url", JSONObject::getString, Util::createUrl$rethrow);
-        JsonBinding.TwoStage<String, URL> PROXY_URL = simple("proxy_url", JSONObject::getString, Util::createUrl$rethrow);
-        JsonBinding.OneStage<Integer> HEIGHT = identity("height", JSONObject::getInteger);
-        JsonBinding.OneStage<Integer> WIDTH = identity("width", JSONObject::getInteger);
+    interface JSON extends Snowflake.Trait {
+        JSONBinding.OneStage<String> FILENAME = identity("filename", JSONObject::getString);
+        JSONBinding.OneStage<Integer> SIZE = identity("size", JSONObject::getInteger);
+        JSONBinding.TwoStage<String, URL> URL = simple("url", JSONObject::getString, Util::createUrl$rethrow);
+        JSONBinding.TwoStage<String, URL> PROXY_URL = simple("proxy_url", JSONObject::getString, Util::createUrl$rethrow);
+        JSONBinding.OneStage<Integer> HEIGHT = identity("height", JSONObject::getInteger);
+        JSONBinding.OneStage<Integer> WIDTH = identity("width", JSONObject::getInteger);
     }
 }
