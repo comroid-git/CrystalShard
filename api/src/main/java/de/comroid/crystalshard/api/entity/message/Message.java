@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.channel.TextChannel;
@@ -41,8 +42,7 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
 
 import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
@@ -51,10 +51,12 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.mappingCollection;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
+@MainAPI
 @JsonTraits(Message.Trait.class)
 public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
     @CacheInformation.Marker
@@ -171,30 +173,30 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonBinding<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
-        JsonBinding<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonBinding<JsonNode, User> USER_AUTHOR = underlying("author", User.class);
-        JsonBinding<JsonNode, Webhook> WEBHOOK_AUTHOR = null; // todo
-        JsonBinding<String, String> CONTENT = identity(JsonNode::asText, "content");
-        JsonBinding<String, Instant> SENT_TIMESTAMP = simple(JsonNode::asText, "timestamp", Instant::parse);
-        JsonBinding<String, Instant> EDITED_TIMESTAMP = simple(JsonNode::asText, "edited_timestamp", Instant::parse);
-        JsonBinding<Boolean, Boolean> TTS = identity(JsonNode::asBoolean, "tts");
-        JsonBinding<Boolean, Boolean> MENTIONS_EVERYONE = identity(JsonNode::asBoolean, "mention_everyone");
-        JsonBinding<ArrayNode, Collection<User>> MENTIONED_USERS = underlyingMappingCollection("mentions", User.class);
-        JsonBinding<ArrayNode, Collection<Role>> MENTIONED_ROLES = underlyingMappingCollection("mention_roles", Role.class, (api, data) -> api.getCacheManager()
-                .getByID(Role.class, data.asLong())
+        JsonBinding.TwoStage<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
+        JsonBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonBinding.TwoStage<JSONObject, User> USER_AUTHOR = serialize("author", User.class);
+        JsonBinding.TwoStage<JSONObject, Webhook> WEBHOOK_AUTHOR = serialize("webhook", Webhook.class);
+        JsonBinding.OneStage<String> CONTENT = identity("content", JSONObject::getString);
+        JsonBinding.TwoStage<String, Instant> SENT_TIMESTAMP = simple("timestamp", JSONObject::getString, Instant::parse);
+        JsonBinding.TwoStage<String, Instant> EDITED_TIMESTAMP = simple("edited_timestamp", JSONObject::getString, Instant::parse);
+        JsonBinding.OneStage<Boolean> TTS = identity("tts", JSONObject::getBoolean);
+        JsonBinding.OneStage<Boolean> MENTIONS_EVERYONE = identity("mention_everyone", JSONObject::getBoolean);
+        JsonBinding.TriStage<JSONObject, User> MENTIONED_USERS = serializableCollection("mentions", User.class);
+        JsonBinding.TriStage<Long, Role> MENTIONED_ROLES = mappingCollection("mention_roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
+                .getByID(Role.class, id)
                 .orElseThrow());
-        JsonBinding<ArrayNode, Collection<ChannelMention>> MENTIONED_CHANNELS = underlyingMappingCollection("mention_channels", ChannelMention.class);
-        JsonBinding<ArrayNode, Collection<MessageAttachment>> ATTACHMENTS = underlyingMappingCollection("attachments", MessageAttachment.class);
-        JsonBinding<ArrayNode, Collection<ActiveEmbed>> EMBEDS = underlyingMappingCollection("embeds", ActiveEmbed.class);
-        JsonBinding<ArrayNode, Collection<Reaction>> CURRENT_REACTIONS = underlyingMappingCollection("reactions", Reaction.class);
-        JsonBinding<Long, Snowflake> NONCE = simple(JsonNode::asLong, "nonce", id -> Adapter.require(Snowflake.class, id));
-        JsonBinding<Boolean, Boolean> PINNED = identity(JsonNode::asBoolean, "pinned");
-        JsonBinding<Integer, MessageType> TYPE = simple(JsonNode::asInt, "type", MessageType::valueOf);
-        JsonBinding<JsonNode, MessageActivity> ACTIVITY = underlying("activity", MessageActivity.class);
-        JsonBinding<JsonNode, MessageApplication> APPLICATION = underlying("application", MessageApplication.class);
-        JsonBinding<JsonNode, MessageReference> REFERENCED_MESSAGE = underlying("message_reference", MessageReference.class);
-        JsonBinding<Integer, Integer> FLAGS = identity(JsonNode::asInt, "flags");
+        JsonBinding.TriStage<JSONObject, ChannelMention> MENTIONED_CHANNELS = serializableCollection("mention_channels", ChannelMention.class);
+        JsonBinding.TriStage<JSONObject, MessageAttachment> ATTACHMENTS = serializableCollection("attachments", MessageAttachment.class);
+        JsonBinding.TriStage<JSONObject, ActiveEmbed> EMBEDS = serializableCollection("embeds", ActiveEmbed.class);
+        JsonBinding.TriStage<JSONObject, Reaction> CURRENT_REACTIONS = serializableCollection("reactions", Reaction.class);
+        JsonBinding.TwoStage<Long, Snowflake> NONCE = simple("nonce", JSONObject::getLong, id -> Adapter.require(Snowflake.class, id));
+        JsonBinding.OneStage<Boolean> PINNED = identity("pinned", JSONObject::getBoolean);
+        JsonBinding.TwoStage<Integer, MessageType> TYPE = simple("type", JSONObject::getInteger, MessageType::valueOf);
+        JsonBinding.TwoStage<JSONObject, MessageActivity> ACTIVITY = serialize("activity", MessageActivity.class);
+        JsonBinding.TwoStage<JSONObject, MessageApplication> APPLICATION = serialize("application", MessageApplication.class);
+        JsonBinding.TwoStage<JSONObject, MessageReference> REFERENCED_MESSAGE = serialize("message_reference", MessageReference.class);
+        JsonBinding.OneStage<Integer> FLAGS = identity("flags", JSONObject::getInteger);
     }
     
     @IntroducedBy(API)

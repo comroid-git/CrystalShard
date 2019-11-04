@@ -7,7 +7,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import de.comroid.crystalshard.abstraction.AbstractCloneable;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.util.Util;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
@@ -15,20 +14,15 @@ import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.CrystalShard.PLEASE_REPORT;
 
 public class JsonBindings {
     private static abstract class Abstract<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT>
-            extends AbstractCloneable<JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT>>
             implements JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> {
         protected final String fieldName;
         protected final BiFunction<JSON_TYPE, String, STAGE_ONE> extractor;
-
-        protected @Nullable Discord api;
 
         private Abstract(String fieldName, BiFunction<JSON_TYPE, String, STAGE_ONE> extractor) {
             this.fieldName = fieldName;
@@ -38,21 +32,6 @@ public class JsonBindings {
         @Override
         public @NotNull String fieldName() {
             return fieldName;
-        }
-
-        @Override
-        @Contract("null -> fail; _ -> _")
-        public JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> cloneWithApi(Discord api) {
-            if (api != null)
-                throw new UnsupportedOperationException("Cannot clone this instance!" + PLEASE_REPORT);
-
-            final JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> clone = clone();
-
-            if (clone instanceof Abstract)
-                ((Abstract) clone).api = api;
-            else throw new UnsupportedOperationException("Clone not supported properly." + PLEASE_REPORT);
-
-            return clone;
         }
 
         @Override
@@ -74,14 +53,7 @@ public class JsonBindings {
         }
 
         @Override
-        @Contract(pure = true)
-        public JsonBinding<JSONObject, T, T, T> clone() {
-            return new OneStageImpl$Identity<>(fieldName, extractor);
-        }
-
-        @Override
-        @Contract("null -> null; _ -> _")
-        public T apply(T type_in) {
+        public T apply(Discord api, T type_in) {
             return type_in;
         }
     }
@@ -98,14 +70,7 @@ public class JsonBindings {
         }
 
         @Override
-        @Contract(pure = true)
-        public JsonBinding<JSONObject, S, S, T> clone() {
-            return new TwoStageImpl$Simple<>(fieldName, extractor, mapper);
-        }
-
-        @Override
-        @Contract("null -> null; _ -> _")
-        public T apply(S type_in) {
+        public T apply(Discord api, S type_in) {
             return mapper.apply(type_in);
         }
     }
@@ -122,14 +87,7 @@ public class JsonBindings {
         }
 
         @Override
-        @Contract(pure = true)
-        public JsonBinding<JSONObject, S, S, T> clone() {
-            return new TwoStageImpl$Api<>(fieldName, extractor, apiMapper);
-        }
-
-        @Override
-        @Contract("null -> null; _ -> _")
-        public T apply(S type_in) {
+        public T apply(Discord api, S type_in) {
             return apiMapper.apply(api, type_in);
         }
     }
@@ -149,13 +107,7 @@ public class JsonBindings {
         }
 
         @Override
-        @Contract(pure = true)
-        public JsonBinding<JSONArray, List<S>, List<S>, Collection<T>> clone() {
-            return new TriStageImpl$UnderlyingMapped<>(fieldName, extractor, eachMapper);
-        }
-
-        @Override
-        public Collection<T> apply(List<S> type_in) {
+        public Collection<T> apply(Discord api, List<S> type_in) {
             return Util.quickStream(250, type_in)
                     .map(it -> eachMapper.apply(api, it))
                     .collect(Collectors.toList());

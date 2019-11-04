@@ -7,9 +7,10 @@ import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.event.role.RoleEvent;
-import de.comroid.crystalshard.api.listener.AttachableTo;
+import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.permission.PermissionOverridable;
@@ -19,7 +20,10 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
+import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,11 +31,15 @@ import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableI
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
+@MainAPI
+@JsonTraits(Role.Trait.class)
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
-public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<AttachableTo.Role<? extends RoleEvent>> {
+public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.Role<? extends RoleEvent>> {
     Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(de.comroid.crystalshard.api.entity.guild.Role::getPosition);
-    
+
     @CacheInformation.Marker
     CacheInformation<Guild> CACHE_INFORMATION = makeSubcacheableInfo(Guild.class, de.comroid.crystalshard.api.entity.guild.Role::getGuild);
 
@@ -48,25 +56,39 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
     Guild getGuild();
 
     @IntroducedBy(GETTER)
-    String getName();
+    default String getName() {
+        return getTraitValue(Trait.NAME);
+    }
 
     @IntroducedBy(GETTER)
-    Optional<Color> getColor();
+    default Optional<Color> getColor() {
+        return wrapTraitValue(Trait.COLOR);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isHoisted();
+    default boolean isHoisted() {
+        return getTraitValue(Trait.HOIST);
+    }
 
     @IntroducedBy(GETTER)
-    int getPosition();
+    default int getPosition() {
+        return getTraitValue(Trait.POSITION);
+    }
 
     @IntroducedBy(GETTER)
-    PermissionOverride getPermissions();
+    default PermissionOverride getPermissions() {
+        return getTraitValue(Trait.PERMISSIONS);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isManaged();
+    default boolean isManaged() {
+        return getTraitValue(Trait.MANAGED);
+    }
 
     @IntroducedBy(GETTER)
-    boolean isMentionable();
+    default boolean isMentionable() {
+        return getTraitValue(Trait.MENTIONABLE);
+    }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-role")
     default CompletableFuture<Void> delete() {
@@ -76,6 +98,16 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
                 .executeAs(data -> getAPI().getCacheManager()
                         .deleteMember(Guild.class, Role.class, getGuild().getID(), getID()));
+    }
+
+    interface Trait extends Snowflake.Trait {
+        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+        JsonBinding.TwoStage<Integer, Color> COLOR = simple("color", JSONObject::getInteger, Color::new);
+        JsonBinding.OneStage<Boolean> HOIST = identity("hoist", JSONObject::getBoolean);
+        JsonBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
+        JsonBinding.TwoStage<Integer, PermissionOverride> PERMISSIONS = simple("permissions", JSONObject::getInteger, PermissionOverride::fromBitmask);
+        JsonBinding.OneStage<Boolean> MANAGED = identity("managed", JSONObject::getBoolean);
+        JsonBinding.OneStage<Boolean> MENTIONABLE = identity("mentionable", JSONObject::getBoolean);
     }
 
     interface Builder {

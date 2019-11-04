@@ -15,16 +15,15 @@ import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollection;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
 
 public interface GuildChannel extends Channel {
     Comparator<GuildChannel> GUILD_CHANNEL_COMPARATOR = Comparator.comparingInt(GuildChannel::getPosition);
@@ -71,15 +70,11 @@ public interface GuildChannel extends Channel {
     }
 
     interface Trait extends Channel.Trait {
-        JsonBinding<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-
-        JsonBinding<Integer, Integer> POSITION = identity(JsonNode::asInt, "position");
-
-        JsonBinding<ArrayNode, Collection<PermissionOverride>> PERMISSION_OVERRIDES = underlyingCollection("permission_overwrites", PermissionOverride.class);
-
-        JsonBinding<String, String> NAME = identity(JsonNode::asText, "name");
-
-        JsonBinding<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
+        JsonBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
+        JsonBinding.TriStage<JSONObject, PermissionOverride> PERMISSION_OVERRIDES = serializableCollection("permission_overwrites", PermissionOverride.class);
+        JsonBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+        JsonBinding.TwoStage<Long, GuildChannelCategory> CATEGORY = cache("parent_id",
                 (CacheManager cache, Long id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannelCategory));
     }
 

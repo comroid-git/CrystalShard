@@ -15,7 +15,7 @@ import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
@@ -54,8 +54,8 @@ public interface TextChannel extends Channel, Messageable {
     }
     
     interface Trait extends Channel.Trait {
-        JsonBinding<String, Instant> LAST_PINNED_TIMESTAMP = simple(JsonNode::asText, "last_pin_timestamp", Instant::parse);
-        JsonBinding<Long, Message> LAST_MESSAGE_ID = JsonBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
+        JsonBinding.TwoStage<String, Instant> LAST_PINNED_TIMESTAMP = simple("last_pin_timestamp", JSONObject::getString, Instant::parse);
+        JsonBinding.TwoStage<Long, Message> LAST_MESSAGE_ID = JsonBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
     }
 
     interface Builder<R extends TextChannel, Self extends Builder> extends Channel.Builder<R, Self> {

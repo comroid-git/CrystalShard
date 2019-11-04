@@ -5,15 +5,12 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.Snowflake;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 public abstract class AbstractSnowflake<Self extends AbstractSnowflake<Self>>
         extends AbstractJsonDeserializable
         implements Snowflake {
-    protected @JsonProperty long id;
-
-    protected AbstractSnowflake(Discord api, JsonNode data) {
+    protected AbstractSnowflake(Discord api, JSONObject data) {
         super(api, data);
     }
 
@@ -23,14 +20,9 @@ public abstract class AbstractSnowflake<Self extends AbstractSnowflake<Self>>
     }
 
     @Override
-    public long getID() {
-        return id;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof AbstractSnowflake)
-            return ((AbstractSnowflake) obj).id == id;
+            return ((AbstractSnowflake) obj).getID() == getID();
 
         return false;
     }

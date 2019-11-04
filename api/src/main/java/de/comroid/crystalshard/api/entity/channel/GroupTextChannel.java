@@ -11,7 +11,7 @@ import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
@@ -34,7 +34,7 @@ public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     }
     
     interface Trait extends PrivateChannel.Trait, TextChannel.Trait {
-        JsonBinding<String, URL> ICON = simple(JsonNode::asText, "icon", hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
+        JsonBinding.TwoStage<String, URL> ICON = simple("icon", JSONObject::getString, hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
     }
 
     interface Builder extends

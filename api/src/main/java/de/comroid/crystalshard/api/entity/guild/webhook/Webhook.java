@@ -27,7 +27,7 @@ import de.comroid.crystalshard.util.model.ImageHelper;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
@@ -35,7 +35,7 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
 
 @MainAPI
 @JsonTraits(Webhook.Trait.class)
@@ -102,12 +102,12 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
     }
 
     interface Trait {
-        JsonBinding<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
-        JsonBinding<Long, GuildTextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
-        JsonBinding<JsonNode, User> CREATOR = underlying("user", User.class);
-        JsonBinding<String, String> DEFAULT_NAME = identity(JsonNode::asText, "name");
-        JsonBinding<String, String> AVATAR_HASH = identity(JsonNode::asText, "avatar");
-        JsonBinding<String, String> TOKEN = identity(JsonNode::asText, "token");
+        JsonBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
+        JsonBinding.TwoStage<Long, GuildTextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JsonBinding.TwoStage<JSONObject, User> CREATOR = serialize("user", User.class);
+        JsonBinding.OneStage<String> DEFAULT_NAME = identity("name", JSONObject::getString);
+        JsonBinding.OneStage<String> AVATAR_HASH = identity("avatar", JSONObject::getString);
+        JsonBinding.OneStage<String> TOKEN = identity("token", JSONObject::getString);
     }
 
     @IntroducedBy(PRODUCTION)

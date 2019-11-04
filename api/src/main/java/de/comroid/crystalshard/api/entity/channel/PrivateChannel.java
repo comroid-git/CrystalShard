@@ -10,12 +10,12 @@ import de.comroid.crystalshard.core.api.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingCollection;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
 
 public interface PrivateChannel extends Channel {
     @Override
@@ -39,9 +39,9 @@ public interface PrivateChannel extends Channel {
     }
     
     interface Trait extends Channel.Trait {
-        JsonBinding<ArrayNode, Collection<User>> RECIPIENTS = underlyingCollection("recipients", User.class);
-        JsonBinding<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
-        JsonBinding<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);
+        JsonBinding.TriStage<JSONObject, User> RECIPIENTS = serializableCollection("recipients", User.class);
+        JsonBinding.TwoStage<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
+        JsonBinding.TwoStage<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);
     }
 
     interface Builder<R extends PrivateChannel, Self extends PrivateChannel.Builder>

@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.channel.GuildVoiceChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.Role;
@@ -19,20 +20,20 @@ import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.api.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.mappingCollection;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
 
+@MainAPI
 @JsonTraits(GuildMember.Trait.class)
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
     @IntroducedBy(PRODUCTION)
@@ -77,14 +78,14 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
     }
 
     interface Trait extends User.Trait {
-        JsonBinding<String, String> NICKNAME = identity(JsonNode::asText, "nick");
-        JsonBinding<ArrayNode, Collection<Role>> ROLES = underlyingMappingCollection("roles", Role.class, (api, data) -> api.getCacheManager()
-                .getRoleByID(data.asLong())
+        JsonBinding.OneStage<String> NICKNAME = identity("nick", JSONObject::getString);
+        JsonBinding.TriStage<Long, Role> ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
+                .getRoleByID(id)
                 .orElseThrow());
-        JsonBinding<String, Instant> JOINED_TIMESTAMP = simple(JsonNode::asText, "joined_at", Instant::parse);
-        JsonBinding<String, Instant> NITRO_BOOST_TIMESTAMP = simple(JsonNode::asText, "premium_since", Instant::parse);
-        JsonBinding<Boolean, Boolean> DEAFENED = identity(JsonNode::asBoolean, "deaf");
-        JsonBinding<Boolean, Boolean> MUTED = identity(JsonNode::asBoolean, "mute");
+        JsonBinding.TwoStage<String, Instant> JOINED_TIMESTAMP = simple("joined_at", JSONObject::getString, Instant::parse);
+        JsonBinding.TwoStage<String, Instant> NITRO_BOOST_TIMESTAMP = simple("premium_since", JSONObject::getString, Instant::parse);
+        JsonBinding.OneStage<Boolean> DEAFENED = identity("deaf", JSONObject::getBoolean);
+        JsonBinding.OneStage<Boolean> MUTED = identity("mute", JSONObject::getBoolean);
     }
 
     @IntroducedBy(PRODUCTION)

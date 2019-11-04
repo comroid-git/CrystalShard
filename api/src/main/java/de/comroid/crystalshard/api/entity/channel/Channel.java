@@ -8,7 +8,7 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.event.channel.ChannelEvent;
-import de.comroid.crystalshard.api.listener.AttachableTo;
+import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
@@ -19,19 +19,18 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.TypeGroup;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.Util.hackCast;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
 
 public interface Channel extends 
         Snowflake, 
         TypeGroup<Channel>, 
-        Mentionable, 
-        ListenerAttachable<AttachableTo.Channel<? extends ChannelEvent<? extends Channel>>>,
+        Mentionable,
+        ListenerAttachable<ListenerSpec.AttachableTo.Channel<? extends ChannelEvent<? extends Channel>>>,
         Cacheable {
     @IntroducedBy(API)
     default ChannelType getChannelType() {
@@ -205,7 +204,7 @@ public interface Channel extends
     }
 
     interface Trait extends Snowflake.Trait {
-        JsonBinding<String, ChannelType> CHANNEL_TYPE = simple(JsonNode::asText, "type", ChannelType::valueOf);
+        JsonBinding.TwoStage<String, ChannelType> CHANNEL_TYPE = simple("type", JSONObject::getString, ChannelType::valueOf);
     }
 
     interface Default {

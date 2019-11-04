@@ -12,10 +12,10 @@ import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 public interface Cacheable extends JsonDeserializable {
-    default void update(JsonNode data) {
+    default void update(JSONObject data) {
         updateFromJson(data);
     }
 

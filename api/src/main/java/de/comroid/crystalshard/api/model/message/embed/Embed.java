@@ -6,10 +6,9 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import de.comroid.crystalshard.adapter.MainAPI;
 
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-
+@MainAPI
 public interface Embed {
     Optional<String> getTitle();
 
@@ -35,6 +34,7 @@ public interface Embed {
 
     Collection<? extends Field> getFields();
 
+    @MainAPI
     interface Footer {
         String getText();
 
@@ -43,6 +43,7 @@ public interface Embed {
         Optional<URL> getProxyIconURL();
     }
 
+    @MainAPI
     interface Image {
         Optional<URL> getURL();
 
@@ -53,6 +54,7 @@ public interface Embed {
         Optional<Integer> getWidth();
     }
 
+    @MainAPI
     interface Thumbnail {
         Optional<URL> getURL();
 
@@ -63,6 +65,7 @@ public interface Embed {
         Optional<Integer> getWidth();
     }
 
+    @MainAPI
     interface Video {
         Optional<URL> getURL();
 
@@ -71,12 +74,14 @@ public interface Embed {
         Optional<Integer> getWidth();
     }
 
+    @MainAPI
     interface Provider {
         Optional<String> getName();
 
         Optional<URL> getURL();
     }
 
+    @MainAPI
     interface Author {
         Optional<String> getName();
 
@@ -87,6 +92,7 @@ public interface Embed {
         Optional<URL> getProxyIconURL();
     }
 
+    @MainAPI
     interface Field {
         String getName();
 

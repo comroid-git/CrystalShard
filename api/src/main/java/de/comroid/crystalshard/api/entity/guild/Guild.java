@@ -57,8 +57,8 @@ import static de.comroid.crystalshard.util.model.serialization.JsonBinding.cache
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingMappingCollection;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlyingSerializableCollection;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.mappingCollection;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serializableCollection;
 
 @JsonTraits(Guild.Trait.class)
 public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.AttachableTo.Guild>, Cacheable {
@@ -378,9 +378,9 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         JsonBinding.TwoStage<Integer, VerificationLevel> VERIFICATION_LEVEL = simple("verification_level", JSONObject::getInteger, VerificationLevel::valueOf);
         JsonBinding.TwoStage<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple("default_message_notifications", JSONObject::getInteger, DefaultMessageNotificationLevel::valueOf);
         JsonBinding.TwoStage<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple("explicit_content_filter", JSONObject::getInteger, ExplicitContentFilterLevel::valueOf);
-        JsonBinding.TriStage<JSONObject, Role> ROLES = underlyingSerializableCollection("roles", Role.class);
-        JsonBinding.TriStage<JSONObject, CustomEmoji> EMOJIS = underlyingSerializableCollection("emojis", CustomEmoji.class);
-        JsonBinding.TriStage<String, Feature> FEATURES = underlyingMappingCollection("features", JSONObject::getString, (api, key) -> Feature.valueOf(key));
+        JsonBinding.TriStage<JSONObject, Role> ROLES = serializableCollection("roles", Role.class);
+        JsonBinding.TriStage<JSONObject, CustomEmoji> EMOJIS = serializableCollection("emojis", CustomEmoji.class);
+        JsonBinding.TriStage<String, Feature> FEATURES = mappingCollection("features", JSONObject::getString, (api, key) -> Feature.valueOf(key));
         JsonBinding.TwoStage<Integer, MFALevel> MFA_LEVEL = simple("mfa_level", JSONObject::getInteger, MFALevel::valueOf);
         JsonBinding.TwoStage<Long, Snowflake> OWNER_APPLICATION_ID = api("application_id", JSONObject::getLong, (api, id) -> Adapter.require(Snowflake.class, api, id));
         JsonBinding.OneStage<Boolean> WIDGETABLE = identity("widget_enabled", JSONObject::getBoolean);
@@ -390,10 +390,10 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         JsonBinding.OneStage<Boolean> LARGE = identity("large", JSONObject::getBoolean);
         JsonBinding.OneStage<Boolean> UNAVAILABLE = identity("unavailable", JSONObject::getBoolean);
         JsonBinding.OneStage<Integer> MEMBER_COUNT = identity("member_count", JSONObject::getInteger);
-        JsonBinding.TriStage<JSONObject, VoiceState> VOICE_STATES = underlyingSerializableCollection("voice_states", VoiceState.class);
-        JsonBinding.TriStage<JSONObject, GuildMember> MEMBERS = underlyingSerializableCollection("members", GuildMember.class);
-        JsonBinding.TriStage<JSONObject, GuildChannel> CHANNELS = underlyingSerializableCollection("channels", GuildChannel.class);
-        JsonBinding.TriStage<JSONObject, Presence> PRESENCES = underlyingSerializableCollection("presences", Presence.class);
+        JsonBinding.TriStage<JSONObject, VoiceState> VOICE_STATES = serializableCollection("voice_states", VoiceState.class);
+        JsonBinding.TriStage<JSONObject, GuildMember> MEMBERS = serializableCollection("members", GuildMember.class);
+        JsonBinding.TriStage<JSONObject, GuildChannel> CHANNELS = serializableCollection("channels", GuildChannel.class);
+        JsonBinding.TriStage<JSONObject, Presence> PRESENCES = serializableCollection("presences", Presence.class);
         JsonBinding.OneStage<Integer> MAXIMUM_PRESENCES = identity("max_presences", JSONObject::getInteger);
         JsonBinding.OneStage<Integer> MAXIMUM_MEMBERS = identity("max_members", JSONObject::getInteger);
         JsonBinding.TwoStage<String, URL> VANITY_INVITE_URL = simple("vanity_url_code", JSONObject::getString, code -> Util.createUrl$rethrow("https://discord.gg/" + code));

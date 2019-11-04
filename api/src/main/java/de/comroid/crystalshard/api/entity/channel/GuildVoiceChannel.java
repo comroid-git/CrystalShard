@@ -8,7 +8,7 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.model.channel.ChannelType;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
 
@@ -28,7 +28,7 @@ public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
     }
 
     interface Trait extends GuildChannel.Trait, VoiceChannel.Trait {
-        JsonBinding<Integer, Integer> USER_LIMIT = identity(JsonNode::asInt, "user_limit");
+        JsonBinding.OneStage<Integer> USER_LIMIT = identity("user_limit", JSONObject::getInteger);
     }
 
     Updater createUpdater();

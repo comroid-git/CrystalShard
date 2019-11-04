@@ -7,24 +7,26 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.channel.GuildChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
 
+@MainAPI
 @JsonTraits(Invite.Trait.class)
 public interface Invite extends JsonDeserializable {
     default String getInviteCode() {
@@ -70,15 +72,16 @@ public interface Invite extends JsonDeserializable {
     }
 
     interface Trait {
-        JsonBinding<String, String> INVITE_CODE = identity(JsonNode::asText, "code");
-        JsonBinding<JsonNode, Guild> GUILD = underlying("guild", Guild.class);
-        JsonBinding<JsonNode, Channel> CHANNEL = underlying("channel", Channel.class);
-        JsonBinding<JsonNode, User> TARGET_USER = underlying("target_user", User.class);
-        JsonBinding<Integer, TargetType> TARGET_USER_TYPE = simple(JsonNode::asInt, "target_user_type", TargetType::valueOf);
-        JsonBinding<Integer, Integer> APPROXIMATE_PRESENCE_COUNT = identity(JsonNode::asInt, "approximate_presence_count");
-        JsonBinding<Integer, Integer> APPROXIMATE_MEMBER_COUNT = identity(JsonNode::asInt, "approximate_member_count");
+        JsonBinding.OneStage<String> INVITE_CODE = identity("code", JSONObject::getString);
+        JsonBinding.TwoStage<JSONObject, Guild> GUILD = serialize("guild", Guild.class);
+        JsonBinding.TwoStage<JSONObject, Channel> CHANNEL = serialize("channel", Channel.class);
+        JsonBinding.TwoStage<JSONObject, User> TARGET_USER = serialize("target_user", User.class);
+        JsonBinding.TwoStage<Integer, TargetType> TARGET_USER_TYPE = simple("target_user_type", JSONObject::getInteger, TargetType::valueOf);
+        JsonBinding.OneStage<Integer> APPROXIMATE_PRESENCE_COUNT = identity("approximate_presence_count", JSONObject::getInteger);
+        JsonBinding.OneStage<Integer> APPROXIMATE_MEMBER_COUNT = identity("approximate_member_count", JSONObject::getInteger);
     }
 
+    @MainAPI
     @JsonTraits(Metadata.Trait.class)
     interface Metadata extends JsonDeserializable {
         default User getInviter() {
@@ -106,14 +109,14 @@ public interface Invite extends JsonDeserializable {
         }
 
         interface Trait {
-            JsonBinding<JsonNode, User> INVITER = underlying("inviter", User.class);
-            JsonBinding<Integer, Integer> USES = identity(JsonNode::asInt, "uses");
-            JsonBinding<Integer, Integer> MAXIMUM_USES = identity(JsonNode::asInt, "max_uses");
-            JsonBinding<Integer, Duration> MAXIMUM_AGE = simple(JsonNode::asInt, "max_age", Duration::ofSeconds);
-            JsonBinding<Boolean, Boolean> TEMPORARY = identity(JsonNode::asBoolean, "temporary");
-            JsonBinding<String, Instant> CREATED_TIMESTAMP = simple(JsonNode::asText, "created_at", Instant::parse);
+            JsonBinding.TwoStage<JSONObject, User> INVITER = serialize("inviter", User.class);
+            JsonBinding.OneStage<Integer> USES = identity("uses", JSONObject::getInteger);
+            JsonBinding.OneStage<Integer> MAXIMUM_USES = identity("max_uses", JSONObject::getInteger);
+            JsonBinding.TwoStage<Integer, Duration> MAXIMUM_AGE = simple("max_age", JSONObject::getInteger, Duration::ofSeconds);
+            JsonBinding.OneStage<Boolean> TEMPORARY = identity("temporary", JSONObject::getBoolean);
+            JsonBinding.TwoStage<String, Instant> CREATED_TIMESTAMP = simple("created_at", JSONObject::getString, Instant::parse);
         }
-        
+
         default Instant expiresAt() {
             return getCreatedTimestamp().plus(getMaximumAge());
         }

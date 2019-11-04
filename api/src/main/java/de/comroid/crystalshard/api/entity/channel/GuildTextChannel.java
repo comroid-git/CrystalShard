@@ -16,7 +16,7 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
@@ -60,9 +60,9 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
     }
 
     interface Trait extends GuildChannel.Trait, TextChannel.Trait {
-        JsonBinding<String, String> TOPIC = identity(JsonNode::asText, "topic");
-        JsonBinding<Boolean, Boolean> NSFW = identity(JsonNode::asBoolean, "nsfw");
-        JsonBinding<Integer, Integer> MESSAGE_RATELIMIT = identity(JsonNode::asInt, "rate_limit_per_user");
+        JsonBinding.OneStage<String> TOPIC = identity("topic", JSONObject::getString);
+        JsonBinding.OneStage<Boolean> NSFW = identity("nsfw", JSONObject::getBoolean);
+        JsonBinding.OneStage<Integer> MESSAGE_RATELIMIT = identity("rate_limit_per_user", JSONObject::getInteger);
     }
 
     interface Builder extends

@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import de.comroid.crystalshard.api.model.ApiBound;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.Contract;
 
@@ -30,7 +30,7 @@ public interface DiscordRequest<T> extends WebRequest<T>, ApiBound {
     DiscordRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPStatusCodes.class) int code);
 
     @Override
-    CompletableFuture<T> executeAs(Function<JsonNode, T> mapper);
+    CompletableFuture<T> executeAs(Function<JSONObject, T> mapper);
 
     DiscordRequest<T> endpoint(DiscordEndpoint endpoint, Object... args) throws IllegalArgumentException;
 

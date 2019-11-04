@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
 
 public interface WebRequest<T> {
@@ -18,5 +18,5 @@ public interface WebRequest<T> {
 
     WebRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPStatusCodes.class) int code);
 
-    CompletableFuture<T> executeAs(Function<JsonNode, T> mapper);
+    CompletableFuture<T> executeAs(Function<JSONObject, T> mapper);
 }

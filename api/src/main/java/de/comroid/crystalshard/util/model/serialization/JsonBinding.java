@@ -15,14 +15,10 @@ import de.comroid.crystalshard.core.api.cache.Cacheable;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT> extends Function<STAGE_ONE, TYPE_OUT> {
+public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_OUT> extends BiFunction<Discord, STAGE_ONE, TYPE_OUT> {
     @NotNull String fieldName();
-
-    @Contract("null -> fail; _ -> _")
-    JsonBinding<JSON_TYPE, STAGE_ONE, STAGE_TWO, TYPE_OUT> cloneWithApi(Discord api);
 
     STAGE_ONE extractValue(JSON_TYPE from);
 
@@ -43,10 +39,18 @@ public interface JsonBinding<JSON_TYPE extends JSON, STAGE_ONE, STAGE_TWO, TYPE_
                 .orElseThrow(() -> new AssertionError("No instance of " + fieldName + " was found in cache!")));
     }
 
-    static <S, T> TriStage<S, Collection<T>> underlyingMappingCollection(String fieldName, BiFunction<JSONObject, String, S> extractor, BiFunction<Discord, S, T> eachMapper) {
+    static <T extends JsonDeserializable> TwoStage<JSONObject, T> serialize(String fieldName, final Class<T> targetClass) {
+        return api(fieldName, JSONObject::getJSONObject, (api, json) -> Adapter.require(targetClass, api, json));
+    }
+
+    static <S, T> TriStage<S, T> mappingCollection(String fieldName, BiFunction<JSONObject, String, S> extractor, BiFunction<Discord, S, T> eachMapper) {
         return Adapter.require(JsonBinding.class, fieldName, extractor, eachMapper);
     }
-    
+
+    static <T extends JsonDeserializable> TriStage<JSONObject, T> serializableCollection(String fieldName, final Class<T> targetClass) {
+        return mappingCollection(fieldName, JSONObject::getJSONObject, (api, json) -> Adapter.require(targetClass, api, json));
+    }
+
     interface OneStage<T> extends JsonBinding<JSONObject, T, T, T> {
     }
 

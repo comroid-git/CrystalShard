@@ -20,7 +20,7 @@ import de.comroid.crystalshard.util.NStreamImpl;
 import de.comroid.crystalshard.util.annotation.InitializedBy;
 import de.comroid.crystalshard.util.model.NStream;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.util.Util.hackCast;
 
@@ -29,7 +29,7 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
         implements ListenerAttachable<AL> {
     protected Collection<ListenerManager<? extends AL>> listenerManagers;
 
-    protected AbstractListenerAttachable(Discord api, JsonNode data) {
+    protected AbstractListenerAttachable(Discord api, JSONObject data) {
         super(api, data);
 
         this.listenerManagers = new ArrayList<>();

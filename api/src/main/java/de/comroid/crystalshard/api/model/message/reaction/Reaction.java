@@ -2,27 +2,26 @@ package de.comroid.crystalshard.api.model.message.reaction;
 
 // https://discordapp.com/developers/docs/resources/channel#reaction-object-reaction-structure
 
+import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
-import de.comroid.crystalshard.api.event.role.RoleEvent;
-import de.comroid.crystalshard.api.listener.AttachableTo;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.core.api.cache.Cacheable;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JsonTraits;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.alibaba.fastjson.JSONObject;
 
 import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 import static de.comroid.crystalshard.util.model.serialization.JsonBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JsonBinding.underlying;
+import static de.comroid.crystalshard.util.model.serialization.JsonBinding.serialize;
 
+@MainAPI
 @JsonTraits(Reaction.Trait.class)
-public interface Reaction extends JsonDeserializable, Cacheable, ListenerAttachable<AttachableTo.Role<? extends RoleEvent>> {
+public interface Reaction extends JsonDeserializable, Cacheable {
     @CacheInformation.Marker
     CacheInformation<Message> CACHE_INFORMATION = makeSubcacheableInfo(Message.class, Reaction::getMessage);
     
@@ -45,8 +44,8 @@ public interface Reaction extends JsonDeserializable, Cacheable, ListenerAttacha
     Message getMessage();
 
     interface Trait {
-        JsonBinding<Integer, Integer> COUNT = identity(JsonNode::asInt, "count");
-        JsonBinding<Boolean, Boolean> ME = identity(JsonNode::asBoolean, "me");
-        JsonBinding<JsonNode, Emoji> EMOJI = underlying("emoji", Emoji.class);
+        JsonBinding.OneStage<Integer> COUNT = identity("count", JSONObject::getInteger);
+        JsonBinding.OneStage<Boolean> ME = identity("me", JSONObject::getBoolean);
+        JsonBinding.TwoStage<JSONObject, Emoji> EMOJI = serialize("emoji", Emoji.class);
     }
 }

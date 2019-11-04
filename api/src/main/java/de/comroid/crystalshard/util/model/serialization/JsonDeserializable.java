@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 public interface JsonDeserializable extends ApiBound, Cloneable {
-    Set<JsonBinding> possibleTraits();
+    Set<JsonBinding> bindings();
 
     <S, T> @Nullable T getTraitValue(JsonBinding<?, S, ?, T> trait);
 

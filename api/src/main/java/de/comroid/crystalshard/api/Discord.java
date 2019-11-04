@@ -9,7 +9,7 @@ import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.api.event.DiscordEvent;
-import de.comroid.crystalshard.api.listener.AttachableTo;
+import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.core.api.cache.CacheManager;
@@ -23,9 +23,9 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface Discord extends ListenerAttachable<AttachableTo.Discord<? extends DiscordEvent>> {
+public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Discord<? extends DiscordEvent>> {
     String getToken();
-    
+
     int getShardID();
 
     ThreadPool getCommonThreadPool();
