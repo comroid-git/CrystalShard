@@ -83,7 +83,7 @@ project(":api") {
     version = '2.0.0'
 
     dependencies {
-        compileOnly 'com.alibaba:fastjson:1.2.61'
+        compileOnly 'com.alibaba:fastjson:1.2.62'
 
         testImplementation 'org.reflections:reflections:0.9.11'
     }
