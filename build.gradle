@@ -71,7 +71,7 @@ subprojects {
 
     dependencies {
         implementation 'com.google.flogger:flogger:0.4'
-        compileOnly 'org.jetbrains:annotations:17.0.0'
+        compileOnly 'org.jetbrains:annotations:18.0.0'
 
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.easymock:easymock:4.0.2'
