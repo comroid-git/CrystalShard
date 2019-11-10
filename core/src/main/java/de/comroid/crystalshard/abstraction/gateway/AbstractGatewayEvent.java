@@ -14,5 +14,12 @@ public abstract class AbstractGatewayEvent extends AbstractEvent implements Gate
         super(api, data);
 
         gateway = api.getGateway();
+        
+        affects(gateway);
+    }
+
+    @Override
+    public Gateway getGateway() {
+        return gateway;
     }
 }
