@@ -61,11 +61,15 @@ public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Di
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#get-guild")
     default CompletableFuture<Guild> requestGuild(long id) {
+        return requestGuild(ThreadPool.getContextApi(), id);
+    }
+
+    @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#get-guild")
+    default CompletableFuture<Guild> requestGuild(Discord api, long id) {
         return Adapter.<Guild>request(this)
                 .endpoint(DiscordEndpoint.GUILD_SPECIFIC, id)
                 .method(RestMethod.GET)
-                .executeAsObject(data -> getCacheManager()
-                        .updateOrCreateAndGet(Guild.class, id, data));
+                .executeAsObject(data -> Adapter.require(Guild.class, api, data));
     }
 
     static Builder builder() {
