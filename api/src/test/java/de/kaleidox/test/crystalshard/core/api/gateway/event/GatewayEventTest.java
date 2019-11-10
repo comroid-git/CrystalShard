@@ -1,6 +1,6 @@
 package de.kaleidox.test.crystalshard.core.api.gateway.event;
 
-import de.comroid.crystalshard.core.api.gateway.event.GatewayEventBase;
+import de.comroid.crystalshard.core.gateway.event.GatewayEventBase;
 
 import org.junit.Test;
 import org.reflections.Reflections;

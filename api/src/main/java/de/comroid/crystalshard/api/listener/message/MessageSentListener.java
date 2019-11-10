@@ -5,8 +5,8 @@ import de.comroid.crystalshard.api.event.message.MessageSentEvent;
 import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
-import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.gateway.event.MESSAGE_CREATE;
+import de.comroid.crystalshard.core.gateway.Gateway;
+import de.comroid.crystalshard.core.gateway.event.MESSAGE_CREATE;
 import de.comroid.crystalshard.util.annotation.InitializedBy;
 
 @InitializedBy(MessageSentListener.Initializer.class)

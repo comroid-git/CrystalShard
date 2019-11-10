@@ -5,7 +5,7 @@ import java.util.OptionalLong;
 
 import de.comroid.crystalshard.abstraction.entity.AbstractSnowflake;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
+import de.comroid.crystalshard.core.cache.Cacheable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

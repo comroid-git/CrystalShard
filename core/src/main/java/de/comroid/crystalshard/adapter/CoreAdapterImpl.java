@@ -6,12 +6,12 @@ import java.util.function.Function;
 
 import de.comroid.crystalshard.abstraction.serialization.JsonBindings;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
-import de.comroid.crystalshard.core.api.concurrent.WorkerThread;
-import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.rest.DiscordRequest;
-import de.comroid.crystalshard.core.api.rest.Ratelimiter;
-import de.comroid.crystalshard.core.api.rest.WebRequest;
+import de.comroid.crystalshard.core.concurrent.ThreadPool;
+import de.comroid.crystalshard.core.concurrent.WorkerThread;
+import de.comroid.crystalshard.core.gateway.Gateway;
+import de.comroid.crystalshard.core.rest.DiscordRequest;
+import de.comroid.crystalshard.core.rest.Ratelimiter;
+import de.comroid.crystalshard.core.rest.WebRequest;
 import de.comroid.crystalshard.core.concurrent.ThreadPoolImpl;
 import de.comroid.crystalshard.core.concurrent.WorkerThreadImpl;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;

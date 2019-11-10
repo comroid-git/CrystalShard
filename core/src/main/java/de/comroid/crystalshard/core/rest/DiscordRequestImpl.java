@@ -8,10 +8,6 @@ import java.util.function.Function;
 import java.util.logging.Level;
 
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
-import de.comroid.crystalshard.core.api.rest.DiscordRequest;
-import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
-import de.comroid.crystalshard.core.api.rest.RestMethod;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

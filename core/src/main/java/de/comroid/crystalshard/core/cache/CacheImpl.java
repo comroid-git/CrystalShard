@@ -7,8 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.core.api.cache.Cache;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
 
 import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.Nullable;

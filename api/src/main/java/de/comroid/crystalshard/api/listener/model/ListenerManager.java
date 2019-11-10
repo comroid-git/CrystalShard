@@ -7,9 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.gateway.listener.GatewayListener;
-import de.comroid.crystalshard.core.api.gateway.listener.GatewayListenerManager;
+import de.comroid.crystalshard.core.gateway.Gateway;
+import de.comroid.crystalshard.core.gateway.listener.GatewayListener;
+import de.comroid.crystalshard.core.gateway.listener.GatewayListenerManager;
 import de.comroid.crystalshard.util.model.Timeoutable;
 
 public interface ListenerManager<L extends Listener> extends Timeoutable {

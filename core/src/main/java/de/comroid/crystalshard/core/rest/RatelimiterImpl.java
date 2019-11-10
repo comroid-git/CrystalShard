@@ -5,8 +5,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
-import de.comroid.crystalshard.core.api.rest.Ratelimiter;
 
 public class RatelimiterImpl implements Ratelimiter {
     private final Discord api;

@@ -9,7 +9,7 @@ import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.GuildChannel;
 import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
+import de.comroid.crystalshard.core.cache.Cacheable;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 

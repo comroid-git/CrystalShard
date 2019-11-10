@@ -9,8 +9,8 @@ import java.util.function.Function;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
+import de.comroid.crystalshard.core.cache.CacheManager;
+import de.comroid.crystalshard.core.cache.Cacheable;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;

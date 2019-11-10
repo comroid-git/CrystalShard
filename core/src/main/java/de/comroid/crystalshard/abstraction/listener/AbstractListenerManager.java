@@ -16,8 +16,8 @@ import de.comroid.crystalshard.api.listener.model.AttachableListener;
 import de.comroid.crystalshard.api.listener.model.Listener;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
-import de.comroid.crystalshard.core.api.gateway.listener.GatewayListener;
-import de.comroid.crystalshard.core.api.gateway.listener.GatewayListenerManager;
+import de.comroid.crystalshard.core.gateway.listener.GatewayListener;
+import de.comroid.crystalshard.core.gateway.listener.GatewayListenerManager;
 import de.comroid.crystalshard.util.Util;
 
 public abstract class AbstractListenerManager<L extends Listener<E> & AttachableListener, E extends Event>

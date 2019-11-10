@@ -13,12 +13,12 @@ import de.comroid.crystalshard.api.listener.AttachableTo;
 import de.comroid.crystalshard.api.listener.model.Listener;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.api.model.user.Yourself;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
-import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
-import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.gateway.OpCode;
-import de.comroid.crystalshard.core.api.gateway.event.READY;
-import de.comroid.crystalshard.core.api.rest.Ratelimiter;
+import de.comroid.crystalshard.core.cache.CacheManager;
+import de.comroid.crystalshard.core.concurrent.ThreadPool;
+import de.comroid.crystalshard.core.gateway.Gateway;
+import de.comroid.crystalshard.core.gateway.OpCode;
+import de.comroid.crystalshard.core.gateway.event.READY;
+import de.comroid.crystalshard.core.rest.Ratelimiter;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;
 import de.comroid.crystalshard.util.model.NStream;
 

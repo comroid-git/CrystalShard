@@ -7,7 +7,7 @@ import de.comroid.crystalshard.api.entity.channel.VoiceChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
+import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;

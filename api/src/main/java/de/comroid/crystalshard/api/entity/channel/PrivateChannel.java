@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
+import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 

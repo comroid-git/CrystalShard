@@ -2,8 +2,8 @@ package de.comroid.crystalshard.abstraction.gateway;
 
 import de.comroid.crystalshard.abstraction.event.AbstractEvent;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.gateway.event.GatewayEventBase;
+import de.comroid.crystalshard.core.gateway.Gateway;
+import de.comroid.crystalshard.core.gateway.event.GatewayEventBase;
 
 import com.alibaba.fastjson.JSONObject;
 

@@ -6,7 +6,7 @@ import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.message.Message;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
+import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;

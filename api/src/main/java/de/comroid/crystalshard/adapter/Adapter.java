@@ -10,8 +10,8 @@ import java.util.logging.Level;
 
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
-import de.comroid.crystalshard.core.api.rest.DiscordRequest;
+import de.comroid.crystalshard.core.cache.Cacheable;
+import de.comroid.crystalshard.core.rest.DiscordRequest;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;

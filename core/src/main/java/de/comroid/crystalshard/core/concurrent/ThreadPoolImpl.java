@@ -13,8 +13,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
-
 import org.jetbrains.annotations.NotNull;
 
 public class ThreadPoolImpl implements ThreadPool {

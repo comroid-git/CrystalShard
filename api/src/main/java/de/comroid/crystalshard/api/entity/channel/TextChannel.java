@@ -9,9 +9,9 @@ import java.util.concurrent.CompletableFuture;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.model.message.Messageable;
-import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
-import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
-import de.comroid.crystalshard.core.api.rest.RestMethod;
+import de.comroid.crystalshard.core.rest.DiscordEndpoint;
+import de.comroid.crystalshard.core.rest.HTTPStatusCodes;
+import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 

@@ -117,6 +117,7 @@ project(":api") {
 
     dependencies {
         compileOnly 'com.alibaba:fastjson:1.2.62'
+        compileOnly project(':core')
 
         testImplementation 'org.reflections:reflections:0.9.11'
     }

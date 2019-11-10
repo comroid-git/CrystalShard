@@ -4,14 +4,14 @@ import java.util.Optional;
 
 import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
+import de.comroid.crystalshard.core.cache.Cacheable;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
-import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
+import static de.comroid.crystalshard.core.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 

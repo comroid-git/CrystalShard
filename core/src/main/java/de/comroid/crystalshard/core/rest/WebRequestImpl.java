@@ -8,10 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
-import de.comroid.crystalshard.core.api.rest.RestMethod;
-import de.comroid.crystalshard.core.api.rest.WebRequest;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;

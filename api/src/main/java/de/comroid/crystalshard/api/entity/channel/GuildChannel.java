@@ -11,7 +11,7 @@ import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.model.guild.invite.Invite;
 import de.comroid.crystalshard.api.model.permission.PermissionOverride;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
+import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 

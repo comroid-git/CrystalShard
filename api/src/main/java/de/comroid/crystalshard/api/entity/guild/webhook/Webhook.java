@@ -16,11 +16,11 @@ import de.comroid.crystalshard.api.event.guild.webhook.WebhookEvent;
 import de.comroid.crystalshard.api.listener.guild.WebhookAttachableListener;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
-import de.comroid.crystalshard.core.api.cache.Cacheable;
-import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
-import de.comroid.crystalshard.core.api.rest.HTTPStatusCodes;
-import de.comroid.crystalshard.core.api.rest.RestMethod;
+import de.comroid.crystalshard.core.cache.CacheManager;
+import de.comroid.crystalshard.core.cache.Cacheable;
+import de.comroid.crystalshard.core.rest.DiscordEndpoint;
+import de.comroid.crystalshard.core.rest.HTTPStatusCodes;
+import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
@@ -29,7 +29,7 @@ import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 import com.alibaba.fastjson.JSONObject;
 
-import static de.comroid.crystalshard.core.api.cache.Cacheable.makeSubcacheableInfo;
+import static de.comroid.crystalshard.core.cache.Cacheable.makeSubcacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;

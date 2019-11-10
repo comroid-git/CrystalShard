@@ -12,12 +12,12 @@ import de.comroid.crystalshard.api.event.DiscordEvent;
 import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.user.Yourself;
-import de.comroid.crystalshard.core.api.cache.CacheManager;
-import de.comroid.crystalshard.core.api.concurrent.ThreadPool;
-import de.comroid.crystalshard.core.api.gateway.Gateway;
-import de.comroid.crystalshard.core.api.rest.DiscordEndpoint;
-import de.comroid.crystalshard.core.api.rest.Ratelimiter;
-import de.comroid.crystalshard.core.api.rest.RestMethod;
+import de.comroid.crystalshard.core.cache.CacheManager;
+import de.comroid.crystalshard.core.concurrent.ThreadPool;
+import de.comroid.crystalshard.core.gateway.Gateway;
+import de.comroid.crystalshard.core.rest.DiscordEndpoint;
+import de.comroid.crystalshard.core.rest.Ratelimiter;
+import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
