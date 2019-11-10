@@ -1,9 +1,16 @@
 import static java.lang.System.getenv
 
 ext {
-    artifactName = "crystalshard"
-    projectName = "CrystalShard"
+    artifactName = 'crystalshard'
+    userbase = 'comroid-git'
     projectDescription = "Modular Java-Wrapper for the Discord Bot API"
+    
+    exportedProjects = [
+            ':api',
+            ':impl',
+            ':core',
+            ':util'
+    ]
 
     snapshot = project.version.endsWith("-SNAPSHOT")
 
@@ -11,4 +18,4 @@ ext {
     sonatypePassword = getenv("sonatypePassword")
 }
 
-ext."signing.password" = getenv("gpgKeyPassword")
+ext."signing.gnupg.passphrase" = getenv("gpgKeyPassword")

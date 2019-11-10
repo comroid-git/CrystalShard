@@ -1,6 +1,6 @@
 buildscript {
     repositories.gradlePluginPortal()
-    dependencies.classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.1"
+    dependencies.classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.0"
 }
 
 apply plugin: 'java-library'
@@ -10,33 +10,39 @@ version '1.0.0-SNAPSHOT'
 
 apply from: 'gradle/vars.gradle'
 
-def exportedProjects = [
-        ':api',
-        ':impl',
-        ':core',
-        ':util'
-]
+sourceCompatibility = targetCompatibility = 1.8
 
-wrapper {
+tasks.findByName('wrapper').configure {
     gradleVersion = '5.6'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-sourceSets {
-    main.java.srcDirs = []
-    main.resources.srcDirs = []
-    test.java.srcDirs = []
-    test.resources.srcDirs = []
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+
+    try {
+        archiveClassifier.set 'sources'
+    } catch (MissingPropertyException ignored) {
+        classifier = "sources"
+    }
 }
 
-dependencies {
-    api project(':api')
-    runtimeOnly project(':impl')
-    runtimeOnly project(':core')
+task javadocJar(type: Jar) {
+    dependsOn 'javadoc'
+
+    from javadoc.destinationDir
+
+    try {
+        archiveClassifier.set 'javadoc'
+    } catch (MissingPropertyException ignored) {
+        classifier = "javadoc"
+    }
 }
 
 allprojects {
     tasks.withType(Javadoc) {
+        source = sourceSets.main.java
+        
         options {
             encoding = 'UTF-8'
             links = [
@@ -45,6 +51,22 @@ allprojects {
             ]
         }
     }
+}
+
+compileJava.options.encoding = 'UTF-8'
+repositories.jcenter()
+
+dependencies {
+    api project(':api')
+    runtimeOnly project(':impl')
+    runtimeOnly project(':core')
+}
+
+sourceSets {
+    main.java.srcDirs = []
+    main.resources.srcDirs = []
+    test.java.srcDirs = []
+    test.resources.srcDirs = []
 }
 
 subprojects {
@@ -57,13 +79,24 @@ subprojects {
 
     task sourcesJar(type: Jar) {
         from sourceSets.main.allJava
-        archiveClassifier = "sources"
+
+        try {
+            archiveClassifier.set 'sources'
+        } catch (MissingPropertyException ignored) {
+            classifier = "sources"
+        }
     }
 
     task javadocJar(type: Jar) {
-        //javadoc
+        dependsOn 'javadoc'
+
         from javadoc.destinationDir
-        archiveClassifier = "javadoc"
+
+        try {
+            archiveClassifier.set 'javadoc'
+        } catch (MissingPropertyException ignored) {
+            classifier = "javadoc"
+        }
     }
 
     compileJava.options.encoding = 'UTF-8'
@@ -95,7 +128,7 @@ project(":core") {
     dependencies {
         api project(':api')
 
-        implementation 'com.alibaba:fastjson:1.2.61'
+        implementation 'com.alibaba:fastjson:1.2.62'
 
         runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
@@ -108,7 +141,7 @@ project(":impl") {
         api project(':api')
         api project(':core')
 
-        implementation 'com.alibaba:fastjson:1.2.61'
+        implementation 'com.alibaba:fastjson:1.2.62'
 
         runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
@@ -119,8 +152,10 @@ project(":util") {
 }
 
 task allJavadoc(type: Javadoc) {
-    source exportedProjects.collect { project(it).sourceSets.main.allJava }
-    classpath = files(exportedProjects.collect { project(it).sourceSets.main.compileClasspath })
+    source exportedProjects.collect { //noinspection GroovyAssignabilityCheck
+        project(it).sourceSets.main.allJava }
+    classpath = files(exportedProjects.collect { //noinspection GroovyAssignabilityCheck
+        project(it).sourceSets.main.compileClasspath })
     options.encoding = 'UTF-8'
     options.destinationDirectory(file("./docs/"))
 }

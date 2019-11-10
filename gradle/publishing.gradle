@@ -1,8 +1,7 @@
-apply plugin: "io.codearte.nexus-staging"
-
 allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
+    apply plugin: "io.codearte.nexus-staging"
 
     publishing {
         repositories {
@@ -21,21 +20,17 @@ allprojects {
 
         publications {
             mavenJava(MavenPublication) {
+                artifactId = artifactName
                 from components.java
 
-                if (project.name.equals("CrystalShard")) {
-                    artifactId = "${artifactName}"
-                } else {
-                    artifactId = "${artifactName}-${project.name}"
-                    artifact sourcesJar
-                    artifact javadocJar
-                }
+                artifact sourcesJar
+                artifact javadocJar
 
                 pom {
-                    name = projectName
+                    name = rootProject.name
                     description = projectDescription
                     inceptionYear = '2019'
-                    url = "https://github.com/CrystalShardDiscord/${artifactName}-${project.name}".toString()
+                    url = "https://github.com/$userbase/$rootProject.name".toString()
 
                     licenses {
                         license {
@@ -46,20 +41,18 @@ allprojects {
 
                     developers {
                         developer {
-                            id = "burdoto"
-                            name = "Tobias Burdow"
-                            email = "burdoto@outlook.com"
+                            id = 'burdoto'
+                            name = 'Tobias Burdow'
+                            email = 'burdoto@outlook.com'
                         }
                     }
 
                     scm {
-                        connection = "scm:git:git://github.com/CrystalShardDiscord/${projectName}.git".toString()
-                        developerConnection = "scm:git:ssh://github.com/CrystalShardDiscord/${projectName}.git".toString()
-                        url = "https://github.com/CrystalShardDiscord/${projectName}".toString()
+                        connection = "scm:git:git://github.com/$userbase/${rootProject.name}.git".toString()
+                        developerConnection = "scm:git:ssh://github.com/$userbase/${rootProject.name}.git".toString()
+                        url = "https://github.com/$userbase/$rootProject.name".toString()
                     }
                 }
-
-                System.out.println("Registered artifact publication: '${group}:${artifactId}:${project.version}'")
             }
         }
     }
@@ -69,18 +62,27 @@ allprojects {
         pom = publishing.publications.mavenJava.pom
     }
 
-    if (!System.getenv().containsKey('JITPACK')) {
+    task teamcityPublish {
+        dependsOn 'publish'
+
+        if (!snapshot) {
+            dependsOn 'closeAndReleaseRepository'
+            tasks.findByName('closeAndReleaseRepository').mustRunAfter 'publish'
+        }
+    }
+
+    if (!snapshot) {
         signing {
             useGpgCmd()
+
             sign publishing.publications.mavenJava
         }
     }
+
+    tasks.removeAll([promoteRepository, closeAndPromoteRepository, getStagingProfile])
+
+    nexusStaging {
+        username sonatypeUsername
+        password sonatypePassword
+    }
 }
-
-tasks.removeAll([promoteRepository, closeAndPromoteRepository, getStagingProfile])
-
-nexusStaging {
-    username sonatypeUsername.toString()
-    password sonatypePassword.toString()
-}
-
