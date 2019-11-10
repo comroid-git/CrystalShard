@@ -1,5 +1,7 @@
 package de.comroid.crystalshard.api.model.permission;
 
+import de.comroid.crystalshard.util.Util;
+
 public enum Permission {
     // general
     CREATE_INSTANT_INVITE(0x00000001),
@@ -44,17 +46,19 @@ public enum Permission {
         this.value = value;
     }
 
-    public boolean isSet(int i) {
-        return (i & value) != 0;
+    public boolean isSet(int inMask) {
+        return Util.isFlagSet(value, inMask);
     }
 
-    public int apply(int i, boolean set) {
-        if (set && !isSet(i)) {
-            return i + value;
+    public int apply(int toMask, boolean set) {
+        if (set && !isSet(toMask)) {
+            return toMask + value;
         }
-        if (!set && isSet(i)) {
-            return i - value;
+
+        if (!set && isSet(toMask)) {
+            return toMask - value;
         }
-        return i;
+
+        return toMask;
     }
 }

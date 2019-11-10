@@ -6,10 +6,12 @@ import java.util.Comparator;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.model.ApiBound;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.flogger.FluentLogger;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,6 +20,9 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 
 public interface Snowflake extends ApiBound, JsonDeserializable, Comparable<Snowflake> {
+    @Internal
+    FluentLogger SNOWFLAKE_COMMON_LOGGER = FluentLogger.forEnclosingClass();
+
     Comparator<Snowflake> SNOWFLAKE_COMPARATOR = Comparator.comparingLong(flake -> flake.getID() >> 22);
 
     @IntroducedBy(PRODUCTION)

@@ -45,4 +45,8 @@ public final class Util {
 
         return -1;
     }
+
+    public static boolean isFlagSet(int flag, int inMask) {
+        return (inMask & flag) != 0;
+    }
 }

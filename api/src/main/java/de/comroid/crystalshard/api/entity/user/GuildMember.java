@@ -21,8 +21,8 @@ import de.comroid.crystalshard.core.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappi
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(GuildMember.Trait.class)
+@JSONBindingLocation(GuildMember.JSON.class)
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
@@ -77,7 +77,7 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
                         .deleteMember(Guild.class, Ban.class, getGuild().getID(), getID()));
     }
 
-    interface JSON extends User.Trait {
+    interface JSON extends User.JSON {
         JSONBinding.OneStage<String> NICKNAME = identity("nick", JSONObject::getString);
         JSONBinding.TriStage<Long, Role> ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getRoleByID(id)
