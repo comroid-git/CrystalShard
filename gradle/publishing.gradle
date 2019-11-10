@@ -1,7 +1,15 @@
+apply plugin: "io.codearte.nexus-staging"
+
+tasks.removeAll([promoteRepository, closeAndPromoteRepository, getStagingProfile])
+
+nexusStaging {
+    username sonatypeUsername
+    password sonatypePassword
+}
+
 allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    apply plugin: "io.codearte.nexus-staging"
 
     publishing {
         repositories {
@@ -77,12 +85,5 @@ allprojects {
 
             sign publishing.publications.mavenJava
         }
-    }
-
-    tasks.removeAll([promoteRepository, closeAndPromoteRepository, getStagingProfile])
-
-    nexusStaging {
-        username sonatypeUsername
-        password sonatypePassword
     }
 }
