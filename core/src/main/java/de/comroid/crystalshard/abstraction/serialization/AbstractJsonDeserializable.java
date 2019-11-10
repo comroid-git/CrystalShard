@@ -43,7 +43,7 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
 
         possibleTraits = Arrays.stream(traitsClass.value()
                 .getFields())
-                .filter(field -> Snowflake.Trait.class.isAssignableFrom(field.getType()))
+                .filter(field -> Snowflake.JSON.class.isAssignableFrom(field.getType()))
                 .filter(field -> Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()))
                 .map(field -> {
                     try {
