@@ -27,7 +27,7 @@ public interface TextChannel extends Channel, Messageable {
         return Adapter.<Message>request(getAPI())
                 .endpoint(DiscordEndpoint.MESSAGE, getID(), id)
                 .method(RestMethod.GET)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .updateOrCreateAndGet(Message.class, id, data));
     }
 
@@ -37,7 +37,7 @@ public interface TextChannel extends Channel, Messageable {
                 .endpoint(DiscordEndpoint.CHANNEL_TYPING, getID())
                 .method(RestMethod.POST)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> Duration.ofSeconds(5));
+                .executeAsObject(data -> Duration.ofSeconds(5));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/channel#get-pinned-messages")

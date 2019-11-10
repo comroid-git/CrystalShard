@@ -96,7 +96,7 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
                 .endpoint(DiscordEndpoint.ROLE, getGuild().getID(), getID())
                 .method(RestMethod.DELETE)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .deleteMember(Guild.class, Role.class, getGuild().getID(), getID()));
     }
 

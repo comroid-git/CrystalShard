@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
 
@@ -18,5 +19,7 @@ public interface WebRequest<T> {
 
     WebRequest<T> expectCode(@MagicConstant(valuesFromClass = HTTPStatusCodes.class) int code);
 
-    CompletableFuture<T> executeAs(Function<JSONObject, T> mapper);
+    CompletableFuture<T> executeAsObject(Function<JSONObject, T> mapper);
+
+    CompletableFuture<T> executeAsArray(Function<JSONArray, T> mapper);
 }

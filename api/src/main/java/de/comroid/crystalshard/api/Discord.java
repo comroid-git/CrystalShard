@@ -64,7 +64,7 @@ public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Di
         return Adapter.<Guild>request(this)
                 .endpoint(DiscordEndpoint.GUILD_SPECIFIC, id)
                 .method(RestMethod.GET)
-                .executeAs(data -> getCacheManager()
+                .executeAsObject(data -> getCacheManager()
                         .updateOrCreateAndGet(Guild.class, id, data));
     }
 

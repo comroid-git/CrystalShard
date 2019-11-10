@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
@@ -66,7 +67,20 @@ public class WebRequestImpl<T> implements WebRequest<T> {
     }
 
     @Override
-    public CompletableFuture<T> executeAs(Function<JSONObject, T> mapper) {
+    public CompletableFuture<T> executeAsObject(Function<JSONObject, T> mapper) {
+        return execute()
+                .thenApply(JSON::parseObject)
+                .thenApply(mapper);
+    }
+
+    @Override
+    public CompletableFuture<T> executeAsArray(Function<JSONArray, T> mapper) {
+        return execute()
+                .thenApply(JSON::parseArray)
+                .thenApply(mapper);
+    }
+
+    private CompletableFuture<String> execute() {
         return client.sendAsync(
                 request.method(method.toString(), publisher).build(),
                 HttpResponse.BodyHandlers.ofString())
@@ -76,8 +90,6 @@ public class WebRequestImpl<T> implements WebRequest<T> {
                                 + HTTPStatusCodes.toString(response.statusCode()));
 
                     return response.body();
-                })
-                .thenApply(JSON::parseObject)
-                .thenApply(mapper);
+                });
     }
 }

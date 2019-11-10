@@ -47,7 +47,7 @@ public interface Channel extends
         return Adapter.<Void>request(getAPI())
                 .endpoint(DiscordEndpoint.CHANNEL, getID())
                 .method(RestMethod.DELETE)
-                .executeAs(data -> getAPI().getCacheManager().delete(Channel.class, getID()));
+                .executeAsObject(data -> getAPI().getCacheManager().delete(Channel.class, getID()));
     }
 
     @IntroducedBy(PRODUCTION)
@@ -110,7 +110,7 @@ public interface Channel extends
         return Adapter.<Channel>request(api)
                 .endpoint(DiscordEndpoint.CHANNEL, id)
                 .method(RestMethod.GET)
-                .executeAs(json -> Adapter.require(Channel.class, api, json));
+                .executeAsObject(json -> Adapter.require(Channel.class, api, json));
     }
 
     interface Builder<R extends Channel, Self extends Channel.Builder> extends TypeGroup<Builder<R, Self>> {

@@ -208,7 +208,7 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
                 .endpoint(DiscordEndpoint.MESSAGE_SPECIFIC, getChannel().getID(), getID())
                 .method(RestMethod.DELETE)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .delete(Message.class, getID()));
     }
 

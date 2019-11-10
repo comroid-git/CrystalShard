@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import de.comroid.crystalshard.api.Discord;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
@@ -70,7 +71,16 @@ public class DiscordRequestImpl<T> implements DiscordRequest<T> {
     }
 
     @Override
-    public CompletableFuture<T> executeAs(Function<JSONObject, T> mapper) {
+    public CompletableFuture<T> executeAsObject(Function<JSONObject, T> mapper) {
+        return execute(JSON::parseObject, mapper);
+    }
+
+    @Override
+    public CompletableFuture<T> executeAsArray(Function<JSONArray, T> mapper) {
+        return execute(JSON::parseArray, mapper);
+    }
+    
+    private <J extends JSON> CompletableFuture<T> execute(Function<String, J> jsonParser, Function<J, T> mapper) {
         final HttpRequest request = this.request.uri(endpoint.uri(endpointArgs))
                 .method(method.toString(), publisher)
                 .build();
@@ -86,11 +96,15 @@ public class DiscordRequestImpl<T> implements DiscordRequest<T> {
                 return response;
             })
                     .thenApply(HttpResponse::body)
-                    .thenApply(JSON::parseObject)
+                    .thenApply(jsonParser)
                     .thenApply(mapper)
-                    .thenAccept(future::complete);
-        } catch (Exception e) {
-            future.completeExceptionally(new RuntimeException("Unexpected Exception", e));
+                    .whenComplete((value, throwable) -> {
+                        if (throwable == null)
+                            future.complete(value);
+                        else future.completeExceptionally(throwable);
+                    });
+        } catch (Throwable e) {
+            future.completeExceptionally(e);
         }
 
         return future;

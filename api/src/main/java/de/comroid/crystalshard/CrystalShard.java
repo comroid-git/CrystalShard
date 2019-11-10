@@ -1,5 +1,7 @@
 package de.comroid.crystalshard;
 
+import java.util.logging.Level;
+
 public final class CrystalShard {
     public static final String VERSION = "2.0.0";
 
@@ -14,4 +16,35 @@ public final class CrystalShard {
     public static final String ISSUES_URL = URL + "/issues";
     
     public static final String PLEASE_REPORT = " Please open an issue including information about this crash at " + ISSUES_URL;
+
+    public static final class LogLevel {
+        public static final Level SKIPPED = new CustomLogLevel("SKIPPED", 950, Level.SEVERE.getResourceBundleName());
+        
+        private static class CustomLogLevel extends Level {
+            private final String name;
+            private final String resourceBundleName;
+
+            private CustomLogLevel(String name, int value, String resourceBundleName) {
+                super(name, value);
+
+                this.name = name;
+                this.resourceBundleName = resourceBundleName;
+            }
+
+            @Override
+            public String getResourceBundleName() {
+                return resourceBundleName;
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public String getLocalizedName() {
+                return name;
+            }
+        }
+    }
 }

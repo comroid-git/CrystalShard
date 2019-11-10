@@ -88,7 +88,7 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
                 .endpoint(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC, getGuild().getID(), getID())
                 .method(RestMethod.DELETE)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .delete(CustomEmoji.class, getID()));
     }
 

@@ -73,7 +73,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<CustomEmoji>request(getAPI())
                 .endpoint(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC, getID(), id)
                 .method(RestMethod.GET)
-                .executeAs(data -> getAPI().getCacheManager().updateOrCreateAndGet(CustomEmoji.class, id, data));
+                .executeAsObject(data -> getAPI().getCacheManager().updateOrCreateAndGet(CustomEmoji.class, id, data));
     }
 
     @IntroducedBy(GETTER)
@@ -271,7 +271,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                 .endpoint(DiscordEndpoint.GUILD_SPECIFIC)
                 .method(RestMethod.DELETE)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> getAPI().getCacheManager().delete(Guild.class, getID()));
+                .executeAsObject(data -> getAPI().getCacheManager().delete(Guild.class, getID()));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#get-guild-channels")
@@ -282,7 +282,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<GuildMember>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_MEMBER, getID(), user.getID())
                 .method(RestMethod.GET)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .updateOrCreateAndGet(GuildMember.class, user.getID(), data));
     }
 
@@ -300,7 +300,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<Ban>request(getAPI())
                 .endpoint(DiscordEndpoint.BAN_SPECIFIC, getID(), user.getID())
                 .method(RestMethod.GET)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .updateOrCreateMemberAndGet(Guild.class, Ban.class, getID(), user.getID(), data))
                 .thenApply(Optional::ofNullable);
     }
@@ -328,7 +328,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<Embed>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_EMBED, getID())
                 .method(RestMethod.GET)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .updateOrCreateSingletonMemberAndGet(Guild.class, Embed.class, getID(), data));
     }
 
@@ -350,7 +350,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                 .endpoint(DiscordEndpoint.GUILD_SELF, getID())
                 .method(RestMethod.DELETE)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .delete(Guild.class, getID()));
     }
 
@@ -514,7 +514,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                     .endpoint(DiscordEndpoint.INTEGRATION_SPECIFIC, getGuild().getID(), getID())
                     .method(RestMethod.DELETE)
                     .expectCode(HTTPStatusCodes.NO_CONTENT)
-                    .executeAs(data -> getAPI().getCacheManager()
+                    .executeAsObject(data -> getAPI().getCacheManager()
                             .deleteMember(Guild.class, Integration.class, getGuild().getID(), getID()));
             // todo add thenCompose waiting for deletion listener?
         }
@@ -525,7 +525,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                     .endpoint(DiscordEndpoint.INTEGRATION_SPECIFIC_SYNC, getGuild().getID(), getID())
                     .method(RestMethod.POST)
                     .expectCode(HTTPStatusCodes.NO_CONTENT)
-                    .executeAs(data -> null);
+                    .executeAsObject(data -> null);
         }
 
         @JSONBindingLocation(Account.Trait.class)

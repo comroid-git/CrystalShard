@@ -98,7 +98,7 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
         return Adapter.<User>request(api)
                 .endpoint(DiscordEndpoint.USER, id)
                 .method(RestMethod.GET)
-                .executeAs(data -> api.getCacheManager()
+                .executeAsObject(data -> api.getCacheManager()
                         .updateOrCreateAndGet(User.class, id, data));
     }
 

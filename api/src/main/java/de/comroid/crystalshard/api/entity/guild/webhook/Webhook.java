@@ -81,7 +81,7 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
                 .endpoint(DiscordEndpoint.WEBHOOK, getID())
                 .method(RestMethod.DELETE)
                 .expectCode(HTTPStatusCodes.NO_CONTENT)
-                .executeAs(data -> getAPI().getCacheManager()
+                .executeAsObject(data -> getAPI().getCacheManager()
                         .delete(Webhook.class, getID()));
     }
 
@@ -92,7 +92,7 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
         return Adapter.<Webhook>request(api)
                 .endpoint(DiscordEndpoint.WEBHOOK, id)
                 .method(RestMethod.GET)
-                .executeAs(data -> api.getCacheManager()
+                .executeAsObject(data -> api.getCacheManager()
                         .updateOrCreateAndGet(Webhook.class, id, data));
     }
 

@@ -8,6 +8,7 @@ import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ScheduledFuture;
@@ -35,11 +36,13 @@ import de.comroid.crystalshard.core.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.InitializedBy;
 import de.comroid.crystalshard.util.model.NStream;
+import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
+import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.CrystalShard.URL;
 import static de.comroid.crystalshard.CrystalShard.VERSION;
@@ -85,7 +88,7 @@ public class GatewayImpl implements Gateway {
                             .buildAsync(Adapter.<String>request(api)
                                     .endpoint(DiscordEndpoint.GATEWAY)
                                     .method(RestMethod.GET)
-                                    .executeAs(node -> node.getString("url"))
+                                    .executeAsObject(node -> node.getString("url"))
                                     .thenApply(str -> {
                                         try {
                                             return new URI(str);
@@ -162,20 +165,24 @@ public class GatewayImpl implements Gateway {
         log.at(Level.FINER).log("Dispatching data: " + jsonStr);
 
         threadPool.submit(() -> {
+            String eventType = null;
+
             try {
                 final JSONObject json = JSON.parseObject(jsonStr);
 
                 OpCode op = OpCode.getByValue(json.getInteger("op"));
                 final JSONObject data = json.getJSONObject("d");
                 int seq = json.getInteger("s");
-                String type = json.getString("t");
+                eventType = json.getString("t");
 
-                GatewayEventBase event = null;
+                final Class<?> eventClass = Class.forName("de.comroid.crystalshard.core.gateway.event." + eventType);
+                GatewayEventBase event = Adapter.require(eventClass, api, data);
 
+                final String finalEventType = eventType;
                 (listenerManagers.size() > 200
                         ? listenerManagers.parallelStream()
                         : listenerManagers.stream())
-                        .filter(basicGatewayListener -> basicGatewayListener.test(type))
+                        .filter(basicGatewayListener -> basicGatewayListener.test(finalEventType))
                         .map((Function<BasicGatewayListener, Runnable>) basicGatewayListener -> {
                             Class<? extends ListenerManager<? extends GatewayListener>> managerClass
                                     = getManagerClass(basicGatewayListener.underlyingListener.getClass());
@@ -193,7 +200,9 @@ public class GatewayImpl implements Gateway {
                         })
                         .forEachOrdered(api.getListenerThreadPool()::submit);
             } catch (JSONException e) {
-                throw new RuntimeException("JSON Deserialization Exception", e);
+                log.at(Level.SEVERE).withCause(e).log("JSON Deserialization Exception");
+            } catch (ClassNotFoundException e) {
+                log.at(CrystalShard.LogLevel.SKIPPED).log("Unrecognized Gateway Event Type: %s", eventType);
             }
         });
     }
@@ -203,7 +212,7 @@ public class GatewayImpl implements Gateway {
         InitializedBy initializedBy = aClass.getAnnotation(InitializedBy.class);
 
         Objects.requireNonNull(initializedBy, "Internal Error: Listener class " + aClass + " does not have a " +
-                "@ManagedBy definition. Please open an issue at " + CrystalShard.ISSUES_URL);
+                "@InitializedBy definition. Please open an issue at " + CrystalShard.ISSUES_URL);
 
         return (Class<ListenerManager<TL>>) initializedBy.value();
     }
@@ -339,6 +348,18 @@ public class GatewayImpl implements Gateway {
         @Override
         public Discord getAPI() {
             return null; // todo test behavior
+        }
+
+        @Override public Set<JSONBinding> bindings() {
+            return null;
+        }
+
+        @Override public <S, T> @Nullable T getBindingValue(JSONBinding<?, S, ?, T> trait) {
+            return null;
+        }
+
+        @Override public Set<JSONBinding> updateFromJson(JSONObject data) {
+            return null;
         }
     }
 
