@@ -10,7 +10,8 @@ version '1.0.0-SNAPSHOT'
 
 apply from: 'gradle/vars.gradle'
 
-sourceCompatibility = targetCompatibility = 1.8
+sourceCompatibility = 13
+targetCompatibility = 13
 
 tasks.findByName('wrapper').configure {
     gradleVersion = '5.6'
