@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -134,9 +133,29 @@ public class ThreadPoolImpl implements ThreadPool {
         return null;
     }
 
-    @Override 
-    public ScheduledExecutorService getScheduler() {
+    @Override
+    public ScheduledExecutorService getUnderlyingScheduler() {
         return scheduledExecutorService;
+    }
+
+    @Override
+    public @NotNull ScheduledFuture<?> schedule(@NotNull Runnable task, long delay, @NotNull TimeUnit unit) {
+        return scheduledExecutorService.schedule(task, delay, unit);
+    }
+
+    @Override
+    public @NotNull <V> ScheduledFuture<V> schedule(@NotNull Callable<V> task, long delay, @NotNull TimeUnit unit) {
+        return scheduledExecutorService.schedule(task, delay, unit);
+    }
+
+    @Override
+    public @NotNull ScheduledFuture<?> scheduleAtFixedRate(@NotNull Runnable task, long initialDelay, long period, @NotNull TimeUnit unit) {
+        return scheduledExecutorService.scheduleAtFixedRate(task, initialDelay, period, unit);
+    }
+
+    @Override
+    public @NotNull ScheduledFuture<?> scheduleWithFixedDelay(@NotNull Runnable task, long initialDelay, long delay, @NotNull TimeUnit unit) {
+        return scheduledExecutorService.scheduleWithFixedDelay(task, initialDelay, delay, unit);
     }
 
     @Override
@@ -161,11 +180,11 @@ public class ThreadPoolImpl implements ThreadPool {
 
     @Override
     public boolean isTerminated() {
-        return shutdown;
+        return isShutdown() && busyWorkers.length == 0;
     }
 
     @Override
-    public boolean awaitTermination(long timeout, @NotNull TimeUnit unit) throws InterruptedException {
+    public boolean awaitTermination(long timeout, @NotNull TimeUnit unit) {
         return false; // todo
     }
 
@@ -215,18 +234,18 @@ public class ThreadPoolImpl implements ThreadPool {
     }
 
     @Override
-    public @NotNull <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
+    public @NotNull <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks) {
         return null; // todo
     }
 
     @Override
     public <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks,
-                           long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                           long timeout, @NotNull TimeUnit unit) {
         return null; // todo
     }
 
     @Override
     public void execute(@NotNull Runnable task) {
-        submit(task);
+        newThread(task);
     }
 }

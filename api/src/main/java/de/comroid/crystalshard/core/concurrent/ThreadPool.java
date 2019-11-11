@@ -6,9 +6,9 @@ import java.util.concurrent.ThreadFactory;
 
 import de.comroid.crystalshard.api.Discord;
 
-public interface ThreadPool extends ExecutorService, ThreadFactory {
-    ScheduledExecutorService getScheduler();
-
+public interface ThreadPool extends ExecutorService, ScheduledExecutorService, ThreadFactory {
+    ScheduledExecutorService getUnderlyingScheduler();
+    
     static Discord getContextApi() throws IllegalCallerException {
         final Thread thread = Thread.currentThread();
 
