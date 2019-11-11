@@ -16,6 +16,8 @@ public final class CrystalShard {
     public static final String ISSUES_URL = URL + "/issues";
     
     public static final String PLEASE_REPORT = " Please open an issue including information about this crash at " + ISSUES_URL;
+    
+    public static final ThreadGroup THREAD_GROUP = new ThreadGroup("CrystalShard");
 
     public static final class LogLevel {
         public static final Level SKIPPED = new CustomLogLevel("SKIPPED", 950, Level.SEVERE.getResourceBundleName());

@@ -43,10 +43,10 @@ public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
         
         this.cacheManager = Adapter.require(CacheManager.class, this);
         
-        this.commonThreadPool = Adapter.require(ThreadPool.class, this, "Common");
-        this.gatewayThreadPool = Adapter.require(ThreadPool.class, this, "Gateway");
-        this.listenerThreadPool = Adapter.require(ThreadPool.class, this, "Listener");
-        this.ratelimiterThreadPool = Adapter.require(ThreadPool.class, this, "Ratelimiter");
+        this.commonThreadPool = Adapter.require(ThreadPool.class, this, "Common", Integer.MAX_VALUE);
+        this.gatewayThreadPool = Adapter.require(ThreadPool.class, this, "Gateway", Integer.MAX_VALUE);
+        this.listenerThreadPool = Adapter.require(ThreadPool.class, this, "Listener", Integer.MAX_VALUE);
+        this.ratelimiterThreadPool = Adapter.require(ThreadPool.class, this, "Ratelimiter", Integer.MAX_VALUE);
         
         this.ratelimiter = Adapter.require(Ratelimiter.class, this, ratelimiterThreadPool);
         this.gateway = Adapter.require(Gateway.class, this, gatewayThreadPool);

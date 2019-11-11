@@ -15,6 +15,7 @@ import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
+import org.intellij.lang.annotations.MagicConstant;
 
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
@@ -49,7 +50,7 @@ public interface PermissionOverride extends JsonDeserializable {
          */
     }
 
-    default EntityType getTargetType() {
+    default @MagicConstant(intValues = {EntityType.ROLE.mask}) EntityType getTargetType() {
         return getBindingValue(JSON.TARGET_TYPE);
     }
 
