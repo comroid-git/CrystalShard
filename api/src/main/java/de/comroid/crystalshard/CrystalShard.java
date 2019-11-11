@@ -2,6 +2,8 @@ package de.comroid.crystalshard;
 
 import java.util.logging.Level;
 
+import com.google.common.flogger.LoggerConfig;
+
 public final class CrystalShard {
     public static final String VERSION = "2.0.0";
 

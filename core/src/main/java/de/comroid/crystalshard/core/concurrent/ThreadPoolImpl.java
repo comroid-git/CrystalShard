@@ -1,9 +1,11 @@
 package de.comroid.crystalshard.core.concurrent;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -12,15 +14,17 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.util.ThreadpoolArrayUtil;
 
 import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.NotNull;
 
+import static de.comroid.crystalshard.core.concurrent.WorkerThreadImpl.Status.BUSY;
 import static de.comroid.crystalshard.util.ThreadpoolArrayUtil.allNull;
+import static de.comroid.crystalshard.util.ThreadpoolArrayUtil.getAny;
 import static de.comroid.crystalshard.util.ThreadpoolArrayUtil.notNullSum;
 
 public class ThreadPoolImpl implements ThreadPool {
@@ -53,6 +57,8 @@ public class ThreadPoolImpl implements ThreadPool {
 
     final ScheduledExecutorService scheduledExecutorService;
 
+    private boolean shutdown = false;
+
     int workerCounter = 0;
 
     public ThreadPoolImpl(Discord api, String name, int concurrencyLimit) {
@@ -65,36 +71,38 @@ public class ThreadPoolImpl implements ThreadPool {
         idleWorkers = workerMap[0];
         busyWorkers = workerMap[1];
 
-        this.taskAssigner = new Thread(threadGroup, new Runnable() {
-            @Override
-            public void run() {
-                do {
-                    try {
-                        synchronized (queue) {
-                            while (queue.peek() == null)
-                                queue.wait(10);
+        this.taskAssigner = new Thread(threadGroup, () -> {
+            do {
+                try {
+                    synchronized (queue) {
+                        while (queue.peek() == null)
+                            queue.wait(10);
 
-                            WorkerThreadImpl worker = null;
+                        WorkerThreadImpl worker = null;
 
-                            while (worker == null) {
-                                // if no idle workers and less total workers than concurrencyLimit
-                                // create new worker
-                                if (allNull(idleWorkers) && notNullSum(idleWorkers, busyWorkers) < concurrencyLimit)
-                                    worker = new WorkerThreadImpl(api, ThreadPoolImpl.this, workerCounter++);
-                                else if (!allNull(idleWorkers) && notNullSum(idleWorkers, busyWorkers) >= concurrencyLimit) {
-                                    worker = getAny(idleWorkers)
-                                }
-                            }
-
-                            if (worker)
+                        while (worker == null) {
+                            // if no idle workers and less total workers than concurrencyLimit
+                            // create new worker
+                            if (allNull(idleWorkers) && notNullSum(idleWorkers, busyWorkers) < concurrencyLimit) {
+                                logger.at(Level.FINER).log("Creating new Worker in pool %s", ThreadPoolImpl.this.toString());
+                                worker = new WorkerThreadImpl(api, ThreadPoolImpl.this, workerCounter++);
+                            } else if (!allNull(idleWorkers) && notNullSum(idleWorkers, busyWorkers) == concurrencyLimit) {
+                                logger.at(Level.FINE)
+                                        .atMostEvery(10, TimeUnit.SECONDS)
+                                        .log("All workers are busy! Is this correct?");
+                                queue.wait(1000 /* if all workers are busy, this will take a while */);
+                            } else worker = getAny(idleWorkers);
                         }
-                    } catch (InterruptedException e) {
-                        ThreadPoolImpl.logger.at(Level.SEVERE)
-                                .withCause(e)
-                                .log();
+
+                        if (worker.changeStatus(WorkerThreadImpl.Status.BUSY))
+                            worker.takeLoad(queue.poll());
                     }
-                } while (true);
-            }
+                } catch (InterruptedException e) {
+                    ThreadPoolImpl.logger.at(Level.SEVERE)
+                            .withCause(e)
+                            .log();
+                }
+            } while (true);
         }, threadGroup.getName() + "-TaskAssigner");
         this.taskAssigner.start();
 
@@ -103,10 +111,13 @@ public class ThreadPoolImpl implements ThreadPool {
 
     @Override
     public Thread newThread(@NotNull Runnable task) {
+        if (shutdown)
+            throw new IllegalStateException("ThreadPool was shut down!");
+
         // first try to find existing worker
         for (WorkerThreadImpl idleWorker : idleWorkers) {
             if (idleWorker != null) {
-                if (idleWorker.changeStatus(WorkerThreadImpl.Status.BUSY)) {
+                if (idleWorker.changeStatus(BUSY)) {
                     idleWorker.takeLoad(task);
                     return idleWorker.internalThread;
                 }
@@ -128,63 +139,94 @@ public class ThreadPoolImpl implements ThreadPool {
         return scheduledExecutorService;
     }
 
-    private WorkerThreadImpl findFreeWorker$blocking() {
-        return null;
-    }
+    @Override
+    public void shutdown() {
+        shutdown = true;
 
-    @Override public void shutdown() {
-
-    }
-
-    @NotNull @Override public List<Runnable> shutdownNow() {
-        return null;
-    }
-
-    @Override public boolean isShutdown() {
-        return false;
-    }
-
-    @Override public boolean isTerminated() {
-        return false;
-    }
-
-    @Override public boolean awaitTermination(long timeout, @NotNull TimeUnit unit) throws InterruptedException {
-        return false;
-    }
-
-    @NotNull @Override public <T> Future<T> submit(@NotNull Callable<T> task) {
-        return null;
-    }
-
-    @NotNull @Override public <T> Future<T> submit(@NotNull Runnable task, T result) {
-        return null;
-    }
-
-    @NotNull @Override public Future<?> submit(@NotNull Runnable task) {
-        return null;
-    }
-
-    @NotNull @Override
-    public <T> List<Future<T>> invokeAll(@NotNull Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return null;
-    }
-
-    @NotNull @Override
-    public <T> List<Future<T>> invokeAll(@NotNull Collection<? extends Callable<T>> tasks, long timeout, @NotNull TimeUnit unit) throws InterruptedException {
-        return null;
-    }
-
-    @NotNull @Override
-    public <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-        return null;
+        queue.clear();
     }
 
     @Override
-    public <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks, long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return null;
+    public @NotNull List<Runnable> shutdownNow() {
+        return new ArrayList<>() {{
+            addAll(queue);
+            shutdown();
+        }};
     }
 
-    @Override public void execute(@NotNull Runnable command) {
+    @Override
+    public boolean isShutdown() {
+        return shutdown;
+    }
 
+    @Override
+    public boolean isTerminated() {
+        return shutdown;
+    }
+
+    @Override
+    public boolean awaitTermination(long timeout, @NotNull TimeUnit unit) throws InterruptedException {
+        return false; // todo
+    }
+
+    @Override
+    public @NotNull <T> Future<T> submit(@NotNull final Callable<T> task) {
+        final CompletableFuture<T> future = new CompletableFuture<>();
+
+        execute(() -> {
+            try {
+                future.complete(task.call());
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+
+        return future;
+    }
+
+    @Override
+    public @NotNull <T> Future<T> submit(@NotNull final Runnable task, final T result) {
+        return CompletableFuture.supplyAsync(() -> {
+            task.run();
+            return result;
+        }, this);
+    }
+
+    @Override
+    public @NotNull Future<?> submit(@NotNull final Runnable task) {
+        return CompletableFuture.supplyAsync(() -> {
+            task.run();
+            return null;
+        }, this);
+    }
+
+    @Override
+    public @NotNull <T> List<Future<T>> invokeAll(@NotNull Collection<? extends Callable<T>> tasks) {
+        return tasks.stream()
+                .sequential()
+                .map(this::submit)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public @NotNull <T> List<Future<T>> invokeAll(@NotNull Collection<? extends Callable<T>> tasks,
+                                                  long timeout, @NotNull TimeUnit unit) {
+        return invokeAll(tasks); // todo
+    }
+
+    @Override
+    public @NotNull <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
+        return null; // todo
+    }
+
+    @Override
+    public <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks,
+                           long timeout, @NotNull TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        return null; // todo
+    }
+
+    @Override
+    public void execute(@NotNull Runnable task) {
+        submit(task);
     }
 }

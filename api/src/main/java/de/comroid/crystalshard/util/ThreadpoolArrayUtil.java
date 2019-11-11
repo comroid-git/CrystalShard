@@ -41,4 +41,13 @@ public class ThreadpoolArrayUtil {
                         .count())
                 .sum();
     }
+
+    public static <T> T getAny(T[] workers) {
+        for (T worker : workers) {
+            if (worker != null)
+                return worker;
+        }
+        
+        return null;
+    }
 }
