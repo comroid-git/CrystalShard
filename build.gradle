@@ -107,7 +107,7 @@ subprojects {
         compileOnly 'org.jetbrains:annotations:18.0.0'
 
         testImplementation 'junit:junit:4.12'
-        testImplementation 'org.easymock:easymock:4.0.2'
+        testImplementation 'org.easymock:easymock:4.1'
         testImplementation 'com.google.flogger:flogger-system-backend:0.4'
     }
 }
