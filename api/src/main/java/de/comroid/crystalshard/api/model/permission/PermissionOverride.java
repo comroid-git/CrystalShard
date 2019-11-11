@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.GuildChannel;
 import de.comroid.crystalshard.api.entity.guild.Role;
@@ -14,24 +15,41 @@ import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
-import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 public interface PermissionOverride extends JsonDeserializable {
+    @SuppressWarnings("unchecked")
     default <X extends Snowflake & Cacheable & PermissionOverridable> X getTarget() {
         long targetId = getBindingValue(JSON.TARGET_ID);
 
+        switch (getTargetType()) {
+            case ROLE:
+                return (X) getAPI().getCacheManager()
+                        .streamSnowflakesByID(Role.class, targetId)
+                        .findAny().orElseThrow();
+            case GUILD_MEMBER:
+                return (X) getAPI().getCacheManager()
+                        .streamSnowflakesByID(User.class, targetId)
+                        .findAny().orElseThrow();
+        }
+
+        throw new AssertionError();
+        
+        /*
+        commented code not buildable due to https://youtrack.jetbrains.com/issue/IDEA-226596#focus=streamItem-27-3787597.0-0
+        
         return (X) (switch (getTargetType()) {
             case ROLE -> getAPI().getCacheManager()
                     .streamSnowflakesByID(Role.class, targetId);
             case MEMBER -> getAPI().getCacheManager()
                     .streamSnowflakesByID(User.class, targetId);
         }).findAny().orElseThrow();
+         */
     }
 
-    default TargetType getTargetType() {
+    default EntityType getTargetType() {
         return getBindingValue(JSON.TARGET_TYPE);
     }
 
@@ -139,7 +157,7 @@ public interface PermissionOverride extends JsonDeserializable {
 
     interface JSON {
         JSONBinding.OneStage<Long> TARGET_ID = identity("id", JSONObject::getLong);
-        JSONBinding.TwoStage<String, TargetType> TARGET_TYPE = simple("type", JSONObject::getString, TargetType::from);
+        JSONBinding.TwoStage<String, EntityType> TARGET_TYPE = simple("type", JSONObject::getString, EntityType::valueOf);
         JSONBinding.OneStage<Integer> ALLOWED = identity("allow", JSONObject::getInteger);
         JSONBinding.OneStage<Integer> DENIED = identity("deny", JSONObject::getInteger);
     }
@@ -179,15 +197,5 @@ public interface PermissionOverride extends JsonDeserializable {
         DENIED,
 
         UNSET
-    }
-
-    enum TargetType {
-        ROLE,
-
-        MEMBER;
-
-        private static @Nullable TargetType from(String value) {
-            return valueOf(TargetType.class, value.toUpperCase());
-        }
     }
 }
