@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.MainAPI;
+import de.comroid.crystalshard.api.entity.EntityType;
 import de.comroid.crystalshard.api.entity.channel.GuildVoiceChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.Role;
@@ -38,6 +39,11 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simpl
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
+
+    @Override
+    default EntityType getEntityType() {
+        return EntityType.GUILD_MEMBER;
+    }
 
     default Optional<String> getNickname() {
         return wrapBindingValue(JSON.NICKNAME);

@@ -1,59 +1,65 @@
 package de.comroid.crystalshard.api.entity;
 
-public enum EntityType {
-    UNKNOWN(0x0, 0x0),
+import org.jetbrains.annotations.ApiStatus.Internal;
 
-    GUILD(0x00001, 0x00001),
+import static de.comroid.crystalshard.util.Util.isFlagSet;
 
-    AUDIT_LOG_ENTRY(0x00002, 0x00002),
+public @Internal enum EntityType {
+    UNKNOWN(0x0000, 0x0000),
 
-    AUDIT_LOG_ENTRY_TARGET(0x00004, 0x00004),
+    GUILD(0x00000001, 0x00000001),
 
-    CUSTOM_EMOJI(0x00008, 0x00008),
+    AUDIT_LOG_ENTRY(0x00000002, 0x00000002),
 
-    USER(0x00010, 0x00010),
+    AUDIT_LOG_ENTRY_TARGET(0x00000004, 0x00000004),
 
-    WEBHOOK(0x00020, 0x00020),
+    CUSTOM_EMOJI(0x00000008, 0x00000008),
 
-    ROLE(0x00040, 0x00040),
+    USER(0x00000010, 0x00000010),
 
-    MESSAGE(0x00080, 0x00080),
+    WEBHOOK(0x00000020, 0x00000020),
 
-    CHANNEL(0x00100, 0x00100),
+    ROLE(0x00000040, 0x00000040),
 
-    TEXT_CHANNEL(0x00200, CHANNEL.effectiveMask | 0x00200),
+    MESSAGE(0x00000080, 0x00000080),
 
-    VOICE_CHANNEL(0x00400, CHANNEL.effectiveMask | 0x00400),
+    CHANNEL(0x00000100, 0x00000100),
 
-    GUILD_CHANNEL(0x00800, CHANNEL.effectiveMask | 0x00800),
+    TEXT_CHANNEL(0x00000200, CHANNEL.mask | 0x00000200),
 
-    GUILD_TEXT_CHANNEL(0x01000, TEXT_CHANNEL.effectiveMask | GUILD_CHANNEL.effectiveMask | 0x01000),
+    VOICE_CHANNEL(0x00000400, CHANNEL.mask | 0x00000400),
 
-    GUILD_VOICE_CHANNEL(0x02000, VOICE_CHANNEL.effectiveMask | GUILD_CHANNEL.effectiveMask | 0x02000),
+    GUILD_CHANNEL(0x00000800, CHANNEL.mask | 0x00000800),
 
-    PRIVATE_TEXT_CHANNEL(0x04000, TEXT_CHANNEL.effectiveMask | VOICE_CHANNEL.effectiveMask | 0x04000),
+    GUILD_TEXT_CHANNEL(0x00001000, TEXT_CHANNEL.mask | GUILD_CHANNEL.mask | 0x00001000),
 
-    GROUP_TEXT_CHANNEL(0x08000, TEXT_CHANNEL.effectiveMask | VOICE_CHANNEL.effectiveMask | 0x08000),
+    GUILD_VOICE_CHANNEL(0x00002000, VOICE_CHANNEL.mask | GUILD_CHANNEL.mask | 0x00002000),
 
-    GUILD_CHANNEL_CATEGORY(0x10000, GUILD_CHANNEL.effectiveMask | 0x10000),
+    PRIVATE_TEXT_CHANNEL(0x00004000, TEXT_CHANNEL.mask | VOICE_CHANNEL.mask | 0x00004000),
 
-    GUILD_NEWS_CHANNEL(0x40000, GUILD_CHANNEL.effectiveMask | 0x40000),
+    GROUP_TEXT_CHANNEL(0x00008000, TEXT_CHANNEL.mask | VOICE_CHANNEL.mask | 0x00008000),
 
-    GUILD_STORE_CHANNEL(0x80000, GUILD_CHANNEL.effectiveMask | 0x80000),
+    GUILD_CHANNEL_CATEGORY(0x00010000, GUILD_CHANNEL.mask | 0x00010000),
 
-    MESSAGE_ATTACHMENT(0x20000, 0x20000),
+    GUILD_NEWS_CHANNEL(0x00040000, GUILD_CHANNEL.mask | 0x00040000),
 
-    PRIVATE_CHANNEL(0xF0000, CHANNEL.effectiveMask | 0xF0000);
+    GUILD_STORE_CHANNEL(0x00080000, GUILD_CHANNEL.mask | 0x00080000),
 
-    private final int ownMask;
-    private final int effectiveMask;
+    MESSAGE_ATTACHMENT(0x00020000, 0x00020000),
 
-    EntityType(int ownMask, int effectiveMask) {
-        this.ownMask = ownMask;
-        this.effectiveMask = effectiveMask;
+    PRIVATE_CHANNEL(0x000F0000, CHANNEL.mask | 0x000F0000),
+
+    GUILD_MEMBER(0x00100000, USER.mask | 0x00100000);
+
+    public @Internal final int mask;
+    private final int flag;
+
+    EntityType(int flag, int mask) {
+        this.flag = flag;
+        this.mask = mask;
     }
 
     public boolean isType(EntityType other) {
-        return (effectiveMask & other.ownMask) != 0;
+        return isFlagSet(flag, other.mask);
     }
 }
