@@ -150,6 +150,10 @@ project(":impl") {
 
 project(":util") {
     version = '2.0.0'
+    
+    dependencies {
+        api project(':api')
+    }
 }
 
 task allJavadoc(type: Javadoc) {

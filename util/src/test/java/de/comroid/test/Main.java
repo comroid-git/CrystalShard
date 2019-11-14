@@ -3,14 +3,14 @@ package de.comroid.test;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import de.comroid.javacord.util.commands.Command;
-import de.comroid.javacord.util.commands.CommandGroup;
-import de.comroid.javacord.util.commands.CommandHandler;
-import de.comroid.javacord.util.server.properties.PropertyGroup;
-import de.comroid.javacord.util.server.properties.ServerPropertiesManager;
-import de.comroid.javacord.util.ui.embed.DefaultEmbedFactory;
-import de.comroid.javacord.util.ui.messages.categorizing.CategorizedEmbed;
-import de.comroid.javacord.util.ui.reactions.InfoReaction;
+import de.comroid.crystalshard.util.commands.Command;
+import de.comroid.crystalshard.util.commands.CommandGroup;
+import de.comroid.crystalshard.util.commands.CommandHandler;
+import de.comroid.crystalshard.util.server.properties.PropertyGroup;
+import de.comroid.crystalshard.util.server.properties.ServerPropertiesManager;
+import de.comroid.crystalshard.util.ui.embed.DefaultEmbedFactory;
+import de.comroid.crystalshard.util.ui.messages.categorizing.CategorizedEmbed;
+import de.comroid.crystalshard.util.ui.reactions.InfoReaction;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
