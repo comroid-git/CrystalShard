@@ -1,5 +1,6 @@
 package de.comroid.crystalshard.api.entity.guild;
 
+import java.awt.Color;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +31,7 @@ import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.guild.ban.Ban;
 import de.comroid.crystalshard.api.model.guild.invite.Invite;
 import de.comroid.crystalshard.api.model.user.Presence;
+import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.api.model.voice.VoiceRegion;
 import de.comroid.crystalshard.api.model.voice.VoiceState;
 import de.comroid.crystalshard.core.cache.CacheManager;
@@ -357,6 +359,8 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                 .findFirst()
                 .orElseThrow(AssertionError::new);
     }
+
+    Optional<Color> getRoleColor(User ofUser); // todo
 
     static Builder builder(Discord api) {
         return Adapter.require(Builder.class, api);

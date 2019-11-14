@@ -2,9 +2,12 @@ package de.comroid.crystalshard.api.model.message.reaction;
 
 // https://discordapp.com/developers/docs/resources/channel#reaction-object-reaction-structure
 
+import java.util.concurrent.CompletableFuture;
+
 import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
+import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.core.cache.Cacheable;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
@@ -47,5 +50,19 @@ public interface Reaction extends JsonDeserializable, Cacheable {
         JSONBinding.OneStage<Integer> COUNT = identity("count", JSONObject::getInteger);
         JSONBinding.OneStage<Boolean> ME = identity("me", JSONObject::getBoolean);
         JSONBinding.TwoStage<JSONObject, Emoji> EMOJI = require("emoji", Emoji.class);
+    }
+
+    interface Remover { // todo
+        Remover byEmoji(String... emojis);
+        
+        Remover byAllEmojis();
+        
+        Remover byUser(User... users);
+        
+        Remover byEveryone();
+        
+        Remover byYourself();
+        
+        CompletableFuture<Void> remove();
     }
 }

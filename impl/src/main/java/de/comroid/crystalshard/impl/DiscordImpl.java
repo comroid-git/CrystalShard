@@ -64,7 +64,7 @@ public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
                     properties.put("$browser", "CrystalShard " + CrystalShard.VERSION);
                     properties.put("$device", "CrystalShard " + CrystalShard.VERSION);
 
-                    final CompletableFuture<EventPair<READY, ListenerManager<Listener<? extends READY>>>> readyFuture = gateway.listenOnceTo(READY.class);
+                    final CompletableFuture<EventPair<READY, ListenerManager<Listener>>> readyFuture = gateway.listenOnceTo(READY.class);
                     gateway.sendRequest(OpCode.IDENTIFY, identify);
                     
                     return readyFuture;
@@ -144,12 +144,12 @@ public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
     }
 
     @Override
-    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenOnceTo(Class<FE> forEvent) {
+    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener>>> listenOnceTo(Class<FE> forEvent) {
         return null;
     }
 
     @Override
-    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenInStream(Class<FE> forEvent) {
+    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent) {
         return null;
     }
 }

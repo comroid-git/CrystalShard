@@ -28,11 +28,11 @@ public interface ListenerAttachable<AL extends AttachableListener & Listener> {
         return c;
     }
 
-    <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenOnceTo(Class<FE> forEvent);
+    <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener>>> listenOnceTo(Class<FE> forEvent);
 
-    <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenInStream(Class<FE> forEvent);
+    <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent);
 
-    final class EventPair<E extends Event, LM extends ListenerManager<Listener<? extends E>>> extends Pair<E, LM> {
+    final class EventPair<E extends Event, LM extends ListenerManager<Listener>> extends Pair<E, LM> {
         public EventPair(E aValue, LM bValue) {
             super(aValue, bValue);
         }

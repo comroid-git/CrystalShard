@@ -5,10 +5,11 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.event.DiscordEvent;
 import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.user.Yourself;
@@ -23,7 +24,7 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Discord<? extends DiscordEvent>> {
+public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Discord> {
     String getToken();
 
     int getShardID();
@@ -70,6 +71,11 @@ public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Di
                 .endpoint(DiscordEndpoint.GUILD_SPECIFIC, id)
                 .method(RestMethod.GET)
                 .executeAsObject(data -> Adapter.require(Guild.class, api, data));
+    }
+
+    default Optional<? extends Channel> getChannelByID(long id) {
+        return getCacheManager()
+                .getChannelByID(id);
     }
 
     static Builder builder() {

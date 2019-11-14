@@ -8,18 +8,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+import de.comroid.crystalshard.api.entity.emoji.Emoji;
+import de.comroid.crystalshard.api.entity.message.Message;
+import de.comroid.crystalshard.api.event.message.reaction.ReactionEvent;
+import de.comroid.crystalshard.api.listener.message.MessageDeleteListener;
+import de.comroid.crystalshard.api.listener.message.reaction.ReactionAddListener;
+import de.comroid.crystalshard.api.listener.message.reaction.ReactionRemoveListener;
+import de.comroid.crystalshard.api.listener.model.ListenerManager;
+import de.comroid.crystalshard.api.model.message.Messageable;
+import de.comroid.crystalshard.api.model.message.embed.Embed;
 import de.comroid.crystalshard.util.ui.embed.DefaultEmbedFactory;
-import de.comroid.crystalshard.util.ui.embed.EmbedFieldRepresentative;
 
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.Messageable;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.event.message.reaction.SingleReactionEvent;
-import org.javacord.api.util.logging.ExceptionLogger;
+import static de.comroid.crystalshard.adapter.Adapter.exceptionLogger;
 
 public class PagedEmbed {
     private final Messageable messageable;
-    private final Supplier<EmbedBuilder> embedsupplier;
+    private final Supplier<Embed> embedsupplier;
 
     private ConcurrentHashMap<Integer, List<Field>> pages = new ConcurrentHashMap<>();
     private List<Field> fields = new ArrayList<>();
@@ -41,7 +45,7 @@ public class PagedEmbed {
      * @param messageable   The Messageable in which the embed should be sent.
      * @param embedsupplier A Predicate to supply a new, clean EmbedBuilder, that the sent embed should be based on.
      */
-    public PagedEmbed(Messageable messageable, Supplier<EmbedBuilder> embedsupplier) {
+    public PagedEmbed(Messageable messageable, Supplier<Embed> embedsupplier) {
         this.messageable = messageable;
         this.embedsupplier = embedsupplier;
     }
@@ -87,39 +91,39 @@ public class PagedEmbed {
     public CompletableFuture<Message> build() {
         page = 1;
 
-        CompletableFuture<Message> future = messageable.sendMessage(embedsupplier.get())
-                .exceptionally(ExceptionLogger.get());
+        CompletableFuture<Message> future = messageable.composeMessage()
+                .setEmbed(embedsupplier.get())
+                .send()
+                .exceptionally(exceptionLogger());
 
         future.thenAcceptAsync(message -> {
             sentMessage.set(message);
             if (pages.size() != 1) {
-                message.addReactionAddListener(this::onReactionClick);
-                message.addReactionRemoveListener(this::onReactionClick);
-                message.addReaction(Variables.PREV_PAGE_EMOJI);
-                message.addReaction(Variables.NEXT_PAGE_EMOJI);
+                message.attachListener((ReactionAddListener) this::onReactionClick);
+                message.attachListener((ReactionRemoveListener) this::onReactionClick);
+                message.addReaction(Emoji.unicode(Variables.PREV_PAGE_EMOJI));
+                message.addReaction(Emoji.unicode(Variables.NEXT_PAGE_EMOJI));
             }
 
-            message.addMessageDeleteListener(delete -> message.getMessageAttachableListeners()
-                    .forEach((a, b) -> message.removeMessageAttachableListener(a)))
-                    .removeAfter(3, TimeUnit.HOURS)
-                    .addRemoveHandler(() -> {
-                        sentMessage.get()
-                                .removeAllReactions();
-                        sentMessage.get()
-                                .getMessageAttachableListeners()
-                                .forEach((a, b) -> message.removeMessageAttachableListener(a));
-                    });
+            message.attachListener((MessageDeleteListener) delete -> message.getAttachedListenerManagers()
+                    .forEach(ListenerManager::detachNow))
+                    .addDetachHandler(() -> {
+                        sentMessage.get().removeAllReactions();
+                        sentMessage.get().getAttachedListenerManagers()
+                                .forEach(ListenerManager::detachNow);
+                    })
+                    .detachIn(3, TimeUnit.HOURS);
             refreshPages();
-        }).exceptionally(ExceptionLogger.get());
+        }).exceptionally(exceptionLogger());
 
         return future;
     }
 
-    public EmbedBuilder getRawEmbed() {
+    public Embed getRawEmbed() {
         return embedsupplier.get();
     }
 
-    public Supplier<EmbedBuilder> getEmbedsupplier() {
+    public Supplier<Embed> getEmbedsupplier() {
         return embedsupplier;
     }
 
@@ -161,7 +165,8 @@ public class PagedEmbed {
         }
 
         // Refresh the embed to the current page
-        EmbedBuilder embed = embedsupplier.get().removeAllFields();
+        Embed embed = embedsupplier.get()
+                .removeAllFields();
 
         pages.get(page)
                 .forEach(field -> embed.addField(
@@ -173,21 +178,31 @@ public class PagedEmbed {
 
         // Edit sent message
         if (sentMessage.get() != null) {
-            sentMessage.get().edit(embed);
+            sentMessage.get().editor()
+                    .setEmbed(embed)
+                    .edit()
+                    .exceptionally(exceptionLogger());
 
             if (pages.size() == 1 && prevSize > 1) {
-                sentMessage.get().removeOwnReactionByEmoji(Variables.NEXT_PAGE_EMOJI);
-                sentMessage.get().removeOwnReactionByEmoji(Variables.PREV_PAGE_EMOJI);
+                sentMessage.get().removeReactions()
+                        .byEmoji(Variables.NEXT_PAGE_EMOJI)
+                        .byYourself()
+                        .remove();
+                sentMessage.get().removeReactions()
+                        .byEmoji(Variables.PREV_PAGE_EMOJI)
+                        .byYourself()
+                        .remove();
             } else if (pages.size() > 1 && prevSize == 1) {
-                sentMessage.get().addReaction(Variables.PREV_PAGE_EMOJI);
-                sentMessage.get().addReaction(Variables.NEXT_PAGE_EMOJI);
+                sentMessage.get().addReaction(Emoji.unicode(Variables.PREV_PAGE_EMOJI));
+                sentMessage.get().addReaction(Emoji.unicode(Variables.NEXT_PAGE_EMOJI));
             }
         }
     }
 
-    private void onReactionClick(SingleReactionEvent event) {
-        event.getEmoji().asUnicodeEmoji().ifPresent(emoji -> {
-            if (!event.getUser().isYourself()) {
+    private void onReactionClick(ReactionEvent event) {
+        event.getEmoji().asUnicodeEmoji()
+                .ifPresent(emoji -> {
+            if (!event.getTriggeringUser().isYourself()) {
                 if (Variables.PREV_PAGE_EMOJI.equals(emoji)) {
                     if (page > 1)
                         page--;

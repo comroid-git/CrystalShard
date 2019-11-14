@@ -8,7 +8,7 @@ import de.comroid.crystalshard.api.event.guild.webhook.WrappedWebhookEvent;
 import de.comroid.crystalshard.api.event.role.WrappedRoleEvent;
 import de.comroid.crystalshard.api.event.user.WrappedUserEvent;
 
-public interface MessageSentEvent extends
+public interface MessageEditEvent extends
         DiscordEvent,
         WrappedGuildEvent,
         ChannelEvent<TextChannel>,

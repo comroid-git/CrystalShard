@@ -9,7 +9,9 @@ import java.util.function.Predicate;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.api.model.guild.invite.Invite;
+import de.comroid.crystalshard.api.model.permission.Permission;
 import de.comroid.crystalshard.api.model.permission.PermissionOverride;
 import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
@@ -67,6 +69,10 @@ public interface GuildChannel extends Channel {
 
     default Invite.Builder createInviteBuilder() {
         return Invite.builder(this);
+    }
+
+    default boolean hasAnyPermission(User user, Permission[] targetPermissions) {
+        return false; // todo
     }
 
     interface JSON extends Channel.JSON {

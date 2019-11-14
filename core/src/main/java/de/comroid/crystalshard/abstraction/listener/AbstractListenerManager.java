@@ -20,7 +20,7 @@ import de.comroid.crystalshard.core.gateway.listener.GatewayListener;
 import de.comroid.crystalshard.core.gateway.listener.GatewayListenerManager;
 import de.comroid.crystalshard.util.Util;
 
-public abstract class AbstractListenerManager<L extends Listener<E> & AttachableListener, E extends Event>
+public abstract class AbstractListenerManager<L extends Listener & AttachableListener, E extends Event>
         implements ListenerManager<L>, Consumer<E> {
     protected final Discord api;
     protected final ListenerAttachable<L> attachedTo;
@@ -120,7 +120,7 @@ public abstract class AbstractListenerManager<L extends Listener<E> & Attachable
                 }, time, unit);
     }
 
-    public static <L extends Listener<E> & AttachableListener, E extends Event> void submit(
+    public static <L extends Listener & AttachableListener, E extends Event> void submit(
             Discord api,
             Class<L> listenerClass,
             E event

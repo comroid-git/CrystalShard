@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import de.comroid.crystalshard.util.ui.embed.EmbedFieldRepresentative;
 import de.comroid.util.Util;
 
 import org.javacord.api.entity.message.Message;

@@ -14,6 +14,8 @@ import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 public interface Cacheable extends JsonDeserializable {
     default void update(JSONObject data) {
@@ -51,6 +53,7 @@ public interface Cacheable extends JsonDeserializable {
         return Adapter.require(CacheInformation.class, 2, parentClass, parentExtractor);
     }
 
+    @Internal
     interface CacheInformation<P extends Cacheable & Snowflake> {
         Class<P> getParentClass();
 

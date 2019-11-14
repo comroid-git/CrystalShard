@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
+import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.core.cache.Cacheable;
 import de.comroid.crystalshard.core.rest.DiscordRequest;
 
@@ -36,6 +37,16 @@ public abstract class Adapter {
             return Optional.ofNullable(getApiClass_r((Class<?>) from));
 
         return Optional.ofNullable(getApiClass_r(from.getClass()));
+    }
+
+    public static <T> Function<Throwable, ? extends T> exceptionLogger() {
+        return throwable -> {
+            log.at(Level.SEVERE)
+                    .withCause(throwable)
+                    .log("Error in Completion");
+            
+            return null;
+        };
     }
 
     private static <T> Class<?> getApiClass_r(Class<?> impl) {

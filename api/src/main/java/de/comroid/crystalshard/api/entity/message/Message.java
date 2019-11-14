@@ -12,16 +12,17 @@ import java.util.stream.Collectors;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.MainAPI;
+import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.Channel;
+import de.comroid.crystalshard.api.entity.channel.PrivateChannel;
 import de.comroid.crystalshard.api.entity.channel.TextChannel;
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.event.message.MessageEvent;
-import de.comroid.crystalshard.api.listener.message.MessageAttachableListener;
+import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.channel.ChannelMention;
 import de.comroid.crystalshard.api.model.message.MessageActivity;
@@ -58,7 +59,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simpl
 
 @MainAPI
 @JSONBindingLocation(Message.JSON.class)
-public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
+public interface Message extends Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.Message> {
     @CacheInformation.Marker
     CacheInformation<TextChannel> CACHE_INFORMATION = makeSubcacheableInfo(TextChannel.class, Message::getChannel);
     
@@ -172,6 +173,14 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
         return getBindingValue(JSON.FLAGS);
     }
 
+    CompletableFuture<Void> removeAllReactions(); // todo
+
+    Reaction.Remover removeReactions();
+
+    default boolean isPrivate() {
+        return getChannel() instanceof PrivateChannel;
+    }
+
     interface JSON extends Snowflake.JSON {
         JSONBinding.TwoStage<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
         JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
@@ -223,6 +232,13 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
 
     static BulkDeleter createBulkDeleter(TextChannel channel) {
         return Adapter.require(BulkDeleter.class, channel);
+    }
+
+    static CompletableFuture<Message> request(Discord api, long channelId, long messageId) {
+        return Adapter.<Message>request(api)
+                .endpoint(DiscordEndpoint.MESSAGE_SPECIFIC, channelId, messageId)
+                .method(RestMethod.GET)
+                .executeAsObject(json -> Adapter.require(Message.class, api, json));
     }
 
     @IntroducedBy(PRODUCTION)

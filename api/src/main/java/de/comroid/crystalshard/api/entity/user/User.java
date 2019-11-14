@@ -12,12 +12,12 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
-import de.comroid.crystalshard.api.event.user.UserEvent;
 import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.api.model.message.Messageable;
+import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.core.cache.Cacheable;
 import de.comroid.crystalshard.core.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.rest.RestMethod;
@@ -40,13 +40,17 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simpl
 
 @MainAPI
 @JSONBindingLocation(User.JSON.class)
-public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.User<? extends UserEvent>>, JsonDeserializable {
+public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.User>, JsonDeserializable {
     default String getUsername() {
         return getBindingValue(JSON.USERNAME);
     }
 
     default String getDiscriminator() {
         return getBindingValue(JSON.DISCRIMINATOR);
+    }
+    
+    default String getNicknameMentionTag() {
+        return null; // todo
     }
 
     default URL getAvatarURL() {
@@ -91,6 +95,10 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
     @IntroducedBy(PRODUCTION)
     default String getDiscriminatedName() {
         return getUsername() +'#'+ getDiscriminator();
+    }
+
+    default boolean isYourself() {
+        return this instanceof Yourself;
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/user#get-user")

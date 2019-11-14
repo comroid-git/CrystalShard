@@ -2,6 +2,7 @@ package de.comroid.crystalshard.api.event.message;
 
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.event.model.Event;
+import de.comroid.crystalshard.api.model.message.MessageAuthor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,5 +13,5 @@ public interface MessageEvent extends Event {
     - attached to a Message
     - fired by something else than a Message
      */
-    @NotNull Message getTriggeringMessage();
+    Message getTriggeringMessage();
 }

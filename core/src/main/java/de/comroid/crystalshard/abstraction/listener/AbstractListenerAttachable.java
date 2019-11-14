@@ -43,7 +43,7 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
         ListenerManager.Initializer<TL> initializer = Adapter.require(initializerClass, api, this, listener);
         initializer.initialize(getAPI().getGateway(), listener);
 
-        return new AbstractListenerManager<TL, Event>(api, (ListenerAttachable<TL>) this, listener.eventClass(), listener) {};
+        return new AbstractListenerManager<TL, Event>(api, (ListenerAttachable<TL>) this, listener.getEventClass(), listener) {};
     }
 
     @Override
@@ -57,13 +57,13 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
     }
 
     @Override
-    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenOnceTo(Class<FE> forEvent) {
-        class CompletingListener implements AttachableListener, Listener<FE> {
-            private final CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> future;
+    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener>>> listenOnceTo(Class<FE> forEvent) {
+        class CompletingListener implements AttachableListener, Listener {
+            private final CompletableFuture<EventPair<FE, ListenerManager<Listener>>> future;
             private final AtomicReference<ListenerManager<? extends AL>> mgrRef;
 
             protected CompletingListener(
-                    CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> future,
+                    CompletableFuture<EventPair<FE, ListenerManager<Listener>>> future,
                     AtomicReference<ListenerManager<? extends AL>> mgrRef) {
                 this.future = future;
                 this.mgrRef = mgrRef;
@@ -86,7 +86,7 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
             }
         }
 
-        final CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> future = new CompletableFuture<>();
+        final CompletableFuture<EventPair<FE, ListenerManager<Listener>>> future = new CompletableFuture<>();
         final AtomicReference<ListenerManager<? extends AL>> mgrRef = new AtomicReference<>();
 
         CompletingListener listener = new CompletingListener(future, mgrRef);
@@ -99,13 +99,13 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
     }
 
     @Override
-    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenInStream(Class<FE> forEvent) {
-        class StreamingListener implements AttachableListener, Listener<FE> {
-            private final NStreamImpl<EventPair<FE, ListenerManager<Listener<? extends FE>>>> streamImpl;
+    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent) {
+        class StreamingListener implements AttachableListener, Listener {
+            private final NStreamImpl<EventPair<FE, ListenerManager<Listener>>> streamImpl;
             private AtomicReference<ListenerManager<? extends AL>> mgrRef;
 
             protected StreamingListener(
-                    NStreamImpl<EventPair<FE, ListenerManager<Listener<? extends FE>>>> streamImpl,
+                    NStreamImpl<EventPair<FE, ListenerManager<Listener>>> streamImpl,
                     AtomicReference<ListenerManager<? extends AL>> mgrRef) {
                 this.streamImpl = streamImpl;
                 this.mgrRef = mgrRef;
@@ -128,7 +128,7 @@ public abstract class AbstractListenerAttachable<AL extends AttachableListener &
             }
         }
 
-        final NStreamImpl<EventPair<FE, ListenerManager<Listener<? extends FE>>>> streamImpl = new NStreamImpl<>();
+        final NStreamImpl<EventPair<FE, ListenerManager<Listener>>> streamImpl = new NStreamImpl<>();
         final AtomicReference<ListenerManager<? extends AL>> mgrRef = new AtomicReference<>();
 
         StreamingListener listener = new StreamingListener(streamImpl, mgrRef);

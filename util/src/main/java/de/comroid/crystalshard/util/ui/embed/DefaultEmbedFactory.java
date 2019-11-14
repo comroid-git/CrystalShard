@@ -3,60 +3,64 @@ package de.comroid.crystalshard.util.ui.embed;
 import java.awt.Color;
 import java.util.function.Supplier;
 
-import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
+import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.api.entity.user.User;
+import de.comroid.crystalshard.api.model.message.embed.Embed;
 
-public enum DefaultEmbedFactory implements Supplier<EmbedBuilder> {
+public enum DefaultEmbedFactory implements Supplier<Embed> {
     INSTANCE;
 
-    private Supplier<EmbedBuilder> embedSupplier;
+    private Supplier<Embed.Composer> predefinition;
 
     DefaultEmbedFactory() {
-        this.embedSupplier = EmbedBuilder::new;
+        this.predefinition = Embed::composer;
     }
 
     @Override
-    public EmbedBuilder get() {
-        return embedSupplier.get()
-                .removeAllFields();
+    public Embed get() {
+        return predefinition.get()
+                .removeAllFields()
+                .compose();
     }
 
-    public EmbedBuilder get(Server server) {
-        return get()
-                .setColor(server.getRoleColor(server.getApi().getYourself())
-                        .orElse(new Color(0x7289da))); // discord's blurple is default color
-    }
-
-    public EmbedBuilder get(User user) {
-        return get()
-                .setAuthor(user);
-    }
-
-    public EmbedBuilder get(Server server, User user) {
-        return get()
-                .setColor(server.getRoleColor(server.getApi().getYourself())
+    public Embed get(Guild guild) {
+        return predefinition.get()
+                .setColor(guild.getRoleColor(guild.getAPI().getYourself())
                         .orElse(new Color(0x7289da))) // discord's blurple is default color
-                .setAuthor(user);
+                .compose();
     }
 
-    public static void setEmbedSupplier(Supplier<EmbedBuilder> embedSupplier) {
-        INSTANCE.embedSupplier = embedSupplier;
+    public Embed get(User user) {
+        return predefinition.get()
+                .setAuthor(user)
+                .compose();
     }
 
-    public static EmbedBuilder create() {
+    public Embed get(Guild guild, User user) {
+        return predefinition.get()
+                .setColor(guild.getRoleColor(guild.getAPI().getYourself())
+                        .orElse(new Color(0x7289da))) // discord's blurple is default color
+                .setAuthor(user)
+                .compose();
+    }
+
+    public static void setEmbedSupplier(Supplier<Embed.Composer> composerSupplier) {
+        INSTANCE.predefinition = composerSupplier;
+    }
+
+    public static Embed create() {
         return INSTANCE.get();
     }
 
-    public static EmbedBuilder create(Server server) {
-        return INSTANCE.get(server);
+    public static Embed create(Guild guild) {
+        return INSTANCE.get(guild);
     }
 
-    public static EmbedBuilder create(User user) {
+    public static Embed create(User user) {
         return INSTANCE.get(user);
     }
 
-    public static EmbedBuilder create(Server server, User user) {
-        return INSTANCE.get(server, user);
+    public static Embed create(Guild guild, User user) {
+        return INSTANCE.get(guild, user);
     }
 }

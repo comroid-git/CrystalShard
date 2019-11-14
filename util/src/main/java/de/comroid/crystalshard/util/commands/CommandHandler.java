@@ -19,9 +19,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.comroid.crystalshard.api.Discord;
+import de.comroid.crystalshard.api.entity.Snowflake;
+import de.comroid.crystalshard.api.entity.channel.Channel;
+import de.comroid.crystalshard.api.entity.channel.GuildChannel;
+import de.comroid.crystalshard.api.entity.channel.GuildTextChannel;
+import de.comroid.crystalshard.api.entity.channel.TextChannel;
+import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.api.entity.message.Message;
+import de.comroid.crystalshard.api.event.guild.WrappedGuildEvent;
+import de.comroid.crystalshard.api.event.message.MessageDeleteEvent;
+import de.comroid.crystalshard.api.event.message.MessageEditEvent;
+import de.comroid.crystalshard.api.event.message.MessageEvent;
+import de.comroid.crystalshard.api.event.message.MessageSentEvent;
+import de.comroid.crystalshard.api.listener.message.MessageDeleteListener;
+import de.comroid.crystalshard.api.listener.message.MessageEditListener;
+import de.comroid.crystalshard.api.listener.message.MessageSentListener;
+import de.comroid.crystalshard.api.model.message.MessageAuthor;
+import de.comroid.crystalshard.api.model.message.embed.Embed;
+import de.comroid.crystalshard.api.model.permission.Permission;
 import de.comroid.crystalshard.util.model.command.SelfBotOwnerIgnorable;
 import de.comroid.crystalshard.util.model.command.SelfCommandChannelable;
 import de.comroid.crystalshard.util.model.command.SelfCustomPrefixable;
@@ -42,6 +62,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static java.lang.System.arraycopy;
 import static java.lang.reflect.Modifier.isStatic;
+import static de.comroid.crystalshard.adapter.Adapter.exceptionLogger;
 
 public final class CommandHandler implements
         SelfMultiCommandRegisterable<CommandHandler>,
@@ -52,25 +73,25 @@ public final class CommandHandler implements
     private static final FluentLogger logger = FluentLogger.forEnclosingClass();
     static final String NO_GROUP = "@NoGroup#";
 
-    private final DiscordApi api;
+    private final Discord api;
     private final Map<String, CommandRepresentation> commands = new ConcurrentHashMap<>();
     private final Map<Long, long[]> responseMap = new ConcurrentHashMap<>();
 
     public String[] prefixes;
     public boolean autoDeleteResponseOnCommandDeletion;
     public boolean useBotMentionAsPrefix;
-    private Supplier<EmbedBuilder> embedSupplier = null;
+    private Supplier<Embed> embedSupplier = null;
     private @Nullable Function<Long, String> customPrefixProvider;
     private @Nullable Function<Long, Long> commandChannelProvider;
     private long[] serverBlacklist;
     private boolean ignoreBotOwnerPermissions;
     private boolean respondToUnknownCommand;
 
-    public CommandHandler(DiscordApi api) {
+    public CommandHandler(Discord api) {
         this(api, false);
     }
 
-    public CommandHandler(DiscordApi api, boolean handleMessageEdit) {
+    public CommandHandler(Discord api, boolean handleMessageEdit) {
         this.api = api;
 
         prefixes = new String[]{"!"};
@@ -80,10 +101,10 @@ public final class CommandHandler implements
         ignoreBotOwnerPermissions = false;
         respondToUnknownCommand = false;
 
-        api.addMessageCreateListener(this::handleMessageCreate);
+        api.attachListener((MessageSentListener) this::handleMessageCreate);
         if (handleMessageEdit)
-            api.addMessageEditListener(this::handleMessageEdit);
-        api.addMessageDeleteListener(this::handleMessageDelete);
+            api.attachListener((MessageEditListener) this::handleMessageEdit);
+        api.attachListener((MessageDeleteListener) this::handleMessageDelete);
     }
 
     @Override
@@ -105,7 +126,7 @@ public final class CommandHandler implements
             Method method = (Method) target;
 
             if (!isStatic(method.getModifiers()))
-                logger.error("Could not register non-static method: " + method.toGenericString());
+                logger.at(Level.WARNING).log("Could not register non-static method: %s", method.toGenericString());
             else extractCommandRep(null, method);
 
             return this;
@@ -166,8 +187,8 @@ public final class CommandHandler implements
 
         for (String s : remove)
             if (commands.remove(s) != null)
-                logger.info("Successfully unregistered command: " + s);
-            else logger.warn("Could not unregister command: " + s);
+                logger.at(Level.INFO).log("Successfully unregistered command: " + s);
+            else logger.at(Level.WARNING).log("Could not unregister command: " + s);
 
         return this;
     }
@@ -176,7 +197,7 @@ public final class CommandHandler implements
         return new HashSet<>(commands.values());
     }
 
-    public void useDefaultHelp(@Nullable Supplier<EmbedBuilder> embedSupplier) {
+    public void useDefaultHelp(@Nullable Supplier<Embed> embedSupplier) {
         this.embedSupplier = (embedSupplier == null ? DefaultEmbedFactory.INSTANCE : embedSupplier);
         registerCommands(this);
     }
@@ -244,7 +265,7 @@ public final class CommandHandler implements
                 return embed;
             }
         } else {
-            EmbedBuilder embed = embedSupplier.get();
+            Embed embed = embedSupplier.get();
             Optional<CommandRepresentation> command = getCommands().stream()
                     .filter(cmd -> {
                         for (String alias : cmd.aliases)
@@ -336,15 +357,15 @@ public final class CommandHandler implements
 
             boolean hasErrored = false;
             if (!cmd.enableServerChat()
-                    && Util.arrayContains(cmd.requiredDiscordPermissions(), PermissionType.SEND_MESSAGES)) {
-                logger.error("Command " + method.getName() + "(" + Arrays.stream(method.getParameterTypes())
+                    && Util.arrayContains(cmd.requiredDiscordPermissions(), Permission.SEND_MESSAGES)) {
+                logger.at(Level.SEVERE).log("Command " + method.getName() + "(" + Arrays.stream(method.getParameterTypes())
                         .map(Class::getSimpleName)
                         .collect(Collectors.joining(", ")) + ")"
                         + ": Conflicting command properties; private-only commands cannot require permissions!");
                 hasErrored = true;
             }
             if (!cmd.enableServerChat() && !cmd.enableServerChat()) {
-                logger.error("Command " + method.getName() + "(" + Arrays.stream(method.getParameterTypes())
+                logger.at(Level.SEVERE).log("Command " + method.getName() + "(" + Arrays.stream(method.getParameterTypes())
                         .map(Class::getSimpleName)
                         .collect(Collectors.joining(", ")) + ")"
                         + ": Conflicting command properties; command cannot disallow both private and server chat!");
@@ -358,25 +379,25 @@ public final class CommandHandler implements
                 for (String alias : cmd.aliases()) commands.put(alias, commandRep);
             else commands.put(method.getName(), commandRep);
             if (group == null)
-                logger.info("Command " + (cmd.aliases().length == 0 ? method.getName() : cmd.aliases()[0])
+                logger.at(Level.INFO).log("Command " + (cmd.aliases().length == 0 ? method.getName() : cmd.aliases()[0])
                         + " was registered without a CommandGroup annotation!");
         }
     }
 
-    private void handleMessageCreate(MessageCreateEvent event) {
+    private void handleMessageCreate(MessageSentEvent event) {
         if (isBlacklisted(event)) return;
 
         Params params = new Params(
                 api,
                 event,
                 null,
-                event.getServer().orElse(null),
-                event.getChannel(),
-                event.getMessage(),
-                event.getMessageAuthor()
+                event.getTriggeringGuild(),
+                event.getTriggeringChannel(),
+                event.getTriggeringMessage(),
+                event.getTriggeringMessage().getAuthor()
         );
 
-        handleCommand(params.message, event.getChannel(), params);
+        handleCommand(params.message, event.getTriggeringChannel(), params);
     }
 
     private void handleMessageEdit(MessageEditEvent event) {
@@ -386,33 +407,33 @@ public final class CommandHandler implements
                 api,
                 null,
                 event,
-                event.getServer().orElse(null),
-                event.getChannel(),
-                event.getMessage().orElseGet(() -> event.requestMessage().join()),
-                event.getMessageAuthor().orElse(null)
+                event.getTriggeringGuild(),
+                event.getTriggeringChannel(),
+                event.getTriggeringMessage(),
+                event.getTriggeringMessage().getAuthor()
         );
 
-        handleCommand(params.message, event.getChannel(), params);
+        handleCommand(params.message, event.getTriggeringChannel(), params);
     }
 
     private void handleMessageDelete(MessageDeleteEvent event) {
         if (isBlacklisted(event)) return;
 
         if (autoDeleteResponseOnCommandDeletion) {
-            long[] ids = responseMap.get(event.getMessageId());
+            long[] ids = responseMap.get(event.getTriggeringMessage().getID());
             if (ids == null) return;
-            api.getMessageById(
-                    ids[0],
-                    api.getChannelById(ids[1]).flatMap(Channel::asTextChannel).orElseThrow(AssertionError::new))
+            Message.request(api, api.getChannelByID(ids[1])
+                            .map(Snowflake::getID)
+                            .orElseThrow(AssertionError::new), ids[0])
                     .thenCompose(Message::delete)
-                    .exceptionally(get());
+                    .exceptionally(exceptionLogger());
         }
     }
 
-    private boolean isBlacklisted(MessageEvent event) {
-        if (!event.getServer().isPresent()) return false;
+    private <E extends MessageEvent & WrappedGuildEvent> boolean isBlacklisted(E event) {
+        if (event.wrapTriggeringGuild().isEmpty()) return false;
 
-        long id = event.getServer().get().getId();
+        long id = event.getTriggeringGuild().getID();
 
         for (long blacklisted : serverBlacklist) if (id == blacklisted) return false;
 
@@ -420,13 +441,13 @@ public final class CommandHandler implements
     }
 
     private void handleCommand(final Message message, final TextChannel channel, final Params commandParams) {
-        if (commandChannelProvider != null && !message.isPrivateMessage()) {
-            long serverId = channel.asServerChannel()
-                    .map(ServerChannel::getServer)
-                    .map(DiscordEntity::getId)
+        if (commandChannelProvider != null && !message.isPrivate()) {
+            long serverId = channel.asGuildChannel()
+                    .map(GuildChannel::getGuild)
+                    .map(Snowflake::getID)
                     .orElseThrow(AssertionError::new);
 
-            if (!api.getChannelById(commandChannelProvider.apply(serverId))
+            if (!api.getChannelByID(commandChannelProvider.apply(serverId))
                     .map(channel::equals)
                     .orElse(true))
                 return;
@@ -478,20 +499,22 @@ public final class CommandHandler implements
         commandParams.command = cmd;
         commandParams.args = args;
 
-        if (cmd.useTypingIndicator) channel.type();
+        if (cmd.useTypingIndicator) 
+            channel.triggerTypingIndicator();
 
-        if (message.isPrivateMessage() && !cmd.enablePrivateChat)
+        if (message.isPrivate() && !cmd.enablePrivateChat)
             problems.add("This command can only be run in a server channel!");
-        else if (!message.isPrivateMessage() && !cmd.enableServerChat)
+        else if (!message.isPrivate() && !cmd.enableServerChat)
             problems.add("This command can only be run in a private channel!");
 
-        PermissionType[] perms = new PermissionType[cmd.requiredDiscordPermissions.length];
-        perms[0] = PermissionType.ADMINISTRATOR;
+        Permission[] perms = new Permission[cmd.requiredDiscordPermissions.length];
+        perms[0] = Permission.ADMINISTRATOR;
         System.arraycopy(cmd.requiredDiscordPermissions, 0, perms, 1, cmd.requiredDiscordPermissions.length);
         if (!(ignoreBotOwnerPermissions && message.getAuthor().isBotOwner())
-                && !message.getUserAuthor()
+                && !message.getAuthor()
+                .castAuthorToUser()
                 .map(usr -> message.getChannel()
-                        .asServerTextChannel()
+                        .asGuildTextChannel()
                         .map(stc -> stc.hasAnyPermission(usr, perms))
                         .orElse(true))
                 .orElse(false))
@@ -520,19 +543,20 @@ public final class CommandHandler implements
                 + reqRleMent + " role mention" + (reqRleMent == 1 ? "" : "s") + "!");
 
         if (cmd.runInNSFWChannelOnly
-                && !channel.asServerTextChannel().map(ServerTextChannel::isNsfw).orElse(true))
+                && !channel.asGuildTextChannel().map(GuildTextChannel::isNSFW).orElse(true))
             problems.add("This command can only run in an NSFW marked channel!");
 
         if (problems.size() > 0) {
-            applyResponseDeletion(message.getId(), channel.sendMessage(DefaultEmbedFactory.create()
+            applyResponseDeletion(message.getID(), channel.composeMessage()
+                    .setEmbed(DefaultEmbedFactory.create()
                     .setColor(Color.RED)
                     .setDescription(String.join("\n", problems)))
-                    .exceptionally(get()));
+                    .send()
+                    .exceptionally(exceptionLogger()));
             return;
         }
 
-        if (cmd.async) api.getThreadPool()
-                .getExecutorService()
+        if (cmd.async) api.getCommonThreadPool()
                 .submit(() -> doInvoke(cmd, commandParams, channel, message));
         else doInvoke(cmd, commandParams, channel, message);
     }
@@ -550,8 +574,8 @@ public final class CommandHandler implements
             prefs[prefixes.length] = api.getYourself().getMentionTag() + " ";
             prefs[prefixes.length + 1] = api.getYourself().getNicknameMentionTag() + " ";
         }
-        if (customPrefixProvider != null) message.getServer()
-                .map(DiscordEntity::getId)
+        if (customPrefixProvider != null) message.getGuild()
+                .map(Snowflake::getID)
                 .map(customPrefixProvider)
                 .ifPresent(val -> prefs[prefs.length - 1] = val);
 
@@ -737,10 +761,10 @@ public final class CommandHandler implements
     }
 
     private class Params implements Command.Parameters {
-        private final DiscordApi discord;
-        @Nullable private final MessageCreateEvent createEvent;
+        private final Discord discord;
+        @Nullable private final MessageSentEvent createEvent;
         @Nullable private final MessageEditEvent editEvent;
-        @Nullable private final Server server;
+        @Nullable private final Guild server;
         private final TextChannel textChannel;
         private final Message message;
         private final MessageAuthor author;
@@ -748,10 +772,10 @@ public final class CommandHandler implements
         private String[] args;
 
         private Params(
-                DiscordApi discord,
-                @Nullable MessageCreateEvent createEvent,
+                Discord discord,
+                @Nullable MessageSentEvent createEvent,
                 @Nullable MessageEditEvent editEvent,
-                @Nullable Server server,
+                @Nullable Guild server,
                 TextChannel textChannel,
                 Message message,
                 @Nullable MessageAuthor author
@@ -772,12 +796,12 @@ public final class CommandHandler implements
         }
 
         @Override
-        public DiscordApi getDiscord() {
+        public Discord getDiscord() {
             return discord;
         }
 
         @Override
-        public Optional<MessageCreateEvent> getMessageCreateEvent() {
+        public Optional<MessageSentEvent> getMessageSentEvent() {
             return Optional.ofNullable(createEvent);
         }
 
@@ -787,7 +811,7 @@ public final class CommandHandler implements
         }
 
         @Override
-        public Optional<Server> getServer() {
+        public Optional<Guild> getServer() {
             return Optional.ofNullable(server);
         }
 

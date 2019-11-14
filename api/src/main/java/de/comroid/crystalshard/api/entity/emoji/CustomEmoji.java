@@ -62,8 +62,7 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
         return wrapBindingValue(JSON.ANIMATED);
     }
 
-    interface JSON extends Snowflake.JSON {
-        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+    interface JSON extends Emoji.JSON, Snowflake.JSON {
         JSONBinding.TriStage<Long, Role> WHITELISTED_ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getByID(Role.class, id)
                 .orElseThrow());

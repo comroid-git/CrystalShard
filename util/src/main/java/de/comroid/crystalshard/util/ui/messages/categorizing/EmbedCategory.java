@@ -3,15 +3,13 @@ package de.comroid.crystalshard.util.ui.messages.categorizing;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.comroid.crystalshard.util.ui.embed.EmbedFieldRepresentative;
+import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.api.model.message.embed.Embed;
 
-import org.javacord.api.entity.Nameable;
-import org.javacord.api.entity.message.embed.EmbedField;
-
-public class EmbedCategory implements Nameable {
+public class EmbedCategory {
     private final String name;
     private final String description;
-    private final List<EmbedField> fields;
+    private final List<Embed.Field> fields;
 
     public EmbedCategory(String name, String description) {
         this.name = name;
@@ -25,15 +23,14 @@ public class EmbedCategory implements Nameable {
     }
 
     public EmbedCategory addField(String name, String value, boolean inline) {
-        fields.add(new EmbedFieldRepresentative(name, value, inline));
+        fields.add(Adapter.require(Embed.Field.class, name, value, inline));
         return this;
     }
 
-    public List<EmbedField> getFields() {
+    public List<Embed.Field> getFields() {
         return fields;
     }
 
-    @Override
     public String getName() {
         return name;
     }

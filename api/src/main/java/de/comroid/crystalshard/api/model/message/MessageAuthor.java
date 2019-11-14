@@ -17,4 +17,8 @@ public interface MessageAuthor {
     default Optional<Webhook> castAuthorToWebhook() {
         return TypeGroup.cast(this, Webhook.class);
     }
+
+    default boolean isBotOwner() {
+        return castAuthorToUser().map(User::isBotOwner).orElse(false);
+    }
 }

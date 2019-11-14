@@ -4,11 +4,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import de.comroid.crystalshard.api.Discord;
+import de.comroid.crystalshard.api.entity.channel.Channel;
+import de.comroid.crystalshard.api.entity.channel.GuildTextChannel;
+import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
+import de.comroid.crystalshard.api.entity.channel.TextChannel;
+import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.api.entity.guild.Role;
+import de.comroid.crystalshard.api.entity.message.Message;
+import de.comroid.crystalshard.api.entity.user.User;
+import de.comroid.crystalshard.api.event.message.MessageEditEvent;
 import de.comroid.crystalshard.api.event.message.MessageSentEvent;
+import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.api.model.permission.Permission;
 import de.comroid.crystalshard.util.ui.embed.DefaultEmbedFactory;
 import de.comroid.crystalshard.util.ui.messages.InformationMessage;
@@ -294,40 +305,40 @@ public @interface Command {
 
         Optional<MessageEditEvent> getMessageEditEvent();
 
-        Optional<Server> getServer();
+        Optional<Guild> getServer();
 
         default boolean isPrivate() {
-            return !getServer().isPresent();
+            return getServer().isEmpty();
         }
 
         TextChannel getTextChannel();
 
-        default Optional<ServerTextChannel> getServerTextChannel() {
-            return getTextChannel().asServerTextChannel();
+        default Optional<GuildTextChannel> asGuildTextChannel() {
+            return getTextChannel().asGuildTextChannel();
         }
 
-        default Optional<PrivateChannel> getPrivateChannel() {
-            return getTextChannel().asPrivateChannel();
+        default Optional<PrivateTextChannel> getPrivateChannel() {
+            return getTextChannel().asPrivateTextChannel();
         }
 
         Message getCommandMessage();
 
-        default List<ServerTextChannel> getChannelMentions() {
+        default Collection<Channel> getChannelMentions() {
             return getCommandMessage().getMentionedChannels();
         }
 
-        default List<User> getUserMentions() {
+        default Collection<User> getUserMentions() {
             return getCommandMessage().getMentionedUsers();
         }
 
-        default List<Role> getRoleMentions() {
+        default Collection<Role> getRoleMentions() {
             return getCommandMessage().getMentionedRoles();
         }
 
         Optional<MessageAuthor> getCommandExecutor();
 
         default Optional<User> getUser() {
-            return getCommandExecutor().flatMap(MessageAuthor::asUser);
+            return getCommandExecutor().flatMap(MessageAuthor::castAuthorToUser);
         }
 
         String[] getArguments();

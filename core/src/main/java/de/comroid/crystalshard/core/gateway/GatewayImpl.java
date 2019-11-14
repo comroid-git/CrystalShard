@@ -139,12 +139,12 @@ public class GatewayImpl implements Gateway {
     }
 
     @Override
-    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenOnceTo(Class<FE> forEvent) {
+    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener>>> listenOnceTo(Class<FE> forEvent) {
         return null; // todo
     }
 
     @Override
-    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener<? extends FE>>>> listenInStream(Class<FE> forEvent) {
+    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent) {
         return null; // todo
     }
 
@@ -187,8 +187,8 @@ public class GatewayImpl implements Gateway {
                             Class<? extends ListenerManager<? extends GatewayListener>> managerClass
                                     = getManagerClass(basicGatewayListener.underlyingListener.getClass());
                             @SuppressWarnings("unchecked")
-                            Class<? extends Listener<? extends GatewayEventBase>> declaringClass
-                                    = (Class<? extends Listener<? extends GatewayEventBase>>) managerClass.getDeclaringClass();
+                            Class<? extends Listener> declaringClass
+                                    = (Class<? extends Listener>) managerClass.getDeclaringClass();
 
                             Objects.requireNonNull(declaringClass,
                                     managerClass + " should be declared by its listener class!");
@@ -325,12 +325,12 @@ public class GatewayImpl implements Gateway {
         }
     }
 
-    static class EventData<L extends Listener<? extends GatewayEventBase>, E extends GatewayEventBase> implements GatewayEventBase {
+    static class EventData<L extends Listener, E extends GatewayEventBase> implements GatewayEventBase {
         final Class<L> listenerClass;
         final E event;
 
         @SuppressWarnings("unchecked")
-        EventData(Class<? extends Listener<? extends GatewayEventBase>> listenerClass, GatewayEventBase event) {
+        EventData(Class<? extends Listener> listenerClass, GatewayEventBase event) {
             this.listenerClass = (Class<L>) listenerClass;
             this.event = (E) event;
         }

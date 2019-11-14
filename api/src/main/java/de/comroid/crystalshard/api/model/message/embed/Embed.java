@@ -6,10 +6,12 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
+import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.MainAPI;
+import de.comroid.crystalshard.api.entity.user.User;
 
 @MainAPI
-public interface Embed {
+public interface Embed extends EmbedModicator<Embed> {
     Optional<String> getTitle();
 
     Optional<String> getDescription();
@@ -33,6 +35,10 @@ public interface Embed {
     Optional<? extends Author> getAuthor();
 
     Collection<? extends Field> getFields();
+
+    static Composer composer() {
+        return Adapter.require(Composer.class);
+    }
 
     @MainAPI
     interface Footer {
@@ -101,7 +107,8 @@ public interface Embed {
         boolean isInline();
     }
 
-    interface Composer {
+    interface Composer extends EmbedModicator<Composer> { // TODO: 14.11.2019  
+        Embed compose();
     }
 
     final class Limit {
