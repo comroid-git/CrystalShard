@@ -20,7 +20,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JSONBindingLocation(Reaction.Trait.class)
+@JSONBindingLocation(Reaction.JSON.class)
 public interface Reaction extends JsonDeserializable, Cacheable {
     @CacheInformation.Marker
     CacheInformation<Message> CACHE_INFORMATION = makeSubcacheableInfo(Message.class, Reaction::getMessage);

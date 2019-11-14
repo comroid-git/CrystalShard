@@ -60,7 +60,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simpl
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappingCollection;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 
-@JSONBindingLocation(Guild.Trait.class)
+@JSONBindingLocation(Guild.JSON.class)
 public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.AttachableTo.Guild>, Cacheable {
     @IntroducedBy(API)
     CompletableFuture<Collection<Webhook>> requestWebhooks();
@@ -73,7 +73,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<CustomEmoji>request(getAPI())
                 .endpoint(DiscordEndpoint.CUSTOM_EMOJI_SPECIFIC, getID(), id)
                 .method(RestMethod.GET)
-                .executeAsObject(data -> getAPI().getCacheManager().updateOrCreateAndGet(CustomEmoji.class, id, data));
+                .executeAsObject(data -> Adapter.require(CustomEmoji.class, getAPI(), data));
     }
 
     @IntroducedBy(GETTER)
@@ -282,8 +282,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<GuildMember>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_MEMBER, getID(), user.getID())
                 .method(RestMethod.GET)
-                .executeAsObject(data -> getAPI().getCacheManager()
-                        .updateOrCreateAndGet(GuildMember.class, user.getID(), data));
+                .executeAsObject(data -> Adapter.require(GuildMember.class, getAPI(), data));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#list-guild-members")
@@ -300,8 +299,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<Ban>request(getAPI())
                 .endpoint(DiscordEndpoint.BAN_SPECIFIC, getID(), user.getID())
                 .method(RestMethod.GET)
-                .executeAsObject(data -> getAPI().getCacheManager()
-                        .updateOrCreateMemberAndGet(Guild.class, Ban.class, getID(), user.getID(), data))
+                .executeAsObject(data -> Adapter.require(Ban.class, getAPI(), data))
                 .thenApply(Optional::ofNullable);
     }
 
@@ -328,8 +326,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.<Embed>request(getAPI())
                 .endpoint(DiscordEndpoint.GUILD_EMBED, getID())
                 .method(RestMethod.GET)
-                .executeAsObject(data -> getAPI().getCacheManager()
-                        .updateOrCreateSingletonMemberAndGet(Guild.class, Embed.class, getID(), data));
+                .executeAsObject(data -> Adapter.require(Embed.class, getAPI(), data));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#get-guild-vanity-url")
@@ -365,7 +362,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         return Adapter.require(Builder.class, api);
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
         JSONBinding.OneStage<String> ICON_HASH = identity("icon", JSONObject::getString);
         JSONBinding.OneStage<String> SPLASH_HASH = identity("splash", JSONObject::getString);
@@ -404,7 +401,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         JSONBinding.TwoStage<String, Locale> PREFERRED_LOCALE = simple("preferred_locale", JSONObject::getString, Locale::forLanguageTag);
     }
 
-    @JSONBindingLocation(Embed.Trait.class)
+    @JSONBindingLocation(Embed.JSON.class)
     interface Embed extends Cacheable, JsonDeserializable {
         @CacheInformation.Marker
         CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Embed::getGuild);
@@ -438,7 +435,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         }
     }
 
-    @JSONBindingLocation(Integration.Trait.class)
+    @JSONBindingLocation(Integration.JSON.class)
     interface Integration extends Snowflake, JsonDeserializable, Cacheable {
         @CacheInformation.Marker
         CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Integration::getGuild);
@@ -495,7 +492,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
             return getBindingValue(JSON.SYNCED_AT);
         }
 
-        interface JSON extends Snowflake.Trait {
+        interface JSON extends Snowflake.JSON {
             JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
             JSONBinding.OneStage<String> TYPE = identity("type", JSONObject::getString);
             JSONBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
@@ -528,7 +525,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
                     .executeAsObject(data -> null);
         }
 
-        @JSONBindingLocation(Account.Trait.class)
+        @JSONBindingLocation(Account.JSON.class)
         interface Account extends JsonDeserializable {
             default String getID() {
                 return getBindingValue(JSON.ID);

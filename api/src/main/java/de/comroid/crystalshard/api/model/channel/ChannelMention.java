@@ -17,7 +17,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(ChannelMention.Trait.class) 
+@JSONBindingLocation(ChannelMention.JSON.class) 
 public interface ChannelMention extends JsonDeserializable {
     @IntroducedBy(GETTER)
     default Channel getChannel() {

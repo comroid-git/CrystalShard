@@ -18,7 +18,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.seria
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
-@JSONBindingLocation(ActiveEmbed.Trait.class)
+@JSONBindingLocation(ActiveEmbed.JSON.class)
 public interface ActiveEmbed extends Embed, JsonDeserializable {
     @Override
     default Optional<String> getTitle() {
@@ -95,7 +95,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         JSONBinding.TriStage<JSONObject, Field> FIELDS = serializableCollection("fields", Field.class);
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Footer extends Embed.Footer, JsonDeserializable {
         @Override
         default String getText() {
@@ -119,7 +119,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Image extends Embed.Image, JsonDeserializable {
         @Override
         default Optional<URL> getURL() {
@@ -149,7 +149,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Thumbnail extends Embed.Thumbnail, JsonDeserializable {
         @Override
         default Optional<URL> getURL() {
@@ -179,7 +179,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Video extends Embed.Video, JsonDeserializable {
         @Override
         default Optional<URL> getURL() {
@@ -203,7 +203,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Provider extends Embed.Provider, JsonDeserializable {
         @Override
         default Optional<String> getName() {
@@ -221,7 +221,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Author extends Embed.Author, JsonDeserializable {
         @Override
         default Optional<String> getName() {
@@ -251,7 +251,7 @@ public interface ActiveEmbed extends Embed, JsonDeserializable {
         }
     }
 
-    @JSONBindingLocation(Footer.Trait.class)
+    @JSONBindingLocation(Footer.JSON.class)
     interface Field extends Embed.Field, JsonDeserializable {
         @Override 
         default String getName() {

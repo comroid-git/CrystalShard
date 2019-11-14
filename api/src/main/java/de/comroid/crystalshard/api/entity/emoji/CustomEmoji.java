@@ -33,7 +33,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappi
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JSONBindingLocation(CustomEmoji.Trait.class)
+@JSONBindingLocation(CustomEmoji.JSON.class)
 public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
@@ -62,7 +62,7 @@ public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
         return wrapBindingValue(JSON.ANIMATED);
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
         JSONBinding.TriStage<Long, Role> WHITELISTED_ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getByID(Role.class, id)

@@ -27,7 +27,7 @@ public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
         return wrapBindingValue(JSON.USER_LIMIT);
     }
 
-    interface JSON extends GuildChannel.Trait, VoiceChannel.Trait {
+    interface JSON extends GuildChannel.JSON, VoiceChannel.JSON {
         JSONBinding.OneStage<Integer> USER_LIMIT = identity("user_limit", JSONObject::getInteger);
     }
 

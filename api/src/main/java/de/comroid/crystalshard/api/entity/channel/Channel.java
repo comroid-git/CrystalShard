@@ -202,7 +202,7 @@ public interface Channel extends
         }
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.TwoStage<String, ChannelType> CHANNEL_TYPE = simple("type", JSONObject::getString, ChannelType::valueOf);
     }
 

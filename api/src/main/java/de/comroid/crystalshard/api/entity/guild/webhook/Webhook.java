@@ -38,7 +38,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JSONBindingLocation(Webhook.Trait.class)
+@JSONBindingLocation(Webhook.JSON.class)
 public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAttachable<WebhookAttachableListener<? extends WebhookEvent>> {
     @CacheInformation.Marker
     CacheInformation<GuildTextChannel> CACHE_INFORMATION = makeSubcacheableInfo(GuildTextChannel.class, Webhook::getChannel);
@@ -92,8 +92,7 @@ public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAt
         return Adapter.<Webhook>request(api)
                 .endpoint(DiscordEndpoint.WEBHOOK, id)
                 .method(RestMethod.GET)
-                .executeAsObject(data -> api.getCacheManager()
-                        .updateOrCreateAndGet(Webhook.class, id, data));
+                .executeAsObject(data -> Adapter.require(Webhook.class, api, data));
     }
 
     @IntroducedBy(PRODUCTION)

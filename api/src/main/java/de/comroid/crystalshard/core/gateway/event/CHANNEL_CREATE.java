@@ -10,7 +10,7 @@ import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 import com.alibaba.fastjson.JSONObject;
 
 @MainAPI
-@JSONBindingLocation(CHANNEL_CREATE.Trait.class)
+@JSONBindingLocation(CHANNEL_CREATE.JSON.class)
 public interface CHANNEL_CREATE extends GatewayEventBase {
     default Channel getChannel() {
         return getBindingValue(JSON.CHANNEL);

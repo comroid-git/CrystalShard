@@ -36,7 +36,6 @@ public interface ListenerManager<L extends Listener> extends Timeoutable {
     default ScheduledFuture<?> detachIn(long time, TimeUnit unit) {
         return getAPI()
                 .getListenerThreadPool()
-                .getScheduler()
                 .schedule((Callable<ListenerManager<L>>) this::detachNow, time, unit);
     }
 

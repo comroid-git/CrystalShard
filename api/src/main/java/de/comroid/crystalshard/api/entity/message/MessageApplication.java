@@ -17,7 +17,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(MessageApplication.Trait.class)
+@JSONBindingLocation(MessageApplication.JSON.class)
 public interface MessageApplication extends Snowflake {
     default Optional<URL> getCoverImageURL() {
         return wrapBindingValue(JSON.COVER_IMAGE_URL);
@@ -35,7 +35,7 @@ public interface MessageApplication extends Snowflake {
         return getBindingValue(JSON.NAME);
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.TwoStage<String, URL> COVER_IMAGE_URL = simple("cover_image", JSONObject::getString, Util::createUrl$rethrow);
         JSONBinding.OneStage<String> DESCRIPTION = identity("description", JSONObject::getString);
         JSONBinding.TwoStage<String, URL> ICON_URL = simple("icon", JSONObject::getString, Util::createUrl$rethrow);

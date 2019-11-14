@@ -14,7 +14,7 @@ import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
 
 @MainAPI
-@JSONBindingLocation(MessageReference.Trait.class)
+@JSONBindingLocation(MessageReference.JSON.class)
 public interface MessageReference extends JsonDeserializable {
     default Optional<Message> getMessage() {
         return wrapBindingValue(JSON.MESSAGE);

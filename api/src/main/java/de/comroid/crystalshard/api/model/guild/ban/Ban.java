@@ -16,7 +16,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JSONBindingLocation(Ban.Trait.class)
+@JSONBindingLocation(Ban.JSON.class)
 public interface Ban extends Cacheable, JsonDeserializable {
     @CacheInformation.Marker
     CacheInformation<User> CACHE_INFORMATION = makeSubcacheableInfo(User.class, Ban::getBannedUser);

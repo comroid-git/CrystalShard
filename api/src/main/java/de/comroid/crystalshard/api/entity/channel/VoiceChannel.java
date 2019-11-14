@@ -18,7 +18,7 @@ public interface VoiceChannel extends Channel {
         int BITRATE = 64000;
     }
     
-    interface JSON extends Channel.Trait {
+    interface JSON extends Channel.JSON {
         JSONBinding.OneStage<Integer> BITRATE = identity("bitrate", JSONObject::getInteger);
     }
 

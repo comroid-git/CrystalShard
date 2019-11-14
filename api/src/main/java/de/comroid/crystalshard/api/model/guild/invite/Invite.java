@@ -27,7 +27,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.requi
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(Invite.Trait.class)
+@JSONBindingLocation(Invite.JSON.class)
 public interface Invite extends JsonDeserializable {
     default String getInviteCode() {
         return getBindingValue(JSON.INVITE_CODE);
@@ -82,7 +82,7 @@ public interface Invite extends JsonDeserializable {
     }
 
     @MainAPI
-    @JSONBindingLocation(Metadata.Trait.class)
+    @JSONBindingLocation(Metadata.JSON.class)
     interface Metadata extends JsonDeserializable {
         default User getInviter() {
             return getBindingValue(JSON.INVITER);

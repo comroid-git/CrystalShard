@@ -17,7 +17,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(MessageActivity.Trait.class)
+@JSONBindingLocation(MessageActivity.JSON.class)
 public interface MessageActivity extends JsonDeserializable {
     default Type getType() {
         return getBindingValue(JSON.TYPE);

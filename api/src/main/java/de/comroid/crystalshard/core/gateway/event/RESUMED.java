@@ -6,7 +6,7 @@ import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
 @MainAPI
-@JSONBindingLocation(RESUMED.Trait.class)
+@JSONBindingLocation(RESUMED.JSON.class)
 public interface RESUMED extends GatewayEventBase {
     interface JSON {}
 }

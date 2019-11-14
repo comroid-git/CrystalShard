@@ -22,7 +22,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.seria
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(READY.Trait.class)
+@JSONBindingLocation(READY.JSON.class)
 public interface READY extends GatewayEventBase {
     default int getGatewayProtocolVersion() {
         return getBindingValue(JSON.GATEWAY_PROTOCOL_VERSION);

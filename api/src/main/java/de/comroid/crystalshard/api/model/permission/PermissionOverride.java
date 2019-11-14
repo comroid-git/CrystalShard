@@ -50,7 +50,7 @@ public interface PermissionOverride extends JsonDeserializable {
          */
     }
 
-    default @MagicConstant(intValues = {EntityType.ROLE.mask}) EntityType getTargetType() {
+    default EntityType getTargetType() {
         return getBindingValue(JSON.TARGET_TYPE);
     }
 

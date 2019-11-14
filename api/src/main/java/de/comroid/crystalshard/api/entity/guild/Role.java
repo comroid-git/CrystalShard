@@ -35,7 +35,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(Role.Trait.class)
+@JSONBindingLocation(Role.JSON.class)
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
 public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.Role<? extends RoleEvent>> {
     Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(de.comroid.crystalshard.api.entity.guild.Role::getPosition);
@@ -100,7 +100,7 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
                         .deleteMember(Guild.class, Role.class, getGuild().getID(), getID()));
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
         JSONBinding.TwoStage<Integer, Color> COLOR = simple("color", JSONObject::getInteger, Color::new);
         JSONBinding.OneStage<Boolean> HOIST = identity("hoist", JSONObject::getBoolean);

@@ -68,7 +68,7 @@ public abstract class Adapter {
                     else {
                         if (args[1] instanceof JSONArray)
                             throw new IllegalArgumentException("Cannot instantiate from JSONArray!");
-                        id = Snowflake.Trait.ID.extractValue((JSONObject) args[1]);
+                        id = Snowflake.JSON.ID.extractValue((JSONObject) args[1]);
                     }
 
                     return ((Discord) args[0]).getCacheManager()

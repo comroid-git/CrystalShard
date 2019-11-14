@@ -69,7 +69,7 @@ public interface GuildChannel extends Channel {
         return Invite.builder(this);
     }
 
-    interface JSON extends Channel.Trait {
+    interface JSON extends Channel.JSON {
         JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
         JSONBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
         JSONBinding.TriStage<JSONObject, PermissionOverride> PERMISSION_OVERRIDES = serializableCollection("permission_overwrites", PermissionOverride.class);

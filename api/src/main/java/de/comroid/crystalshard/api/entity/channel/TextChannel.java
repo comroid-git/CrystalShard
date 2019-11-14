@@ -27,8 +27,7 @@ public interface TextChannel extends Channel, Messageable {
         return Adapter.<Message>request(getAPI())
                 .endpoint(DiscordEndpoint.MESSAGE, getID(), id)
                 .method(RestMethod.GET)
-                .executeAsObject(data -> getAPI().getCacheManager()
-                        .updateOrCreateAndGet(Message.class, id, data));
+                .executeAsObject(data -> Adapter.require(Message.class, getAPI(), data));
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/channel#trigger-typing-indicator")
@@ -53,7 +52,7 @@ public interface TextChannel extends Channel, Messageable {
         return wrapBindingValue(JSON.LAST_MESSAGE_ID);
     }
     
-    interface JSON extends Channel.Trait {
+    interface JSON extends Channel.JSON {
         JSONBinding.TwoStage<String, Instant> LAST_PINNED_TIMESTAMP = simple("last_pin_timestamp", JSONObject::getString, Instant::parse);
         JSONBinding.TwoStage<Long, Message> LAST_MESSAGE_ID = JSONBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
     }

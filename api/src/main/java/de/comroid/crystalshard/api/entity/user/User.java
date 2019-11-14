@@ -39,7 +39,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.seria
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(User.Trait.class)
+@JSONBindingLocation(User.JSON.class)
 public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.User<? extends UserEvent>>, JsonDeserializable {
     default String getUsername() {
         return getBindingValue(JSON.USERNAME);
@@ -94,15 +94,14 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/user#get-user")
-    static CompletableFuture<User> requestUser(Discord api, long id) {
+    static CompletableFuture<User> requestUser(final Discord api, long id) {
         return Adapter.<User>request(api)
                 .endpoint(DiscordEndpoint.USER, id)
                 .method(RestMethod.GET)
-                .executeAsObject(data -> api.getCacheManager()
-                        .updateOrCreateAndGet(User.class, id, data));
+                .executeAsObject(data -> Adapter.require(User.class, api, data));
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.OneStage<String> USERNAME = identity("username", JSONObject::getString);
         JSONBinding.OneStage<String> DISCRIMINATOR = identity("discriminator", JSONObject::getString);
         JSONBinding.OneStage<String> AVATAR_HASH = identity("avatar", JSONObject::getString);
@@ -116,7 +115,7 @@ public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake
     }
 
     @MainAPI
-    @JSONBindingLocation(Connection.Trait.class)
+    @JSONBindingLocation(Connection.JSON.class)
     interface Connection extends JsonDeserializable {
         default String getID() {
             return getBindingValue(JSON.ID);

@@ -57,7 +57,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.requi
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(Message.Trait.class)
+@JSONBindingLocation(Message.JSON.class)
 public interface Message extends Snowflake, Cacheable, ListenerAttachable<MessageAttachableListener<? extends MessageEvent>> {
     @CacheInformation.Marker
     CacheInformation<TextChannel> CACHE_INFORMATION = makeSubcacheableInfo(TextChannel.class, Message::getChannel);
@@ -172,7 +172,7 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Messag
         return getBindingValue(JSON.FLAGS);
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.TwoStage<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
         JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
         JSONBinding.TwoStage<JSONObject, User> USER_AUTHOR = require("author", User.class);

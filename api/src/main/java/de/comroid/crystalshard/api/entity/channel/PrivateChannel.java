@@ -38,7 +38,7 @@ public interface PrivateChannel extends Channel {
         return wrapBindingValue(JSON.APPLICATION_OWNER);
     }
     
-    interface JSON extends Channel.Trait {
+    interface JSON extends Channel.JSON {
         JSONBinding.TriStage<JSONObject, User> RECIPIENTS = serializableCollection("recipients", User.class);
         JSONBinding.TwoStage<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
         JSONBinding.TwoStage<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);

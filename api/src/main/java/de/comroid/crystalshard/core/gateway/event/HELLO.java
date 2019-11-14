@@ -7,7 +7,7 @@ import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 import com.alibaba.fastjson.JSONObject;
 
 @MainAPI
-@JSONBindingLocation(HELLO.Trait.class)
+@JSONBindingLocation(HELLO.JSON.class)
 public interface HELLO extends GatewayEventBase {
     default int getHeartbeatInterval() {
         return getBindingValue(JSON.HEARTBEAT_INTERVAL);

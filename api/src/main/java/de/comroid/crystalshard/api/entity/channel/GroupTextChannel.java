@@ -33,7 +33,7 @@ public interface  GroupTextChannel extends PrivateChannel, TextChannel {
         return wrapBindingValue(JSON.ICON);
     }
     
-    interface JSON extends PrivateChannel.Trait, TextChannel.Trait {
+    interface JSON extends PrivateChannel.JSON, TextChannel.JSON {
         JSONBinding.TwoStage<String, URL> ICON = simple("icon", JSONObject::getString, hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
     }
 

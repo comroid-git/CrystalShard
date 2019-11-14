@@ -15,7 +15,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.ident
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(MessageAttachment.Trait.class)
+@JSONBindingLocation(MessageAttachment.JSON.class)
 public interface MessageAttachment extends Snowflake {
     default String getFilename() {
         return getBindingValue(JSON.FILENAME);
@@ -41,7 +41,7 @@ public interface MessageAttachment extends Snowflake {
         return wrapBindingValue(JSON.WIDTH);
     }
 
-    interface JSON extends Snowflake.Trait {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.OneStage<String> FILENAME = identity("filename", JSONObject::getString);
         JSONBinding.OneStage<Integer> SIZE = identity("size", JSONObject::getInteger);
         JSONBinding.TwoStage<String, URL> URL = simple("url", JSONObject::getString, Util::createUrl$rethrow);

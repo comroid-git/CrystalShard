@@ -9,7 +9,7 @@ import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 import com.alibaba.fastjson.JSONObject;
 
 @MainAPI
-@JSONBindingLocation(INVALID_SESSION.Trait.class)
+@JSONBindingLocation(INVALID_SESSION.JSON.class)
 public interface INVALID_SESSION extends GatewayEventBase {
     default boolean isResumable() {
         return getBindingValue(JSON.RESUMABLE);

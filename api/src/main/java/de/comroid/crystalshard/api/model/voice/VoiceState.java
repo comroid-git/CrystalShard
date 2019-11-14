@@ -18,7 +18,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
-@JSONBindingLocation(VoiceState.Trait.class)
+@JSONBindingLocation(VoiceState.JSON.class)
 public interface VoiceState extends JsonDeserializable {
     default Optional<Guild> getGuild() {
         return wrapBindingValue(JSON.GUILD);
