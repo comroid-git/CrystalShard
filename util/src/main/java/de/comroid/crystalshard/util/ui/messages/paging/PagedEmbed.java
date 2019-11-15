@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
-import de.comroid.crystalshard.api.event.message.reaction.ReactionEvent;
+import de.comroid.crystalshard.api.event.multipart.message.reaction.ReactionEvent;
 import de.comroid.crystalshard.api.listener.message.MessageDeleteListener;
 import de.comroid.crystalshard.api.listener.message.reaction.ReactionAddListener;
 import de.comroid.crystalshard.api.listener.message.reaction.ReactionRemoveListener;
@@ -25,8 +25,8 @@ public class PagedEmbed {
     private final Messageable messageable;
     private final Supplier<Embed> embedsupplier;
 
-    private ConcurrentHashMap<Integer, List<Field>> pages = new ConcurrentHashMap<>();
-    private List<Field> fields = new ArrayList<>();
+    private ConcurrentHashMap<Integer, List<Embed.Field>> pages = new ConcurrentHashMap<>();
+    private List<Embed.Field> fields = new ArrayList<>();
     private int page;
     private AtomicReference<Message> sentMessage = new AtomicReference<>();
 
@@ -72,13 +72,7 @@ public class PagedEmbed {
      * @return The new, modified PageEmbed object.
      */
     public PagedEmbed addField(String title, String text, boolean inline) {
-        fields.add(
-                new Field(
-                        title,
-                        text,
-                        inline
-                )
-        );
+        fields.add(Embed.Field.of(title, text, inline));
 
         return this;
     }
@@ -101,8 +95,8 @@ public class PagedEmbed {
             if (pages.size() != 1) {
                 message.attachListener((ReactionAddListener) this::onReactionClick);
                 message.attachListener((ReactionRemoveListener) this::onReactionClick);
-                message.addReaction(Emoji.unicode(Variables.PREV_PAGE_EMOJI));
-                message.addReaction(Emoji.unicode(Variables.NEXT_PAGE_EMOJI));
+                message.addReaction(Variables.PREV_PAGE_EMOJI);
+                message.addReaction(Variables.NEXT_PAGE_EMOJI);
             }
 
             message.attachListener((MessageDeleteListener) delete -> message.getAttachedListenerManagers()
@@ -139,7 +133,7 @@ public class PagedEmbed {
         int prevSize = pages.size();
         pages.clear();
 
-        for (Field field : fields) {
+        for (Embed.Field field : fields) {
             pages.putIfAbsent(thisPage, new ArrayList<>());
 
             if (fieldCount <= Variables.MAX_FIELDS_PER_PAGE &&
@@ -149,8 +143,8 @@ public class PagedEmbed {
                         .add(field);
 
                 fieldCount++;
-                pageChars = pageChars + field.getTotalChars();
-                totalChars = totalChars + field.getTotalChars();
+                pageChars = pageChars + totalChars(field);
+                totalChars = totalChars + totalChars(field);
             } else {
                 thisPage++;
                 pages.putIfAbsent(thisPage, new ArrayList<>());
@@ -159,8 +153,8 @@ public class PagedEmbed {
                         .add(field);
 
                 fieldCount = 1;
-                pageChars = field.getTotalChars();
-                totalChars = field.getTotalChars();
+                pageChars = totalChars(field);
+                totalChars = totalChars(field);
             }
         }
 
@@ -193,8 +187,8 @@ public class PagedEmbed {
                         .byYourself()
                         .remove();
             } else if (pages.size() > 1 && prevSize == 1) {
-                sentMessage.get().addReaction(Emoji.unicode(Variables.PREV_PAGE_EMOJI));
-                sentMessage.get().addReaction(Emoji.unicode(Variables.NEXT_PAGE_EMOJI));
+                sentMessage.get().addReaction(Variables.PREV_PAGE_EMOJI);
+                sentMessage.get().addReaction(Variables.NEXT_PAGE_EMOJI);
             }
         }
     }
@@ -221,31 +215,17 @@ public class PagedEmbed {
             }
         });
     }
-
-    /**
-     * This subclass represents an embed field for the PagedEmbed.
-     */
-    class Field extends EmbedFieldRepresentative {
-        public Field(String title, String text, boolean inline) {
-            super(title, text, inline);
-        }
-
-        /**
-         * Returns the total characters of the field.
-         *
-         * @return The total characters of the field.
-         */
-        int getTotalChars() {
-            return name.length() + value.length();
-        }
+    
+    static int totalChars(Embed.Field field) {
+        return field.getName().length() + field.getValue().length();
     }
 
     public static class Variables {
         public static int FIELD_MAX_CHARS = 1024;
         public static int MAX_CHARS_PER_PAGE = 4500;
         public static int MAX_FIELDS_PER_PAGE = 8;
-        public static String PREV_PAGE_EMOJI = "⬅";
-        public static String NEXT_PAGE_EMOJI = "➡";
+        public static Emoji PREV_PAGE_EMOJI = Emoji.unicode("⬅");
+        public static Emoji NEXT_PAGE_EMOJI = Emoji.unicode("➡");
 
     }
 }

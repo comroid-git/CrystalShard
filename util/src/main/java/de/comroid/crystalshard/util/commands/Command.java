@@ -5,7 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import de.comroid.crystalshard.api.Discord;
@@ -17,31 +16,15 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.event.message.MessageEditEvent;
-import de.comroid.crystalshard.api.event.message.MessageSentEvent;
+import de.comroid.crystalshard.api.event.multipart.message.MessageEditEvent;
+import de.comroid.crystalshard.api.event.multipart.message.MessageSentEvent;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
+import de.comroid.crystalshard.api.model.message.embed.Embed;
 import de.comroid.crystalshard.api.model.permission.Permission;
 import de.comroid.crystalshard.util.ui.embed.DefaultEmbedFactory;
-import de.comroid.crystalshard.util.ui.messages.InformationMessage;
-import de.comroid.crystalshard.util.ui.messages.RefreshableMessage;
 import de.comroid.crystalshard.util.ui.messages.paging.PagedEmbed;
 import de.comroid.crystalshard.util.ui.messages.paging.PagedMessage;
 import de.comroid.crystalshard.util.ui.reactions.InfoReaction;
-
-import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.PrivateChannel;
-import org.javacord.api.entity.channel.ServerTextChannel;
-import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.MessageAuthor;
-import org.javacord.api.entity.message.MessageBuilder;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.permission.PermissionType;
-import org.javacord.api.entity.permission.Role;
-import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
-import org.javacord.api.event.message.MessageCreateEvent;
-import org.javacord.api.event.message.MessageEditEvent;
 
 /**
  * Marks a method as a command.
@@ -54,22 +37,16 @@ import org.javacord.api.event.message.MessageEditEvent;
  * <th>{@link String}</th>
  * </tr>
  * <tr>
- * <td>{@link EmbedBuilder}</td>
+ * <td>{@link Embed}</td>
  * </tr>
  * <tr>
- * <td>{@link MessageBuilder}</td>
- * </tr>
- * <tr>
- * <td>{@link InformationMessage}</td>
+ * <td>{@link Message.Composer}</td>
  * </tr>
  * <tr>
  * <td>{@link PagedEmbed}</td>
  * </tr>
  * <tr>
  * <td>{@link PagedMessage}</td>
- * </tr>
- * <tr>
- * <td>{@link RefreshableMessage}</td>
  * </tr>
  * <tr>
  * <td>{@link InfoReaction}</td>
@@ -92,24 +69,24 @@ import org.javacord.api.event.message.MessageEditEvent;
  * <td></td>
  * </tr>
  * <tr>
- * <td>{@link DiscordApi}</td>
+ * <td>{@link Discord}</td>
  * <td>The API that caught the command message's event.</td>
  * <td></td>
  * </tr>
  * <tr>
- * <td>{@link MessageCreateEvent}<br></td>
+ * <td>{@link MessageSentEvent}<br></td>
  * <td>The MessageCreateEvent that triggered the command.</td>
  * <td>{@code null} if the command was triggered by a {@link MessageEditEvent}.</td>
  * </tr>
  * <tr>
  * <td>{@link MessageEditEvent}<br></td>
  * <td>The MessageEditEvent that triggered the command.</td>
- * <td>{@code null} if the command was triggered by a {@link MessageCreateEvent}.</td>
+ * <td>{@code null} if the command was triggered by a {@link MessageSentEvent}.</td>
  * </tr>
  * <tr>
- * <td>{@link Server}</td>
+ * <td>{@link Guild}</td>
  * <td>The server that the command was sent in.</td>
- * <td>{@code null} if the command was sent in a {@link PrivateChannel}.</td>
+ * <td>{@code null} if the command was sent in a {@link PrivateTextChannel}.</td>
  * </tr>
  * <tr>
  * <td>{@link Boolean}<br></td>
@@ -122,14 +99,14 @@ import org.javacord.api.event.message.MessageEditEvent;
  * <td></td>
  * </tr>
  * <tr>
- * <td>{@link ServerTextChannel}</td>
+ * <td>{@link GuildTextChannel}</td>
  * <td>The ServerTextChannel that the command was sent in.</td>
- * <td>{@code null} if the command was sent in a {@link PrivateChannel}.</td>
+ * <td>{@code null} if the command was sent in a {@link PrivateTextChannel}.</td>
  * </tr>
  * <tr>
- * <td>{@link PrivateChannel}<br></td>
+ * <td>{@link PrivateTextChannel}<br></td>
  * <td>The PrivateChannel that the command was sent in.</td>
- * <td>{@code null} if the command was sent in a {@link ServerTextChannel}.</td>
+ * <td>{@code null} if the command was sent in a {@link GuildTextChannel}.</td>
  * </tr>
  * <tr>
  * <td>{@link Message}</td>
@@ -139,13 +116,13 @@ import org.javacord.api.event.message.MessageEditEvent;
  * <tr>
  * <td>{@link User}</td>
  * <td>The user that authored the command message.</td>
- * <td>{@code null} if there is no {@link User}. See {@link MessageEditEvent#getMessageAuthor()} for more
+ * <td>{@code null} if there is no {@link User}.
  * information.</td>
  * </tr>
  * <tr>
  * <td>{@link MessageAuthor}</td>
  * <td>The author of the command message.</td>
- * <td>{@code null} if there is no {@link MessageAuthor}. See {@link MessageEditEvent#getMessageAuthor()} for more
+ * <td>{@code null} if there is no {@link MessageAuthor}.
  * information.</td>
  * </tr>
  * <tr>

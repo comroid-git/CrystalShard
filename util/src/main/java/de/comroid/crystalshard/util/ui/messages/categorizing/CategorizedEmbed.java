@@ -12,9 +12,9 @@ import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
-import de.comroid.crystalshard.api.event.message.reaction.ReactionAddEvent;
-import de.comroid.crystalshard.api.event.message.reaction.ReactionEvent;
-import de.comroid.crystalshard.api.event.message.reaction.ReactionRemoveEvent;
+import de.comroid.crystalshard.api.event.multipart.message.reaction.ReactionAddEvent;
+import de.comroid.crystalshard.api.event.multipart.message.reaction.ReactionEvent;
+import de.comroid.crystalshard.api.event.multipart.message.reaction.ReactionRemoveEvent;
 import de.comroid.crystalshard.api.listener.message.reaction.ReactionAddListener;
 import de.comroid.crystalshard.api.listener.message.reaction.ReactionRemoveListener;
 import de.comroid.crystalshard.api.model.message.Messageable;

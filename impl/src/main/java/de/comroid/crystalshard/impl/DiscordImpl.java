@@ -3,13 +3,12 @@ package de.comroid.crystalshard.impl;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.event.DiscordEvent;
 import de.comroid.crystalshard.api.event.model.Event;
-import de.comroid.crystalshard.api.listener.AttachableTo;
+import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.Listener;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.api.model.user.Yourself;
@@ -22,7 +21,7 @@ import de.comroid.crystalshard.core.rest.Ratelimiter;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;
 import de.comroid.crystalshard.util.model.NStream;
 
-public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
+public class DiscordImpl implements Discord {
     private final String token;
     private final int shardId;
 
@@ -129,17 +128,17 @@ public class DiscordImpl implements de.comroid.crystalshard.api.Discord {
     }
 
     @Override
-    public <TL extends AttachableTo.Discord<? extends DiscordEvent>> ListenerManager<TL> attachListener(TL listener) {
+    public <TL extends ListenerSpec.AttachableTo.Discord> ListenerManager<TL> attachListener(TL listener) {
         return null;
     }
 
     @Override
-    public <TL extends AttachableTo.Discord<? extends DiscordEvent>> boolean detachListener(TL listener) {
+    public <TL extends ListenerSpec.AttachableTo.Discord> boolean detachListener(TL listener) {
         return false;
     }
 
     @Override
-    public Collection<ListenerManager<? extends AttachableTo.Discord<? extends DiscordEvent>>> getAttachedListenerManagers() {
+    public Collection<ListenerManager<? extends ListenerSpec.AttachableTo.Discord>> getAttachedListenerManagers() {
         return null;
     }
 

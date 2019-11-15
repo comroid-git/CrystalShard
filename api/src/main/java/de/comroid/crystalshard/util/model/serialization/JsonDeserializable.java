@@ -3,11 +3,13 @@ package de.comroid.crystalshard.util.model.serialization;
 import java.util.Optional;
 import java.util.Set;
 
+import de.comroid.crystalshard.adapter.Constructor;
 import de.comroid.crystalshard.api.model.ApiBound;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
+@Constructor
 public interface JsonDeserializable extends ApiBound, Cloneable {
     Set<JSONBinding> bindings();
 

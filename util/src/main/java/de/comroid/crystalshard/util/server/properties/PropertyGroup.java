@@ -5,17 +5,15 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.util.model.SelfDefaultable;
 import de.comroid.crystalshard.util.model.SelfDescribable;
 import de.comroid.crystalshard.util.model.SelfDisplaynameable;
 import de.comroid.util.markers.Value;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.javacord.api.entity.server.Server;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.NotNull;
-
-import static de.comroid.util.Util.nodeOf;
 
 public final class PropertyGroup implements
         SelfDisplaynameable<PropertyGroup>,
@@ -36,16 +34,16 @@ public final class PropertyGroup implements
         values = new ConcurrentHashMap<>();
     }
 
-    public Value.Setter setValue(Server server) {
-        return setValue(server.getId());
+    public Value.Setter setValue(Guild server) {
+        return setValue(server.getID());
     }
 
     public Value.Setter setValue(long serverId) {
         return getValue(serverId).setter();
     }
 
-    public Value getValue(Server server) {
-        return getValue(server.getId());
+    public Value getValue(Guild server) {
+        return getValue(server.getID());
     }
 
     public Value getValue(long serverId) {
@@ -96,14 +94,15 @@ public final class PropertyGroup implements
         return Optional.ofNullable(displayName);
     }
 
-    void serialize(ArrayNode node) {
+    void serialize(JSONArray node) {
         values.forEach((id, value) -> {
             if (!value.asString().equals(defaultValue.asString())) {
-                ObjectNode object = node.addObject();
+                JSONObject json = new JSONObject();
+                node.add(json);
 
-                object.set("id", nodeOf(id));
-                object.set("val", nodeOf(value.asString()));
-                object.set("type", nodeOf((value.getValue() != null ? value.getValue() : "").getClass().getName()));
+                json.put("id", id);
+                json.put("val", value.asString());
+                json.put("type", (value.getValue() != null ? value.getValue() : "").getClass().getName());
             }
         });
     }

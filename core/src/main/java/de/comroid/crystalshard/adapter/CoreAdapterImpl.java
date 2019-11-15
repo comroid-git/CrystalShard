@@ -23,14 +23,13 @@ import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 public final class CoreAdapterImpl extends CoreAdapter {
     public CoreAdapterImpl() throws NoSuchMethodException {
         mappingTool.implement(WebRequest.class, WebRequestImpl.class.getConstructor())
-                .implement(ThreadPool.class, ThreadPoolImpl.class.getConstructor(String.class))
-                .implement(WorkerThread.class, WorkerThreadImpl.class.getConstructor(Runnable.class))
+                .implement(ThreadPool.class, ThreadPoolImpl.class.getConstructor(Discord.class, String.class, int.class))
+                .implement(WorkerThread.class, WorkerThreadImpl.class.getConstructor(Discord.class, ThreadPoolImpl.class, int.class))
                 .implement(Gateway.class, GatewayImpl.class.getConstructor(Discord.class, ThreadPool.class))
                 .implement(DiscordRequest.class, DiscordRequestImpl.class.getConstructor(Discord.class))
                 .implement(Ratelimiter.class, RatelimiterImpl.class.getConstructor(Discord.class))
                 .implement(JSONBinding.OneStage.class, JsonBindings.OneStageImpl$Identity.class.getConstructor(String.class, BiFunction.class))
                 .implement(JSONBinding.TwoStage.class, JsonBindings.TwoStageImpl$Simple.class.getConstructor(String.class, BiFunction.class, Function.class))
-                .implement(JSONBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingObjects.class.getConstructor(String.class, Class.class))
                 .implement(JSONBinding.TriStage.class, JsonBindings.TriStageImpl$UnderlyingMapped.class.getConstructor(String.class, BiFunction.class, BiFunction.class));
     }
 

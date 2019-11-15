@@ -17,7 +17,7 @@ public final class Util {
         }
     }
 
-    public static <T, R> R hackCast(T var) {
+    public static <T, R> R hackCast(T var) { // todo rename
         //noinspection unchecked,RedundantCast
         return (R) (Object) var;
     }

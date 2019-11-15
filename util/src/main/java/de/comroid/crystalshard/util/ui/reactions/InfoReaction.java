@@ -8,7 +8,7 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.message.Message;
-import de.comroid.crystalshard.api.event.message.reaction.ReactionEvent;
+import de.comroid.crystalshard.api.event.multipart.message.reaction.ReactionEvent;
 import de.comroid.crystalshard.api.listener.message.reaction.ReactionAddListener;
 import de.comroid.crystalshard.api.listener.message.reaction.ReactionRemoveListener;
 import de.comroid.crystalshard.api.model.message.embed.Embed;
@@ -91,6 +91,6 @@ public class InfoReaction {
     }
 
     public static class MessageTypeEmoji {
-        public static final String WARNING = "⚠";
+        public static final Emoji WARNING = Emoji.unicode("⚠");
     }
 }

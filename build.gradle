@@ -63,13 +63,19 @@ dependencies {
     
     runtimeOnly project(':impl')
     runtimeOnly project(':core')
+
+    // test configuration
+    testImplementation project(':api')
+    testImplementation project(':util')
+    testImplementation project(':core')
+    testImplementation project(':impl')
 }
 
 sourceSets {
     main.java.srcDirs = []
     main.resources.srcDirs = []
-    test.java.srcDirs = []
-    test.resources.srcDirs = []
+    test.java.srcDirs = ["src/test/java"]
+    test.resources.srcDirs = ["src/test/resources"]
 }
 
 subprojects {
@@ -77,8 +83,8 @@ subprojects {
 
     group 'de.kaleidox'
 
-    sourceCompatibility = 13
-    targetCompatibility = 13
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
     task sourcesJar(type: Jar) {
         from sourceSets.main.allJava
@@ -112,11 +118,12 @@ subprojects {
         testImplementation 'junit:junit:4.12'
         testImplementation 'org.easymock:easymock:4.1'
         testImplementation 'com.google.flogger:flogger-system-backend:0.4'
+        testCompileOnly 'org.codehaus.groovy:groovy:3.0.0-rc-1'
     }
 }
 
 project(":api") {
-    version = '2.0.0'
+    version = '1.0.0-SNAPSHOT'
 
     dependencies {
         compileOnly 'com.alibaba:fastjson:1.2.62'
@@ -126,7 +133,7 @@ project(":api") {
 }
 
 project(":core") {
-    version = '2.0.0'
+    version = '1.0.0-SNAPSHOT'
 
     dependencies {
         api project(':api')
@@ -138,7 +145,7 @@ project(":core") {
 }
 
 project(":impl") {
-    version = '2.0.0'
+    version = '1.0.0-SNAPSHOT'
 
     dependencies {
         api project(':api')
@@ -151,10 +158,15 @@ project(":impl") {
 }
 
 project(":util") {
-    version = '2.0.0'
+    version = '1.0.0-SNAPSHOT'
     
     dependencies {
         api project(':api')
+        api project(':core')
+
+        implementation 'com.alibaba:fastjson:1.2.62'
+
+        runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
 }
 

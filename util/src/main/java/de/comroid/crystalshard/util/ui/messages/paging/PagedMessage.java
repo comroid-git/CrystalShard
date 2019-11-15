@@ -10,14 +10,19 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.Messageable;
-import org.javacord.api.event.message.reaction.SingleReactionEvent;
+import de.comroid.crystalshard.api.entity.emoji.Emoji;
+import de.comroid.crystalshard.api.entity.message.Message;
+import de.comroid.crystalshard.api.event.multipart.message.reaction.ReactionEvent;
+import de.comroid.crystalshard.api.listener.message.reaction.ReactionAddListener;
+import de.comroid.crystalshard.api.listener.message.reaction.ReactionRemoveListener;
+import de.comroid.crystalshard.api.model.message.Messageable;
+
+import static de.comroid.crystalshard.adapter.Adapter.exceptionLogger;
 
 public class PagedMessage {
     private final static ConcurrentHashMap<Messageable, PagedMessage> selfMap = new ConcurrentHashMap<>();
-    private final static String PREV_PAGE_EMOJI = "⬅";
-    private final static String NEXT_PAGE_EMOJI = "➡";
+    private final static Emoji PREV_PAGE_EMOJI = Emoji.unicode("⬅");
+    private final static Emoji NEXT_PAGE_EMOJI = Emoji.unicode("➡");
     private final static int SUITABLE_MAX_LENGTH = 1700;
 
     private Messageable parent;
@@ -47,9 +52,9 @@ public class PagedMessage {
         refreshPages();
 
         if (lastMessage != null) {
-            lastMessage.edit(
-                    getPageContent()
-            );
+            lastMessage.editor()
+                    .setText(getPageContent())
+                    .edit();
         }
     }
 
@@ -57,35 +62,35 @@ public class PagedMessage {
         refreshPages();
 
         if (lastMessage != null) {
-            lastMessage.delete("Outdated");
+            lastMessage.delete();
         }
 
-        parent.sendMessage(
-                getPageContent()
-        ).thenAcceptAsync(msg -> {
+        parent.composeMessage()
+                .setText(getPageContent())
+                .send()
+                .thenAcceptAsync(msg -> {
             lastMessage = msg;
-            msg.addReactionAddListener(this::onPageClick);
-            msg.addReactionRemoveListener(this::onPageClick);
+                    msg.attachListener((ReactionAddListener) this::onPageClick);
+                    msg.attachListener((ReactionRemoveListener) this::onPageClick);
             msg.addReaction(PREV_PAGE_EMOJI);
             msg.addReaction(NEXT_PAGE_EMOJI);
-        });
+                }).exceptionally(exceptionLogger());
     }
 
-    private void onPageClick(SingleReactionEvent event) {
-        if (!event.getUser().isYourself()) {
-            switch (event.getEmoji().asUnicodeEmoji().orElse("")) {
-                case PREV_PAGE_EMOJI:
-                    if (page > 0)
-                        page--;
+    private void onPageClick(ReactionEvent event) {
+        if (!event.getTriggeringUser().isYourself()) {
+            Emoji emoji = event.getEmoji().asUnicodeEmoji().orElse(null);
+            
+            if (PREV_PAGE_EMOJI.equals(emoji)) {
+                if (page > 0)
+                    page--;
 
-                    this.refreshPage();
-                    break;
-                case NEXT_PAGE_EMOJI:
-                    if (page < pages.size() - 1)
-                        page++;
+                this.refreshPage();
+            } else if (NEXT_PAGE_EMOJI.equals(emoji)) {
+                if (page < pages.size() - 1)
+                    page++;
 
-                    this.refreshPage();
-                    break;
+                this.refreshPage();
             }
         }
     }
@@ -133,7 +138,7 @@ public class PagedMessage {
         }
     }
 
-    public final static PagedMessage get(Messageable forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
+    public static PagedMessage get(Messageable forParent, Supplier<String> defaultHead, Supplier<String> defaultBody) {
         if (selfMap.containsKey(forParent)) {
             PagedMessage val = selfMap.get(forParent);
             val.resend();
@@ -150,7 +155,7 @@ public class PagedMessage {
         }
     }
 
-    public final static Optional<PagedMessage> get(Messageable forParent) {
+    public static Optional<PagedMessage> get(Messageable forParent) {
         if (selfMap.containsKey(forParent)) {
             PagedMessage val = selfMap.get(forParent);
             val.resend();

@@ -2,6 +2,7 @@ package de.comroid.crystalshard.core.gateway.event;
 
 // https://discordapp.com/developers/docs/topics/gateway#message-create
 
+import de.comroid.crystalshard.adapter.Constructor;
 import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;

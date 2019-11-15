@@ -1,16 +1,24 @@
 package de.comroid.crystalshard.util.server.properties;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+import de.comroid.crystalshard.api.entity.guild.Guild;
+import de.comroid.crystalshard.api.entity.user.User;
+import de.comroid.crystalshard.api.model.message.MessageAuthor;
+import de.comroid.crystalshard.api.model.message.embed.Embed;
+import de.comroid.crystalshard.api.model.permission.Permission;
 import de.comroid.crystalshard.util.commands.Command;
 import de.comroid.crystalshard.util.commands.CommandGroup;
 import de.comroid.crystalshard.util.commands.CommandHandler;
@@ -19,25 +27,18 @@ import de.comroid.crystalshard.util.ui.messages.paging.PagedEmbed;
 import de.comroid.util.interfaces.Initializable;
 import de.comroid.util.markers.Value;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.javacord.api.entity.message.MessageAuthor;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.permission.PermissionType;
-import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static de.comroid.util.Util.nodeOf;
 import static de.comroid.util.Util.objectNode;
 
 public final class ServerPropertiesManager implements Initializable, Closeable {
     private final Map<String, PropertyGroup> properties;
     private final File propertiesFile;
-    private Supplier<EmbedBuilder> embedSupplier;
+    private Supplier<Embed> embedSupplier;
 
     public ServerPropertiesManager(File propertiesFile) throws IOException {
         if (!propertiesFile.exists()) propertiesFile.createNewFile();
@@ -80,7 +81,7 @@ public final class ServerPropertiesManager implements Initializable, Closeable {
     }
 
     public void usePropertyCommand(
-            @Nullable Supplier<EmbedBuilder> embedSupplier,
+            @Nullable Supplier<Embed> embedSupplier,
             CommandHandler commandHandler
     ) {
         this.embedSupplier = (embedSupplier == null ? DefaultEmbedFactory.INSTANCE : embedSupplier);
@@ -93,11 +94,11 @@ public final class ServerPropertiesManager implements Initializable, Closeable {
     @Command(aliases = "property",
             usage = "property [<Property Name> [New Value]]",
             description = "Change or read the value of properties",
-            requiredDiscordPermissions = PermissionType.MANAGE_SERVER,
+            requiredDiscordPermissions = Permission.MANAGE_SERVER,
             enablePrivateChat = false)
     public Object propertyCommand(Command.Parameters param) {
-        Server server = param.getServer().orElseThrow(AssertionError::new);
-        User user = param.getCommandExecutor().flatMap(MessageAuthor::asUser).orElse(null);
+        Guild server = param.getServer().orElseThrow(AssertionError::new);
+        User user = param.getCommandExecutor().flatMap(MessageAuthor::castAuthorToUser).orElse(null);
         String[] args = param.getArguments();
 
         if (user == null)
@@ -170,16 +171,22 @@ public final class ServerPropertiesManager implements Initializable, Closeable {
     }
 
     public void storeData() throws IOException {
-        ObjectNode node = objectNode();
-        ArrayNode array = node.putArray("entries");
+        JSONObject node = objectNode();
+        JSONArray array = new JSONArray();
+        node.put("entries", array);
 
         properties.forEach((name, group) -> {
-            ObjectNode data = array.addObject();
-            data.set("name", nodeOf(name));
-            data.set("default", nodeOf(group.getDefaultValue().asString()));
-            data.set("displayName", nodeOf(group.getDisplayName()));
-            data.set("description", nodeOf(group.getDescription()));
-            group.serialize(data.putArray("items"));
+            JSONObject data = new JSONObject();
+            array.add(data);
+
+            data.put("name", name);
+            data.put("default", group.getDefaultValue().asString());
+            data.put("displayName", group.getDisplayName());
+            data.put("description", group.getDescription());
+
+            final JSONArray jsonArray = new JSONArray();
+            data.put("items", jsonArray);
+            group.serialize(jsonArray);
         });
 
         if (propertiesFile.exists()) propertiesFile.delete();
@@ -223,23 +230,44 @@ public final class ServerPropertiesManager implements Initializable, Closeable {
 
     private void readData() throws IOException {
         int c = 0;
-        JsonNode node = new ObjectMapper().readTree(new FileInputStream(propertiesFile));
+        InputStream is = new FileInputStream(propertiesFile);
+        BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+
+        String line = buf.readLine();
+        StringBuilder sb = new StringBuilder();
+
+        while (line != null) {
+            sb.append(line).append("\n");
+            line = buf.readLine();
+        }
+
+        String fileAsString = sb.toString();
+
+        JSONObject node = JSON.parseObject(fileAsString);
 
         if (node != null && node.size() != 0) {
-            for (JsonNode entry : node.get("entries")) {
+            for (Object entry : node.getJSONArray("entries")) {
+                if (!(entry instanceof JSONObject))
+                    continue;
+                JSONObject json = (JSONObject) entry;
+
                 PropertyGroup group = register(
-                        entry.get("name").asText(),
-                        entry.get("default").asText(),
-                        entry.path("displayName").asText(entry.get("name").asText()),
-                        entry.path("description").asText("No description provided.")
+                        json.getString("name"),
+                        json.get("default"),
+                        (String) json.getOrDefault("displayName", json.getString("name")),
+                        (String) json.getOrDefault("description", "No description provided.")
                 );
 
-                for (JsonNode item : entry.get("items")) {
-                    String typeVal = item.get("type").asText();
+                for (Object obj : ((JSONObject) entry).getJSONArray("items")) {
+                    if (!(obj instanceof JSONObject))
+                        continue;
+                    JSONObject item = (JSONObject) obj;
+
+                    String typeVal = item.getString("type");
                     try {
                         Class<?> type = Class.forName(typeVal);
-                        Value.Setter setValue = group.setValue(item.get("id").asLong());
-                        String val = item.get("val").asText();
+                        Value.Setter setValue = group.setValue(item.getLong("id"));
+                        String val = item.getString("val");
 
                         if (type == String.class) setValue.toString(val);
                         else setValue.toObject(type.getMethod("valueOf", String.class).invoke(null, val));

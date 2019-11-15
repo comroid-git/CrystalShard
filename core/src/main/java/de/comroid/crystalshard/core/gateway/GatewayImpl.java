@@ -19,7 +19,6 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import de.comroid.crystalshard.CrystalShard;
-import de.comroid.crystalshard.abstraction.listener.AbstractListenerManager;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.event.model.Event;
@@ -34,7 +33,6 @@ import de.comroid.crystalshard.core.gateway.listener.GatewayListener;
 import de.comroid.crystalshard.core.gateway.listener.GatewayListenerManager;
 import de.comroid.crystalshard.core.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.rest.RestMethod;
-import de.comroid.crystalshard.util.annotation.InitializedBy;
 import de.comroid.crystalshard.util.model.NStream;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
@@ -68,8 +66,7 @@ public class GatewayImpl implements Gateway {
                 .thenAccept(pair -> {
                     final int interval = pair.getEvent().getHeartbeatInterval();
 
-                    threadPool.getScheduler()
-                            .scheduleAtFixedRate(() -> this.sendRequest(OpCode.HEARTBEAT, JSON.parseObject("{}")),
+                    threadPool.scheduleAtFixedRate(() -> this.sendRequest(OpCode.HEARTBEAT, JSON.parseObject("{}")),
                                     interval, interval, TimeUnit.MILLISECONDS);
                 });
 
@@ -111,6 +108,11 @@ public class GatewayImpl implements Gateway {
     }
 
     @Override
+    public Discord getAPI() {
+        return api;
+    }
+
+    @Override
     public CompletableFuture<Void> sendRequest(OpCode code, JSONObject payload) {
         return CompletableFuture.supplyAsync(() -> {
             JSONObject json = new JSONObject();
@@ -146,11 +148,6 @@ public class GatewayImpl implements Gateway {
     @Override
     public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent) {
         return null; // todo
-    }
-
-    @Override
-    public Discord getAPI() {
-        return api;
     }
 
     private <L extends GatewayListener<E>, E extends GatewayEventBase> ListenerManager<L> attachListener_impl(L listener) {
@@ -285,18 +282,11 @@ public class GatewayImpl implements Gateway {
         @Override
         public ScheduledFuture<?> timeout(long time, TimeUnit unit, Runnable timeoutHandler) {
             return api.getListenerThreadPool()
-                    .getScheduler()
                     .schedule(() -> {
                         detachNow(false);
 
                         timeoutHandler.run();
                     }, time, unit);
-        }
-
-        @Override
-        public void onEvent(EventData<L, E> eventData) {
-            api.getListenerThreadPool().submit(() -> underlyingListener.onEvent(eventData.event));
-            AbstractListenerManager.submit(api, eventData.listenerClass, eventData.event);
         }
 
         @Override

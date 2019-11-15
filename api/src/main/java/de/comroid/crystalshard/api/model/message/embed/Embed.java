@@ -104,6 +104,10 @@ public interface Embed extends EmbedModificator<Embed> {
         String getValue();
 
         boolean isInline();
+
+        static Field of(String title, String text, boolean inline) {
+            return Adapter.require(Embed.Field.class, title, text, inline);
+        }
     }
 
     interface Composer extends EmbedModificator<Composer> { // TODO: 14.11.2019  

@@ -55,6 +55,8 @@ public interface Reaction extends JsonDeserializable, Cacheable {
     interface Remover { // todo
         Remover byEmoji(String... emojis);
         
+        Remover byEmoji(Emoji... emojis);
+        
         Remover byAllEmojis();
         
         Remover byUser(User... users);

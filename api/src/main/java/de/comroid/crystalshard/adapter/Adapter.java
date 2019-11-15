@@ -1,5 +1,6 @@
 package de.comroid.crystalshard.adapter;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -7,6 +8,8 @@ import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
@@ -37,6 +40,12 @@ public abstract class Adapter {
             return Optional.ofNullable(getApiClass_r((Class<?>) from));
 
         return Optional.ofNullable(getApiClass_r(from.getClass()));
+    }
+    
+    public static Collection<Class[]> getRequiredConstructorParameterTypes(Class<?> of) {
+        return Stream.of(of.getAnnotationsByType(Constructor.class))
+                .map(Constructor::value)
+                .collect(Collectors.toSet());
     }
 
     public static <T> Function<Throwable, ? extends T> exceptionLogger() {

@@ -291,7 +291,7 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Listen
     interface Editor {
         Optional<String> getContent();
 
-        Editor setContent(String content);
+        Editor setText(String content);
 
         Optional<Embed> getEmbed();
 
