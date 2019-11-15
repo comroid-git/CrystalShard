@@ -59,6 +59,8 @@ repositories.jcenter()
 
 dependencies {
     api project(':api')
+    api project(':util')
+    
     runtimeOnly project(':impl')
     runtimeOnly project(':core')
 }
