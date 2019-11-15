@@ -2,7 +2,8 @@ package de.comroid.crystalshard.util.commands;
 
 import java.lang.reflect.Method;
 
-import org.javacord.api.entity.permission.PermissionType;
+import de.comroid.crystalshard.api.model.permission.Permission;
+
 import org.jetbrains.annotations.Nullable;
 
 public final class CommandRepresentation {
@@ -14,7 +15,7 @@ public final class CommandRepresentation {
     public final boolean showInHelpCommand;
     public final boolean enablePrivateChat;
     public final boolean enableServerChat;
-    public final PermissionType[] requiredDiscordPermissions;
+    public final Permission[] requiredDiscordPermissions;
     public final int minimumArguments;
     public final int maximumArguments;
     public final int requiredChannelMentions;

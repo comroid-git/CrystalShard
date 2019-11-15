@@ -7,6 +7,8 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.api.model.message.MessageFlags;
 import de.comroid.crystalshard.api.model.message.MessageReference;
 import de.comroid.crystalshard.api.model.message.MessageType;
+import de.comroid.crystalshard.api.model.message.Messageable;
 import de.comroid.crystalshard.api.model.message.TextDecoration;
 import de.comroid.crystalshard.api.model.message.embed.ActiveEmbed;
 import de.comroid.crystalshard.api.model.message.embed.Embed;
@@ -40,6 +43,7 @@ import de.comroid.crystalshard.core.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.rest.HTTPStatusCodes;
 import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
+import de.comroid.crystalshard.util.model.BackTo;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
 
@@ -267,7 +271,7 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Listen
 
         Composer setEmbed(Embed embed);
 
-        Embed.Composer composeEmbed();
+        <ComposerPair extends Embed.Composer & BackTo<Composer>> ComposerPair composeEmbed();
 
         Optional<MessageAttachment> getAttachment();
 
@@ -279,6 +283,8 @@ public interface Message extends Snowflake, Cacheable, ListenerAttachable<Listen
 
         @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/channel#create-message")
         CompletableFuture<Message> send();
+        
+        CompletableFuture<Message> send(TextChannel to);
     }
 
     @IntroducedBy(PRODUCTION)

@@ -25,12 +25,14 @@ import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.channel.GuildChannel;
 import de.comroid.crystalshard.api.entity.channel.GuildTextChannel;
+import de.comroid.crystalshard.api.entity.channel.PrivateChannel;
 import de.comroid.crystalshard.api.entity.channel.TextChannel;
+import de.comroid.crystalshard.api.entity.emoji.Emoji;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.message.Message;
+import de.comroid.crystalshard.api.entity.user.User;
 import de.comroid.crystalshard.api.event.guild.WrappedGuildEvent;
 import de.comroid.crystalshard.api.event.message.MessageDeleteEvent;
 import de.comroid.crystalshard.api.event.message.MessageEditEvent;
@@ -683,19 +685,25 @@ public final class CommandHandler implements
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Cannot access command method!", e);
         } catch (InvocationTargetException e) {
-            new InfoReaction(message, "⚠", "Command threw an exception: ["
-                    + e.getCause().getClass().getSimpleName() + "] \n```\n" + e.getCause().getMessage() + "\n```",
-                    1, TimeUnit.MINUTES, () -> DefaultEmbedFactory.create().setColor(Color.RED))
+            new InfoReaction(message,
+                    Emoji.unicode("⚠"),
+                    "Command threw an exception: [" + e.getCause().getClass().getSimpleName() + "] \n```\n" + e.getCause().getMessage() + "\n```",
+                    1, TimeUnit.MINUTES,
+                    () -> DefaultEmbedFactory.create().setColor(Color.RED))
                     .build();
-            logger.catching(e.getCause());
+            logger.at(Level.SEVERE)
+                    .withCause(e.getCause())
+                    .log();
             return;
         }
 
         if (reply != null) {
             CompletableFuture<Message> msgFut = null;
 
-            if (reply instanceof EmbedBuilder) msgFut = channel.sendMessage((EmbedBuilder) reply);
-            else if (reply instanceof MessageBuilder) msgFut = ((MessageBuilder) reply).send(channel);
+            if (reply instanceof Embed) msgFut = channel.composeMessage()
+                    .setEmbed((Embed) reply)
+                    .send();
+            else if (reply instanceof Message.Composer) msgFut = ((Message.Composer) reply).send(channel);
             else if (reply instanceof InformationMessage) ((InformationMessage) reply).refresh();
             else if (reply instanceof PagedEmbed) msgFut = ((PagedEmbed) reply).build();
             else if (reply instanceof PagedMessage) ((PagedMessage) reply).refresh();
@@ -703,11 +711,15 @@ public final class CommandHandler implements
             else if (reply instanceof CategorizedEmbed) msgFut = ((CategorizedEmbed) reply).build();
             else if (reply instanceof InfoReaction) ((InfoReaction) reply).build();
             else if (commandRep.convertStringResultsToEmbed && reply instanceof String)
-                msgFut = channel.sendMessage(DefaultEmbedFactory.create().setDescription((String) reply));
-            else msgFut = channel.sendMessage(String.valueOf(reply));
+                msgFut = channel.composeMessage()
+                        .setEmbed(DefaultEmbedFactory.create().setDescription((String) reply))
+                        .send();
+            else msgFut = channel.composeMessage()
+                        .setText(String.valueOf(reply))
+                        .send();
 
             if (msgFut != null)
-                applyResponseDeletion(message.getId(), msgFut.exceptionally(get()));
+                applyResponseDeletion(message.getID(), msgFut.exceptionally(exceptionLogger()));
         }
     }
 
@@ -721,26 +733,26 @@ public final class CommandHandler implements
 
             if (CommandRepresentation.class.isAssignableFrom(klasse))
                 args[i] = param.command;
-            else if (DiscordApi.class.isAssignableFrom(klasse))
+            else if (Discord.class.isAssignableFrom(klasse))
                 args[i] = param.discord;
-            else if (MessageCreateEvent.class.isAssignableFrom(klasse))
+            else if (MessageSentEvent.class.isAssignableFrom(klasse))
                 args[i] = param.createEvent;
             else if (MessageEditEvent.class.isAssignableFrom(klasse))
                 args[i] = param.editEvent;
-            else if (Server.class.isAssignableFrom(klasse))
+            else if (Guild.class.isAssignableFrom(klasse))
                 args[i] = param.server;
             else if (Boolean.class.isAssignableFrom(klasse))
-                args[i] = param.message.isPrivateMessage();
+                args[i] = param.message.isPrivate();
             else if (TextChannel.class.isAssignableFrom(klasse)) {
-                if (ServerTextChannel.class.isAssignableFrom(klasse))
-                    args[i] = param.textChannel.asServerTextChannel().orElse(null);
+                if (GuildTextChannel.class.isAssignableFrom(klasse))
+                    args[i] = param.textChannel.asGuildTextChannel().orElse(null);
                 else if (PrivateChannel.class.isAssignableFrom(klasse))
-                    args[i] = param.textChannel.asPrivateChannel().orElse(null);
+                    args[i] = param.textChannel.asPrivateTextChannel().orElse(null);
                 else args[i] = param.textChannel;
             } else if (Message.class.isAssignableFrom(klasse))
                 args[i] = param.message;
             else if (User.class.isAssignableFrom(klasse))
-                args[i] = param.author.asUser().orElse(null);
+                args[i] = param.author.castAuthorToUser().orElse(null);
             else if (MessageAuthor.class.isAssignableFrom(klasse))
                 args[i] = param.author;
             else if (String[].class.isAssignableFrom(klasse))
@@ -756,7 +768,7 @@ public final class CommandHandler implements
     private void applyResponseDeletion(long cmdMsgId, CompletableFuture<Message> message) {
         message.thenAcceptAsync(msg -> {
             if (autoDeleteResponseOnCommandDeletion)
-                responseMap.put(cmdMsgId, new long[]{msg.getId(), msg.getChannel().getId()});
+                responseMap.put(cmdMsgId, new long[]{msg.getID(), msg.getChannel().getID()});
         });
     }
 

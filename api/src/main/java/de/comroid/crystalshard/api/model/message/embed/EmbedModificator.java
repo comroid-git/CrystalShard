@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import de.comroid.crystalshard.api.entity.user.User;
 
-public interface EmbedModicator<Self extends EmbedModicator<Self>> { // todo
+public interface EmbedModificator<Self extends EmbedModificator<Self>> { // todo
     Self removeAllFields();
 
     Self setColor(Color color);

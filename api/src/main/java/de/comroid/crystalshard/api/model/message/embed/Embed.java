@@ -8,10 +8,9 @@ import java.util.Optional;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.MainAPI;
-import de.comroid.crystalshard.api.entity.user.User;
 
 @MainAPI
-public interface Embed extends EmbedModicator<Embed> {
+public interface Embed extends EmbedModificator<Embed> {
     Optional<String> getTitle();
 
     Optional<String> getDescription();
@@ -107,7 +106,7 @@ public interface Embed extends EmbedModicator<Embed> {
         boolean isInline();
     }
 
-    interface Composer extends EmbedModicator<Composer> { // TODO: 14.11.2019  
+    interface Composer extends EmbedModificator<Composer> { // TODO: 14.11.2019  
         Embed compose();
     }
 
