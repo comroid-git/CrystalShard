@@ -17,7 +17,7 @@ import de.comroid.crystalshard.util.ui.reactions.InfoReaction;
 
 public class CrystalShardTest {
     public static void main(String[] args) throws Exception {
-        Discord api = Discord.builder()
+        Discord api = new Discord.Builder()
                 .setToken(args[0])
                 .build()
                 .join();

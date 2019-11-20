@@ -9,8 +9,9 @@ import java.util.concurrent.CompletableFuture;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.Snowflake;
-import de.comroid.crystalshard.api.listener.ListenerSpec;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.event.multipart.APIEvent;
+import de.comroid.crystalshard.api.event.multipart.role.RolesEvent;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.permission.PermissionOverridable;
 import de.comroid.crystalshard.api.model.permission.PermissionOverride;
@@ -36,7 +37,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simpl
 @MainAPI
 @JSONBindingLocation(Role.JSON.class)
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
-public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.Role> {
+public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, EventHandler<APIEvent> {
     Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(de.comroid.crystalshard.api.entity.guild.Role::getPosition);
 
     @CacheInformation.Marker

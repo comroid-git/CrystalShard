@@ -12,8 +12,8 @@ import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
-import de.comroid.crystalshard.api.listener.ListenerSpec;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.event.multipart.user.UserEvent;
 import de.comroid.crystalshard.api.model.Mentionable;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.api.model.message.Messageable;
@@ -25,8 +25,8 @@ import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
 import org.intellij.lang.annotations.MagicConstant;
@@ -40,7 +40,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simpl
 
 @MainAPI
 @JSONBindingLocation(User.JSON.class)
-public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.User>, JsonDeserializable {
+public interface User extends Messageable, MessageAuthor, Mentionable, Snowflake, Cacheable, EventHandler<UserEvent>, JsonDeserializable {
     default String getUsername() {
         return getBindingValue(JSON.USERNAME);
     }

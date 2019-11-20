@@ -12,9 +12,8 @@ import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.channel.GuildTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.event.guild.webhook.WebhookEvent;
-import de.comroid.crystalshard.api.listener.guild.WebhookAttachableListener;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.event.multipart.APIEvent;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.core.cache.Cacheable;
@@ -39,7 +38,7 @@ import static de.comroid.crystalshard.util.model.serialization.JSONBinding.requi
 
 @MainAPI
 @JSONBindingLocation(Webhook.JSON.class)
-public interface Webhook extends MessageAuthor, Snowflake, Cacheable, ListenerAttachable<WebhookAttachableListener<? extends WebhookEvent>> {
+public interface Webhook extends MessageAuthor, Snowflake, Cacheable, EventHandler<APIEvent> {
     @CacheInformation.Marker
     CacheInformation<GuildTextChannel> CACHE_INFORMATION = makeSubcacheableInfo(GuildTextChannel.class, Webhook::getChannel);
 

@@ -7,8 +7,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -24,15 +22,15 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.api.entity.guild.Role;
 import de.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.listener.ListenerSpec;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.event.multipart.APIEvent;
+import de.comroid.crystalshard.api.event.multipart.message.MessageEvent;
 import de.comroid.crystalshard.api.model.channel.ChannelMention;
 import de.comroid.crystalshard.api.model.message.MessageActivity;
 import de.comroid.crystalshard.api.model.message.MessageAuthor;
 import de.comroid.crystalshard.api.model.message.MessageFlags;
 import de.comroid.crystalshard.api.model.message.MessageReference;
 import de.comroid.crystalshard.api.model.message.MessageType;
-import de.comroid.crystalshard.api.model.message.Messageable;
 import de.comroid.crystalshard.api.model.message.TextDecoration;
 import de.comroid.crystalshard.api.model.message.embed.ActiveEmbed;
 import de.comroid.crystalshard.api.model.message.embed.Embed;
@@ -57,13 +55,13 @@ import static de.comroid.crystalshard.util.annotation.IntroducedBy.Implementatio
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappingCollection;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
+import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
 @JSONBindingLocation(Message.JSON.class)
-public interface Message extends Snowflake, Cacheable, ListenerAttachable<ListenerSpec.AttachableTo.Message> {
+public interface Message extends Snowflake, Cacheable, EventHandler<APIEvent> {
     @CacheInformation.Marker
     CacheInformation<TextChannel> CACHE_INFORMATION = makeSubcacheableInfo(TextChannel.class, Message::getChannel);
     

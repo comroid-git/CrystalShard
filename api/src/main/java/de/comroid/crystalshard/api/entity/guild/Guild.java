@@ -26,12 +26,11 @@ import de.comroid.crystalshard.api.entity.emoji.CustomEmoji;
 import de.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import de.comroid.crystalshard.api.entity.user.GuildMember;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.listener.ListenerSpec;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.event.multipart.APIEvent;
 import de.comroid.crystalshard.api.model.guild.ban.Ban;
 import de.comroid.crystalshard.api.model.guild.invite.Invite;
 import de.comroid.crystalshard.api.model.user.Presence;
-import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.api.model.voice.VoiceRegion;
 import de.comroid.crystalshard.api.model.voice.VoiceState;
 import de.comroid.crystalshard.core.cache.CacheManager;
@@ -43,27 +42,19 @@ import de.comroid.crystalshard.util.Util;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 import de.comroid.crystalshard.util.model.FileType;
 import de.comroid.crystalshard.util.model.ImageHelper;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
-import static de.comroid.crystalshard.core.cache.Cacheable.makeSingletonCacheableInfo;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.api;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.cache;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.require;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.mappingCollection;
-import static de.comroid.crystalshard.util.model.serialization.JSONBinding.serializableCollection;
 
 @JSONBindingLocation(Guild.JSON.class)
-public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.AttachableTo.Guild>, Cacheable {
+public interface Guild extends Snowflake, Cacheable, EventHandler<APIEvent> {
     @IntroducedBy(API)
     CompletableFuture<Collection<Webhook>> requestWebhooks();
 
@@ -367,48 +358,48 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
     }
 
     interface JSON extends Snowflake.JSON {
-        JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-        JSONBinding.OneStage<String> ICON_HASH = identity("icon", JSONObject::getString);
-        JSONBinding.OneStage<String> SPLASH_HASH = identity("splash", JSONObject::getString);
-        JSONBinding.TwoStage<Long, User> OWNER = cache("owner_id", CacheManager::getUserByID);
-        JSONBinding.TwoStage<String, Region> REGION = simple("region", JSONObject::getString, key -> Adapter.require(VoiceRegion.class, key));
-        JSONBinding.TwoStage<Long, GuildVoiceChannel> AFK_CHANNEL = cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
-        JSONBinding.TwoStage<Integer, Duration> AFK_TIMEOUT = simple("afk_timeout", JSONObject::getInteger, Duration::ofSeconds);
-        JSONBinding.OneStage<Boolean> EMBEDDABLE = identity("embed_enabled", JSONObject::getBoolean);
-        JSONBinding.TwoStage<Long, GuildChannel> EMBED_CHANNEL = cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        JSONBinding.TwoStage<Integer, VerificationLevel> VERIFICATION_LEVEL = simple("verification_level", JSONObject::getInteger, VerificationLevel::valueOf);
-        JSONBinding.TwoStage<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = simple("default_message_notifications", JSONObject::getInteger, DefaultMessageNotificationLevel::valueOf);
-        JSONBinding.TwoStage<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = simple("explicit_content_filter", JSONObject::getInteger, ExplicitContentFilterLevel::valueOf);
-        JSONBinding.TriStage<JSONObject, Role> ROLES = serializableCollection("roles", Role.class);
-        JSONBinding.TriStage<JSONObject, CustomEmoji> EMOJIS = serializableCollection("emojis", CustomEmoji.class);
-        JSONBinding.TriStage<String, Feature> FEATURES = mappingCollection("features", JSONObject::getString, (api, key) -> Feature.valueOf(key));
-        JSONBinding.TwoStage<Integer, MFALevel> MFA_LEVEL = simple("mfa_level", JSONObject::getInteger, MFALevel::valueOf);
-        JSONBinding.TwoStage<Long, Snowflake> OWNER_APPLICATION_ID = api("application_id", JSONObject::getLong, (api, id) -> Adapter.require(Snowflake.class, api, id));
-        JSONBinding.OneStage<Boolean> WIDGETABLE = identity("widget_enabled", JSONObject::getBoolean);
-        JSONBinding.TwoStage<Long, GuildChannel> WIDGET_CHANNEL = cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
-        JSONBinding.TwoStage<Long, GuildTextChannel> SYSTEM_CHANNEL = cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
-        JSONBinding.TwoStage<String, Instant> JOINED_AT = simple("joined_at", JSONObject::getString, Instant::parse);
-        JSONBinding.OneStage<Boolean> LARGE = identity("large", JSONObject::getBoolean);
-        JSONBinding.OneStage<Boolean> UNAVAILABLE = identity("unavailable", JSONObject::getBoolean);
-        JSONBinding.OneStage<Integer> MEMBER_COUNT = identity("member_count", JSONObject::getInteger);
-        JSONBinding.TriStage<JSONObject, VoiceState> VOICE_STATES = serializableCollection("voice_states", VoiceState.class);
-        JSONBinding.TriStage<JSONObject, GuildMember> MEMBERS = serializableCollection("members", GuildMember.class);
-        JSONBinding.TriStage<JSONObject, GuildChannel> CHANNELS = serializableCollection("channels", GuildChannel.class);
-        JSONBinding.TriStage<JSONObject, Presence> PRESENCES = serializableCollection("presences", Presence.class);
-        JSONBinding.OneStage<Integer> MAXIMUM_PRESENCES = identity("max_presences", JSONObject::getInteger);
-        JSONBinding.OneStage<Integer> MAXIMUM_MEMBERS = identity("max_members", JSONObject::getInteger);
-        JSONBinding.TwoStage<String, URL> VANITY_INVITE_URL = simple("vanity_url_code", JSONObject::getString, code -> Util.createUrl$rethrow("https://discord.gg/" + code));
-        JSONBinding.OneStage<String> DESCRIPTION = identity("description", JSONObject::getString);
-        JSONBinding.OneStage<String> BANNER_HASH = identity("banner", JSONObject::getString);
-        JSONBinding.TwoStage<Integer, PremiumTier> PREMIUM_TIER = simple("premium_tier", JSONObject::getInteger, PremiumTier::valueOf);
-        JSONBinding.OneStage<Integer> PREMIUM_SUB_COUNT = identity("premium_subscription_count", JSONObject::getInteger);
-        JSONBinding.TwoStage<String, Locale> PREFERRED_LOCALE = simple("preferred_locale", JSONObject::getString, Locale::forLanguageTag);
+        JSONBinding.OneStage<String> NAME = JSONBinding.identity("name", JSONObject::getString);
+        JSONBinding.OneStage<String> ICON_HASH = JSONBinding.identity("icon", JSONObject::getString);
+        JSONBinding.OneStage<String> SPLASH_HASH = JSONBinding.identity("splash", JSONObject::getString);
+        JSONBinding.TwoStage<Long, User> OWNER = JSONBinding.cache("owner_id", CacheManager::getUserByID);
+        JSONBinding.TwoStage<String, Region> REGION = JSONBinding.simple("region", JSONObject::getString, key -> Adapter.require(VoiceRegion.class, key));
+        JSONBinding.TwoStage<Long, GuildVoiceChannel> AFK_CHANNEL = JSONBinding.cache("afk_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildVoiceChannel));
+        JSONBinding.TwoStage<Integer, Duration> AFK_TIMEOUT = JSONBinding.simple("afk_timeout", JSONObject::getInteger, Duration::ofSeconds);
+        JSONBinding.OneStage<Boolean> EMBEDDABLE = JSONBinding.identity("embed_enabled", JSONObject::getBoolean);
+        JSONBinding.TwoStage<Long, GuildChannel> EMBED_CHANNEL = JSONBinding.cache("embed_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JSONBinding.TwoStage<Integer, VerificationLevel> VERIFICATION_LEVEL = JSONBinding.simple("verification_level", JSONObject::getInteger, VerificationLevel::valueOf);
+        JSONBinding.TwoStage<Integer, DefaultMessageNotificationLevel> DEFAULT_MESSAGE_NOTIFICATION_LEVEL = JSONBinding.simple("default_message_notifications", JSONObject::getInteger, DefaultMessageNotificationLevel::valueOf);
+        JSONBinding.TwoStage<Integer, ExplicitContentFilterLevel> EXPLICIT_CONTENT_FILTER_LEVEL = JSONBinding.simple("explicit_content_filter", JSONObject::getInteger, ExplicitContentFilterLevel::valueOf);
+        JSONBinding.TriStage<JSONObject, Role> ROLES = JSONBinding.serializableCollection("roles", Role.class);
+        JSONBinding.TriStage<JSONObject, CustomEmoji> EMOJIS = JSONBinding.serializableCollection("emojis", CustomEmoji.class);
+        JSONBinding.TriStage<String, Feature> FEATURES = JSONBinding.mappingCollection("features", JSONObject::getString, (api, key) -> Feature.valueOf(key));
+        JSONBinding.TwoStage<Integer, MFALevel> MFA_LEVEL = JSONBinding.simple("mfa_level", JSONObject::getInteger, MFALevel::valueOf);
+        JSONBinding.TwoStage<Long, Snowflake> OWNER_APPLICATION_ID = JSONBinding.api("application_id", JSONObject::getLong, (api, id) -> Adapter.require(Snowflake.class, api, id));
+        JSONBinding.OneStage<Boolean> WIDGETABLE = JSONBinding.identity("widget_enabled", JSONObject::getBoolean);
+        JSONBinding.TwoStage<Long, GuildChannel> WIDGET_CHANNEL = JSONBinding.cache("widget_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+        JSONBinding.TwoStage<Long, GuildTextChannel> SYSTEM_CHANNEL = JSONBinding.cache("system_channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildTextChannel));
+        JSONBinding.TwoStage<String, Instant> JOINED_AT = JSONBinding.simple("joined_at", JSONObject::getString, Instant::parse);
+        JSONBinding.OneStage<Boolean> LARGE = JSONBinding.identity("large", JSONObject::getBoolean);
+        JSONBinding.OneStage<Boolean> UNAVAILABLE = JSONBinding.identity("unavailable", JSONObject::getBoolean);
+        JSONBinding.OneStage<Integer> MEMBER_COUNT = JSONBinding.identity("member_count", JSONObject::getInteger);
+        JSONBinding.TriStage<JSONObject, VoiceState> VOICE_STATES = JSONBinding.serializableCollection("voice_states", VoiceState.class);
+        JSONBinding.TriStage<JSONObject, GuildMember> MEMBERS = JSONBinding.serializableCollection("members", GuildMember.class);
+        JSONBinding.TriStage<JSONObject, GuildChannel> CHANNELS = JSONBinding.serializableCollection("channels", GuildChannel.class);
+        JSONBinding.TriStage<JSONObject, Presence> PRESENCES = JSONBinding.serializableCollection("presences", Presence.class);
+        JSONBinding.OneStage<Integer> MAXIMUM_PRESENCES = JSONBinding.identity("max_presences", JSONObject::getInteger);
+        JSONBinding.OneStage<Integer> MAXIMUM_MEMBERS = JSONBinding.identity("max_members", JSONObject::getInteger);
+        JSONBinding.TwoStage<String, URL> VANITY_INVITE_URL = JSONBinding.simple("vanity_url_code", JSONObject::getString, code -> Util.createUrl$rethrow("https://discord.gg/" + code));
+        JSONBinding.OneStage<String> DESCRIPTION = JSONBinding.identity("description", JSONObject::getString);
+        JSONBinding.OneStage<String> BANNER_HASH = JSONBinding.identity("banner", JSONObject::getString);
+        JSONBinding.TwoStage<Integer, PremiumTier> PREMIUM_TIER = JSONBinding.simple("premium_tier", JSONObject::getInteger, PremiumTier::valueOf);
+        JSONBinding.OneStage<Integer> PREMIUM_SUB_COUNT = JSONBinding.identity("premium_subscription_count", JSONObject::getInteger);
+        JSONBinding.TwoStage<String, Locale> PREFERRED_LOCALE = JSONBinding.simple("preferred_locale", JSONObject::getString, Locale::forLanguageTag);
     }
 
     @JSONBindingLocation(Embed.JSON.class)
     interface Embed extends Cacheable, JsonDeserializable {
         @CacheInformation.Marker
-        CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Embed::getGuild);
+        CacheInformation<Guild> CACHE_INFORMATION = Cacheable.makeSingletonCacheableInfo(Guild.class, Embed::getGuild);
         
         Guild getGuild();
 
@@ -421,8 +412,8 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         }
 
         interface JSON {
-            JSONBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
-            JSONBinding.TwoStage<Long, GuildChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
+            JSONBinding.OneStage<Boolean> ENABLED = JSONBinding.identity("enabled", JSONObject::getBoolean);
+            JSONBinding.TwoStage<Long, GuildChannel> CHANNEL = JSONBinding.cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asGuildChannel));
         }
 
         interface Updater {
@@ -442,7 +433,7 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
     @JSONBindingLocation(Integration.JSON.class)
     interface Integration extends Snowflake, JsonDeserializable, Cacheable {
         @CacheInformation.Marker
-        CacheInformation<Guild> CACHE_INFORMATION = makeSingletonCacheableInfo(Guild.class, Integration::getGuild);
+        CacheInformation<Guild> CACHE_INFORMATION = Cacheable.makeSingletonCacheableInfo(Guild.class, Integration::getGuild);
         
         Guild getGuild();
 
@@ -497,16 +488,16 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
         }
 
         interface JSON extends Snowflake.JSON {
-            JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
-            JSONBinding.OneStage<String> TYPE = identity("type", JSONObject::getString);
-            JSONBinding.OneStage<Boolean> ENABLED = identity("enabled", JSONObject::getBoolean);
-            JSONBinding.OneStage<Boolean> IS_SYNCING = identity("syncing", JSONObject::getBoolean);
-            JSONBinding.TwoStage<Long, Role> PREMIUM_ROLE = cache("role_id", CacheManager::getRoleByID);
-            JSONBinding.OneStage<Integer> EXPIRE_BEHAVIOR = identity("expire_behavior", JSONObject::getInteger);
-            JSONBinding.OneStage<Integer> EXPIRE_GRACE_PERIOD = identity("expire_grace_period", JSONObject::getInteger);
-            JSONBinding.TwoStage<JSONObject, User> USER = require("user", User.class);
-            JSONBinding.TwoStage<JSONObject, Account> ACCOUNT = require("account", Account.class);
-            JSONBinding.TwoStage<String, Instant> SYNCED_AT = simple("synced_at", JSONObject::getString, Instant::parse);
+            JSONBinding.OneStage<String> NAME = JSONBinding.identity("name", JSONObject::getString);
+            JSONBinding.OneStage<String> TYPE = JSONBinding.identity("type", JSONObject::getString);
+            JSONBinding.OneStage<Boolean> ENABLED = JSONBinding.identity("enabled", JSONObject::getBoolean);
+            JSONBinding.OneStage<Boolean> IS_SYNCING = JSONBinding.identity("syncing", JSONObject::getBoolean);
+            JSONBinding.TwoStage<Long, Role> PREMIUM_ROLE = JSONBinding.cache("role_id", CacheManager::getRoleByID);
+            JSONBinding.OneStage<Integer> EXPIRE_BEHAVIOR = JSONBinding.identity("expire_behavior", JSONObject::getInteger);
+            JSONBinding.OneStage<Integer> EXPIRE_GRACE_PERIOD = JSONBinding.identity("expire_grace_period", JSONObject::getInteger);
+            JSONBinding.TwoStage<JSONObject, User> USER = JSONBinding.require("user", User.class);
+            JSONBinding.TwoStage<JSONObject, Account> ACCOUNT = JSONBinding.require("account", Account.class);
+            JSONBinding.TwoStage<String, Instant> SYNCED_AT = JSONBinding.simple("synced_at", JSONObject::getString, Instant::parse);
         }
 
         @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-integration")
@@ -540,8 +531,8 @@ public interface Guild extends Snowflake, ListenerAttachable<ListenerSpec.Attach
             }
 
             interface JSON {
-                JSONBinding.OneStage<String> ID = identity("id", JSONObject::getString);
-                JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
+                JSONBinding.OneStage<String> ID = JSONBinding.identity("id", JSONObject::getString);
+                JSONBinding.OneStage<String> NAME = JSONBinding.identity("name", JSONObject::getString);
             }
         }
 
