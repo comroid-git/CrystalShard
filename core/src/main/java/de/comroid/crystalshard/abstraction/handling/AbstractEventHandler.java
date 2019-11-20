@@ -17,12 +17,12 @@ import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import de.comroid.crystalshard.CrystalShard;
-import de.comroid.crystalshard.abstraction.AbstractApiBound;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.api.exception.ListenerTimeoutException;
 import de.comroid.crystalshard.api.event.EventBase;
 import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.exception.ListenerTimeoutException;
+import de.comroid.crystalshard.api.model.ApiBound;
 import de.comroid.crystalshard.core.concurrent.ThreadPool;
 import de.comroid.crystalshard.util.model.NonThrowingCloseable;
 import de.comroid.crystalshard.util.model.Pair;
@@ -33,13 +33,12 @@ import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.util.Util.hackCast;
 
-public abstract class AbstractEventHandler<E extends EventBase> extends AbstractApiBound implements EventHandler<E> {
+public abstract class AbstractEventHandler<E extends EventBase> implements EventHandler<E> {
     private final static FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private final Map<Class<? extends EventBase>, Collection<HandlerPair>> handlers = new ConcurrentHashMap<>();
 
-    public AbstractEventHandler(Discord api) {
-        super(api);
+    public AbstractEventHandler() {
     }
 
     @Override
@@ -73,15 +72,25 @@ public abstract class AbstractEventHandler<E extends EventBase> extends Abstract
         return local;
     }
 
+    @Override
+    public boolean detachHandlerIf(Class<? extends E> targetType, Predicate<Consumer<E>> filter) {
+        return false; // todo
+    }
+
+    @Override
+    public boolean detachAdapterIf(Class<? extends E> targetType, Predicate<EventAdapter<E>> filter) {
+        return false; // todo
+    }
+
     @Internal
     @Override
     public void submit(E event) {
-        final Class<? extends EventBase> eventClass = (Class<? extends EventBase>) Adapter.getApiClass(event.getClass())
-                .orElseThrow();
+        @SuppressWarnings("unchecked") final Class<? extends EventBase> eventClass =
+                (Class<? extends EventBase>) Adapter.getApiClass(event.getClass()).orElseThrow();
 
         handlers.forEach((targetType, handlers) -> {
             if (targetType.isAssignableFrom(eventClass)) {
-                ThreadPool threadPool = getAPI().getListenerThreadPool();
+                ThreadPool threadPool = api().getListenerThreadPool();
 
                 for (HandlerPair pair : handlers) {
                     Runnable runnable = new Runnable() {
@@ -103,6 +112,13 @@ public abstract class AbstractEventHandler<E extends EventBase> extends Abstract
                 }
             }
         });
+    }
+
+    private Discord api() {
+        if (this instanceof ApiBound)
+            return ((ApiBound) this).getAPI();
+
+        throw new AssertionError(CrystalShard.PLEASE_REPORT);
     }
 
     private NonThrowingCloseable putHandler(Class<? extends E> type, Consumer<? extends E> execution) {
@@ -207,7 +223,7 @@ public abstract class AbstractEventHandler<E extends EventBase> extends Abstract
             final Local local = new Local();
 
             if (timeout != null) {
-                getAPI().getListenerThreadPool()
+                api().getListenerThreadPool()
                         .schedule(local, timeout.get(ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
             }
 
@@ -251,7 +267,7 @@ public abstract class AbstractEventHandler<E extends EventBase> extends Abstract
             local.detacher.set(putHandler(eventType, local));
 
             if (timeout != null) {
-                getAPI().getListenerThreadPool()
+                api().getListenerThreadPool()
                         .schedule(local, timeout.get(ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
             }
 

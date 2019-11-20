@@ -9,13 +9,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import de.comroid.crystalshard.adapter.Constructor;
-import de.comroid.crystalshard.api.model.ApiBound;
 import de.comroid.crystalshard.core.gateway.Gateway;
 import de.comroid.crystalshard.util.model.NonThrowingCloseable;
 
 import static org.jetbrains.annotations.ApiStatus.Internal;
 
-public interface EventHandler<E extends EventBase> extends ApiBound {
+public interface EventHandler<E extends EventBase> {
     <X extends E> EventHandler.API<X> listenTo(Class<X> eventType);
 
     <X extends E> NonThrowingCloseable listenUsing(EventAdapter<X> eventAdapter);

@@ -1,21 +1,12 @@
 package de.comroid.crystalshard.impl;
 
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.abstraction.handling.AbstractEventHandler;
 import de.comroid.crystalshard.adapter.Adapter;
-import de.comroid.crystalshard.adapter.CoreAdapter;
-import de.comroid.crystalshard.adapter.ImplAdapter;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.api.event.DiscordEvent;
-import de.comroid.crystalshard.api.event.model.Event;
 import de.comroid.crystalshard.api.event.multipart.APIEvent;
-import de.comroid.crystalshard.api.listener.ListenerSpec;
-import de.comroid.crystalshard.api.listener.model.Listener;
-import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.core.concurrent.ThreadPool;
@@ -24,8 +15,8 @@ import de.comroid.crystalshard.core.gateway.OpCode;
 import de.comroid.crystalshard.core.gateway.event.READY;
 import de.comroid.crystalshard.core.rest.Ratelimiter;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;
-import de.comroid.crystalshard.util.model.NStream;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
 public class DiscordImpl extends AbstractEventHandler<APIEvent> implements Discord {
@@ -46,6 +37,8 @@ public class DiscordImpl extends AbstractEventHandler<APIEvent> implements Disco
     private String sessionId;
 
     public DiscordImpl(String token, int shardId) {
+        super();
+        
         this.token = token;
         this.shardId = shardId;
         
@@ -61,23 +54,23 @@ public class DiscordImpl extends AbstractEventHandler<APIEvent> implements Disco
         
         this.yourself = ((GatewayImpl) gateway).helloFuture
                 .thenCompose(nil -> {
-                    final ObjectNode identify = JsonNodeFactory.instance.objectNode();
+                    final JSONObject identify = new JSONObject();
                     
                     identify.put("token", token);
                     identify.put("large_threshold", 250);
                     identify.put("shard", shardId);
                             
-                    final ObjectNode properties = identify.putObject("properties");
+                    final JSONObject properties = new JSONObject();
                     properties.put("$os", System.getenv("os.name"));
                     properties.put("$browser", "CrystalShard " + CrystalShard.VERSION);
                     properties.put("$device", "CrystalShard " + CrystalShard.VERSION);
+                    identify.put("properties", properties);
 
-                    final CompletableFuture<EventPair<READY, ListenerManager<Listener>>> readyFuture = gateway.listenOnceTo(READY.class);
+                    final CompletableFuture<READY> readyFuture = gateway.listenTo(READY.class).onlyOnce();
                     gateway.sendRequest(OpCode.IDENTIFY, identify);
                     
                     return readyFuture;
                 })
-                .thenApply(EventPair::getEvent)
                 .thenApply(event -> {
                     this.sessionId = event.getSessionID();
                     
@@ -134,30 +127,5 @@ public class DiscordImpl extends AbstractEventHandler<APIEvent> implements Disco
     @Override
     public Yourself getYourself() {
         return yourself;
-    }
-
-    @Override
-    public <TL extends ListenerSpec.AttachableTo.Discord> ListenerManager<TL> attachListener(TL listener) {
-        return null;
-    }
-
-    @Override
-    public <TL extends ListenerSpec.AttachableTo.Discord> boolean detachListener(TL listener) {
-        return false;
-    }
-
-    @Override
-    public Collection<ListenerManager<? extends ListenerSpec.AttachableTo.Discord>> getAttachedListenerManagers() {
-        return null;
-    }
-
-    @Override
-    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener>>> listenOnceTo(Class<FE> forEvent) {
-        return null;
-    }
-
-    @Override
-    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent) {
-        return null;
     }
 }
