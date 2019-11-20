@@ -1,51 +1,34 @@
 package de.comroid.crystalshard.core.gateway;
 
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 import de.comroid.crystalshard.CrystalShard;
+import de.comroid.crystalshard.abstraction.handling.AbstractEventHandler;
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.api.event.model.Event;
-import de.comroid.crystalshard.api.listener.model.AttachableListener;
-import de.comroid.crystalshard.api.listener.model.Listener;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
-import de.comroid.crystalshard.api.listener.model.ListenerManager;
 import de.comroid.crystalshard.core.concurrent.ThreadPool;
 import de.comroid.crystalshard.core.gateway.event.GatewayEventBase;
 import de.comroid.crystalshard.core.gateway.event.HELLO;
-import de.comroid.crystalshard.core.gateway.listener.GatewayListener;
-import de.comroid.crystalshard.core.gateway.listener.GatewayListenerManager;
 import de.comroid.crystalshard.core.rest.DiscordEndpoint;
 import de.comroid.crystalshard.core.rest.RestMethod;
-import de.comroid.crystalshard.util.model.NStream;
-import de.comroid.crystalshard.util.model.serialization.JSONBinding;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
-import org.jetbrains.annotations.Nullable;
 
 import static de.comroid.crystalshard.CrystalShard.URL;
 import static de.comroid.crystalshard.CrystalShard.VERSION;
 
-public class GatewayImpl implements Gateway {
+public class GatewayImpl extends AbstractEventHandler<GatewayEventBase> implements Gateway {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 
     private final Discord api;
@@ -53,8 +36,6 @@ public class GatewayImpl implements Gateway {
     private final HttpClient client;
     private final SocketListener socketListener;
     private final WebSocket socket;
-
-    private final Collection<BasicGatewayListener<?, ?>> listenerManagers;
     private final ThreadPool threadPool;
 
     public GatewayImpl(Discord api, ThreadPool threadPool) {
@@ -62,9 +43,10 @@ public class GatewayImpl implements Gateway {
         this.threadPool = threadPool;
 
         // prepare receiving HELLO
-        helloFuture = listenOnceTo(HELLO.class)
+        helloFuture = listenTo(HELLO.class)
+                .onlyOnce()
                 .thenAccept(pair -> {
-                    final int interval = pair.getEvent().getHeartbeatInterval();
+                    final int interval = pair.getHeartbeatInterval();
 
                     threadPool.scheduleAtFixedRate(() -> this.sendRequest(OpCode.HEARTBEAT, JSON.parseObject("{}")),
                                     interval, interval, TimeUnit.MILLISECONDS);
@@ -103,8 +85,6 @@ public class GatewayImpl implements Gateway {
         } catch (URISyntaxException e) {
             throw new RuntimeException("Initialization Exception", e);
         }
-
-        listenerManagers = new ArrayList<>();
     }
 
     @Override
@@ -124,211 +104,8 @@ public class GatewayImpl implements Gateway {
         }, threadPool).thenApply(nil -> null);
     }
 
-    private <L extends GatewayListener<E>, E extends GatewayEventBase> ListenerManager<L> attachListener_impl(L listener) {
-        BasicGatewayListener<L, E> gatewayListener = new BasicGatewayListener<>(listener);
-
-        listenerManagers.add(gatewayListener);
-
-        return gatewayListener;
-    }
-
-    private <L extends GatewayListener<E>, E extends GatewayEventBase> void dispatch(final String jsonStr) {
-        log.at(Level.FINER).log("Dispatching data: " + jsonStr);
-
-        threadPool.submit(() -> {
-            String eventType = null;
-
-            try {
-                final JSONObject json = JSON.parseObject(jsonStr);
-
-                OpCode op = OpCode.getByValue(json.getInteger("op"));
-                final JSONObject data = json.getJSONObject("d");
-                int seq = json.getInteger("s");
-                eventType = json.getString("t");
-
-                final Class<?> eventClass = Class.forName("de.comroid.crystalshard.core.gateway.event." + eventType);
-                GatewayEventBase event = Adapter.require(eventClass, api, data);
-
-                final String finalEventType = eventType;
-                (listenerManagers.size() > 200
-                        ? listenerManagers.parallelStream()
-                        : listenerManagers.stream())
-                        .filter(basicGatewayListener -> basicGatewayListener.test(finalEventType))
-                        .map((Function<BasicGatewayListener, Runnable>) basicGatewayListener -> {
-                            Class<? extends ListenerManager<? extends GatewayListener>> managerClass
-                                    = getManagerClass(basicGatewayListener.underlyingListener.getClass());
-                            @SuppressWarnings("unchecked")
-                            Class<? extends Listener> declaringClass
-                                    = (Class<? extends Listener>) managerClass.getDeclaringClass();
-
-                            Objects.requireNonNull(declaringClass,
-                                    managerClass + " should be declared by its listener class!");
-
-                            EventData<L, E> eventData = new EventData<>(declaringClass, event);
-
-                            //noinspection unchecked
-                            return () -> basicGatewayListener.accept(eventData);
-                        })
-                        .forEachOrdered(api.getListenerThreadPool()::submit);
-            } catch (JSONException e) {
-                log.at(Level.SEVERE).withCause(e).log("JSON Deserialization Exception");
-            } catch (ClassNotFoundException e) {
-                log.at(CrystalShard.LogLevel.SKIPPED).log("Unrecognized Gateway Event Type: %s", eventType);
-            }
-        });
-    }
-
-    @SuppressWarnings("unchecked")
-    private <TL extends AttachableListener & Listener> Class<ListenerManager<TL>> getManagerClass(Class<TL> aClass) {
-        InitializedBy initializedBy = aClass.getAnnotation(InitializedBy.class);
-
-        Objects.requireNonNull(initializedBy, "Internal Error: Listener class " + aClass + " does not have a " +
-                "@InitializedBy definition. Please open an issue at " + CrystalShard.ISSUES_URL);
-
-        return (Class<ListenerManager<TL>>) initializedBy.value();
-    }
-
-    class BasicGatewayListener<L extends GatewayListener<E>, E extends GatewayEventBase>
-            implements GatewayListener<EventData<L, E>>, GatewayListenerManager<L>, Predicate<String>, Consumer<EventData<L, E>> {
-        private final GatewayListener<E> underlyingListener;
-
-        private final Collection<Runnable> detachHandlers;
-        protected int maxRuns, runs;
-        private boolean detached;
-
-        BasicGatewayListener(GatewayListener<E> underlyingListener) {
-            this.underlyingListener = underlyingListener;
-
-            detachHandlers = new ArrayList<>();
-
-            detached = false;
-            maxRuns = -1;
-            runs = 0;
-        }
-
-        @Override
-        public Discord getAPI() {
-            return api;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public L getListener() {
-            return (L) underlyingListener;
-        }
-
-        @Override
-        public ListenerManager<L> addDetachHandler(Runnable detachHandler) {
-            detachHandlers.add(detachHandler);
-
-            return this;
-        }
-
-        @Override
-        public boolean removeDetachHandlerIf(Predicate<Runnable> tester) {
-            return detachHandlers.removeIf(tester);
-        }
-
-        @Override
-        public ListenerManager<L> detachNow(boolean fireDetachHandlers) {
-            detached = true;
-            GatewayImpl.this.detachListener((GatewayListener<EventData<L, E>>) this);
-
-            if (fireDetachHandlers)
-                detachHandlers.forEach(runnable -> api.getListenerThreadPool()
-                        .submit(runnable));
-
-            return this;
-        }
-
-        @Override
-        public ListenerManager<L> detachAfter(int runs) {
-            this.maxRuns = runs;
-
-            return this;
-        }
-
-        @Override
-        public boolean isDetached() {
-            return detached;
-        }
-
-        @Override
-        public ScheduledFuture<?> timeout(long time, TimeUnit unit, Runnable timeoutHandler) {
-            return api.getListenerThreadPool()
-                    .schedule(() -> {
-                        detachNow(false);
-
-                        timeoutHandler.run();
-                    }, time, unit);
-        }
-
-        @Override
-        public void accept(EventData<L, E> eventData) {
-            if (detached) return;
-
-            runs++;
-            this.onEvent(eventData);
-
-            if (maxRuns >= runs)
-                detachNow();
-        }
-
-        @Override
-        public boolean test(String actualName) {
-            try {
-                Class<? extends GatewayListener> underlyingListenerClass = underlyingListener.getClass();
-
-                Field nameField = underlyingListenerClass.getField("NAME");
-                String gatewayListenerName = nameField.get(null).toString();
-
-                return actualName.equals(gatewayListenerName);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                throw new RuntimeException("Reflective Operation Excpetion", e);
-            }
-        }
-    }
-
-    static class EventData<L extends Listener, E extends GatewayEventBase> implements GatewayEventBase {
-        final Class<L> listenerClass;
-        final E event;
-
-        @SuppressWarnings("unchecked")
-        EventData(Class<? extends Listener> listenerClass, GatewayEventBase event) {
-            this.listenerClass = (Class<L>) listenerClass;
-            this.event = (E) event;
-        }
-
-        @Override
-        public Gateway getGateway() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public ListenerAttachable[] getAffected() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Discord getAPI() {
-            return null; // todo test behavior
-        }
-
-        @Override public Set<JSONBinding> bindings() {
-            return null;
-        }
-
-        @Override public <S, T> @Nullable T getBindingValue(JSONBinding<?, S, ?, T> trait) {
-            return null;
-        }
-
-        @Override public Set<JSONBinding> updateFromJson(JSONObject data) {
-            return null;
-        }
-    }
-
     class SocketListener implements WebSocket.Listener {
-        StringBuilder strb = new StringBuilder();
+        final AtomicReference<StringBuilder> strb = new AtomicReference<>(new StringBuilder());
 
         @Override
         public void onOpen(WebSocket webSocket) {
@@ -341,12 +118,48 @@ public class GatewayImpl implements Gateway {
         public CompletionStage<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
             log.at(Level.FINEST).log("Received textual data: " + data);
 
-            strb.append(data);
+            synchronized (strb) {
+                strb.get().append(data);
+            }
 
             if (last) {
-                api.getGatewayThreadPool().submit(() -> dispatch(strb.toString()));
+                api.getGatewayThreadPool()
+                        .submit(new Runnable() {
+                            final String rcv;
+                            
+                            {
+                                synchronized (strb) {
+                                    rcv = strb.get().toString();
+                                    strb.set(new StringBuilder());
+                                }
+                            }
+                            
+                            @Override 
+                            public void run() {
+                                log.at(Level.FINER).log("Dispatching data: [ %s ]", rcv);
+                                
+                                final JSONObject json = JSON.parseObject(rcv);
 
-                strb = new StringBuilder();
+                                threadPool.submit(() -> {
+                                    String eventType = null;
+
+                                    try {
+                                        OpCode op = OpCode.getByValue(json.getInteger("op"));
+                                        final JSONObject data = json.getJSONObject("d");
+                                        int seq = json.getInteger("s");
+                                        eventType = json.getString("t");
+
+                                        final Class<?> eventClass = Class.forName("de.comroid.crystalshard.core.gateway.event." + eventType);
+
+                                        submitEvent(Adapter.require(eventClass, api, data));
+                                    } catch (JSONException e) {
+                                        log.at(Level.SEVERE).withCause(e).log("JSON Deserialization Exception");
+                                    } catch (ClassNotFoundException e) {
+                                        log.at(CrystalShard.LogLevel.SKIPPED).log("Unrecognized Gateway Event Type: %s", eventType);
+                                    }
+                                });
+                            }
+                        });
             }
 
             webSocket.request(1);

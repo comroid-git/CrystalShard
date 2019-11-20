@@ -37,7 +37,7 @@ public interface MessageCreateEvent extends
         @Override
         public Collection<NonThrowingCloseable> initialize(Gateway gateway, EventHandler<MessageCreateEvent> handler) {
             return Collections.singleton(gateway.listenTo(MESSAGE_CREATE.class)
-                    .handle(event -> handler.submit(Adapter.require(MessageCreateEvent.class, event))));
+                    .handle(event -> handler.submitEvent(Adapter.require(MessageCreateEvent.class, event))));
         }
     }
 }

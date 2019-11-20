@@ -84,7 +84,7 @@ public abstract class AbstractEventHandler<E extends EventBase> implements Event
 
     @Internal
     @Override
-    public void submit(E event) {
+    public void submitEvent(E event) {
         @SuppressWarnings("unchecked") final Class<? extends EventBase> eventClass =
                 (Class<? extends EventBase>) Adapter.getApiClass(event.getClass()).orElseThrow();
 

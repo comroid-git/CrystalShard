@@ -24,7 +24,7 @@ public interface EventHandler<E extends EventBase> {
     boolean detachAdapterIf(Class<? extends E> targetType, Predicate<EventAdapter<E>> filter);
 
     @Internal
-    void submit(E event);
+    void submitEvent(E event);
     
     @Internal
     @FunctionalInterface
