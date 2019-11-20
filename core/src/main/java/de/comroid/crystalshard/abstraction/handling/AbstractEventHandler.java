@@ -18,6 +18,7 @@ import java.util.logging.Level;
 
 import de.comroid.crystalshard.CrystalShard;
 import de.comroid.crystalshard.abstraction.AbstractApiBound;
+import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.exception.ListenerTimeoutException;
 import de.comroid.crystalshard.api.event.EventBase;
@@ -75,7 +76,8 @@ public abstract class AbstractEventHandler<E extends EventBase> extends Abstract
     @Internal
     @Override
     public void submit(E event) {
-        final Class<? extends EventBase> eventClass = event.getClass();
+        final Class<? extends EventBase> eventClass = (Class<? extends EventBase>) Adapter.getApiClass(event.getClass())
+                .orElseThrow();
 
         handlers.forEach((targetType, handlers) -> {
             if (targetType.isAssignableFrom(eventClass)) {

@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.Constructor;
+import de.comroid.crystalshard.adapter.MainAPI;
 import de.comroid.crystalshard.api.entity.channel.TextChannel;
 import de.comroid.crystalshard.api.event.EventHandler;
 import de.comroid.crystalshard.api.event.InitializedBy;
@@ -19,6 +20,7 @@ import de.comroid.crystalshard.core.gateway.Gateway;
 import de.comroid.crystalshard.core.gateway.event.MESSAGE_CREATE;
 import de.comroid.crystalshard.util.model.NonThrowingCloseable;
 
+@MainAPI
 @Constructor(MESSAGE_CREATE.class)
 @InitializedBy(MessageCreateEvent.Initializer.class)
 public interface MessageCreateEvent extends

@@ -1,17 +1,20 @@
 package de.comroid.crystalshard.api;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.adapter.CoreAdapter;
+import de.comroid.crystalshard.adapter.ImplAdapter;
 import de.comroid.crystalshard.api.entity.channel.Channel;
 import de.comroid.crystalshard.api.entity.channel.PrivateTextChannel;
 import de.comroid.crystalshard.api.entity.guild.Guild;
-import de.comroid.crystalshard.api.entity.message.Message;
 import de.comroid.crystalshard.api.entity.user.User;
-import de.comroid.crystalshard.api.listener.ListenerSpec;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import de.comroid.crystalshard.api.event.EventHandler;
+import de.comroid.crystalshard.api.event.multipart.APIEvent;
 import de.comroid.crystalshard.api.model.user.Yourself;
 import de.comroid.crystalshard.core.cache.CacheManager;
 import de.comroid.crystalshard.core.concurrent.ThreadPool;
@@ -21,10 +24,12 @@ import de.comroid.crystalshard.core.rest.Ratelimiter;
 import de.comroid.crystalshard.core.rest.RestMethod;
 import de.comroid.crystalshard.util.annotation.IntroducedBy;
 
+import com.google.common.flogger.FluentLogger;
+
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static de.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
 
-public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Discord> {
+public interface Discord extends EventHandler<APIEvent> {
     String getToken();
 
     int getShardID();
@@ -78,15 +83,47 @@ public interface Discord extends ListenerAttachable<ListenerSpec.AttachableTo.Di
                 .getChannelByID(id);
     }
 
-    static Builder builder() {
-        return Adapter.require(Builder.class);
-    }
+    final class Builder {
+        private final static FluentLogger log = FluentLogger.forEnclosingClass();
 
-    interface Builder {
-        Optional<String> getToken();
+        private String token;
+        private int shardId = 0;
 
-        Builder setToken(String token);
+        static {
+            // Initialize Default Adapters
+            CoreAdapter.load();
+            ImplAdapter.load();
 
-        CompletableFuture<Discord> build();
+            log.at(Level.INFO).log("Initialized default Adapters");
+        }
+
+        public Builder() {
+        }
+
+        public int getShardId() {
+            return shardId;
+        }
+
+        public Builder setShardId(int shardId) {
+            this.shardId = shardId;
+
+            return this;
+        }
+
+        public Optional<String> getToken() {
+            return Optional.ofNullable(token);
+        }
+
+        public Builder setToken(String token) {
+            this.token = token;
+
+            return this;
+        }
+
+        public CompletableFuture<Discord> build() {
+            Objects.requireNonNull(token, "Token cannot be null!");
+            
+            return Adapter.require(Discord.class, token, shardId /* todo: proper shard support */);
+        }
     }
 }

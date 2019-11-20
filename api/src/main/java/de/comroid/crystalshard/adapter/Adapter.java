@@ -29,7 +29,7 @@ public abstract class Adapter {
 
     protected ImplementationMapping mappingTool;
 
-    public Adapter() {
+    protected Adapter() {
         implementations.add(this);
 
         mappingTool = new ImplementationMapping();

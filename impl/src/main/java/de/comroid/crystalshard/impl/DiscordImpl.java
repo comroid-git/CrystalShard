@@ -2,12 +2,17 @@ package de.comroid.crystalshard.impl;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 import de.comroid.crystalshard.CrystalShard;
+import de.comroid.crystalshard.abstraction.handling.AbstractEventHandler;
 import de.comroid.crystalshard.adapter.Adapter;
+import de.comroid.crystalshard.adapter.CoreAdapter;
+import de.comroid.crystalshard.adapter.ImplAdapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.event.DiscordEvent;
 import de.comroid.crystalshard.api.event.model.Event;
+import de.comroid.crystalshard.api.event.multipart.APIEvent;
 import de.comroid.crystalshard.api.listener.ListenerSpec;
 import de.comroid.crystalshard.api.listener.model.Listener;
 import de.comroid.crystalshard.api.listener.model.ListenerManager;
@@ -21,7 +26,11 @@ import de.comroid.crystalshard.core.rest.Ratelimiter;
 import de.comroid.crystalshard.core.gateway.GatewayImpl;
 import de.comroid.crystalshard.util.model.NStream;
 
-public class DiscordImpl implements Discord {
+import com.google.common.flogger.FluentLogger;
+
+public class DiscordImpl extends AbstractEventHandler<APIEvent> implements Discord {
+    private final static FluentLogger log = FluentLogger.forEnclosingClass();
+    
     private final String token;
     private final int shardId;
 
