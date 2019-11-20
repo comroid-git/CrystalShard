@@ -124,32 +124,6 @@ public class GatewayImpl implements Gateway {
         }, threadPool).thenApply(nil -> null);
     }
 
-    @Override
-    public <TL extends GatewayListener> ListenerManager<TL> attachListener(TL listener) {
-        //noinspection unchecked
-        return attachListener_impl(listener);
-    }
-
-    @Override
-    public <TL extends GatewayListener> boolean detachListener(TL listener) {
-        return listenerManagers.removeIf(bgl -> bgl.underlyingListener.equals(listener));
-    }
-
-    @Override
-    public Collection<ListenerManager<? extends GatewayListener>> getAttachedListenerManagers() {
-        return null;
-    }
-
-    @Override
-    public <FE extends Event> CompletableFuture<EventPair<FE, ListenerManager<Listener>>> listenOnceTo(Class<FE> forEvent) {
-        return null; // todo
-    }
-
-    @Override
-    public <FE extends Event> NStream<EventPair<FE, ListenerManager<Listener>>> listenInStream(Class<FE> forEvent) {
-        return null; // todo
-    }
-
     private <L extends GatewayListener<E>, E extends GatewayEventBase> ListenerManager<L> attachListener_impl(L listener) {
         BasicGatewayListener<L, E> gatewayListener = new BasicGatewayListener<>(listener);
 
