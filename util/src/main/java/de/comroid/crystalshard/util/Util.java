@@ -1,4 +1,4 @@
-package de.comroid.util;
+package de.comroid.crystalshard.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;

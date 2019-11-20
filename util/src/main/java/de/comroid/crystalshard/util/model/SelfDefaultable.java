@@ -1,6 +1,6 @@
 package de.comroid.crystalshard.util.model;
 
-import de.comroid.util.markers.Value;
+import de.comroid.crystalshard.util.markers.Value;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -149,7 +149,7 @@ project(":impl") {
 
     dependencies {
         api project(':api')
-        api project(':core')
+        compileOnly project(':core')
 
         implementation 'com.alibaba:fastjson:1.2.62'
 
@@ -162,7 +162,7 @@ project(":util") {
     
     dependencies {
         api project(':api')
-        api project(':core')
+        compileOnly project(':core')
 
         implementation 'com.alibaba:fastjson:1.2.62'
 

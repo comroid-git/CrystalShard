@@ -1,4 +1,4 @@
-package de.comroid.util.markers;
+package de.comroid.crystalshard.util.markers;
 
 import java.util.Objects;
 

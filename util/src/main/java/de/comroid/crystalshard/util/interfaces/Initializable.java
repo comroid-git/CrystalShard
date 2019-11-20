@@ -1,4 +1,4 @@
-package de.comroid.util.interfaces;
+package de.comroid.crystalshard.util.interfaces;
 
 import java.io.IOException;
 

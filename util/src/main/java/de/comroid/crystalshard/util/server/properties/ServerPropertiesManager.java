@@ -24,8 +24,8 @@ import de.comroid.crystalshard.util.commands.CommandGroup;
 import de.comroid.crystalshard.util.commands.CommandHandler;
 import de.comroid.crystalshard.util.ui.embed.DefaultEmbedFactory;
 import de.comroid.crystalshard.util.ui.messages.paging.PagedEmbed;
-import de.comroid.util.interfaces.Initializable;
-import de.comroid.util.markers.Value;
+import de.comroid.crystalshard.util.interfaces.Initializable;
+import de.comroid.crystalshard.util.markers.Value;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -33,7 +33,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static de.comroid.util.Util.objectNode;
+import static de.comroid.crystalshard.util.Util.objectNode;
 
 public final class ServerPropertiesManager implements Initializable, Closeable {
     private final Map<String, PropertyGroup> properties;

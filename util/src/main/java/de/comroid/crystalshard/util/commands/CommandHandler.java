@@ -54,7 +54,7 @@ import de.comroid.crystalshard.util.ui.messages.categorizing.CategorizedEmbed;
 import de.comroid.crystalshard.util.ui.messages.paging.PagedEmbed;
 import de.comroid.crystalshard.util.ui.messages.paging.PagedMessage;
 import de.comroid.crystalshard.util.ui.reactions.InfoReaction;
-import de.comroid.util.Util;
+import de.comroid.crystalshard.util.Util;
 
 import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.NotNull;

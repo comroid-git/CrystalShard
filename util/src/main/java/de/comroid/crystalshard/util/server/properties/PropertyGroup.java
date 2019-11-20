@@ -9,7 +9,7 @@ import de.comroid.crystalshard.api.entity.guild.Guild;
 import de.comroid.crystalshard.util.model.SelfDefaultable;
 import de.comroid.crystalshard.util.model.SelfDescribable;
 import de.comroid.crystalshard.util.model.SelfDisplaynameable;
-import de.comroid.util.markers.Value;
+import de.comroid.crystalshard.util.markers.Value;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
