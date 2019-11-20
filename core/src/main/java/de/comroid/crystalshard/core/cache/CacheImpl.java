@@ -83,8 +83,9 @@ public class CacheImpl<T extends Cacheable> implements Cache<T> {
         Stream<Snowflake> subCacheResults = subCaches.values()
                 .stream()
                 .flatMap(map -> map.values().stream())
-                .<Snowflake>flatMap(cache -> cache.streamSnowflakesByID(id))
-                .filter(flake -> flake.getID() == id);
+                .flatMap(cache -> cache.streamSnowflakesByID(id))
+                .filter(Snowflake.class::isInstance)
+                .filter(flake -> ((Snowflake) flake).getID() == id);
 
         Stream<Snowflake> singletonCacheResults = singletonMap.values()
                 .stream()
