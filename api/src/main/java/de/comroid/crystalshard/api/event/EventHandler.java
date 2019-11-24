@@ -29,7 +29,7 @@ public interface EventHandler<E extends EventBase> {
     @Internal
     @FunctionalInterface
     interface Initializer<E extends EventBase> {
-        Collection<NonThrowingCloseable> initialize(Gateway gateway, EventHandler<E> handler);
+        NonThrowingCloseable initialize(Gateway gateway, EventHandler<E> handler);
 
     }
 

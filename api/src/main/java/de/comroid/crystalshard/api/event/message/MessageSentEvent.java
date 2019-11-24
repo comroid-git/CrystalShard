@@ -35,9 +35,9 @@ public interface MessageSentEvent extends
         INSTANCE;
 // todo this needs to actually run
         @Override
-        public Collection<NonThrowingCloseable> initialize(Gateway gateway, EventHandler<MessageSentEvent> handler) {
-            return Collections.singleton(gateway.listenTo(MESSAGE_CREATE.class)
-                    .handle(event -> handler.submitEvent(Adapter.require(MessageSentEvent.class, event))));
+        public NonThrowingCloseable initialize(Gateway gateway, EventHandler<MessageSentEvent> handler) {
+            return gateway.listenTo(MESSAGE_CREATE.class)
+                    .handle(event -> handler.submitEvent(Adapter.require(MessageSentEvent.class, event)));
         }
     }
 }
