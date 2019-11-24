@@ -22,8 +22,8 @@ import de.comroid.crystalshard.util.model.NonThrowingCloseable;
 
 @MainAPI
 @Constructor(MESSAGE_CREATE.class)
-@InitializedBy(MessageCreateEvent.Initializer.class)
-public interface MessageCreateEvent extends
+@InitializedBy(MessageSentEvent.Initializer.class)
+public interface MessageSentEvent extends
         APIEvent,
         ChannelEvent<TextChannel>,
         WrappedGuildEvent,
@@ -31,13 +31,13 @@ public interface MessageCreateEvent extends
         WrappedRolesEvent,
         WrappedUserEvent,
         WrappedWebhookEvent {
-    enum Initializer implements EventHandler.Initializer<MessageCreateEvent> {
+    enum Initializer implements EventHandler.Initializer<MessageSentEvent> {
         INSTANCE;
 // todo this needs to actually run
         @Override
-        public Collection<NonThrowingCloseable> initialize(Gateway gateway, EventHandler<MessageCreateEvent> handler) {
+        public Collection<NonThrowingCloseable> initialize(Gateway gateway, EventHandler<MessageSentEvent> handler) {
             return Collections.singleton(gateway.listenTo(MESSAGE_CREATE.class)
-                    .handle(event -> handler.submitEvent(Adapter.require(MessageCreateEvent.class, event))));
+                    .handle(event -> handler.submitEvent(Adapter.require(MessageSentEvent.class, event))));
         }
     }
 }
