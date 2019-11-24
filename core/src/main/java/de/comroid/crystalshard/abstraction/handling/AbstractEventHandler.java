@@ -43,8 +43,7 @@ public abstract class AbstractEventHandler<E extends EventBase> implements Event
 
     @Override
     public <X extends E> EventHandler.API<X> listenTo(Class<X> eventType) {
-        //noinspection unchecked
-        return new API(eventType);
+        return new API<>(eventType);
     }
 
     @Override
