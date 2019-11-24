@@ -1,8 +1,5 @@
 package de.comroid.crystalshard.api.event.message;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.adapter.Constructor;
 import de.comroid.crystalshard.adapter.MainAPI;
