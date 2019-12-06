@@ -97,10 +97,10 @@ public final class CommandHandler implements
         ignoreBotOwnerPermissions = false;
         respondToUnknownCommand = false;
 
-        api.attachListener((MessageSentListener) this::handleMessageCreate);
+        api.listenTo(MessageSentEvent.class).handle(this::handleMessageCreate);
         if (handleMessageEdit)
-            api.attachListener((MessageEditListener) this::handleMessageEdit);
-        api.attachListener((MessageDeleteListener) this::handleMessageDelete);
+            api.listenTo(MessageEditEvent.class).handle(this::handleMessageEdit);
+        api.listenTo(MessageDeleteEvent.class).handle(this::handleMessageDelete);
     }
 
     @Override
