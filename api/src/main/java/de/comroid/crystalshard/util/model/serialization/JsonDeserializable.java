@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 @Constructor
+@SuppressWarnings("rawtypes")
 public interface JsonDeserializable extends ApiBound, Cloneable {
     Set<JSONBinding> bindings();
 
@@ -20,4 +21,13 @@ public interface JsonDeserializable extends ApiBound, Cloneable {
     }
     
     Set<JSONBinding> updateFromJson(final JSONObject data);
+
+    @SuppressWarnings("unchecked")
+    default String jsonString() {
+        JSONObject json = new JSONObject();
+
+        bindings().forEach(binding -> json.put(binding.fieldName(), getBindingValue(binding)));
+
+        return json.toJSONString();
+    }
 }
