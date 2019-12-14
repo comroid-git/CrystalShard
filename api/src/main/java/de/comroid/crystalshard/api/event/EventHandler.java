@@ -25,13 +25,6 @@ public interface EventHandler<E extends EventBase> {
 
     @Internal
     void submitEvent(E event);
-    
-    @Internal
-    @FunctionalInterface
-    interface Initializer<E extends EventBase> {
-        NonThrowingCloseable initialize(Gateway gateway, EventHandler<E> handler);
-
-    }
 
     @Constructor({EventHandler.class, EventBase.class})
     interface API<E> {
