@@ -1,12 +1,12 @@
 package de.comroid.crystalshard.core.cache;
 
-import java.io.Closeable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import de.comroid.crystalshard.api.entity.Snowflake;
+import de.comroid.crystalshard.util.model.NonThrowingCloseable;
 
-public interface Cache<T extends Cacheable> extends Closeable {
+public interface Cache<T extends Cacheable> extends NonThrowingCloseable {
     Optional<T> getByID(long id);
 
     Optional<T> setToID(long id, T inst);
