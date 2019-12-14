@@ -2,6 +2,7 @@ package de.comroid.crystalshard.abstraction.serialization;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -15,19 +16,21 @@ import de.comroid.crystalshard.adapter.Adapter;
 import de.comroid.crystalshard.api.Discord;
 import de.comroid.crystalshard.api.entity.Snowflake;
 import de.comroid.crystalshard.util.model.serialization.JSONBinding;
-import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 import de.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
+import de.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 
 import static de.comroid.crystalshard.CrystalShard.PLEASE_REPORT;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractJsonDeserializable extends AbstractApiBound implements JsonDeserializable {
     private static final FluentLogger log = FluentLogger.forEnclosingClass();
 
+    protected final Set<JSONBinding> initialTraits;
     protected final Set<JSONBinding> possibleTraits;
-    
+
     private Map<JSONBinding, Object> values;
 
     protected AbstractJsonDeserializable(Discord api, JSONObject data) {
@@ -57,12 +60,12 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
 
         values = new ConcurrentHashMap<>();
 
-        updateFromJson(data);
+        initialTraits = Collections.unmodifiableSet(updateFromJson(data));
     }
 
     @Override
     public Set<JSONBinding> bindings() {
-        return possibleTraits;
+        return Collections.unmodifiableSet(possibleTraits);
     }
 
     @Override
@@ -83,7 +86,12 @@ public abstract class AbstractJsonDeserializable extends AbstractApiBound implem
             if (json.containsKey(key))
                 values.put(binding, binding.extractValue(json));
         }
-        
+
         return changed;
+    }
+
+    @Override
+    public Set<JSONBinding> initialBindings() {
+        return initialTraits;
     }
 }

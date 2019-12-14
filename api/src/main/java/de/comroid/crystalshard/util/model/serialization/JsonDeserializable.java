@@ -19,14 +19,25 @@ public interface JsonDeserializable extends ApiBound, Cloneable {
     default <T> Optional<T> wrapBindingValue(JSONBinding<?, ?, ?, T> trait) {
         return Optional.ofNullable(getBindingValue(trait));
     }
-    
+
     Set<JSONBinding> updateFromJson(final JSONObject data);
 
-    @SuppressWarnings("unchecked")
+    Set<JSONBinding> initialBindings();
+
     default String jsonString() {
+        return jsonString(true);
+    }
+
+    default String jsonString(boolean includeNulls) {
+        return jsonString(bindings(), includeNulls);
+    }
+
+    @SuppressWarnings("unchecked")
+    default String jsonString(Set<JSONBinding> with, boolean includeNulls) {
         JSONObject json = new JSONObject();
 
-        bindings().forEach(binding -> json.put(binding.fieldName(), getBindingValue(binding)));
+        if (includeNulls) with.forEach(binding -> json.put(binding.fieldName(), getBindingValue(binding)));
+        else with.forEach(binding -> wrapBindingValue(binding).ifPresent(value -> json.put(binding.fieldName(), value)));
 
         return json.toJSONString();
     }
