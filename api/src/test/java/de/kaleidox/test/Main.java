@@ -1,10 +1,10 @@
 package de.kaleidox.test;
 
-import de.comroid.crystalshard.api.Discord;
-import de.comroid.crystalshard.api.event.channel.ChannelEvent;
-import de.comroid.crystalshard.api.event.multipart.message.MessageSentEvent;
-import de.comroid.crystalshard.api.listener.message.MessageSentListener;
-import de.comroid.crystalshard.api.listener.model.ListenerAttachable;
+import org.comroid.crystalshard.api.Discord;
+import org.comroid.crystalshard.api.event.channel.ChannelEvent;
+import org.comroid.crystalshard.api.event.multipart.message.MessageSentEvent;
+import org.comroid.crystalshard.api.listener.message.MessageSentListener;
+import org.comroid.crystalshard.api.listener.model.ListenerAttachable;
 
 public class Main {
     private static final Discord API;

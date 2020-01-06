@@ -1,0 +1,97 @@
+package org.comroid.crystalshard.abstraction.serialization;
+
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import org.comroid.crystalshard.CrystalShard;
+import org.comroid.crystalshard.abstraction.AbstractApiBound;
+import org.comroid.crystalshard.adapter.Adapter;
+import org.comroid.crystalshard.api.Discord;
+import org.comroid.crystalshard.api.entity.Snowflake;
+import org.comroid.crystalshard.util.model.serialization.JSONBinding;
+import org.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
+import org.comroid.crystalshard.util.model.serialization.JsonDeserializable;
+
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.flogger.FluentLogger;
+
+import static org.comroid.crystalshard.CrystalShard.PLEASE_REPORT;
+
+@SuppressWarnings("rawtypes")
+public abstract class AbstractJsonDeserializable extends AbstractApiBound implements JsonDeserializable {
+    private static final FluentLogger log = FluentLogger.forEnclosingClass();
+
+    protected final Set<JSONBinding> initialTraits;
+    protected final Set<JSONBinding> possibleTraits;
+
+    private Map<JSONBinding, Object> values;
+
+    protected AbstractJsonDeserializable(Discord api, JSONObject data) {
+        super(api);
+
+        JSONBindingLocation traitsClass = Adapter.getApiClass(getClass())
+                .orElseThrow(() -> new NoSuchElementException("Could not find API class of " + this + "." + PLEASE_REPORT))
+                .getAnnotation(JSONBindingLocation.class);
+
+        if (traitsClass == null)
+            throw new AssertionError("Could not determine @JsonTraits annotation for "
+                    + getClass().getSimpleName() + "! Please open an issue at " + CrystalShard.ISSUES_URL);
+
+        possibleTraits = Arrays.stream(traitsClass.value()
+                .getFields())
+                .filter(field -> Snowflake.JSON.class.isAssignableFrom(field.getType()))
+                .filter(field -> Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()))
+                .map(field -> {
+                    try {
+                        return field.get(null);
+                    } catch (IllegalAccessException e) {
+                        throw new AssertionError("Could not access Traits", e);
+                    }
+                })
+                .map(JSONBinding.class::cast)
+                .collect(Collectors.toSet());
+
+        values = new ConcurrentHashMap<>();
+
+        initialTraits = Collections.unmodifiableSet(updateFromJson(data));
+    }
+
+    @Override
+    public Set<JSONBinding> bindings() {
+        return Collections.unmodifiableSet(possibleTraits);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <S, T> T getBindingValue(JSONBinding<?, S, ?, T> binding) {
+        S val;
+        return (val = (S) values.getOrDefault(binding, null)) == null ? null : binding.apply(api, val);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Set<JSONBinding> updateFromJson(final JSONObject json) {
+        Set<JSONBinding> changed = new HashSet<>();
+
+        for (JSONBinding binding : bindings()) {
+            final String key = binding.fieldName();
+
+            if (json.containsKey(key))
+                values.put(binding, binding.extractValue(json));
+        }
+
+        return changed;
+    }
+
+    @Override
+    public Set<JSONBinding> initialBindings() {
+        return initialTraits;
+    }
+}

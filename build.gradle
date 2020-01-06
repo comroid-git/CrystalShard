@@ -5,7 +5,7 @@ buildscript {
 
 apply plugin: 'java-library'
 
-group 'de.comroid'
+group 'org.comroid'
 version '1.0.0-SNAPSHOT'
 
 apply from: 'gradle/vars.gradle'

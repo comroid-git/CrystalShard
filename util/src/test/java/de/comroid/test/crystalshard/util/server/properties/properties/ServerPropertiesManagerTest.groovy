@@ -1,7 +1,7 @@
-package de.comroid.test.crystalshard.util.server.properties.properties
+package org.comroid.test.crystalshard.util.server.properties.properties
 
-import de.comroid.crystalshard.util.server.properties.PropertyGroup
-import de.comroid.crystalshard.util.server.properties.ServerPropertiesManager
+import org.comroid.crystalshard.util.server.properties.PropertyGroup
+import org.comroid.crystalshard.util.server.properties.ServerPropertiesManager
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
