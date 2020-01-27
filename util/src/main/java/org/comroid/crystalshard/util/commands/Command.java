@@ -16,6 +16,7 @@ import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.entity.guild.Role;
 import org.comroid.crystalshard.api.entity.message.Message;
 import org.comroid.crystalshard.api.entity.user.User;
+import org.comroid.crystalshard.api.event.message.MessageSentEvent;
 import org.comroid.crystalshard.api.model.message.MessageAuthor;
 import org.comroid.crystalshard.api.model.message.embed.Embed;
 import org.comroid.crystalshard.api.model.permission.Permission;
