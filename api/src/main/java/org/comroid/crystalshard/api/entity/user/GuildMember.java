@@ -15,6 +15,7 @@ import org.comroid.crystalshard.api.entity.EntityType;
 import org.comroid.crystalshard.api.entity.channel.GuildVoiceChannel;
 import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.entity.guild.Role;
+import org.comroid.crystalshard.api.model.Partial;
 import org.comroid.crystalshard.api.model.guild.ban.Ban;
 import org.comroid.crystalshard.api.model.permission.PermissionOverridable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
@@ -36,10 +37,7 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.simp
 
 @MainAPI
 @JSONBindingLocation(GuildMember.JSON.class)
-public interface GuildMember extends User, PermissionOverridable, JsonDeserializable {
-    @IntroducedBy(PRODUCTION)
-    Guild getGuild();
-
+public interface GuildMember extends User, PermissionOverridable, JsonDeserializable, Partial.GuildMember {
     @Override
     default EntityType getEntityType() {
         return EntityType.GUILD_MEMBER;
@@ -69,9 +67,6 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
     default boolean isMuted() {
         return getBindingValue(JSON.MUTED);
     }
-
-    @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#create-guild-ban")
-    CompletableFuture<Ban> ban(int deleteMessageOfLastDays, String reason);
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#remove-guild-ban")
     default CompletableFuture<Void> unban() {
