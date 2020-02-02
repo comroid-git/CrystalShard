@@ -109,7 +109,17 @@ subprojects {
     }
 
     compileJava.options.encoding = 'UTF-8'
-    repositories.jcenter()
+
+    repositories {
+        maven {
+            url "https://maven.jetbrains.space/comroid/repo"
+            credentials.username "Anonymous.User"
+            credentials.password "anonymous"
+        }
+        jcenter()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://jitpack.io" }
+    }
 
     dependencies {
         implementation 'com.google.flogger:flogger:0.4'
@@ -139,6 +149,7 @@ project(":core") {
         api project(':api')
 
         implementation 'com.alibaba:fastjson:1.2.62'
+        implementation 'org.comroid:common-util-spellbind:0.9.1'
 
         runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
