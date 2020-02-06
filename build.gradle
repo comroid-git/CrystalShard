@@ -162,7 +162,7 @@ project(":impl") {
         compileOnly project(':core')
 
         implementation 'com.alibaba:fastjson:1.2.62'
-        implementation 'org.comroid:common-util-spellbind:0.9.1'
+        implementation 'org.comroid:common-util-spellbind:0.9.2'
 
         runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
     }
