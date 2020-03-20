@@ -135,7 +135,7 @@ project(":api") {
     version = '1.0.0-SNAPSHOT'
 
     dependencies {
-        compileOnly 'com.alibaba:fastjson:1.2.62'
+        compileOnly 'com.alibaba:fastjson:1.2.67'
 
         testImplementation 'org.reflections:reflections:0.9.11'
     }
