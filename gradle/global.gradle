@@ -1,0 +1,50 @@
+tasks.withType(Javadoc) {
+    source = sourceSets.main.java
+
+    options {
+        encoding = 'UTF-8'
+        /*
+        links = [
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://docs.oracle.com/javaee/7/api/"
+        ]
+        */
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+
+    try {
+        archiveClassifier.set 'sources'
+    } catch (MissingPropertyException ignored) {
+        classifier = "sources"
+    }
+}
+
+task javadocJar(type: Jar) {
+    dependsOn 'javadoc'
+
+    from javadoc.destinationDir
+
+    try {
+        archiveClassifier.set 'javadoc'
+    } catch (MissingPropertyException ignored) {
+        classifier = "javadoc"
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
+repositories.jcenter()
+
+dependencies {
+    implementation 'com.google.flogger:flogger:0.4'
+
+    compileOnly 'org.jetbrains:annotations:18.0.0'
+
+    runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.easymock:easymock:4.1'
+    testCompileOnly 'org.codehaus.groovy:groovy:3.0.0-rc-2'
+}

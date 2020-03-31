@@ -1,114 +1,25 @@
-buildscript {
-    repositories.gradlePluginPortal()
-    dependencies.classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.21.2"
+import java.util.stream.Collectors
+
+allprojects {
+    apply plugin: 'java-library'
+
+    group 'org.comroid'
 }
 
-apply plugin: 'java-library'
-
-group 'org.comroid'
-version '1.0.0-SNAPSHOT'
-
-apply from: 'gradle/vars.gradle'
-
-sourceCompatibility = 13
-targetCompatibility = 13
-
 tasks.findByName('wrapper').configure {
-    gradleVersion = '5.6'
+    gradleVersion = '6.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-
-    try {
-        archiveClassifier.set 'sources'
-    } catch (MissingPropertyException ignored) {
-        classifier = "sources"
-    }
-}
-
-task javadocJar(type: Jar) {
-    dependsOn 'javadoc'
-
-    from javadoc.destinationDir
-
-    try {
-        archiveClassifier.set 'javadoc'
-    } catch (MissingPropertyException ignored) {
-        classifier = "javadoc"
+configurations {
+    compileClasspath {
+        resolutionStrategy.activateDependencyLocking()
     }
 }
 
 allprojects {
-    tasks.withType(Javadoc) {
-        source = sourceSets.main.java
-        
-        options {
-            encoding = 'UTF-8'
-            links = [
-                    "https://docs.oracle.com/javase/8/docs/api/",
-                    "https://docs.oracle.com/javaee/7/api/"
-            ]
-        }
-    }
-}
-
-compileJava.options.encoding = 'UTF-8'
-repositories.jcenter()
-
-dependencies {
-    api project(':api')
-    api project(':util')
-    
-    runtimeOnly project(':impl')
-    runtimeOnly project(':core')
-
-    // test configuration
-    testImplementation project(':api')
-    testImplementation project(':util')
-    testImplementation project(':core')
-    testImplementation project(':impl')
-}
-
-sourceSets {
-    main.java.srcDirs = []
-    main.resources.srcDirs = []
-    test.java.srcDirs = ["src/test/java"]
-    test.resources.srcDirs = ["src/test/resources"]
-}
-
-subprojects {
-    apply plugin: 'java-library'
-
-    group 'de.kaleidox'
-
-    sourceCompatibility = 11
-    targetCompatibility = 11
-
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allJava
-
-        try {
-            archiveClassifier.set 'sources'
-        } catch (MissingPropertyException ignored) {
-            classifier = "sources"
-        }
-    }
-
-    task javadocJar(type: Jar) {
-        dependsOn 'javadoc'
-
-        from javadoc.destinationDir
-
-        try {
-            archiveClassifier.set 'javadoc'
-        } catch (MissingPropertyException ignored) {
-            classifier = "javadoc"
-        }
-    }
-
-    compileJava.options.encoding = 'UTF-8'
+    apply from: "$rootDir/gradle/vars.gradle"
+    apply from: "$rootDir/gradle/global.gradle"
 
     repositories {
         maven {
@@ -116,77 +27,48 @@ subprojects {
             credentials.username "Anonymous.User"
             credentials.password "anonymous"
         }
-        jcenter()
-        maven { url "https://jitpack.io" }
     }
 
     dependencies {
-        implementation 'com.google.flogger:flogger:0.4'
-        compileOnly 'org.jetbrains:annotations:19.0.0'
+        api 'org.comroid:common-util:1.2.0'
 
-        testImplementation 'junit:junit:4.13'
-        testImplementation 'org.easymock:easymock:4.1'
-        testImplementation 'com.google.flogger:flogger-system-backend:0.4'
-        testCompileOnly 'org.codehaus.groovy:groovy:3.0.0-rc-2'
+        implementation 'org.comroid:varbind:0.1.0'
+        implementation 'org.comroid:uniform:0.1.0'
+        implementation 'org.comroid:spellbind:0.10.2'
     }
 }
 
-project(":api") {
-    version = '1.0.0-SNAPSHOT'
-
-    dependencies {
-        compileOnly 'com.alibaba:fastjson:1.2.62'
-
-        testImplementation 'org.reflections:reflections:0.9.11'
-    }
-}
-
-project(":core") {
-    version = '1.0.0-SNAPSHOT'
-
-    dependencies {
-        api project(':api')
-
-        implementation 'com.alibaba:fastjson:1.2.62'
-        implementation 'org.comroid:common-util-spellbind:0.10.0'
-
-        runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
-    }
-}
-
-project(":impl") {
-    version = '1.0.0-SNAPSHOT'
-
-    dependencies {
-        api project(':api')
-        compileOnly project(':core')
-
-        implementation 'com.alibaba:fastjson:1.2.62'
-
-        runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
-    }
-}
-
-project(":util") {
-    version = '1.0.0-SNAPSHOT'
-    
-    dependencies {
-        api project(':api')
-        compileOnly project(':core')
-
-        implementation 'com.alibaba:fastjson:1.2.62'
-
-        runtimeOnly 'com.google.flogger:flogger-system-backend:0.4'
-    }
+dependencies {
+    testImplementation 'junit:junit:4.12'
 }
 
 task allJavadoc(type: Javadoc) {
-    source exportedProjects.collect { //noinspection GroovyAssignabilityCheck
-        project(it).sourceSets.main.allJava }
-    classpath = files(exportedProjects.collect { //noinspection GroovyAssignabilityCheck
-        project(it).sourceSets.main.compileClasspath })
-    options.encoding = 'UTF-8'
-    options.destinationDirectory(file("./docs/"))
+    source = files(exportedProjects.stream()
+            .map { rootProject.findProject(it.toString()) }
+            .filter { !Objects.isNull(it) }
+            .filter { it.hasProperty("sourceSet") }
+            .map { it.sourceSets.main.allJava }
+            .collect(Collectors.toList()))
+    classpath = files(exportedProjects.stream()
+            .map { rootProject.findProject(it.toString()) }
+            .filter { !Objects.isNull(it) }
+            .filter { it.hasProperty("sourceSet") }
+            .map { it.sourceSets.main.compileClasspath }
+            .collect(Collectors.toList()))
+    options {
+        destinationDirectory(file("$rootDir/docs/"))
+        encoding = 'UTF-8'
+    }
 }
 
-apply from: 'gradle/publishing.gradle'
+assemble {
+    dependsOn = getTasksByName('assemble', true)
+            .stream()
+            .filter { (it as Task).project.parent.equals(rootProject) }
+            .collect()
+
+    exportedProjects.stream()
+            .map { rootProject.findProject(it.toString()) }
+            .filter { !Objects.isNull(it) }
+            .forEach { it.apply from: "$rootDir/gradle/publishing.gradle" }
+}

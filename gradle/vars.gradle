@@ -1,21 +1,20 @@
 import static java.lang.System.getenv
 
 ext {
-    artifactName = 'crystalshard'
+    artifactName = 'common-util'
     userbase = 'comroid-git'
-    projectDescription = "Modular Java-Wrapper for the Discord Bot API"
-    
-    exportedProjects = [
-            ':api',
-            ':impl',
-            ':core',
-            ':util'
-    ]
 
-    snapshot = project.version.endsWith("-SNAPSHOT")
+    exportedProjects = rootProject.subprojects.collect { it.name }
 
-    sonatypeUsername = getenv("sonatypeUsername")
-    sonatypePassword = getenv("sonatypePassword")
+    snapshot = project.version.endsWith('SNAPSHOT')
+
+    spaceUsername = getenv('SPACE_USERNAME')
+    spacePassword = getenv('SPACE_PASSWORD')
+
+    sonatypeUsername = getenv('SONATYPE_USERNAME')
+    sonatypePassword = getenv('SONATYPE_PASSWORD')
 }
 
-ext."signing.gnupg.passphrase" = getenv("gpgKeyPassword")
+ext.'signing.gnupg.passphrase' = getenv('GPG_PASSPHRASE') //todo: Create TeamCity template
+ext.'signing.gnupg.keyName' = getenv('GPG_KEYNAME')
+ext.'signing.gnupg.useLegacyGpg' = true
