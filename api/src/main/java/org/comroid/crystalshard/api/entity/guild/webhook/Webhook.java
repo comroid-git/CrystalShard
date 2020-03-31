@@ -19,7 +19,6 @@ import org.comroid.crystalshard.core.cache.CacheManager;
 import org.comroid.crystalshard.core.cache.Cacheable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.HTTPStatusCodes;
-import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.FileType;
 import org.comroid.crystalshard.util.model.ImageHelper;

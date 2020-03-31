@@ -11,7 +11,6 @@ import org.comroid.crystalshard.api.entity.message.Message;
 import org.comroid.crystalshard.api.model.message.Messageable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.HTTPStatusCodes;
-import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
 
@@ -44,15 +43,15 @@ public interface TextChannel extends Channel, Messageable {
     
     @IntroducedBy(GETTER)
     default Optional<Instant> getLastPinnedTimestamp() {
-        return wrapBindingValue(JSON.LAST_PINNED_TIMESTAMP);
+        return wrapBindingValue(Bind.LAST_PINNED_TIMESTAMP);
     }
     
     @IntroducedBy(GETTER)
     default Optional<Message> getLastMessage() {
-        return wrapBindingValue(JSON.LAST_MESSAGE_ID);
+        return wrapBindingValue(Bind.LAST_MESSAGE_ID);
     }
     
-    interface JSON extends Channel.JSON {
+    interface Bind extends Channel.Bind {
         JSONBinding.TwoStage<String, Instant> LAST_PINNED_TIMESTAMP = simple("last_pin_timestamp", JSONObject::getString, Instant::parse);
         JSONBinding.TwoStage<Long, Message> LAST_MESSAGE_ID = JSONBinding.cache("last_message_id", (cacheManager, id) -> cacheManager.getByID(Message.class, id));
     }

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.comroid.crystalshard.api.entity.EntityType;
+import org.comroid.crystalshard.api.model.EntityType;
 import org.comroid.crystalshard.api.entity.user.User;
 import org.comroid.crystalshard.core.cache.CacheManager;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
@@ -25,20 +25,20 @@ public interface PrivateChannel extends Channel {
 
     @IntroducedBy(GETTER)
     default Collection<User> getRecipients() {
-        return getBindingValue(JSON.RECIPIENTS);
+        return getBindingValue(Bind.RECIPIENTS);
     }
     
     @IntroducedBy(GETTER)
     default Optional<User> getUserOwner() {
-        return wrapBindingValue(JSON.USER_OWNER);
+        return wrapBindingValue(Bind.USER_OWNER);
     }
     
     @IntroducedBy(GETTER)
     default Optional<User> getApplicationOwner() {
-        return wrapBindingValue(JSON.APPLICATION_OWNER);
+        return wrapBindingValue(Bind.APPLICATION_OWNER);
     }
     
-    interface JSON extends Channel.JSON {
+    interface Bind extends Channel.Bind {
         JSONBinding.TriStage<JSONObject, User> RECIPIENTS = serializableCollection("recipients", User.class);
         JSONBinding.TwoStage<Long, User> USER_OWNER = cache("owner_id", CacheManager::getUserByID);
         JSONBinding.TwoStage<Long, User> APPLICATION_OWNER = cache("application_id", CacheManager::getUserByID);

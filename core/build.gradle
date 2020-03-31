@@ -6,3 +6,7 @@ targetCompatibility = 11
 ext {
     projectDescription = "CrystalShard Implementation for Java 11"
 }
+
+dependencies {
+    implementation 'com.alibaba:fastjson:1.2.68'
+}

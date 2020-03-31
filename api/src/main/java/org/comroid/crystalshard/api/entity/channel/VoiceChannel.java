@@ -11,14 +11,14 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.iden
 public interface VoiceChannel extends Channel {
     @IntroducedBy(GETTER)
     default int getBitrate() {
-        return wrapBindingValue(JSON.BITRATE).orElse(VoiceChannel.Default.BITRATE);
+        return wrapBindingValue(Bind.BITRATE).orElse(VoiceChannel.Default.BITRATE);
     }
     
     interface Default extends Channel.Default {
         int BITRATE = 64000;
     }
     
-    interface JSON extends Channel.JSON {
+    interface Bind extends Channel.Bind {
         JSONBinding.OneStage<Integer> BITRATE = identity("bitrate", JSONObject::getInteger);
     }
 

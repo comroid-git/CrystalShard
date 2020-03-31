@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import org.comroid.crystalshard.adapter.Adapter;
 import org.comroid.crystalshard.adapter.MainAPI;
 import org.comroid.crystalshard.api.entity.Snowflake;
+import org.comroid.crystalshard.api.entity.emoji.CustomEmoji.Bind;
 import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.entity.guild.Role;
 import org.comroid.crystalshard.api.entity.user.User;
@@ -19,7 +20,6 @@ import org.comroid.crystalshard.api.model.Mentionable;
 import org.comroid.crystalshard.core.cache.Cacheable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.HTTPStatusCodes;
-import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
 import org.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
@@ -33,36 +33,36 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.mapp
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.require;
 
 @MainAPI
-@JSONBindingLocation(CustomEmoji.JSON.class)
+@JSONBindingLocation(Bind.class)
 public interface CustomEmoji extends Emoji, Mentionable, Snowflake, Cacheable {
     @IntroducedBy(PRODUCTION)
     Guild getGuild();
 
     default String getName() {
-        return getBindingValue(JSON.NAME);
+        return getBindingValue(Bind.NAME);
     }
 
     default Collection<Role> getRoles() {
-        return getBindingValue(JSON.WHITELISTED_ROLES);
+        return getBindingValue(Bind.WHITELISTED_ROLES);
     }
 
     default Optional<User> getCreator() {
-        return wrapBindingValue(JSON.CREATOR);
+        return wrapBindingValue(Bind.CREATOR);
     }
 
     default Optional<Boolean> requiresColons() {
-        return wrapBindingValue(JSON.REQUIRE_COLONS);
+        return wrapBindingValue(Bind.REQUIRE_COLONS);
     }
 
     default Optional<Boolean> isManaged() {
-        return wrapBindingValue(JSON.MANAGED);
+        return wrapBindingValue(Bind.MANAGED);
     }
 
     default Optional<Boolean> isAnimated() {
-        return wrapBindingValue(JSON.ANIMATED);
+        return wrapBindingValue(Bind.ANIMATED);
     }
 
-    interface JSON extends Emoji.JSON, Snowflake.JSON {
+    interface Bind extends Emoji.JSON, Snowflake.Bind {
         JSONBinding.TriStage<Long, Role> WHITELISTED_ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getByID(Role.class, id)
                 .orElseThrow());

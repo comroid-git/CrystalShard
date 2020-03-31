@@ -2,7 +2,7 @@ package org.comroid.crystalshard.api.entity.channel;
 
 import java.util.Optional;
 
-import org.comroid.crystalshard.api.entity.EntityType;
+import org.comroid.crystalshard.api.model.EntityType;
 import org.comroid.crystalshard.api.model.channel.ChannelType;
 
 import org.jetbrains.annotations.Contract;

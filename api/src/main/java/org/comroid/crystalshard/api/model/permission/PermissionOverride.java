@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.comroid.crystalshard.adapter.Adapter;
-import org.comroid.crystalshard.api.entity.EntityType;
+import org.comroid.crystalshard.api.model.EntityType;
 import org.comroid.crystalshard.api.entity.Snowflake;
 import org.comroid.crystalshard.api.entity.channel.GuildChannel;
 import org.comroid.crystalshard.api.entity.guild.Role;
@@ -15,7 +15,6 @@ import org.comroid.crystalshard.util.model.serialization.JSONBinding;
 import org.comroid.crystalshard.util.model.serialization.JsonDeserializable;
 
 import com.alibaba.fastjson.JSONObject;
-import org.intellij.lang.annotations.MagicConstant;
 
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.simple;

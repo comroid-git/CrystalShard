@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.comroid.crystalshard.adapter.MainAPI;
 import org.comroid.crystalshard.api.entity.Snowflake;
+import org.comroid.crystalshard.api.entity.message.MessageAttachment.Bind;
 import org.comroid.crystalshard.util.Util;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
 import org.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
@@ -15,33 +16,33 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.iden
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(MessageAttachment.JSON.class)
+@JSONBindingLocation(Bind.class)
 public interface MessageAttachment extends Snowflake {
     default String getFilename() {
-        return getBindingValue(JSON.FILENAME);
+        return getBindingValue(Bind.FILENAME);
     }
 
     default int getFilesize() {
-        return getBindingValue(JSON.SIZE);
+        return getBindingValue(Bind.SIZE);
     }
 
     default URL getURL() {
-        return getBindingValue(JSON.URL);
+        return getBindingValue(Bind.URL);
     }
 
     default URL getProxyURL() {
-        return getBindingValue(JSON.PROXY_URL);
+        return getBindingValue(Bind.PROXY_URL);
     }
 
     default Optional<Integer> getHeight() {
-        return wrapBindingValue(JSON.HEIGHT);
+        return wrapBindingValue(Bind.HEIGHT);
     }
 
     default Optional<Integer> getWidth() {
-        return wrapBindingValue(JSON.WIDTH);
+        return wrapBindingValue(Bind.WIDTH);
     }
 
-    interface JSON extends Snowflake.JSON {
+    interface Bind extends Snowflake.Bind {
         JSONBinding.OneStage<String> FILENAME = identity("filename", JSONObject::getString);
         JSONBinding.OneStage<Integer> SIZE = identity("size", JSONObject::getInteger);
         JSONBinding.TwoStage<String, URL> URL = simple("url", JSONObject::getString, Util::createUrl$rethrow);

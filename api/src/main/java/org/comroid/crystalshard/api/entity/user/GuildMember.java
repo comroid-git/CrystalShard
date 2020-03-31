@@ -11,16 +11,16 @@ import java.util.function.Predicate;
 
 import org.comroid.crystalshard.adapter.Adapter;
 import org.comroid.crystalshard.adapter.MainAPI;
-import org.comroid.crystalshard.api.entity.EntityType;
+import org.comroid.crystalshard.api.model.EntityType;
 import org.comroid.crystalshard.api.entity.channel.GuildVoiceChannel;
 import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.entity.guild.Role;
+import org.comroid.crystalshard.api.entity.user.GuildMember.Bind;
 import org.comroid.crystalshard.api.model.Partial;
 import org.comroid.crystalshard.api.model.guild.ban.Ban;
 import org.comroid.crystalshard.api.model.permission.PermissionOverridable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.HTTPStatusCodes;
-import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
 import org.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
@@ -36,7 +36,7 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.mapp
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(GuildMember.JSON.class)
+@JSONBindingLocation(Bind.class)
 public interface GuildMember extends User, PermissionOverridable, JsonDeserializable, Partial.GuildMember {
     @Override
     default EntityType getEntityType() {
@@ -44,28 +44,28 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
     }
 
     default Optional<String> getNickname() {
-        return wrapBindingValue(JSON.NICKNAME);
+        return wrapBindingValue(Bind.NICKNAME);
     }
 
     default List<Role> getRoles() {
-        final ArrayList<Role> list = new ArrayList<>(getBindingValue(JSON.ROLES));
+        final ArrayList<Role> list = new ArrayList<>(getBindingValue(Bind.ROLES));
         Collections.sort(list);
         return list;
     }
 
     default Instant getJoinTimestamp() {
-        return getBindingValue(JSON.JOINED_TIMESTAMP);    }
+        return getBindingValue(Bind.JOINED_TIMESTAMP);    }
 
     default Optional<Instant> getNitroBoostTimestamp() {
-        return wrapBindingValue(JSON.NITRO_BOOST_TIMESTAMP);
+        return wrapBindingValue(Bind.NITRO_BOOST_TIMESTAMP);
     }
 
     default boolean isDeafened() {
-        return getBindingValue(JSON.DEAFENED);
+        return getBindingValue(Bind.DEAFENED);
     }
 
     default boolean isMuted() {
-        return getBindingValue(JSON.MUTED);
+        return getBindingValue(Bind.MUTED);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#remove-guild-ban")
@@ -78,7 +78,7 @@ public interface GuildMember extends User, PermissionOverridable, JsonDeserializ
                         .deleteMember(Guild.class, Ban.class, getGuild().getID(), getID()));
     }
 
-    interface JSON extends User.JSON {
+    interface Bind extends User.Bind {
         JSONBinding.OneStage<String> NICKNAME = identity("nick", JSONObject::getString);
         JSONBinding.TriStage<Long, Role> ROLES = mappingCollection("roles", JSONObject::getLong, (api, id) -> api.getCacheManager()
                 .getRoleByID(id)
