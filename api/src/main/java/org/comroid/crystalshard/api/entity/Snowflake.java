@@ -6,10 +6,8 @@ import java.util.Comparator;
 import org.comroid.crystalshard.adapter.Adapter;
 import org.comroid.crystalshard.api.model.ApiBound;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
-import org.comroid.crystalshard.util.model.serialization.JSONBinding;
-import org.comroid.crystalshard.util.model.serialization.JsonDeserializable;
+import org.comroid.varbind.model.VariableCarrier;
 
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Contract;
@@ -17,9 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 import static org.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.API;
 import static org.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.PRODUCTION;
-import static org.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 
-public interface Snowflake extends ApiBound, JsonDeserializable, Comparable<Snowflake> {
+public interface Snowflake extends ApiBound, VariableCarrier, Comparable<Snowflake> {
     @Internal
     FluentLogger SNOWFLAKE_COMMON_LOGGER = FluentLogger.forEnclosingClass();
 
