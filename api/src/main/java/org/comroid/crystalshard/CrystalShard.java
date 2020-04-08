@@ -2,8 +2,6 @@ package org.comroid.crystalshard;
 
 import java.util.logging.Level;
 
-import com.google.common.flogger.LoggerConfig;
-
 public final class CrystalShard {
     public static final String VERSION = "2.0.0";
 
@@ -11,11 +9,11 @@ public final class CrystalShard {
 
     public static final String API_BASE_URL = "https://discordapp.com/api/v" + API_VERSION;
 
-    public static final String GATEWAY_DEFAULT_URL = "wss://gateway.discord.gg/";
+    public static final String DEFAULT_GATEWAY_URL = "wss://gateway.discord.gg/";
 
-    public static final String URL = "https://github.com/CrystalShardDiscord/CrystalShard";
+    public static final String PROJECT_URL = "https://github.com/CrystalShardDiscord/CrystalShard";
 
-    public static final String ISSUES_URL = URL + "/issues";
+    public static final String ISSUES_URL = PROJECT_URL + "/issues";
     
     public static final String PLEASE_REPORT = " Please open an issue including information about this crash at " + ISSUES_URL;
     

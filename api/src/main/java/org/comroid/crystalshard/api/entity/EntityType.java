@@ -1,5 +1,7 @@
 package org.comroid.crystalshard.api.entity;
 
+import org.comroid.varbind.model.VariableCarrier;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import static org.comroid.crystalshard.util.Util.isFlagSet;
