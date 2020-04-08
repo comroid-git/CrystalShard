@@ -1,4 +1,4 @@
-rootProject.name = 'common-util'
+rootProject.name = 'CrystalShard'
 
 include(':api')
 include(':core')
