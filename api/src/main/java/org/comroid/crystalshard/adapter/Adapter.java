@@ -1,18 +1,61 @@
 package org.comroid.crystalshard.adapter;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.comroid.crystalshard.api.Discord;
+import org.comroid.crystalshard.api.entity.Snowflake;
+import org.comroid.crystalshard.api.entity.message.Message;
+import org.comroid.crystalshard.core.cache.Cacheable;
+import org.comroid.crystalshard.core.rest.DiscordRequest;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.flogger.FluentLogger;
 import org.jetbrains.annotations.Contract;
 
 public abstract class Adapter {
+    private static FluentLogger log = FluentLogger.forEnclosingClass();
+    private static Set<Adapter> implementations = new HashSet<>();
+
+    protected ImplementationMapping mappingTool;
+
+    protected Adapter() {
+        implementations.add(this);
+
+        mappingTool = new ImplementationMapping();
+    }
+    
     public static Optional<Class<?>> getApiClass(final Object from) {
         if (from instanceof Class)
             return Optional.ofNullable(getApiClass_r((Class<?>) from));
 
         return Optional.ofNullable(getApiClass_r(from.getClass()));
+    }
+    
+    public static Collection<Class[]> getRequiredConstructorParameterTypes(Class<?> of) {
+        return Stream.of(of.getAnnotationsByType(Constructor.class))
+                .map(Constructor::value)
+                .collect(Collectors.toSet());
+    }
+
+    public static <T> Function<Throwable, ? extends T> exceptionLogger() {
+        return throwable -> {
+            log.at(Level.SEVERE)
+                    .withCause(throwable)
+                    .log("Error in Completion");
+            
+            return null;
+        };
     }
 
     private static <T> Class<?> getApiClass_r(Class<?> impl) {
@@ -31,8 +74,48 @@ public abstract class Adapter {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Contract("null, _ -> fail; _, _ -> _")
     public static <R> R require(final Class<? super R> type, final Object... param) {
+        return ((Cacheable.class.isAssignableFrom(type) && param.length == 2 && (param[0] instanceof Discord & (param[1] instanceof JSON || param[1] instanceof Long)))
+                ? Optional.of(param)
+                : Optional.<Object[]>empty())
+                .flatMap((Function<Object[], Optional<R>>) args -> {
+                    long id;
+
+                    if (args[1] instanceof Long)
+                        id = (long) args[1];
+                    else {
+                        if (args[1] instanceof JSONArray)
+                            throw new IllegalArgumentException("Cannot instantiate from JSONArray!");
+                        id = Snowflake.JSON.ID.extractValue((JSONObject) args[1]);
+                    }
+
+                    return ((Discord) args[0]).getCacheManager()
+                            .getByID((Class<? extends Snowflake>) getApiClass_r(type), id)
+                            .map(it -> (R) it);
+                })
+                .or(() -> implementations.stream()
+                        .map(adapter -> adapter.mappingTool)
+                        .map(tool -> tool.find(type, getTypes(param)))
+                        .findFirst()
+                        .flatMap(it -> it)
+                        .map(inst -> inst.apply(param))
+                        .map(it -> (R) it))
+                .orElseThrow(() -> new AssertionError("Class " + type.getName() + " is not instantiable by CrystalShard"));
+    }
+
+    @SuppressWarnings("RedundantTypeArguments")
+    @Contract("null -> fail")
+    public static <R> DiscordRequest<R> request(Discord api) {
+        if (api == null) throw new NullPointerException("API is null!");
+
+        return Adapter.<DiscordRequest<R>>require(DiscordRequest.class, api);
+    }
+
+    public static <R, T> R staticOverride(Class<T> type, String method, Object... args) {
+        // todo
+        return null;
     }
 
     protected static <T extends Adapter> T loadAdapter(Class<T> adapter) {
@@ -49,5 +132,14 @@ public abstract class Adapter {
             log.at(Level.FINE).log("Multiple implementations of %s were found!", adapter.getSimpleName());
 
         return impl;
+    }
+
+    static Class[] getTypes(Object... args) {
+        Class[] types = new Class[args.length];
+
+        for (int i = 0; i < args.length; i++)
+            types[i] = args[i].getClass();
+
+        return types;
     }
 }
