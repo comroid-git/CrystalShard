@@ -3,7 +3,7 @@ package org.comroid.crystalshard.api.entity.channel;
 import java.util.Optional;
 
 import org.comroid.crystalshard.adapter.Adapter;
-import org.comroid.crystalshard.api.model.EntityType;
+import org.comroid.crystalshard.api.entity.EntityType;
 import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.model.channel.ChannelType;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
@@ -24,10 +24,10 @@ public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
     }
 
     default Optional<Integer> getUserLimit() {
-        return wrapBindingValue(Bind.USER_LIMIT);
+        return wrapBindingValue(JSON.USER_LIMIT);
     }
 
-    interface Bind extends Bind, VoiceChannel.Bind {
+    interface JSON extends GuildChannel.JSON, VoiceChannel.JSON {
         JSONBinding.OneStage<Integer> USER_LIMIT = identity("user_limit", JSONObject::getInteger);
     }
 

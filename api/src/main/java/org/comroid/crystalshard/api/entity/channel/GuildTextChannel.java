@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.comroid.crystalshard.adapter.Adapter;
-import org.comroid.crystalshard.api.model.EntityType;
+import org.comroid.crystalshard.api.entity.EntityType;
 import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.entity.guild.webhook.Webhook;
 import org.comroid.crystalshard.api.model.channel.ChannelType;
@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import static org.comroid.crystalshard.util.annotation.IntroducedBy.ImplementationSource.GETTER;
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.identity;
 
-@JSONBindingLocation(GuildTextChannel.Bind.class)
+@JSONBindingLocation(GuildTextChannel.JSON.class)
 public interface GuildTextChannel extends GuildChannel, TextChannel {
     // direct api methods
     CompletableFuture<Collection<Webhook>> requestWebhooks();
@@ -39,18 +39,18 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
 
     @IntroducedBy(GETTER)
     default Optional<String> getTopic() {
-        return wrapBindingValue(Bind.TOPIC);
+        return wrapBindingValue(JSON.TOPIC);
     }
 
 
     @IntroducedBy(GETTER)
     default boolean isNSFW() {
-        return getBindingValue(Bind.NSFW);
+        return getBindingValue(JSON.NSFW);
     }
     
     @IntroducedBy(GETTER)
     default Optional<Integer> getMessageRatelimit() {
-        return wrapBindingValue(Bind.MESSAGE_RATELIMIT);
+        return wrapBindingValue(JSON.MESSAGE_RATELIMIT);
     }
 
     Updater createUpdater();
@@ -59,7 +59,7 @@ public interface GuildTextChannel extends GuildChannel, TextChannel {
         return Adapter.require(Builder.class, guild);
     }
 
-    interface Bind extends Bind, TextChannel.Bind {
+    interface JSON extends GuildChannel.JSON, TextChannel.JSON {
         JSONBinding.OneStage<String> TOPIC = identity("topic", JSONObject::getString);
         JSONBinding.OneStage<Boolean> NSFW = identity("nsfw", JSONObject::getBoolean);
         JSONBinding.OneStage<Integer> MESSAGE_RATELIMIT = identity("rate_limit_per_user", JSONObject::getInteger);

@@ -1,14 +1,14 @@
 package org.comroid.crystalshard.core.rest;
 
+import java.net.http.HttpResponse;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 import org.comroid.crystalshard.api.model.ApiBound;
-import org.comroid.uniform.http.REST;
 
 public interface Ratelimiter extends ApiBound {
-    CompletableFuture<REST.Response> submit(
+    CompletableFuture<HttpResponse<String>> submit(
             DiscordEndpoint endpoint,
-            Callable<REST.Response> execution
+            Callable<HttpResponse<String>> execution
     );
 }

@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.comroid.crystalshard.adapter.Adapter;
 import org.comroid.crystalshard.api.Discord;
-import org.comroid.crystalshard.api.model.EntityType;
+import org.comroid.crystalshard.api.entity.EntityType;
 import org.comroid.crystalshard.api.entity.Snowflake;
 import org.comroid.crystalshard.api.event.multipart.APIEvent;
 import org.comroid.crystalshard.api.event.EventHandler;
@@ -13,6 +13,7 @@ import org.comroid.crystalshard.api.model.Mentionable;
 import org.comroid.crystalshard.api.model.channel.ChannelType;
 import org.comroid.crystalshard.core.cache.Cacheable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
+import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.TypeGroup;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
@@ -32,7 +33,7 @@ public interface Channel extends
         Cacheable {
     @IntroducedBy(API)
     default ChannelType getChannelType() {
-        return getBindingValue(Bind.CHANNEL_TYPE);
+        return getBindingValue(JSON.CHANNEL_TYPE);
     }
 
     @Override
@@ -200,7 +201,7 @@ public interface Channel extends
         }
     }
 
-    interface Bind extends Snowflake.Bind {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.TwoStage<String, ChannelType> CHANNEL_TYPE = simple("type", JSONObject::getString, ChannelType::valueOf);
     }
 

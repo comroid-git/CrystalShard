@@ -33,7 +33,7 @@ allprojects {
         // comroid APIs
         api 'org.comroid:common-util:1.2.0'
 
-        implementation 'org.comroid:varbind:0.2.0'
+        implementation 'org.comroid:varbind:0.1.0'
         implementation 'org.comroid:uniform:0.1.0'
         implementation 'org.comroid:spellbind:0.10.2-SNAPSHOT'
     }

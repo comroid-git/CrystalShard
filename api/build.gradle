@@ -6,7 +6,3 @@ targetCompatibility = 11
 ext {
     projectDescription = "CrystalShard API for Java 11"
 }
-
-dependencies {
-    compileOnly 'com.alibaba:fastjson:1.2.68'
-}

@@ -21,10 +21,10 @@ import org.comroid.crystalshard.api.entity.emoji.Emoji;
 import org.comroid.crystalshard.api.entity.guild.Guild;
 import org.comroid.crystalshard.api.entity.guild.Role;
 import org.comroid.crystalshard.api.entity.guild.webhook.Webhook;
-import org.comroid.crystalshard.api.entity.message.Message.Bind;
 import org.comroid.crystalshard.api.entity.user.User;
 import org.comroid.crystalshard.api.event.EventHandler;
 import org.comroid.crystalshard.api.event.multipart.APIEvent;
+import org.comroid.crystalshard.api.event.multipart.message.MessageEvent;
 import org.comroid.crystalshard.api.model.channel.ChannelMention;
 import org.comroid.crystalshard.api.model.message.MessageActivity;
 import org.comroid.crystalshard.api.model.message.MessageAuthor;
@@ -39,6 +39,7 @@ import org.comroid.crystalshard.core.cache.CacheManager;
 import org.comroid.crystalshard.core.cache.Cacheable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.HTTPStatusCodes;
+import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.BackTo;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
@@ -59,64 +60,64 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.seri
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(Bind.class)
+@JSONBindingLocation(Message.JSON.class)
 public interface Message extends Snowflake, Cacheable, EventHandler<APIEvent> {
     @CacheInformation.Marker
     CacheInformation<TextChannel> CACHE_INFORMATION = makeSubcacheableInfo(TextChannel.class, Message::getChannel);
     
     @IntroducedBy(GETTER)
     default TextChannel getChannel() {
-        return getBindingValue(Bind.CHANNEL);
+        return getBindingValue(JSON.CHANNEL);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Guild> getGuild() {
-        return wrapBindingValue(Bind.GUILD);
+        return wrapBindingValue(JSON.GUILD);
     }
 
     @IntroducedBy(GETTER)
     default MessageAuthor getAuthor() {
-        return getBindingValue(Bind.USER_AUTHOR);
+        return getBindingValue(JSON.USER_AUTHOR);
     }
 
     @IntroducedBy(GETTER)
     default String getContent() {
-        return getBindingValue(Bind.CONTENT);
+        return getBindingValue(JSON.CONTENT);
     }
 
     @IntroducedBy(GETTER)
     default Instant getSentTimestamp() {
-        return getBindingValue(Bind.SENT_TIMESTAMP);
+        return getBindingValue(JSON.SENT_TIMESTAMP);
     }
 
     @IntroducedBy(GETTER)
     default Instant getEditedTimestamp() {
-        return getBindingValue(Bind.EDITED_TIMESTAMP);
+        return getBindingValue(JSON.EDITED_TIMESTAMP);
     }
     
     @IntroducedBy(GETTER)
     default boolean isTTS() {
-        return getBindingValue(Bind.TTS);
+        return getBindingValue(JSON.TTS);
     }
 
     @IntroducedBy(GETTER)
     default boolean isMentioningEveryone() {
-        return getBindingValue(Bind.MENTIONS_EVERYONE);
+        return getBindingValue(JSON.MENTIONS_EVERYONE);
     }
 
     @IntroducedBy(GETTER)
     default Collection<User> getMentionedUsers() {
-        return getBindingValue(Bind.MENTIONED_USERS);
+        return getBindingValue(JSON.MENTIONED_USERS);
     }
 
     @IntroducedBy(GETTER)
     default Collection<Role> getMentionedRoles() {
-        return getBindingValue(Bind.MENTIONED_ROLES);
+        return getBindingValue(JSON.MENTIONED_ROLES);
     }
 
     @IntroducedBy(GETTER)
     default Collection<Channel> getMentionedChannels() {
-        return getBindingValue(Bind.MENTIONED_CHANNELS)
+        return getBindingValue(JSON.MENTIONED_CHANNELS)
                 .stream()
                 .map(ChannelMention::getChannel)
                 .collect(Collectors.toList());
@@ -124,54 +125,54 @@ public interface Message extends Snowflake, Cacheable, EventHandler<APIEvent> {
 
     @IntroducedBy(GETTER)
     default Collection<MessageAttachment> getAttachments() {
-        return getBindingValue(Bind.ATTACHMENTS);
+        return getBindingValue(JSON.ATTACHMENTS);
     }
 
     @IntroducedBy(GETTER)
     default Collection<ActiveEmbed> getEmbeds() {
-        return getBindingValue(Bind.EMBEDS);
+        return getBindingValue(JSON.EMBEDS);
     }
 
     @IntroducedBy(GETTER)
     default Collection<Reaction> getCurrentReactions() {
-        return getBindingValue(Bind.CURRENT_REACTIONS);
+        return getBindingValue(JSON.CURRENT_REACTIONS);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Snowflake> getNonce() {
-        return wrapBindingValue(Bind.NONCE);
+        return wrapBindingValue(JSON.NONCE);
     }
 
     @IntroducedBy(GETTER)
     default boolean isPinned() {
-        return getBindingValue(Bind.PINNED);
+        return getBindingValue(JSON.PINNED);
     }
 
     @IntroducedBy(GETTER)
     default MessageType getMessageType() {
-        return getBindingValue(Bind.TYPE);
+        return getBindingValue(JSON.TYPE);
     }
 
     @IntroducedBy(GETTER)
     default Optional<MessageActivity> getMessageActivity() {
-        return wrapBindingValue(Bind.ACTIVITY);
+        return wrapBindingValue(JSON.ACTIVITY);
     }
 
     @IntroducedBy(GETTER)
     default Optional<MessageApplication> getMessageApplication() {
-        return wrapBindingValue(Bind.APPLICATION);
+        return wrapBindingValue(JSON.APPLICATION);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Message> getReferencedMessage() {
-        return wrapBindingValue(Bind.REFERENCED_MESSAGE)
+        return wrapBindingValue(JSON.REFERENCED_MESSAGE)
                 .flatMap(MessageReference::getMessage);
     }
 
     @IntroducedBy(GETTER)
     @MagicConstant(flagsFromClass = MessageFlags.class)
     default int getMessageFlags() {
-        return getBindingValue(Bind.FLAGS);
+        return getBindingValue(JSON.FLAGS);
     }
 
     CompletableFuture<Void> removeAllReactions(); // todo
@@ -182,7 +183,7 @@ public interface Message extends Snowflake, Cacheable, EventHandler<APIEvent> {
         return getChannel() instanceof PrivateChannel;
     }
 
-    interface Bind extends Snowflake.Bind {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.TwoStage<Long, TextChannel> CHANNEL = cache("channel_id", (cache, id) -> cache.getChannelByID(id).flatMap(Channel::asTextChannel));
         JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
         JSONBinding.TwoStage<JSONObject, User> USER_AUTHOR = require("author", User.class);

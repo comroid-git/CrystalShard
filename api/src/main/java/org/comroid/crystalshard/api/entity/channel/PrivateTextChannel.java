@@ -3,7 +3,7 @@ package org.comroid.crystalshard.api.entity.channel;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-import org.comroid.crystalshard.api.model.EntityType;
+import org.comroid.crystalshard.api.entity.EntityType;
 import org.comroid.crystalshard.api.entity.user.User;
 import org.comroid.crystalshard.api.model.channel.ChannelType;
 
@@ -20,7 +20,7 @@ public interface PrivateTextChannel extends PrivateChannel, TextChannel {
         return EntityType.PRIVATE_TEXT_CHANNEL;
     }
     
-    interface Bind extends Bind, TextChannel.Bind {
+    interface JSON extends PrivateChannel.JSON, TextChannel.JSON {
     }
 
     interface Builder extends

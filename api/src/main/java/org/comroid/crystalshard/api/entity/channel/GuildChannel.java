@@ -41,27 +41,27 @@ public interface GuildChannel extends Channel {
 
     @IntroducedBy(GETTER)
     default Guild getGuild() {
-        return getBindingValue(Bind.GUILD);
+        return getBindingValue(JSON.GUILD);
     }
 
     @IntroducedBy(GETTER)
     default int getPosition() {
-        return getBindingValue(Bind.POSITION);
+        return getBindingValue(JSON.POSITION);
     }
 
     @IntroducedBy(GETTER)
     default Collection<PermissionOverride> getPermissionOverrides() {
-        return getBindingValue(Bind.PERMISSION_OVERRIDES);
+        return getBindingValue(JSON.PERMISSION_OVERRIDES);
     }
 
     @IntroducedBy(GETTER)
     default String getName() {
-        return getBindingValue(Bind.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
     @IntroducedBy(GETTER)
     default Optional<GuildChannelCategory> getCategory() {
-        return wrapBindingValue(Bind.CATEGORY);
+        return wrapBindingValue(JSON.CATEGORY);
     }
 
     @IntroducedBy(API)
@@ -75,7 +75,7 @@ public interface GuildChannel extends Channel {
         return false; // todo
     }
 
-    interface Bind extends Channel.Bind {
+    interface JSON extends Channel.JSON {
         JSONBinding.TwoStage<Long, Guild> GUILD = cache("guild_id", CacheManager::getGuildByID);
         JSONBinding.OneStage<Integer> POSITION = identity("position", JSONObject::getInteger);
         JSONBinding.TriStage<JSONObject, PermissionOverride> PERMISSION_OVERRIDES = serializableCollection("permission_overwrites", PermissionOverride.class);

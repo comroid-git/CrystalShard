@@ -9,15 +9,16 @@ import java.util.concurrent.CompletableFuture;
 import org.comroid.crystalshard.adapter.Adapter;
 import org.comroid.crystalshard.adapter.MainAPI;
 import org.comroid.crystalshard.api.entity.Snowflake;
-import org.comroid.crystalshard.api.entity.guild.Role.Bind;
 import org.comroid.crystalshard.api.event.EventHandler;
 import org.comroid.crystalshard.api.event.multipart.APIEvent;
+import org.comroid.crystalshard.api.event.multipart.role.RolesEvent;
 import org.comroid.crystalshard.api.model.Mentionable;
 import org.comroid.crystalshard.api.model.permission.PermissionOverridable;
 import org.comroid.crystalshard.api.model.permission.PermissionOverride;
 import org.comroid.crystalshard.core.cache.Cacheable;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.HTTPStatusCodes;
+import org.comroid.crystalshard.core.rest.RestMethod;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.serialization.JSONBinding;
 import org.comroid.crystalshard.util.model.serialization.JSONBindingLocation;
@@ -34,7 +35,7 @@ import static org.comroid.crystalshard.util.model.serialization.JSONBinding.iden
 import static org.comroid.crystalshard.util.model.serialization.JSONBinding.simple;
 
 @MainAPI
-@JSONBindingLocation(Bind.class)
+@JSONBindingLocation(Role.JSON.class)
 @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/topics/permissions#role-object")
 public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cacheable, EventHandler<APIEvent> {
     Comparator<Role> ROLE_COMPARATOR = Comparator.comparingInt(org.comroid.crystalshard.api.entity.guild.Role::getPosition);
@@ -56,37 +57,37 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
 
     @IntroducedBy(GETTER)
     default String getName() {
-        return getBindingValue(Bind.NAME);
+        return getBindingValue(JSON.NAME);
     }
 
     @IntroducedBy(GETTER)
     default Optional<Color> getColor() {
-        return wrapBindingValue(Bind.COLOR);
+        return wrapBindingValue(JSON.COLOR);
     }
 
     @IntroducedBy(GETTER)
     default boolean isHoisted() {
-        return getBindingValue(Bind.HOIST);
+        return getBindingValue(JSON.HOIST);
     }
 
     @IntroducedBy(GETTER)
     default int getPosition() {
-        return getBindingValue(Bind.POSITION);
+        return getBindingValue(JSON.POSITION);
     }
 
     @IntroducedBy(GETTER)
     default PermissionOverride getPermissions() {
-        return getBindingValue(Bind.PERMISSIONS);
+        return getBindingValue(JSON.PERMISSIONS);
     }
 
     @IntroducedBy(GETTER)
     default boolean isManaged() {
-        return getBindingValue(Bind.MANAGED);
+        return getBindingValue(JSON.MANAGED);
     }
 
     @IntroducedBy(GETTER)
     default boolean isMentionable() {
-        return getBindingValue(Bind.MENTIONABLE);
+        return getBindingValue(JSON.MENTIONABLE);
     }
 
     @IntroducedBy(value = API, docs = "https://discordapp.com/developers/docs/resources/guild#delete-guild-role")
@@ -99,7 +100,7 @@ public interface Role extends Snowflake, PermissionOverridable, Mentionable, Cac
                         .deleteMember(Guild.class, Role.class, getGuild().getID(), getID()));
     }
 
-    interface Bind extends Snowflake.Bind {
+    interface JSON extends Snowflake.JSON {
         JSONBinding.OneStage<String> NAME = identity("name", JSONObject::getString);
         JSONBinding.TwoStage<Integer, Color> COLOR = simple("color", JSONObject::getInteger, Color::new);
         JSONBinding.OneStage<Boolean> HOIST = identity("hoist", JSONObject::getBoolean);

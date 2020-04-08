@@ -4,7 +4,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import org.comroid.crystalshard.api.model.EntityType;
+import org.comroid.crystalshard.api.entity.EntityType;
 import org.comroid.crystalshard.api.model.channel.ChannelType;
 import org.comroid.crystalshard.util.annotation.IntroducedBy;
 import org.comroid.crystalshard.util.model.FileType;
@@ -30,10 +30,10 @@ public interface  GroupTextChannel extends PrivateChannel, TextChannel {
     
     @IntroducedBy(GETTER)
     default Optional<URL> getIconUrl() {
-        return wrapBindingValue(Bind.ICON);
+        return wrapBindingValue(JSON.ICON);
     }
     
-    interface Bind extends Bind, TextChannel.Bind {
+    interface JSON extends PrivateChannel.JSON, TextChannel.JSON {
         JSONBinding.TwoStage<String, URL> ICON = simple("icon", JSONObject::getString, hash -> ImageHelper.GUILD_ICON.url(FileType.PNG, hash));
     }
 
