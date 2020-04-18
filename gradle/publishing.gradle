@@ -33,7 +33,7 @@ publishing {
 
     publications {
         mavenJava(MavenPublication) {
-            artifactId = (project.name.equals('util') ? 'common-util' : project.name)
+            artifactId = "crystalshard-$project.name"
             from project.components.java
 
             artifact sourcesJar
