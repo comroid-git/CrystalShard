@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.model.BotBound;
 import org.comroid.dreadpool.ThreadPool;
 import org.comroid.restless.REST;
 import org.comroid.uniform.cache.BasicCache;
@@ -24,6 +25,13 @@ public interface DiscordBot {
     }
 
     List<DiscordBot.Shard> getShards();
+
+    interface Shard extends BotBound {
+        int getShardID();
+    }
+
+    static DiscordBot start(String token) {
+    }
 
     final class Support {
         private static final class Impl implements DiscordBot {
@@ -82,10 +90,11 @@ public interface DiscordBot {
             public int getShardID() {
                 return id;
             }
-        }
-    }
 
-    interface Shard {
-        int getShardID();
+            @Override
+            public DiscordBot getBot() {
+                return bot;
+            }
+        }
     }
 }
