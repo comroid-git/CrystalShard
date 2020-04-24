@@ -19,6 +19,8 @@ import org.comroid.uniform.cache.Cache;
 import org.comroid.uniform.node.UniObjectNode;
 
 import static java.lang.System.currentTimeMillis;
+import static org.comroid.crystalshard.CrystalShard.HTTP_ADAPTER;
+import static org.comroid.crystalshard.CrystalShard.SERIALIZATION_ADAPTER;
 
 public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
     String getToken();
@@ -38,12 +40,10 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
     List<DiscordBot.Shard> getShards();
 
     static DiscordBot start(String token) {
-        final BotGatewayEvent suggested = new REST<DiscordBot>(CrystalShard.HTTP_ADAPTER,
-                CrystalShard.SERIALIZATION_ADAPTER
-        ).request(BotGatewayEvent.class)
+        final BotGatewayEvent suggested = new REST<DiscordBot>(HTTP_ADAPTER, SERIALIZATION_ADAPTER).request(BotGatewayEvent.class)
                 .url(DiscordEndpoint.GATEWAY_BOT.make())
                 .addHeader(CommonHeaderNames.AUTHORIZATION, "Bot " + token)
-                .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, CrystalShard.SERIALIZATION_ADAPTER.getMimeType())
+                .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, SERIALIZATION_ADAPTER.getMimeType())
                 .method(REST.Method.GET)
                 .execute$deserializeSingle()
                 .join();
@@ -72,13 +72,13 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
                 this.token       = token;
                 this.threadPool  = ThreadPool.fixedSize(group, 8 * shardCount);
                 this.entityCache = new BasicCache<>(500);
-                this.webSocket   = CrystalShard.HTTP_ADAPTER.createWebSocket(CrystalShard.SERIALIZATION_ADAPTER,
+                this.webSocket   = HTTP_ADAPTER.createWebSocket(SERIALIZATION_ADAPTER,
                         new WebSocket.Header.List(),
                         threadPool,
                         websocketUri
                 )
                         .join();
-                this.restClient  = new REST<>(CrystalShard.HTTP_ADAPTER, CrystalShard.SERIALIZATION_ADAPTER, this);
+                this.restClient  = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
                 this.shards      = IntStream.range(0, shardCount)
                         .mapToObj(it -> new ShardImpl(this, it))
                         .collect(Collectors.toUnmodifiableList());
