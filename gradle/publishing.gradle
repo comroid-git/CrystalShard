@@ -1,3 +1,6 @@
+import groovy.lang.MissingPropertyException
+import org.gradle.api.tasks.bundling.Jar
+
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
@@ -5,6 +8,28 @@ import java.net.http.HttpResponse.BodyHandlers
 final HttpClient client = HttpClient.newBuilder().build()
 
 apply plugin: 'maven-publish'
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+
+    try {
+        archiveClassifier.set 'sources'
+    } catch (MissingPropertyException ignored) {
+        classifier = "sources"
+    }
+}
+
+task javadocJar(type: Jar) {
+    dependsOn 'javadoc'
+
+    from javadoc.destinationDir
+
+    try {
+        archiveClassifier.set 'javadoc'
+    } catch (MissingPropertyException ignored) {
+        classifier = "javadoc"
+    }
+}
 
 publishing {
     repositories {

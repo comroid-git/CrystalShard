@@ -1,5 +1,3 @@
-import java.util.stream.Collectors
-
 allprojects {
     apply plugin: 'java-library'
 
@@ -17,45 +15,24 @@ configurations {
     }
 }
 
-allprojects {
-    apply from: "$rootDir/gradle/vars.gradle"
-    apply from: "$rootDir/gradle/global.gradle"
+apply from: "$rootDir/gradle/vars.gradle"
+apply from: "$rootDir/gradle/global.gradle"
 
-    repositories {
-        mavenLocal()
-        maven {
-            url "https://maven.jetbrains.space/comroid/repo"
-            credentials.username "Anonymous.User"
-            credentials.password "anonymous"
-        }
-        jcenter()
+repositories {
+    mavenLocal()
+    maven {
+        url "https://maven.jetbrains.space/comroid/repo"
+        credentials.username "Anonymous.User"
+        credentials.password "anonymous"
     }
-
-    dependencies {
-        api 'org.comroid:common-util:1.4.1-SNAPSHOT'
-        implementation 'org.comroid:uniform:0.12.1-SNAPSHOT'
-        implementation 'org.comroid:dreadpool:0.1.1-SNAPSHOT'
-        implementation 'org.comroid:spellbind:0.11.0-SNAPSHOT'
-    }
+    jcenter()
 }
 
-task allJavadoc(type: Javadoc) {
-    source = files(exportedProjects.stream()
-            .map { rootProject.findProject(it.toString()) }
-            .filter { !Objects.isNull(it) }
-            .filter { it.hasProperty("sourceSet") }
-            .map { it.sourceSets.main.allJava }
-            .collect(Collectors.toList()))
-    classpath = files(exportedProjects.stream()
-            .map { rootProject.findProject(it.toString()) }
-            .filter { !Objects.isNull(it) }
-            .filter { it.hasProperty("sourceSet") }
-            .map { it.sourceSets.main.compileClasspath }
-            .collect(Collectors.toList()))
-    options {
-        destinationDirectory(file("$rootDir/docs/"))
-        encoding = 'UTF-8'
-    }
+dependencies {
+    api 'org.comroid:common-util:1.4.1-SNAPSHOT'
+    implementation 'org.comroid:uniform:0.12.1-SNAPSHOT'
+    implementation 'org.comroid:dreadpool:0.1.1-SNAPSHOT'
+    implementation 'org.comroid:spellbind:0.11.0-SNAPSHOT'
 }
 
 assemble {
