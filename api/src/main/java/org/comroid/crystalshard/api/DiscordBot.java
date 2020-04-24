@@ -1,11 +1,11 @@
 package org.comroid.crystalshard.api;
 
+import java.util.List;
+
 import org.comroid.crystalshard.api.entity.Snowflake;
 import org.comroid.dreadpool.ThreadPool;
 import org.comroid.restless.REST;
 import org.comroid.uniform.cache.Cache;
-
-import java.util.List;
 
 public interface DiscordBot {
     String getToken();
@@ -16,11 +16,11 @@ public interface DiscordBot {
 
     REST<DiscordBot> getRestClient();
 
-    List<DiscordBot.Shard> getShards();
-
     default int getShardCount() {
         return getShards().size();
     }
+
+    List<DiscordBot.Shard> getShards();
 
     interface Shard {
         int getShardID();

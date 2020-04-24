@@ -1,5 +1,9 @@
 package org.comroid.crystalshard.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.api.DiscordBot;
 import org.comroid.crystalshard.api.entity.Snowflake;
@@ -8,11 +12,19 @@ import org.comroid.restless.REST;
 import org.comroid.uniform.cache.Cache;
 import org.comroid.uniform.cache.ProvidedCache;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class DiscordBotImpl implements DiscordBot {
+    private static class ShardImpl implements Shard {
+        private final int shardId;
+
+        private ShardImpl(int shardId) {
+            this.shardId = shardId;
+        }
+
+        @Override
+        public int getShardID() {
+            return shardId;
+        }
+    }
     private final String                 token;
     private final ThreadPool             threadPool;
     private final Cache<Long, Snowflake> entityCache;
@@ -58,18 +70,5 @@ public class DiscordBotImpl implements DiscordBot {
     @Override
     public List<Shard> getShards() {
         return shards;
-    }
-
-    private static class ShardImpl implements Shard {
-        private final int shardId;
-
-        private ShardImpl(int shardId) {
-            this.shardId = shardId;
-        }
-
-        @Override
-        public int getShardID() {
-            return shardId;
-        }
     }
 }
