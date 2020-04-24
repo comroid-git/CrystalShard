@@ -1,6 +1,7 @@
 package org.comroid.crystalshard;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.comroid.crystalshard.entity.Snowflake;
@@ -26,13 +27,20 @@ public interface DiscordBot {
 
     final class Support {
         private static final class Impl implements DiscordBot {
+            private final String                 token;
+            private final ThreadPool             threadPool;
+            private final Cache<Long, Snowflake> entityCache;
+            private final REST<DiscordBot>       restClient;
+            private final List<Shard>            shards;
+
             private Impl(String token, int shardCount, ThreadGroup group) {
                 this.token       = token;
                 this.threadPool  = ThreadPool.fixedSize(group, 8 * shardCount);
                 this.entityCache = new BasicCache<>(500);
                 this.restClient  = new REST<>(CrystalShard.HTTP_ADAPTER, this, CrystalShard.SERIALIZATION_ADAPTER);
                 this.shards      = IntStream.range(0, shardCount)
-                        .mapToObj(it -> new ShardImpl(this, it));
+                        .mapToObj(it -> new ShardImpl(this, it))
+                        .collect(Collectors.toUnmodifiableList());
             }
 
             @Override
@@ -59,14 +67,12 @@ public interface DiscordBot {
             public List<Shard> getShards() {
                 return shards;
             }
-            private final String                 token;
-            private final ThreadPool             threadPool;
-            private final Cache<Long, Snowflake> entityCache;
-            private final REST<DiscordBot>       restClient;
-            private final List<Shard>            shards;
         }
 
         private static final class ShardImpl implements Shard {
+            private final DiscordBot bot;
+            private final int        id;
+
             public ShardImpl(DiscordBot bot, int myId) {
                 this.bot = bot;
                 this.id  = myId;
@@ -76,8 +82,6 @@ public interface DiscordBot {
             public int getShardID() {
                 return id;
             }
-            private final DiscordBot bot;
-            private final int        id;
         }
     }
 
