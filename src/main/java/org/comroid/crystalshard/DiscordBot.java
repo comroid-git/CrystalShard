@@ -20,7 +20,7 @@ import org.comroid.uniform.node.UniObjectNode;
 
 import static java.lang.System.currentTimeMillis;
 
-public interface DiscordBot extends ListnrAttachable<?, UniObjectNode, > {
+public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
     String getToken();
 
     ThreadPool getThreadPool();
@@ -38,16 +38,15 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode, > {
     List<DiscordBot.Shard> getShards();
 
     static DiscordBot start(String token) {
-        REST<Object> tempRest = new REST<>(CrystalShard.HTTP_ADAPTER, CrystalShard.SERIALIZATION_ADAPTER);
-
-        final BotGatewayEvent suggested = tempRest.request(BotGatewayEvent.class)
+        final BotGatewayEvent suggested = new REST<DiscordBot>(CrystalShard.HTTP_ADAPTER,
+                CrystalShard.SERIALIZATION_ADAPTER
+        ).request(BotGatewayEvent.class)
                 .url(DiscordEndpoint.GATEWAY_BOT.make())
                 .addHeader(CommonHeaderNames.AUTHORIZATION, "Bot " + token)
                 .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, CrystalShard.SERIALIZATION_ADAPTER.getMimeType())
                 .method(REST.Method.GET)
                 .execute$deserializeSingle()
                 .join();
-        tempRest = null;
 
         return new Support.Impl("Bot " + token,
                 Math.max(1, suggested.getShardCount()),
