@@ -1,20 +1,31 @@
 package org.comroid.crystalshard;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.comroid.crystalshard.core.event.BotGatewayEvent;
+import org.comroid.crystalshard.core.net.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.dreadpool.ThreadPool;
+import org.comroid.listnr.ListnrAttachable;
+import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
+import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.cache.BasicCache;
 import org.comroid.uniform.cache.Cache;
+import org.comroid.uniform.node.UniObjectNode;
 
-public interface DiscordBot {
+import static java.lang.System.currentTimeMillis;
+
+public interface DiscordBot extends ListnrAttachable<?, UniObjectNode, > {
     String getToken();
 
     ThreadPool getThreadPool();
+
+    WebSocket<?> getWebSocket();
 
     Cache<Long, Snowflake> getEntityCache();
 
@@ -26,11 +37,27 @@ public interface DiscordBot {
 
     List<DiscordBot.Shard> getShards();
 
-    interface Shard extends BotBound {
-        int getShardID();
+    static DiscordBot start(String token) {
+        REST<Object> tempRest = new REST<>(CrystalShard.HTTP_ADAPTER, CrystalShard.SERIALIZATION_ADAPTER);
+
+        final BotGatewayEvent suggested = tempRest.request(BotGatewayEvent.class)
+                .url(DiscordEndpoint.GATEWAY_BOT.make())
+                .addHeader(CommonHeaderNames.AUTHORIZATION, "Bot " + token)
+                .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, CrystalShard.SERIALIZATION_ADAPTER.getMimeType())
+                .method(REST.Method.GET)
+                .execute$deserializeSingle()
+                .join();
+        tempRest = null;
+
+        return new Support.Impl("Bot " + token,
+                Math.max(1, suggested.getShardCount()),
+                new ThreadGroup(CrystalShard.THREAD_GROUP, "Bot#" + currentTimeMillis()),
+                suggested.getGatewayUrl()
+        );
     }
 
-    static DiscordBot start(String token) {
+    interface Shard extends BotBound {
+        int getShardID();
     }
 
     final class Support {
@@ -38,14 +65,21 @@ public interface DiscordBot {
             private final String                 token;
             private final ThreadPool             threadPool;
             private final Cache<Long, Snowflake> entityCache;
+            private final WebSocket<?>           webSocket;
             private final REST<DiscordBot>       restClient;
             private final List<Shard>            shards;
 
-            private Impl(String token, int shardCount, ThreadGroup group) {
+            private Impl(String token, int shardCount, ThreadGroup group, URI websocketUri) {
                 this.token       = token;
                 this.threadPool  = ThreadPool.fixedSize(group, 8 * shardCount);
                 this.entityCache = new BasicCache<>(500);
-                this.restClient  = new REST<>(CrystalShard.HTTP_ADAPTER, this, CrystalShard.SERIALIZATION_ADAPTER);
+                this.webSocket   = CrystalShard.HTTP_ADAPTER.createWebSocket(CrystalShard.SERIALIZATION_ADAPTER,
+                        new WebSocket.Header.List(),
+                        threadPool,
+                        websocketUri
+                )
+                        .join();
+                this.restClient  = new REST<>(CrystalShard.HTTP_ADAPTER, CrystalShard.SERIALIZATION_ADAPTER, this);
                 this.shards      = IntStream.range(0, shardCount)
                         .mapToObj(it -> new ShardImpl(this, it))
                         .collect(Collectors.toUnmodifiableList());
@@ -59,6 +93,11 @@ public interface DiscordBot {
             @Override
             public ThreadPool getThreadPool() {
                 return threadPool;
+            }
+
+            @Override
+            public WebSocket<?> getWebSocket() {
+                return webSocket;
             }
 
             @Override

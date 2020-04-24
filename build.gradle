@@ -33,6 +33,8 @@ dependencies {
     implementation 'org.comroid:uniform:0.12.1-SNAPSHOT'
     implementation 'org.comroid:dreadpool:0.1.1-SNAPSHOT'
     implementation 'org.comroid:spellbind:0.11.0-SNAPSHOT'
+
+    runtimeOnly 'com.alibaba:fastjson:1.2.68'
 }
 
 assemble {

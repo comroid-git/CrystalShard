@@ -7,7 +7,8 @@ import org.comroid.common.func.Provider;
 import org.comroid.crystalshard.DiscordAPI;
 
 public enum DiscordEndpoint {
-    GATEWAY("/gateway");
+    GATEWAY("/gateway"),
+    GATEWAY_BOT("/gateway/bot");
 
     private final String extRaw;
     private final int requiredParameters;
@@ -21,18 +22,20 @@ public enum DiscordEndpoint {
         return requiredParameters;
     }
 
+    public EndpointProvider make(Object... args) {
+        return new EndpointProvider(this, args);
+    }
+
     public static final class EndpointProvider implements Provider.Now<URL> {
         private final DiscordEndpoint endpoint;
-        private final String extRaw;
         private final Object[] args;
 
-        private EndpointProvider(DiscordEndpoint endpoint, String extRaw, Object[] args) {
+        private EndpointProvider(DiscordEndpoint endpoint, Object[] args) {
             if (endpoint.requiredParameters != args.length)
                 throw new IllegalArgumentException(String.format("Insufficient argument count [expected=%d,actual=%d]",
                         endpoint.requiredParameters, args.length));
             
             this.endpoint = endpoint;
-            this.extRaw   = extRaw;
             this.args     = args;
         }
 
@@ -40,16 +43,12 @@ public enum DiscordEndpoint {
             return endpoint;
         }
 
-        public String getExtRaw() {
-            return extRaw;
-        }
-
         public Object[] getArgs() {
             return args;
         }
 
         public String getUnformattedUrl() {
-            return DiscordAPI.URL_BASE + extRaw;
+            return DiscordAPI.URL_BASE + endpoint.extRaw;
         }
 
         public String getFullUrl() {
