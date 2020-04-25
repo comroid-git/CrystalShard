@@ -1,8 +1,6 @@
-package org.comroid.crystalshard.core.net.socket;
+package org.comroid.crystalshard.core.net.gateway;
 
-import org.comroid.restless.socket.OPCode;
-
-public enum GatewayOPCode implements OPCode {
+public enum OPCode implements org.comroid.restless.socket.OPCode {
     DISPATCH(0, Usage.RECEIVE),
     HEARTBEAT(1, Usage.BIDIRECTIONAL),
     IDENTIFY(2, Usage.SEND),
@@ -18,7 +16,7 @@ public enum GatewayOPCode implements OPCode {
     private final int   value;
     private final Usage usage;
 
-    GatewayOPCode(int value, Usage usage) {
+    OPCode(int value, Usage usage) {
         this.value = value;
         this.usage = usage;
     }

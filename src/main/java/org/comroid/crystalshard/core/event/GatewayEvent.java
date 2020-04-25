@@ -1,17 +1,17 @@
-package org.comroid.crystalshard.event;
+package org.comroid.crystalshard.core.event;
 
 import org.comroid.common.ref.Specifiable;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.model.BotBound;
-import org.comroid.listnr.Event;
+import org.comroid.restless.socket.WebSocketEvent;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.VarCarrier;
 import org.comroid.varbind.VariableCarrier;
 
-public interface DiscordBotEvent
-        extends BotBound, Event<DiscordBotEvent>, VarCarrier.Underlying<DiscordBot>, Specifiable<DiscordBotEvent> {
-    abstract class Abstract extends Event.Support.Abstract<DiscordBotEvent> implements DiscordBotEvent {
+public interface GatewayEvent
+        extends BotBound, WebSocketEvent<GatewayEvent>, VarCarrier.Underlying<DiscordBot>, Specifiable<GatewayEvent> {
+    abstract class Abstract extends WebSocketEvent.Abstract<GatewayEvent> implements GatewayEvent {
         private final DiscordBot             bot;
         private final VarCarrier<DiscordBot> underlyingVarCarrier;
 
@@ -36,4 +36,3 @@ public interface DiscordBotEvent
         }
     }
 }
-

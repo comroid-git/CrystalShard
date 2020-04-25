@@ -1,10 +1,10 @@
-package org.comroid.crystalshard.core.net.socket;
+package org.comroid.crystalshard.core.net.gateway;
 
 import java.util.Optional;
 
 import org.comroid.common.ref.IntEnum;
 
-public enum GatewayCloseCode implements IntEnum {
+public enum CloseCode implements IntEnum {
     UNKNOWN(4000, "We're not sure what went wrong. Try reconnecting?"),
     UNKNOWN_OPCODE(4001, "You sent an invalid Gateway opcode or an invalid payload for an opcode. Don't do that!"),
     DECODE_ERROR(4002, "You sent an invalid payload to us. Don't do that!"),
@@ -34,7 +34,7 @@ public enum GatewayCloseCode implements IntEnum {
     private final int    code;
     private final String description;
 
-    GatewayCloseCode(int code, String description) {
+    CloseCode(int code, String description) {
         this.code        = code;
         this.description = description;
     }
@@ -65,8 +65,8 @@ public enum GatewayCloseCode implements IntEnum {
         return valueOf(code).toString();
     }
 
-    public static Optional<GatewayCloseCode> valueOf(int code) {
-        for (GatewayCloseCode each : values()) {
+    public static Optional<CloseCode> valueOf(int code) {
+        for (CloseCode each : values()) {
             if (each.code == code) {
                 return Optional.of(each);
             }

@@ -4,26 +4,18 @@ import java.util.function.Predicate;
 
 import org.comroid.common.func.ParamFactory;
 import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.core.event.GatewayEvent;
 import org.comroid.crystalshard.model.BotBound;
-import org.comroid.listnr.EventHub;
 import org.comroid.listnr.EventType;
-import org.comroid.restless.socket.WebSocket;
-import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.varbind.VarCarrier;
 
-public interface DiscordBotEventType<P extends DiscordBotEvent>
-        extends EventType<P, UniObjectNode, VarCarrier<DiscordBot>>, BotBound {
+public interface DiscordBotEventType extends EventType<DiscordBotEvent, GatewayEvent, DiscordBotEvent>, BotBound {
     final class Container {
-        public final DiscordBotEventType<DiscordBotEvent> TYPE_BASE;
+        public final DiscordBotEventType TYPE_BASE;
 
-        private final DiscordBot                                      bot;
-        private final EventHub<UniObjectNode, VarCarrier<DiscordBot>> hub;
-        private final WebSocket<?>                                    socket;
+        private final DiscordBot bot;
 
         public Container(DiscordBot bot) {
-            this.bot    = bot;
-            this.hub    = bot.getEventHub();
-            this.socket = bot.getWebSocket();
+            this.bot = bot;
 
             this.TYPE_BASE = new DiscordBotEventType.Abstract<>(bot,
                     DiscordBotEvent.class,
@@ -33,15 +25,15 @@ public interface DiscordBotEventType<P extends DiscordBotEvent>
         }
     }
 
-    abstract class Abstract<P extends DiscordBotEvent> extends EventType.Support.Basic<P, UniObjectNode, VarCarrier<DiscordBot>>
-            implements DiscordBotEventType<P> {
+    abstract class Abstract<P extends DiscordBotEvent>
+            extends EventType.Support.Basic<DiscordBotEvent, GatewayEvent, DiscordBotEvent> implements DiscordBotEventType {
         private final DiscordBot bot;
 
         protected Abstract(
                 DiscordBot bot,
-                Class<P> payloadType,
-                Predicate<VarCarrier<DiscordBot>> eventTester,
-                ParamFactory<VarCarrier<DiscordBot>, P> payloadFactory
+                Class<DiscordBotEvent> payloadType,
+                Predicate<DiscordBotEvent> eventTester,
+                ParamFactory<DiscordBotEvent, DiscordBotEvent> payloadFactory
         ) {
             super(bot.getEventHub(), payloadType, eventTester, payloadFactory);
 
