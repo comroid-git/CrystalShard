@@ -46,7 +46,7 @@ public interface DiscordBot
     List<DiscordBot.Shard> getShards();
 
     static DiscordBot start(String token) {
-        final BotGatewayPayload suggested = new REST<DiscordBot>(HTTP_ADAPTER, SERIALIZATION_ADAPTER).request(BotGatewayPayload.Basic.class)
+        final BotGatewayPayload suggested = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER).request(BotGatewayPayload.Basic.class)
                 .url(DiscordEndpoint.GATEWAY_BOT.make())
                 .addHeader(CommonHeaderNames.AUTHORIZATION, "Bot " + token)
                 .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, SERIALIZATION_ADAPTER.getMimeType())
@@ -72,25 +72,25 @@ public interface DiscordBot
             private final Cache<Long, Snowflake>                          entityCache;
             private final WebSocket<?>                                    webSocket;
             private final EventHub<UniObjectNode, VarCarrier<DiscordBot>> eventHub;
-            private final DiscordBotEventType.Container eventContainer;
+            private final DiscordBotEventType.Container                   eventContainer;
             private final REST<DiscordBot>                                restClient;
             private final List<Shard>                                     shards;
 
             private Impl(String token, int shardCount, ThreadGroup group, URI websocketUri) {
-                this.token       = token;
-                this.threadPool  = ThreadPool.fixedSize(group, 8 * shardCount);
-                this.entityCache = new BasicCache<>(500);
-                this.webSocket   = HTTP_ADAPTER.createWebSocket(SERIALIZATION_ADAPTER,
+                this.token          = token;
+                this.threadPool     = ThreadPool.fixedSize(group, 8 * shardCount);
+                this.entityCache    = new BasicCache<>(500);
+                this.webSocket      = HTTP_ADAPTER.createWebSocket(SERIALIZATION_ADAPTER,
                         new WebSocket.Header.List(),
                         threadPool,
                         websocketUri
                 )
                         .join();
-                this.eventHub    = webSocket.getEventHub()
+                this.eventHub       = webSocket.getEventHub()
                         .dependentHub(threadPool, node -> new VariableCarrier<>(SERIALIZATION_ADAPTER, node, this));
                 this.eventContainer = new DiscordBotEventType.Container(this);
-                this.restClient  = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
-                this.shards      = IntStream.range(0, shardCount)
+                this.restClient     = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
+                this.shards         = IntStream.range(0, shardCount)
                         .mapToObj(it -> new ShardImpl(this, it))
                         .collect(Collectors.toUnmodifiableList());
             }

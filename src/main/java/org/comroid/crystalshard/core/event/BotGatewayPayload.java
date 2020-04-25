@@ -1,13 +1,11 @@
 package org.comroid.crystalshard.core.event;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.comroid.common.Polyfill;
 import org.comroid.crystalshard.CrystalShard;
-import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.event.DiscordBotEvent;
+import org.comroid.listnr.Event;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.UniValueNode;
 import org.comroid.varbind.GroupBind;
@@ -15,18 +13,13 @@ import org.comroid.varbind.ReBind;
 import org.comroid.varbind.VarBind;
 import org.comroid.varbind.VarBind.Location;
 import org.comroid.varbind.VarBind.Root;
+import org.comroid.varbind.VarCarrier;
+import org.comroid.varbind.VariableCarrier;
 
 @Location(BotGatewayPayload.Bind.class)
-public interface BotGatewayPayload extends DiscordBotEvent {
+public interface BotGatewayPayload extends Event<DiscordBotEvent>, VarCarrier.Underlying<Object> {
     default URI getGatewayUrl() {
-        return ref(Bind.Url).process()
-                .map((URL url) -> {
-                    try {
-                        return url.toURI();
-                    } catch (URISyntaxException e) {
-                        throw new AssertionError(e);
-                    }
-                })
+        return ref(Bind.Uri).process()
                 .requireNonNull();
     }
 
@@ -60,15 +53,22 @@ public interface BotGatewayPayload extends DiscordBotEvent {
         VarBind.Uno<Integer>               ShardCount                  = Root.bind1stage("shards",
                 UniValueNode.ValueType.INTEGER
         );
-        VarBind.Duo<String, URL>           Url                         = Root.bind2stage("url",
+        VarBind.Duo<String, URI>           Uri                         = Root.bind2stage("url",
                 UniValueNode.ValueType.STRING,
-                Polyfill::url
+                Polyfill::uri
         );
     }
 
-    final class Basic extends DiscordBotEvent.Abstract<BotGatewayPayload> implements BotGatewayPayload {
-        public Basic(DiscordBot bot, UniObjectNode initialData) {
-            super(bot, initialData);
+    final class Basic extends Event.Support.Abstract<DiscordBotEvent> implements BotGatewayPayload {
+        private final VariableCarrier<Object> underlyingVarCarrier;
+
+        public Basic(UniObjectNode initialData) {
+            this.underlyingVarCarrier = new VariableCarrier<>(Basic.class, CrystalShard.SERIALIZATION_ADAPTER, initialData, null);
+        }
+
+        @Override
+        public final VarCarrier<Object> getUnderlyingVarCarrier() {
+            return underlyingVarCarrier;
         }
     }
 }
