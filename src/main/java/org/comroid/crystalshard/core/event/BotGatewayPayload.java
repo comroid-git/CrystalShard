@@ -16,8 +16,8 @@ import org.comroid.varbind.VarBind;
 import org.comroid.varbind.VarBind.Location;
 import org.comroid.varbind.VarBind.Root;
 
-@Location(BotGatewayEvent.Bind.class)
-public interface BotGatewayEvent extends DiscordBotEvent<BotGatewayEvent> {
+@Location(BotGatewayPayload.Bind.class)
+public interface BotGatewayPayload extends DiscordBotEvent {
     default URI getGatewayUrl() {
         return ref(Bind.Url).process()
                 .map((URL url) -> {
@@ -66,7 +66,7 @@ public interface BotGatewayEvent extends DiscordBotEvent<BotGatewayEvent> {
         );
     }
 
-    final class Basic extends DiscordBotEvent.Abstract<BotGatewayEvent> implements BotGatewayEvent {
+    final class Basic extends DiscordBotEvent.Abstract<BotGatewayPayload> implements BotGatewayPayload {
         public Basic(DiscordBot bot, UniObjectNode initialData) {
             super(bot, initialData);
         }

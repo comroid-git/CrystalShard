@@ -8,8 +8,8 @@ import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.VarCarrier;
 import org.comroid.varbind.VariableCarrier;
 
-public interface DiscordBotEvent<S extends DiscordBotEvent<S>> extends BotBound, Event<S>, VarCarrier.Underlying<DiscordBot> {
-    abstract class Abstract<S extends DiscordBotEvent<S>> extends Event.Support.Abstract<S> implements DiscordBotEvent<S> {
+public interface DiscordBotEvent extends Event<DiscordBotEvent>, BotBound, VarCarrier.Underlying<DiscordBot> {
+    abstract class Abstract<S extends DiscordBotEvent> extends Event.Support.Abstract<DiscordBotEvent> implements DiscordBotEvent {
         private final DiscordBot bot;
         private final VariableCarrier<DiscordBot> underlyingVarCarrier;
 

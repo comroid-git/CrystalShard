@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.comroid.crystalshard.core.event.BotGatewayEvent;
+import org.comroid.crystalshard.core.event.BotGatewayPayload;
 import org.comroid.crystalshard.core.net.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.event.DiscordBotEvent;
+import org.comroid.crystalshard.event.DiscordBotEventType;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.dreadpool.ThreadPool;
+import org.comroid.listnr.EventHub;
 import org.comroid.listnr.ListnrAttachable;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
@@ -17,12 +20,15 @@ import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.cache.BasicCache;
 import org.comroid.uniform.cache.Cache;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.varbind.VarCarrier;
+import org.comroid.varbind.VariableCarrier;
 
 import static java.lang.System.currentTimeMillis;
 import static org.comroid.crystalshard.CrystalShard.HTTP_ADAPTER;
 import static org.comroid.crystalshard.CrystalShard.SERIALIZATION_ADAPTER;
 
-public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
+public interface DiscordBot
+        extends ListnrAttachable<UniObjectNode, VarCarrier<DiscordBot>, DiscordBotEventType<DiscordBotEvent>, DiscordBotEvent> {
     String getToken();
 
     ThreadPool getThreadPool();
@@ -40,7 +46,7 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
     List<DiscordBot.Shard> getShards();
 
     static DiscordBot start(String token) {
-        final BotGatewayEvent suggested = new REST<DiscordBot>(HTTP_ADAPTER, SERIALIZATION_ADAPTER).request(BotGatewayEvent.class)
+        final BotGatewayPayload suggested = new REST<DiscordBot>(HTTP_ADAPTER, SERIALIZATION_ADAPTER).request(BotGatewayPayload.Basic.class)
                 .url(DiscordEndpoint.GATEWAY_BOT.make())
                 .addHeader(CommonHeaderNames.AUTHORIZATION, "Bot " + token)
                 .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, SERIALIZATION_ADAPTER.getMimeType())
@@ -61,12 +67,14 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
 
     final class Support {
         private static final class Impl implements DiscordBot {
-            private final String                 token;
-            private final ThreadPool             threadPool;
-            private final Cache<Long, Snowflake> entityCache;
-            private final WebSocket<?>           webSocket;
-            private final REST<DiscordBot>       restClient;
-            private final List<Shard>            shards;
+            private final String                                          token;
+            private final ThreadPool                                      threadPool;
+            private final Cache<Long, Snowflake>                          entityCache;
+            private final WebSocket<?>                                    webSocket;
+            private final EventHub<UniObjectNode, VarCarrier<DiscordBot>> eventHub;
+            private final DiscordBotEventType.Container eventContainer;
+            private final REST<DiscordBot>                                restClient;
+            private final List<Shard>                                     shards;
 
             private Impl(String token, int shardCount, ThreadGroup group, URI websocketUri) {
                 this.token       = token;
@@ -78,6 +86,9 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
                         websocketUri
                 )
                         .join();
+                this.eventHub    = webSocket.getEventHub()
+                        .dependentHub(threadPool, node -> new VariableCarrier<>(SERIALIZATION_ADAPTER, node, this));
+                this.eventContainer = new DiscordBotEventType.Container(this);
                 this.restClient  = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
                 this.shards      = IntStream.range(0, shardCount)
                         .mapToObj(it -> new ShardImpl(this, it))
@@ -112,6 +123,16 @@ public interface DiscordBot extends ListnrAttachable<?, UniObjectNode,> {
             @Override
             public List<Shard> getShards() {
                 return shards;
+            }
+
+            @Override
+            public EventHub<UniObjectNode, VarCarrier<DiscordBot>> getEventHub() {
+                return eventHub;
+            }
+
+            @Override
+            public DiscordBotEventType<DiscordBotEvent> getBaseEventType() {
+                return eventContainer.TYPE_BASE;
             }
         }
 
