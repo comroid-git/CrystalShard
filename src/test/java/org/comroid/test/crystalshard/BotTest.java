@@ -9,6 +9,9 @@ public class BotTest {
         bot = DiscordBot.start(System.getenv("Bot-Token"));
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        bot.getWebSocket().
+
+        Thread.sleep(99999);
     }
 }

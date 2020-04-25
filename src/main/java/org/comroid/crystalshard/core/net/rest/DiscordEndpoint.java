@@ -1,4 +1,4 @@
-package org.comroid.crystalshard.core.net;
+package org.comroid.crystalshard.core.net.rest;
 
 import java.net.URL;
 

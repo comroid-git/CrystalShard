@@ -7,6 +7,7 @@ import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.listnr.EventHub;
 import org.comroid.listnr.EventType;
+import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.VarCarrier;
 
@@ -15,12 +16,14 @@ public interface DiscordBotEventType<P extends DiscordBotEvent>
     final class Container {
         public final DiscordBotEventType<DiscordBotEvent> TYPE_BASE;
 
-        private final DiscordBot bot;
+        private final DiscordBot                                      bot;
         private final EventHub<UniObjectNode, VarCarrier<DiscordBot>> hub;
+        private final WebSocket<?>                                    socket;
 
         public Container(DiscordBot bot) {
-            this.bot = bot;
-            this.hub = bot.getEventHub();
+            this.bot    = bot;
+            this.hub    = bot.getEventHub();
+            this.socket = bot.getWebSocket();
 
             this.TYPE_BASE = new DiscordBotEventType.Abstract<>(bot,
                     DiscordBotEvent.class,

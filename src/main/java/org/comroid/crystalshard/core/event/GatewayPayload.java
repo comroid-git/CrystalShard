@@ -16,9 +16,9 @@ import org.comroid.varbind.VarBind.Root;
 import org.comroid.varbind.VarCarrier;
 import org.comroid.varbind.VariableCarrier;
 
-@Location(BotGatewayPayload.Bind.class)
-public interface BotGatewayPayload extends Event<DiscordBotEvent>, VarCarrier.Underlying<Object> {
-    default URI getGatewayUrl() {
+@Location(GatewayPayload.Bind.class)
+public interface GatewayPayload extends Event<DiscordBotEvent>, VarCarrier.Underlying<Object> {
+    default URI getGatewayUri() {
         return ref(Bind.Uri).process()
                 .requireNonNull();
     }
@@ -59,11 +59,11 @@ public interface BotGatewayPayload extends Event<DiscordBotEvent>, VarCarrier.Un
         );
     }
 
-    final class Basic extends Event.Support.Abstract<DiscordBotEvent> implements BotGatewayPayload {
+    final class Basic extends Event.Support.Abstract<DiscordBotEvent> implements GatewayPayload {
         private final VariableCarrier<Object> underlyingVarCarrier;
 
         public Basic(UniObjectNode initialData) {
-            this.underlyingVarCarrier = new VariableCarrier<>(Basic.class, CrystalShard.SERIALIZATION_ADAPTER, initialData, null);
+            this.underlyingVarCarrier = new VariableCarrier<>(Basic.class, CrystalShard.SERIALIZATION_ADAPTER, initialData);
         }
 
         @Override
