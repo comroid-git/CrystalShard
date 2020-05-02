@@ -3,14 +3,12 @@ package org.comroid.crystalshard;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.comroid.crystalshard.core.event.GatewayEvent;
 import org.comroid.crystalshard.core.event.GatewayRequestPayload;
 import org.comroid.crystalshard.core.net.gateway.CloseCode;
-import org.comroid.crystalshard.core.net.gateway.cmd.IdentifyCommand;
 import org.comroid.crystalshard.core.net.rest.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.event.DiscordBotEvent;
@@ -26,15 +24,12 @@ import org.comroid.restless.REST;
 import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.cache.BasicCache;
 import org.comroid.uniform.cache.Cache;
-import org.comroid.varbind.VarCarrier;
-import org.comroid.varbind.VariableCarrier;
 
 import static java.lang.System.currentTimeMillis;
 import static org.comroid.crystalshard.CrystalShard.HTTP_ADAPTER;
 import static org.comroid.crystalshard.CrystalShard.SERIALIZATION_ADAPTER;
 
-public interface DiscordBot
-        extends ListnrAttachable<GatewayEvent, DiscordBotEvent, DiscordBotEventType, DiscordBotEvent> {
+public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEvent, DiscordBotEventType, DiscordBotEvent> {
     ThreadPool getThreadPool();
 
     Cache<Long, Snowflake> getEntityCache();
@@ -75,19 +70,19 @@ public interface DiscordBot
     interface Shard extends BotBound {
         int getShardID();
 
-        WebSocket<?> getWebSocket();
+        <T> WebSocket<T> getWebSocket();
     }
 
     final class Support {
         private static final class ShardingManager implements DiscordBot {
-            private final String                                           token;
-            private final ThreadPool                                       threadPool;
-            private final Cache<Long, Snowflake>                           entityCache;
-            private final REST<DiscordBot>                                 restClient;
-            private final List<Shard>                                      shards;
-            private final List<WebSocket<GatewayEvent>>                    webSockets;
-            private final EventHub<GatewayEvent, DiscordBotEvent>          mainEventHub;
-            private final DiscordBotEventType.Container                    eventTypeContainer;
+            private final String                                  token;
+            private final ThreadPool                              threadPool;
+            private final Cache<Long, Snowflake>                  entityCache;
+            private final REST<DiscordBot>                        restClient;
+            private final List<Shard>                             shards;
+            private final List<WebSocket<GatewayEvent>>           webSockets;
+            private final EventHub<GatewayEvent, DiscordBotEvent> mainEventHub;
+            private final DiscordBotEventType.Container           eventTypeContainer;
 
             private ShardingManager(String token, int shards, ThreadGroup threadGroup, URI gatewayUri) {
                 this.token       = token;
@@ -98,8 +93,12 @@ public interface DiscordBot
                 var socketHeaders = new WebSocket.Header.List().add("Authorization", token)
                         .add("Content-Type", SERIALIZATION_ADAPTER.getMimeType());
 
-                List<WebSocket<GatewayEvent>>                    sockets   = new ArrayList<>();
-                List<EventHub<DiscordBotEvent, DiscordBotEvent>> eventHubs = new ArrayList<>();
+                List<WebSocket<GatewayEvent>>                                                          sockets
+                                                                                                                 =
+                        new ArrayList<>();
+                List<EventHub<DiscordBotEvent, DiscordBotEvent, GatewayEventType, DiscordBotEvent>> eventHubs
+                                                                                                                 =
+                        new ArrayList<>();
                 this.webSockets = IntStream.range(0, shards)
                         .mapToObj(shardId -> {
                             WebSocket<GatewayEvent> webSocket = HTTP_ADAPTER.createWebSocket(SERIALIZATION_ADAPTER,
@@ -111,8 +110,7 @@ public interface DiscordBot
                                     .join();
                             webSocket.setCloseCodeResolver(CloseCode::toString);
 
-                            (IdentifyCommand.class);
-                            webSocket.sendCommand();
+                            webSocket.getEventHub()
 
                             return webSocket;
                         })
@@ -185,14 +183,12 @@ public interface DiscordBot
         }
 
         private static final class ShardImpl implements Shard {
-            private final ShardingManager                            shardingManager;
-            private final int                                        shardId;
-            private final WebSocket<GatewayEvent>                    webSocket;
+            private final ShardingManager         shardingManager;
+            private final int                     shardId;
+            private final WebSocket<GatewayEvent> webSocket;
 
             public ShardImpl(
-                    ShardingManager shardingManager,
-                    int shardId,
-                    WebSocket<GatewayEvent> webSocket
+                    ShardingManager shardingManager, int shardId, WebSocket<GatewayEvent> webSocket
             ) {
                 this.shardingManager = shardingManager;
                 this.shardId         = shardId;

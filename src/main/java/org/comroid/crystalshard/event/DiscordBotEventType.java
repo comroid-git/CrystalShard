@@ -17,7 +17,7 @@ public interface DiscordBotEventType extends EventType<DiscordBotEvent, GatewayE
         public Container(DiscordBot bot) {
             this.bot = bot;
 
-            this.TYPE_BASE = new DiscordBotEventType.Abstract<>(bot,
+            this.TYPE_BASE = new DiscordBotEventType.Abstract(bot,
                     DiscordBotEvent.class,
                     discordBotVarCarrier -> false,
                     null
@@ -25,7 +25,7 @@ public interface DiscordBotEventType extends EventType<DiscordBotEvent, GatewayE
         }
     }
 
-    abstract class Abstract<P extends DiscordBotEvent>
+    abstract class Abstract
             extends EventType.Support.Basic<DiscordBotEvent, GatewayEvent, DiscordBotEvent> implements DiscordBotEventType {
         private final DiscordBot bot;
 
