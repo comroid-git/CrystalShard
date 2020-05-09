@@ -7,7 +7,6 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.GuildChannel;
 import org.comroid.crystalshard.entity.channel.GuildTextChannel;
 import org.comroid.crystalshard.entity.channel.GuildVoiceChannel;
-import org.comroid.crystalshard.entity.guild.emoji.CustomEmoji;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.guild.*;
 import org.comroid.crystalshard.model.permission.PermissionSet;

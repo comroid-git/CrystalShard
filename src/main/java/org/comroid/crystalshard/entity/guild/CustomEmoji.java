@@ -1,4 +1,4 @@
-package org.comroid.crystalshard.entity.guild.emoji;
+package org.comroid.crystalshard.entity.guild;
 
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.emoji.Emoji;
