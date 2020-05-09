@@ -42,7 +42,7 @@ public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEve
 
     ThreadPool getThreadPool();
 
-    FileCache<Long, Snowflake, DiscordBot> getEntityCache();
+    Cache<Long, Snowflake> getEntityCache();
 
     REST<DiscordBot> getRestClient();
 
@@ -60,7 +60,7 @@ public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEve
             throw new IllegalArgumentException("CrystalShard currently only support JSON serialization");
         }
 
-        final GatewayRequestPayload suggested = new REST<>(
+        final GatewayRequestPayload grp = new REST<>(
                 HTTP_ADAPTER,
                 SERIALIZATION_ADAPTER
         ).request(GatewayRequestPayload.Bind.Root)
@@ -72,9 +72,9 @@ public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEve
                 .join();
 
         return new Support.ShardingManager("Bot " + token,
-                Math.max(1, suggested.getShardCount()),
+                Math.max(1, grp.getShardCount()),
                 new ThreadGroup(CrystalShard.THREAD_GROUP, "Bot#" + currentTimeMillis()),
-                suggested.getGatewayUri()
+                grp.getGatewayUri()
         );
     }
 
@@ -97,9 +97,11 @@ public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEve
     }
 
     default Processor<? extends Snowflake> getSnowflakeByID(long id) {
-        return Processor.providedOptional(() -> getEntityCache()
+        return Reference.provided(() -> getEntityCache()
                 .stream(other -> id == other)
                 .findAny())
+                .process()
+                .flatMap(ref -> ref)
                 .flatMap(Reference::wrap);
     }
 
