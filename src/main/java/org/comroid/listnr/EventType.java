@@ -11,7 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
-public interface EventType<IN, D, EP extends EventPayload> extends Predicate<IN>, Dependent<D>, TypeFragmentProvider<EP> {
+public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? super IN, ? super D, ? super EP>>>
+        extends Predicate<IN>, Dependent<D>, TypeFragmentProvider<EP> {
     Collection<EventType<? super IN, ? super D, ? super EP>> getParents();
 
     Collection<EventType<? extends IN, ? extends D, ? extends EP>> getChildren();
@@ -31,7 +32,8 @@ public interface EventType<IN, D, EP extends EventPayload> extends Predicate<IN>
         return constructor.autoInvoke(getDependent(), input);
     }
 
-    abstract class Basic<IN, D, EP extends EventPayload> implements EventType<IN, D, EP> {
+    abstract class Basic<IN, D, EP extends EventPayload<? extends EventType<? super IN, ? super D, ? super EP>>>
+            implements EventType<IN, D, EP> {
         private final Collection<EventType<? super IN, ? super D, ? super EP>> parents;
         private final List<EventType<? extends IN, ? extends D, ? extends EP>> children = new ArrayList<>();
         private final InstanceFactory<EP, D> payloadFactory;
