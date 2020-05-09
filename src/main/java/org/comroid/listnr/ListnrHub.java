@@ -2,7 +2,22 @@ package org.comroid.listnr;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-public interface ListnrHub<IN, D, ET extends EventType<IN, D, ?>, LA extends ListnrAttachable<? extends IN, ? extends D, ? extends ET, ?>> {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public final class ListnrHub<IN, D, ET extends EventType<IN, D, ?>, LA extends ListnrAttachable<? extends IN, ? extends D, ? extends ET, ?>> {
+    private final Map<Class<? extends EventPayload<? extends ET>>, ? extends TypeHandler<? extends ET, ?>> handlerCache = new ConcurrentHashMap<>();
+    private final List<LA> managed = new ArrayList<>();
+
     @Internal
-    <IT extends LA, TH extends TypeHandler<? super ET, ?>> ListnrManager<? super ET, TH> attachListener(IT attachable, TH handler) throws IllegalArgumentException;
+    public void addManaged(LA attachable) {
+        managed.add(attachable);
+    }
+
+    @Internal
+    public boolean isManaged(LA attachable) {
+        return managed.contains(attachable);
+    }
 }

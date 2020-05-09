@@ -1,11 +1,16 @@
 package org.comroid.listnr;
 
-import static org.comroid.common.Polyfill.uncheckedCast;
+public class ListnrAttachable<IN, D, ET extends EventType<IN, D, EP>, EP extends EventPayload<ET>> {
+    private final ListnrHub<IN, D, ? super ET, ListnrAttachable<IN, D, ? extends ET, ?>> hub;
 
-public interface ListnrAttachable<IN, D, ET extends EventType<IN, D, EP>, EP extends EventPayload<ET>> {
-    ListnrHub<IN, D, ? super ET, ListnrAttachable<IN, D, ? extends ET, ?>> getHub();
+    public final ListnrHub<IN, D, ? super ET, ListnrAttachable<IN, D, ? extends ET, ?>> getHub() {
+        return hub;
+    }
 
-    default <TH extends TypeHandler<? super ET, ? super EP>> ListnrManager<? super ET, TH> attachListener(TH handler) {
-        return uncheckedCast(getHub().attachListener(uncheckedCast(this), uncheckedCast(handler)));
+    public ListnrAttachable(ListnrHub<IN, D, ? super ET, ListnrAttachable<IN, D, ? extends ET, ?>> hub) {
+        this.hub = hub;
+    }
+
+    public <TH extends TypeHandler<? super ET, ? super EP>> ListnrManager<? super ET, TH> attachListener(TH handler) {
     }
 }
