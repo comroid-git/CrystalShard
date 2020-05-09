@@ -12,6 +12,11 @@ public interface TypeHandler<ET extends EventType<?, ?, EP>, EP extends EventPay
         return Polyfill.uncheckedCast(EventPayload.class);
     }
 
+    @OverrideOnly
+    default ET getMasterEventType() {
+        throw new AbstractMethodError("Method must be overridden as a default interface method");
+    }
+
     @Override
     default boolean test(EP payload) {
         return getEventPayloadType().isInstance(payload);
