@@ -1,8 +1,7 @@
-package org.comroid.crystalshard.event.multipart;
+package org.comroid.crystalshard.event.message;
 
 import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;
-import org.comroid.common.func.Provider;
 import org.comroid.common.ref.StaticCache;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.message.Message;
@@ -12,13 +11,12 @@ import org.comroid.listnr.EventPayload;
 import org.comroid.listnr.EventType;
 import org.comroid.uniform.node.UniObjectNode;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 
 /**
- * Any Discord message related event.
+ * Any discord message related event.
  */
-public class MessageEvent {
+public interface MessageEvent {
     interface Type extends EventType<UniObjectNode, DiscordBot, Payload> {
         @Override
         default boolean test(UniObjectNode uniObjectNode) {
@@ -48,7 +46,7 @@ public class MessageEvent {
 
         public Container(DiscordBot bot) {
             this.bot = bot;
-            this.type = new Container.TypeImpl(bot);
+            this.type = new TypeImpl(bot);
         }
 
         private final class TypeImpl extends EventType.Basic<UniObjectNode, DiscordBot, Payload> implements Type {
@@ -58,12 +56,12 @@ public class MessageEvent {
                         () -> Invocable.ofMethodCall(this, "craftPayload")));
             }
 
-            public Payload craftPayload(Message message) {
-                return new PayloadImpl(this, message);
-            }
-
             public TypeImpl(DiscordBot bot) {
                 super(Collections.emptyList(), Payload.class, bot);
+            }
+
+            public Payload craftPayload(Message message) {
+                return new PayloadImpl(this, message);
             }
         }
 

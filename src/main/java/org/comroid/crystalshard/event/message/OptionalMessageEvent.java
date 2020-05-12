@@ -1,10 +1,10 @@
-package org.comroid.crystalshard.event.multipart;
+package org.comroid.crystalshard.event.message;
 
 import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;
-import org.comroid.common.func.Provider;
 import org.comroid.common.ref.StaticCache;
 import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.listnr.EventContainer;
 import org.comroid.listnr.EventPayload;
@@ -14,9 +14,9 @@ import org.comroid.uniform.node.UniObjectNode;
 import java.util.Collections;
 
 /**
- * Any Discord Bot related Event
+ * Any possibly-discord-message-related event
  */
-public interface BotEvent {
+public interface OptionalMessageEvent {
     interface Type extends EventType<UniObjectNode, DiscordBot, Payload> {
         @Override
         default boolean test(UniObjectNode uniObjectNode) {
@@ -24,12 +24,15 @@ public interface BotEvent {
         }
     }
 
-    interface Payload extends EventPayload<Type>, BotBound {
+    interface Payload extends EventPayload<Type> {
+        Message getMessage();
+
+        // todo interface methods
     }
 
     final class Container implements EventContainer<UniObjectNode, DiscordBot, Type, Payload>, BotBound {
         private final DiscordBot bot;
-        private final BotEvent.Type type;
+        private final Type type;
 
         @Override
         public final DiscordBot getBot() {
@@ -50,22 +53,30 @@ public interface BotEvent {
             @Override
             public Invocable<? extends Payload> getInstanceSupplier() {
                 return Polyfill.uncheckedCast(StaticCache.access(this, Invocable.class,
-                        () -> Invocable.ofProvider(Provider.of(() -> new PayloadImpl(TypeImpl.this)))));
+                        () -> Invocable.ofMethodCall(this, "craftPayload")));
             }
 
             public TypeImpl(DiscordBot bot) {
                 super(Collections.emptyList(), Payload.class, bot);
             }
+
+            public Payload craftPayload(Message message) {
+                return new PayloadImpl(this, message);
+            }
         }
 
         private final class PayloadImpl extends EventPayload.Basic<Type> implements Payload {
+            private final Message message;
+
             @Override
-            public DiscordBot getBot() {
-                return getType().getDependent();
+            public Message getMessage() {
+                return message;
             }
 
-            public PayloadImpl(TypeImpl masterEventType) {
+            public PayloadImpl(TypeImpl masterEventType, Message message) {
                 super(masterEventType);
+
+                this.message = message;
             }
         }
     }
