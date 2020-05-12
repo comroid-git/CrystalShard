@@ -1,65 +1,96 @@
-import groovy.lang.MissingPropertyException
-import org.gradle.api.tasks.bundling.Jar
-
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse.BodyHandlers
 
+import static java.lang.System.getenv
+
 final HttpClient client = HttpClient.newBuilder().build()
+
+ext {
+    snapshot = project.version.endsWith('SNAPSHOT')
+
+    canSign = getenv().containsKey('GPG_KEYNAME') && getenv().containsKey('GPG_PASSPHRASE')
+    canPublishToSpace = getenv().containsKey('SPACE_PASSWORD') && getenv().containsKey('SPACE_USERNAME')
+    canPublishToSonatype = canSign && getenv().containsKey('SONATYPE_PASSWORD') && getenv().containsKey('SONATYPE_USERNAME')
+    canPublishToGitHub = !snapshot && canSign && getenv().containsKey('GITHUB_PASSWORD') && getenv().containsKey('GITHUB_USERNAME')
+}
+
+if (canSign) {
+    ext.'signing.gnupg.keyName' = getenv('GPG_KEYNAME')
+    ext.'signing.gnupg.passphrase' = getenv('GPG_PASSPHRASE')
+}
+
+if (canPublishToSpace) {
+    ext {
+        spaceUsername = getenv('SPACE_USERNAME')
+        spacePassword = getenv('SPACE_PASSWORD')
+    }
+}
+
+if (canPublishToSonatype) {
+    ext {
+        sonatypeUsername = getenv('SONATYPE_USERNAME')
+        sonatypePassword = getenv('SONATYPE_PASSWORD')
+    }
+}
+
+if (canPublishToGitHub) {
+    ext {
+        githubRegistryUrl = uri("https://maven.pkg.github.com/${userbase.toLowerCase()}/${rootProject.name.toLowerCase()}")
+        githubUsername = getenv('GITHUB_USERNAME')
+        githubPassword = getenv('GITHUB_PASSWORD')
+    }
+}
 
 apply plugin: 'maven-publish'
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
-
-    try {
-        archiveClassifier.set 'sources'
-    } catch (MissingPropertyException ignored) {
-        classifier = "sources"
-    }
-}
-
-task javadocJar(type: Jar) {
-    dependsOn 'javadoc'
-
-    from javadoc.destinationDir
-
-    try {
-        archiveClassifier.set 'javadoc'
-    } catch (MissingPropertyException ignored) {
-        classifier = "javadoc"
-    }
-}
-
 publishing {
     repositories {
-        maven {
-            name = 'Space'
-            url = 'https://maven.jetbrains.space/comroid/repo'
+        mavenLocal()
 
-            credentials {
-                username spaceUsername
-                password spacePassword
+        if (canPublishToSpace) {
+            maven {
+                name = 'Space'
+                url = 'https://maven.jetbrains.space/comroid/repo'
+
+                credentials {
+                    username spaceUsername
+                    password spacePassword
+                }
             }
         }
 
-        maven {
-            name = 'Sonatype'
-            url = snapshot
-                    ? 'https://oss.sonatype.org/content/repositories/snapshots'
-                    : 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+        if (canPublishToSonatype) {
+            maven {
+                name = 'Sonatype'
+                url = snapshot
+                        ? 'https://oss.sonatype.org/content/repositories/snapshots'
+                        : 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
 
-            credentials {
-                username sonatypeUsername
-                password sonatypePassword
+                credentials {
+                    username sonatypeUsername
+                    password sonatypePassword
+                }
+            }
+        }
+
+        if (canPublishToGitHub) {
+            maven {
+                name = "GitHubPackages"
+                url = githubRegistryUrl
+
+                credentials {
+                    username githubUsername
+                    password githubPassword
+                }
             }
         }
     }
 
     publications {
         mavenJava(MavenPublication) {
-            artifactId = "crystalshard-$project.name"
-            from project.components.java
+            artifactId = artifactName
+            from components.java
 
             artifact sourcesJar
             artifact javadocJar
@@ -67,7 +98,7 @@ publishing {
             pom {
                 name = rootProject.name
                 description = project.projectDescription
-                inceptionYear = '2019'
+                inceptionYear = '2020'
                 url = "https://github.com/$userbase/$rootProject.name".toString()
 
                 licenses {
@@ -79,9 +110,9 @@ publishing {
 
                 developers {
                     developer {
-                        id = 'burdoto'
+                        id = 'kaleidox'
                         name = 'Tobias Burdow'
-                        email = 'burdoto@outlook.com'
+                        email = 'contact@comroid.org'
                     }
                 }
 
@@ -98,7 +129,9 @@ publishing {
 }
 
 def artifactId = publishing.publications.mavenJava.artifactId
-tasks.findByName('publishMavenJavaPublicationToSonatypeRepository').onlyIf {
+
+// block sonatype release if exists
+tasks.findByName('publishMavenJavaPublicationToSonatypeRepository')?.onlyIf {
     if (snapshot) return true
 
     def uri = new URI(String.format("https://oss.sonatype.org/content/repositories/releases/%s/%s/%s/%s",
@@ -120,9 +153,11 @@ task generateGithubPom(type: GenerateMavenPom) {
     pom = publishing.publications.mavenJava.pom
 }
 
-apply plugin: 'signing'
+if (canSign) {
+    apply plugin: 'signing'
 
-signing {
-    useGpgCmd()
-    sign publishing.publications.mavenJava
+    signing {
+        useGpgCmd()
+        sign publishing.publications.mavenJava
+    }
 }
