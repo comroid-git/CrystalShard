@@ -5,9 +5,9 @@ import org.comroid.common.ref.StaticCache;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.BotBound;
-import org.comroid.listnr.EventContainer;
-import org.comroid.listnr.EventPayload;
-import org.comroid.listnr.EventType;
+import org.comroid.listnr.model.EventContainer;
+import org.comroid.listnr.model.EventPayload;
+import org.comroid.listnr.model.EventType;
 import org.comroid.uniform.node.UniObjectNode;
 
 import java.util.Collections;

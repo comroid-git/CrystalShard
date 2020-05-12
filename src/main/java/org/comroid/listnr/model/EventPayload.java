@@ -1,4 +1,4 @@
-package org.comroid.listnr;
+package org.comroid.listnr.model;
 
 import org.comroid.spellbind.model.TypeFragment;
 import org.comroid.uniform.node.UniObjectNode;

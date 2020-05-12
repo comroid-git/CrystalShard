@@ -8,7 +8,7 @@ import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.model.ShardBound;
 import org.comroid.listnr.EventHub;
-import org.comroid.listnr.EventType;
+import org.comroid.listnr.model.EventType;
 import org.comroid.uniform.node.UniObjectNode;
 
 public interface GatewayEventType extends EventType<String, UniObjectNode, GatewayEvent>, ShardBound {

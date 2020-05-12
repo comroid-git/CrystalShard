@@ -1,4 +1,4 @@
-package org.comroid.listnr;
+package org.comroid.listnr.model;
 
 import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;

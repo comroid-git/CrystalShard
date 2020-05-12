@@ -13,7 +13,7 @@ import org.comroid.crystalshard.model.BotBound;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
 import org.comroid.dreadpool.ThreadPool;
-import org.comroid.listnr.EventType;
+import org.comroid.listnr.model.EventType;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
 import org.comroid.restless.socket.WebSocket;

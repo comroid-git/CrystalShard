@@ -2,6 +2,7 @@ package org.comroid.restless.socket.event;
 
 import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;
+import org.comroid.common.func.Invocable.TypeMap.Null;
 import org.comroid.common.ref.StaticCache;
 import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.node.UniObjectNode;
@@ -46,7 +47,7 @@ public interface OpenEvent {
                 super(Polyfill.uncheckedCast(Collections.singletonList(getWebSocket().getWebSocketEventHub().Base.getType())), Payload.class, bot);
             }
 
-            public PayloadImpl craftOpenPayload(UniObjectNode data) {
+            public PayloadImpl craftOpenPayload(@Null UniObjectNode data) {
                 return new PayloadImpl(this, data);
             }
         }

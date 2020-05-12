@@ -1,6 +1,8 @@
 package org.comroid.restless.socket;
 
 import org.comroid.common.Polyfill;
+import org.comroid.listnr.model.EventType;
+import org.comroid.restless.socket.event.OpenEvent;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 
@@ -9,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntFunction;
 
-public abstract class WebSocket {
+public abstract class WebSocket implements WebSocketEventHub.Attachable {
     private final ThreadGroup threadGroup;
     private final WebSocketEventHub webSocketEventHub;
     private IntFunction<String> closeCodeResolver = String::valueOf;
@@ -51,10 +53,6 @@ public abstract class WebSocket {
 
             return CompletableFuture.allOf(futures);
         }
-    }
-
-    protected final void handleData(UniObjectNode data) {
-
     }
 
     protected abstract CompletableFuture<Void> sendString(String data, boolean last);

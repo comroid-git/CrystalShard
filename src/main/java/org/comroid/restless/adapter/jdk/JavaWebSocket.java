@@ -1,6 +1,10 @@
 package org.comroid.restless.adapter.jdk;
 
+import org.comroid.listnr.ListnrCore;
 import org.comroid.restless.socket.WebSocket;
+import org.comroid.restless.socket.event.OpenEvent;
+import org.comroid.restless.socket.event.SocketEvent;
+import org.comroid.uniform.node.UniObjectNode;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,7 +14,13 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.IntFunction;
 
 public class JavaWebSocket extends WebSocket {
+    private final java.net.http.WebSocket jSocket;
     private final JListener jListener;
+
+    @Override
+    public ListnrCore<UniObjectNode, WebSocket, SocketEvent.Type<?>, SocketEvent.Payload<?>> getListnrCore() {
+        return getWebSocketEventHub();
+    }
 
     protected JavaWebSocket(HttpClient httpClient, WebSocket.Header.List headers, ThreadGroup threadGroup, URI uri) {
         super(threadGroup);
@@ -20,8 +30,7 @@ public class JavaWebSocket extends WebSocket {
 
         headers.forEach(head -> builder.header(head.getName(), head.getValue()));
 
-        builder.buildAsync(uri, this.jListener)
-
+        this.jSocket = builder.buildAsync(uri, this.jListener).join();
     }
 
     @Override
@@ -32,7 +41,12 @@ public class JavaWebSocket extends WebSocket {
     private class JListener implements java.net.http.WebSocket.Listener {
         @Override
         public void onOpen(java.net.http.WebSocket webSocket) {
+            JavaWebSocket.this.<
+                    OpenEvent.Type,
+                    OpenEvent.Payload
+                    >publish(getWebSocketEventHub().Open.getType(), new Object[0]);
 
+            webSocket.request(1);
         }
 
         @Override

@@ -3,6 +3,11 @@ package org.comroid.listnr;
 import org.comroid.common.Polyfill;
 import org.comroid.common.iter.pipe.Pipeable;
 import org.comroid.common.iter.pipe.Pump;
+import org.comroid.listnr.model.EventPayload;
+import org.comroid.listnr.model.EventType;
+import org.comroid.restless.socket.WebSocket;
+import org.comroid.restless.socket.event.OpenEvent;
+import org.comroid.uniform.node.UniObjectNode;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -11,11 +16,17 @@ public @interface Listnr {
     interface Attachable<IN, D, T extends EventType<IN, D, ? extends P>, P extends EventPayload<D, ? extends T>> {
         ListnrCore<IN, D, T, P> getListnrCore();
 
-        default <ET extends EventType<IN, D, EP>, EP extends EventPayload<D, ET>> Listnr.API<IN, D, ET, EP> listenTo(ET eventType) {
+        default <ET extends EventType<IN, D, EP>, EP extends EventPayload<D, ET>>
+        Listnr.API<IN, D, ET, EP> listenTo(ET eventType) throws IllegalArgumentException {
             if (!getListnrCore().getRegisteredEventTypes().contains(eventType))
                 throw new IllegalArgumentException(String.format("Type %s is not managed by %s", eventType, this));
 
             return new Listnr.API<>(Polyfill.uncheckedCast(this), eventType);
+        }
+
+        default <ET extends EventType<IN, D, EventPayload<D, ET>>, EP extends EventPayload<D, EventType<IN, D, EP>>>
+        void publish(EventType<UniObjectNode, WebSocket, ? extends OpenEvent.Payload> eventType, Object... data) {
+            getListnrCore().publish(this, Polyfill.uncheckedCast(eventType), data);
         }
     }
 
