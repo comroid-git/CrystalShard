@@ -5,20 +5,16 @@ import org.comroid.common.func.Invocable;
 import org.comroid.common.ref.StaticCache;
 import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.node.UniObjectNode;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
-public interface OpenEvent {
-    /*
-    we need these classes to extend the SocketEvent classes
-     */
-
+public interface DataEvent {
     interface Type extends SocketEvent.Type<Payload> {
     }
 
     interface Payload extends SocketEvent.Payload<Type> {
+        int getCloseCode();
     }
 
     final class Container extends SocketEvent.Container<Payload> {
@@ -39,21 +35,30 @@ public interface OpenEvent {
             @Override
             public Invocable.TypeMap<? extends Payload> getInstanceSupplier() {
                 return StaticCache.access(this, "instanceSupplier",
-                        () -> Invocable.<Payload>ofMethodCall(this, "craftOpenPayload").typeMapped());
+                        () -> Invocable.<Payload>ofMethodCall(this, "craftDataPayload").typeMapped());
             }
 
             public TypeImpl(WebSocket bot) {
                 super(Polyfill.uncheckedCast(Collections.singletonList(getWebSocket().getWebSocketEventHub().Base.getType())), Payload.class, bot);
             }
 
-            public PayloadImpl craftOpenPayload(UniObjectNode data) {
-                return new PayloadImpl(this, data);
+            public PayloadImpl craftOpenPayload(UniObjectNode data, int closeCode) {
+                return new PayloadImpl(this, closeCode);
             }
         }
 
         private final class PayloadImpl extends SocketEvent.Container<Payload>.PayloadImpl<Type> implements Payload {
-            public PayloadImpl(Type masterEventType, @Nullable UniObjectNode data) {
-                super(masterEventType, data);
+            private final int closeCode;
+
+            @Override
+            public int getCloseCode() {
+                return closeCode;
+            }
+
+            public PayloadImpl(Type masterEventType, int closeCode) {
+                super(masterEventType, null);
+
+                this.closeCode = closeCode;
             }
         }
     }

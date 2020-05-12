@@ -1,7 +1,6 @@
 package org.comroid.restless.socket;
 
 import org.comroid.common.Polyfill;
-import org.comroid.restless.socket.event.SocketEvent;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 
@@ -12,11 +11,11 @@ import java.util.function.IntFunction;
 
 public abstract class WebSocket {
     private final ThreadGroup threadGroup;
-    private final EventCarrier eventCarrier;
+    private final WebSocketEventHub webSocketEventHub;
     private IntFunction<String> closeCodeResolver = String::valueOf;
 
-    public final EventCarrier getEventCarrier() {
-        return eventCarrier;
+    public final WebSocketEventHub getWebSocketEventHub() {
+        return webSocketEventHub;
     }
 
     public IntFunction<String> getCloseCodeResolver() {
@@ -27,11 +26,9 @@ public abstract class WebSocket {
         this.closeCodeResolver = closeCodeResolver;
     }
 
-    protected WebSocket(
-            ThreadGroup threadGroup
-    ) {
+    protected WebSocket(ThreadGroup threadGroup) {
         this.threadGroup = new ThreadGroup(threadGroup, "websocket");
-        this.eventCarrier = new EventCarrier(this);
+        this.webSocketEventHub = new WebSocketEventHub(this);
     }
 
     public final CompletableFuture<Void> sendData(UniNode data) {
