@@ -4,7 +4,6 @@ import org.comroid.common.ref.Specifiable;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.model.BotBound;
-import org.comroid.restless.socket.WebSocketEvent;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.VarCarrier;
 import org.comroid.varbind.VariableCarrier;

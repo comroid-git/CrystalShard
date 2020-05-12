@@ -1,6 +1,6 @@
 package org.comroid.listnr;
 
-import org.comroid.common.func.Factory;
+import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;
 import org.comroid.common.info.Dependent;
 import org.comroid.common.ref.Reference;
@@ -8,19 +8,19 @@ import org.comroid.spellbind.factory.InstanceFactory;
 import org.comroid.spellbind.model.TypeFragmentProvider;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? super IN, ? super D, ? super EP>>>
+public interface EventType<IN, D, EP extends EventPayload<D, ? extends EventType<? super IN, ? super D, ? super EP>>>
         extends Predicate<IN>, Dependent<D>, TypeFragmentProvider<EP> {
-    Collection<EventType<? super IN, ? super D, ? super EP>> getParents();
+    Collection<? extends EventType<? super IN, ? super D, ? super EP>> getParents();
 
     Collection<EventType<? extends IN, ? extends D, ? extends EP>> getChildren();
 
-    Invocable<? extends EP> getPayloadConstructor();
+    Invocable.TypeMap<? extends EP> getPayloadConstructor();
 
     @Override
     boolean test(IN in);
@@ -35,16 +35,16 @@ public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? 
         return constructor.autoInvoke(getDependent(), input);
     }
 
-    abstract class Basic<IN, D, EP extends EventPayload<? extends EventType<? super IN, ? super D, ? super EP>>>
+    abstract class Basic<IN, D, EP extends EventPayload<D, ? extends EventType<? super IN, ? super D, ? super EP>>>
             implements EventType<IN, D, EP>, Reference<EP> {
-        private final Collection<EventType<? super IN, ? super D, ? super EP>> parents;
+        private final Collection<? extends EventType<IN, D, ? super EP>> parents;
         private final List<EventType<? extends IN, ? extends D, ? extends EP>> children = new ArrayList<>();
         private final InstanceFactory<EP, D> payloadFactory;
         private final Class<EP> payloadType;
         private final D dependent;
 
         @Override
-        public final Collection<EventType<? super IN, ? super D, ? super EP>> getParents() {
+        public final Collection<? extends EventType<? super IN, ? super D, ? super EP>> getParents() {
             return parents;
         }
 
@@ -54,7 +54,7 @@ public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? 
         }
 
         @Override
-        public final Invocable<? extends EP> getPayloadConstructor() {
+        public final Invocable.TypeMap<? extends EP> getPayloadConstructor() {
             return payloadFactory;
         }
 
@@ -68,13 +68,8 @@ public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? 
             return payloadType;
         }
 
-        @Override
-        public @Nullable EP get() {
-            return getInstanceSupplier().autoInvoke(getDependent());
-        }
-
-        public Basic(Collection<EventType<? super IN, ? super D, ? super EP>> parents, Class<EP> payloadType, D dependent) {
-            this.parents = parents;
+        public Basic(Collection<? extends EventType<IN, D, ?>> parents, Class<EP> payloadType, D dependent) {
+            this.parents = Polyfill.uncheckedCast(parents);
             this.payloadType = payloadType;
             this.dependent = dependent;
 
@@ -87,8 +82,19 @@ public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? 
         }
 
         @Override
+        public @Nullable EP get() {
+            return getInstanceSupplier().autoInvoke(getDependent());
+        }
+
+        @Override
         public final void addChild(EventType<? extends IN, ? extends D, ? extends EP> child) {
             children.add(child);
+        }
+
+        @Override
+        public boolean test(IN in) {
+            return Stream.concat(Stream.of(this), getChildren().stream())
+                    .allMatch(it -> it.test(Polyfill.uncheckedCast(in)));
         }
     }
 }

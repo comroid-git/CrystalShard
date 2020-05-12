@@ -10,22 +10,20 @@ import org.comroid.listnr.EventContainer;
 import org.comroid.listnr.EventPayload;
 import org.comroid.listnr.EventType;
 import org.comroid.uniform.node.UniObjectNode;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Any possibly-discord-message-related event
  */
 public interface OptionalMessageEvent {
     interface Type extends EventType<UniObjectNode, DiscordBot, Payload> {
-        @Override
-        default boolean test(UniObjectNode uniObjectNode) {
-            return true;
-        }
     }
 
     interface Payload extends EventPayload<Type> {
-        Message getMessage();
+        Optional<Message> getMessage();
 
         // todo interface methods
     }
@@ -51,30 +49,30 @@ public interface OptionalMessageEvent {
 
         private final class TypeImpl extends EventType.Basic<UniObjectNode, DiscordBot, Payload> implements Type {
             @Override
-            public Invocable<? extends Payload> getInstanceSupplier() {
-                return Polyfill.uncheckedCast(StaticCache.access(this, Invocable.class,
-                        () -> Invocable.ofMethodCall(this, "craftPayload")));
+            public Invocable.TypeMap<? extends Payload> getInstanceSupplier() {
+                return Polyfill.uncheckedCast(StaticCache.access(this, "instanceSupplier",
+                        () -> Invocable.ofMethodCall(this, "craftPayload").typeMapped()));
             }
 
             public TypeImpl(DiscordBot bot) {
                 super(Collections.emptyList(), Payload.class, bot);
             }
 
-            public Payload craftPayload(Message message) {
+            public Payload craftPayload(@Nullable @Invocable.TypeMap.Null Message message) {
                 return new PayloadImpl(this, message);
             }
         }
 
         private final class PayloadImpl extends EventPayload.Basic<Type> implements Payload {
-            private final Message message;
+            private final @Nullable Message message;
 
             @Override
-            public Message getMessage() {
-                return message;
+            public Optional<Message> getMessage() {
+                return Optional.ofNullable(message);
             }
 
-            public PayloadImpl(TypeImpl masterEventType, Message message) {
-                super(masterEventType);
+            public PayloadImpl(TypeImpl masterEventType, @Nullable Message message) {
+                super(masterEventType, data, dependent);
 
                 this.message = message;
             }

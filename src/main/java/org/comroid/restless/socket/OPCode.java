@@ -3,11 +3,11 @@ package org.comroid.restless.socket;
 import org.comroid.common.ref.IntEnum;
 
 public interface OPCode extends IntEnum {
+    Usage getUsage();
+
     default boolean canSend() {
         return getUsage().canSend();
     }
-
-    Usage getUsage();
 
     default boolean canReceive() {
         return getUsage().canReceive();

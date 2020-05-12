@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.event.message;
 
-import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;
 import org.comroid.common.ref.StaticCache;
 import org.comroid.crystalshard.DiscordBot;
@@ -18,10 +17,6 @@ import java.util.Collections;
  */
 public interface MessageEvent {
     interface Type extends EventType<UniObjectNode, DiscordBot, Payload> {
-        @Override
-        default boolean test(UniObjectNode uniObjectNode) {
-            return true;
-        }
     }
 
     interface Payload extends EventPayload<Type> {
@@ -51,9 +46,9 @@ public interface MessageEvent {
 
         private final class TypeImpl extends EventType.Basic<UniObjectNode, DiscordBot, Payload> implements Type {
             @Override
-            public Invocable<? extends Payload> getInstanceSupplier() {
-                return Polyfill.uncheckedCast(StaticCache.access(this, Invocable.class,
-                        () -> Invocable.ofMethodCall(this, "craftPayload")));
+            public Invocable.TypeMap<? extends Payload> getInstanceSupplier() {
+                return StaticCache.access(this, "instanceSupplier",
+                        () -> Invocable.<Payload>ofMethodCall(this, "craftPayload").typeMapped());
             }
 
             public TypeImpl(DiscordBot bot) {
@@ -74,7 +69,7 @@ public interface MessageEvent {
             }
 
             public PayloadImpl(TypeImpl masterEventType, Message message) {
-                super(masterEventType);
+                super(masterEventType, data, dependent);
 
                 this.message = message;
             }

@@ -34,7 +34,7 @@ import static java.lang.System.currentTimeMillis;
 import static org.comroid.crystalshard.CrystalShard.HTTP_ADAPTER;
 import static org.comroid.crystalshard.CrystalShard.SERIALIZATION_ADAPTER;
 
-public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEvent, DiscordBotEventType, DiscordBotEvent> {
+public interface DiscordBot {
     String getToken();
 
     ThreadPool getThreadPool();
@@ -49,7 +49,7 @@ public interface DiscordBot extends ListnrAttachable<GatewayEvent, DiscordBotEve
 
     List<DiscordBot.Shard> getShards();
 
-    DiscordBotEventType.Container getEventTypeContainer();
+    CrystalShard.EventCarrier getEventCarrier();
 
     static DiscordBot start(String token) {
         if (!SERIALIZATION_ADAPTER.getMimeType()

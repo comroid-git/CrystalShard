@@ -1,8 +1,7 @@
-allprojects {
-    apply plugin: 'java-library'
+apply plugin: 'java-library'
 
-    group 'org.comroid'
-}
+group 'org.comroid'
+version '0.3.0-SNAPSHOT'
 
 tasks.findByName('wrapper').configure {
     gradleVersion = '6.2'

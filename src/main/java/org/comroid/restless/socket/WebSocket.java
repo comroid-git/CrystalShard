@@ -1,34 +1,37 @@
 package org.comroid.restless.socket;
 
+import org.comroid.common.Polyfill;
+import org.comroid.restless.socket.event.SocketEvent;
+import org.comroid.uniform.node.UniNode;
+import org.comroid.uniform.node.UniObjectNode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.IntFunction;
 
-import org.comroid.common.Polyfill;
-import org.comroid.dreadpool.ThreadPool;
-import old.EventHub;
-import old.EventType;
-import org.comroid.uniform.node.UniNode;
+public abstract class WebSocket {
+    private final ThreadGroup threadGroup;
+    private final EventCarrier eventCarrier;
+    private IntFunction<String> closeCodeResolver = String::valueOf;
 
-public abstract class WebSocket<O, E extends WebSocketEvent<? super E>> {
-    private final EventHub<String, O, ? extends EventType<String, O, E>, E> eventHub;
-    private final SocketEvent.Container<O, E>                                  eventContainer;
+    public final EventCarrier getEventCarrier() {
+        return eventCarrier;
+    }
+
+    public IntFunction<String> getCloseCodeResolver() {
+        return closeCodeResolver;
+    }
+
+    public void setCloseCodeResolver(IntFunction<String> closeCodeResolver) {
+        this.closeCodeResolver = closeCodeResolver;
+    }
 
     protected WebSocket(
-            ThreadGroup threadGroup, Function<String, O> exchangePreprocessor
+            ThreadGroup threadGroup
     ) {
-        this.eventHub       = Polyfill.uncheckedCast(new EventHub<>(ThreadPool.fixedSize(threadGroup, 4), exchangePreprocessor));
-        this.eventContainer = new SocketEvent.Container<>(this, eventHub);
-    }
-
-    public final EventHub<String, O, ? extends EventType<String, O, E>, E> getEventHub() {
-        return Polyfill.uncheckedCast(eventHub);
-    }
-
-    public final SocketEvent.Container<O, E> getEventContainer() {
-        return eventContainer;
+        this.threadGroup = new ThreadGroup(threadGroup, "websocket");
+        this.eventCarrier = new EventCarrier(this);
     }
 
     public final CompletableFuture<Void> sendData(UniNode data) {
@@ -53,20 +56,15 @@ public abstract class WebSocket<O, E extends WebSocketEvent<? super E>> {
         }
     }
 
+    protected final void handleData(UniObjectNode data) {
+
+    }
+
     protected abstract CompletableFuture<Void> sendString(String data, boolean last);
-
-    public abstract IntFunction<String> getCloseCodeResolver();
-
-    public abstract void setCloseCodeResolver(IntFunction<String> closeCodeResolver);
 
     public static final class Header {
         private final String name;
         private final String value;
-
-        public Header(String name, String value) {
-            this.name  = name;
-            this.value = value;
-        }
 
         public String getName() {
             return name;
@@ -74,6 +72,11 @@ public abstract class WebSocket<O, E extends WebSocketEvent<? super E>> {
 
         public String getValue() {
             return value;
+        }
+
+        public Header(String name, String value) {
+            this.name = name;
+            this.value = value;
         }
 
         public static final class List extends ArrayList<Header> {
