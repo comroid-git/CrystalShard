@@ -1,11 +1,14 @@
 package org.comroid.listnr;
 
+import org.comroid.common.func.Factory;
 import org.comroid.common.func.Invocable;
 import org.comroid.common.info.Dependent;
 import org.comroid.common.ref.Reference;
 import org.comroid.spellbind.factory.InstanceFactory;
 import org.comroid.spellbind.model.TypeFragmentProvider;
+import org.jetbrains.annotations.Nullable;
 
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,11 +36,10 @@ public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? 
     }
 
     abstract class Basic<IN, D, EP extends EventPayload<? extends EventType<? super IN, ? super D, ? super EP>>>
-            implements EventType<IN, D, EP> {
+            implements EventType<IN, D, EP>, Reference<EP> {
         private final Collection<EventType<? super IN, ? super D, ? super EP>> parents;
         private final List<EventType<? extends IN, ? extends D, ? extends EP>> children = new ArrayList<>();
         private final InstanceFactory<EP, D> payloadFactory;
-        private final Reference<EP> baseFragmentSupplier;
         private final Class<EP> payloadType;
         private final D dependent;
 
@@ -67,19 +69,18 @@ public interface EventType<IN, D, EP extends EventPayload<? extends EventType<? 
         }
 
         @Override
-        public final Invocable<? extends EP> getInstanceSupplier() {
-            return baseFragmentSupplier.invocable();
+        public @Nullable EP get() {
+            return getInstanceSupplier().autoInvoke(getDependent());
         }
 
-        public Basic(Collection<EventType<? super IN, ? super D, ? super EP>> parents, Class<EP> payloadType, D dependent, Reference<EP> baseFragmentSupplier) {
+        public Basic(Collection<EventType<? super IN, ? super D, ? super EP>> parents, Class<EP> payloadType, D dependent) {
             this.parents = parents;
             this.payloadType = payloadType;
             this.dependent = dependent;
-            this.baseFragmentSupplier = baseFragmentSupplier;
 
             this.payloadFactory = new InstanceFactory<>(
                     payloadType,
-                    baseFragmentSupplier,
+                    this,
                     dependent,
                     parents.toArray(new EventType[0])
             );

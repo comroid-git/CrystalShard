@@ -13,7 +13,7 @@ public interface EventPayload<ET extends EventType<?, ?, ? extends EventPayload<
             return masterEventType;
         }
 
-        protected Basic(ET masterEventType) {
+        public Basic(ET masterEventType) {
             this.masterEventType = masterEventType;
         }
     }

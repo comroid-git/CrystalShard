@@ -18,7 +18,7 @@ public interface BotBound {
 
         @Override
         public final DiscordBot getBot() {
-            return getDependencyObject();
+            return getDependent();
         }
     }
 }

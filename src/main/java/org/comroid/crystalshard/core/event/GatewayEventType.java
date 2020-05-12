@@ -7,7 +7,6 @@ import org.comroid.common.func.ParamFactory;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.model.ShardBound;
-import org.comroid.crystalshard.event.DiscordBotEvent;
 import org.comroid.listnr.EventHub;
 import org.comroid.listnr.EventType;
 import org.comroid.uniform.node.UniObjectNode;
