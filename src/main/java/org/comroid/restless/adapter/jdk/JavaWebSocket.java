@@ -38,6 +38,11 @@ public class JavaWebSocket extends WebSocket {
         return jSocket.sendText(data, last).thenApplyAsync(nil -> null);
     }
 
+    @Override
+    protected CompletableFuture<Void> sendPing(ByteBuffer data) {
+        return jSocket.sendPing(data).thenApply(nil -> null);
+    }
+
     private class JListener implements java.net.http.WebSocket.Listener {
         private StringBuilder sb = new StringBuilder();
 
