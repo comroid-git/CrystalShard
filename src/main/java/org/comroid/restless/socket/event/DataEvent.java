@@ -39,7 +39,7 @@ public interface DataEvent {
             }
 
             public TypeImpl(WebSocket bot) {
-                super(Polyfill.uncheckedCast(Collections.singletonList(getWebSocket().getWebSocketEventHub().Base.getType())), Payload.class, bot);
+                super(Polyfill.uncheckedCast(Collections.singletonList(getWebSocket().getEventHub().Base.getType())), Payload.class, bot);
             }
 
             public PayloadImpl craftOpenPayload(UniObjectNode data, int closeCode) {

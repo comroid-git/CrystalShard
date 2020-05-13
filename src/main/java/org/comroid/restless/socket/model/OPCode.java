@@ -1,4 +1,4 @@
-package org.comroid.restless.socket;
+package org.comroid.restless.socket.model;
 
 import org.comroid.common.ref.IntEnum;
 

@@ -2,7 +2,6 @@ package org.comroid.restless.socket.event;
 
 import org.comroid.common.Polyfill;
 import org.comroid.common.func.Invocable;
-import org.comroid.common.func.Invocable.TypeMap.Null;
 import org.comroid.common.ref.StaticCache;
 import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.node.UniObjectNode;
@@ -10,11 +9,7 @@ import org.comroid.uniform.node.UniObjectNode;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
-public interface CloseEvent {
-    /*
-    we need these classes to extend the SocketEvent classes
-     */
-
+public interface PingEvent {
     interface Type extends SocketEvent.Type<Payload> {
     }
 
@@ -40,14 +35,14 @@ public interface CloseEvent {
             @Override
             public Invocable.TypeMap<? extends Payload> getInstanceSupplier() {
                 return StaticCache.access(this, "instanceSupplier",
-                        () -> Invocable.<Payload>ofMethodCall(this, "craftClosePayload").typeMapped());
+                        () -> Invocable.<Payload>ofMethodCall(this, "craftDataPayload").typeMapped());
             }
 
             public TypeImpl(WebSocket bot) {
                 super(Polyfill.uncheckedCast(Collections.singletonList(getWebSocket().getEventHub().Base.getType())), Payload.class, bot);
             }
 
-            public PayloadImpl craftOpenPayload(@Null UniObjectNode data, int closeCode) {
+            public PayloadImpl craftOpenPayload(UniObjectNode data, int closeCode) {
                 return new PayloadImpl(this, closeCode);
             }
         }

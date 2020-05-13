@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.core.net.gateway;
 
-public enum OPCode implements org.comroid.restless.socket.OPCode {
+public enum OPCode implements org.comroid.restless.socket.model.OPCode {
     DISPATCH(0, Usage.RECEIVE),
     HEARTBEAT(1, Usage.BIDIRECTIONAL),
     IDENTIFY(2, Usage.SEND),

@@ -4,10 +4,7 @@ import org.comroid.listnr.model.EventContainer;
 import org.comroid.listnr.Listnr;
 import org.comroid.listnr.ListnrCore;
 import org.comroid.listnr.model.EventType;
-import org.comroid.restless.socket.event.CloseEvent;
-import org.comroid.restless.socket.event.DataEvent;
-import org.comroid.restless.socket.event.OpenEvent;
-import org.comroid.restless.socket.event.SocketEvent;
+import org.comroid.restless.socket.event.*;
 import org.comroid.uniform.node.UniObjectNode;
 
 public final class WebSocketEventHub extends ListnrCore<UniObjectNode, WebSocket, SocketEvent.Type<?>, SocketEvent.Payload<?>> {
@@ -15,6 +12,8 @@ public final class WebSocketEventHub extends ListnrCore<UniObjectNode, WebSocket
     public final SocketEvent.Container Base;
     public final EventContainer<UniObjectNode, WebSocket, SocketEvent.Type<OpenEvent.Payload>, OpenEvent.Payload> Open;
     public final EventContainer<UniObjectNode, WebSocket, SocketEvent.Type<DataEvent.Payload>, DataEvent.Payload> Data;
+    public final EventContainer<UniObjectNode, WebSocket, SocketEvent.Type<PingEvent.Payload>, PingEvent.Payload> Ping;
+    public final EventContainer<UniObjectNode, WebSocket, SocketEvent.Type<PongEvent.Payload>, PongEvent.Payload> Pong;
     public final EventContainer<UniObjectNode, WebSocket, SocketEvent.Type<CloseEvent.Payload>, CloseEvent.Payload> Close;
 
     public WebSocketEventHub(WebSocket webSocket) {
@@ -23,6 +22,8 @@ public final class WebSocketEventHub extends ListnrCore<UniObjectNode, WebSocket
         this.Base = SocketEvent.container(webSocket);
         this.Open = new OpenEvent.Container(webSocket).registerAt(this);
         this.Data = new DataEvent.Container(webSocket).registerAt(this);
+        this.Ping = new PingEvent.Container(webSocket).registerAt(this);
+        this.Pong = new PongEvent.Container(webSocket).registerAt(this);
         this.Close = new CloseEvent.Container(webSocket).registerAt(this);
     }
 

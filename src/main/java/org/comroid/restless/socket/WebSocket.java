@@ -1,23 +1,25 @@
 package org.comroid.restless.socket;
 
 import org.comroid.common.Polyfill;
-import org.comroid.listnr.model.EventType;
-import org.comroid.restless.socket.event.OpenEvent;
+import org.comroid.common.annotation.Blocking;
+import org.comroid.restless.socket.event.PongEvent;
+import org.comroid.uniform.SerializationAdapter;
 import org.comroid.uniform.node.UniNode;
-import org.comroid.uniform.node.UniObjectNode;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntFunction;
 
 public abstract class WebSocket implements WebSocketEventHub.Attachable {
+    private final SerializationAdapter<?, ?, ?> seriLib;
     private final ThreadGroup threadGroup;
-    private final WebSocketEventHub webSocketEventHub;
+    private final WebSocketEventHub eventHub;
     private IntFunction<String> closeCodeResolver = String::valueOf;
 
-    public final WebSocketEventHub getWebSocketEventHub() {
-        return webSocketEventHub;
+    public final WebSocketEventHub getEventHub() {
+        return eventHub;
     }
 
     public IntFunction<String> getCloseCodeResolver() {
@@ -28,9 +30,18 @@ public abstract class WebSocket implements WebSocketEventHub.Attachable {
         this.closeCodeResolver = closeCodeResolver;
     }
 
-    protected WebSocket(ThreadGroup threadGroup) {
+    public SerializationAdapter<?, ?, ?> getSerializationAdapter() {
+        return seriLib;
+    }
+
+    public ThreadGroup getThreadGroup() {
+        return threadGroup;
+    }
+
+    protected WebSocket(SerializationAdapter<?, ?, ?> seriLib, ThreadGroup threadGroup) {
+        this.seriLib = seriLib;
         this.threadGroup = new ThreadGroup(threadGroup, "websocket");
-        this.webSocketEventHub = new WebSocketEventHub(this);
+        this.eventHub = new WebSocketEventHub(this);
     }
 
     public final CompletableFuture<Void> sendData(UniNode data) {
@@ -55,7 +66,23 @@ public abstract class WebSocket implements WebSocketEventHub.Attachable {
         }
     }
 
+    @Blocking
+    public final long getPing() {
+        final long started = System.currentTimeMillis();
+        completePing().join();
+        final long finished = System.currentTimeMillis();
+
+        return finished - started;
+    }
+
+    public CompletableFuture<PongEvent.Payload> completePing() {
+        return sendPing(ByteBuffer.allocate(0))
+                .thenCompose(nil -> listenTo(eventHub.Pong.getType()).once());
+    }
+
     protected abstract CompletableFuture<Void> sendString(String data, boolean last);
+
+    protected abstract CompletableFuture<Void> sendPing(ByteBuffer data);
 
     public static final class Header {
         private final String name;
