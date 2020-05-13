@@ -2,6 +2,7 @@ package org.comroid.crystalshard;
 
 import org.comroid.common.func.Processor;
 import org.comroid.common.ref.Reference;
+import org.comroid.common.util.Bitmask;
 import org.comroid.crystalshard.core.event.GatewayEvent;
 import org.comroid.crystalshard.core.event.GatewayRequestPayload;
 import org.comroid.crystalshard.core.net.gateway.CloseCode;
@@ -49,9 +50,19 @@ public interface DiscordBot {
 
     List<DiscordBot.Shard> getShards();
 
-    CrystalShard.EventCarrier getEventCarrier();
+    List<DiscordAPI.Intent> getIntents();
 
+    /**
+     * @deprecated Intents are mandatory in a future Discord API release
+     * @param token The token of the bot
+     * @return A running bot instance
+     */
+    @Deprecated
     static DiscordBot start(String token) {
+        return start(token, Bitmask.combine(DiscordAPI.Intent.values()));
+    }
+
+    static DiscordBot start(String token, int intents) {
         if (!SERIALIZATION_ADAPTER.getMimeType()
                 .equals("application/json")) {
             throw new IllegalArgumentException("CrystalShard currently only support JSON serialization");
@@ -69,6 +80,7 @@ public interface DiscordBot {
                 .join();
 
         return new Support.ShardingManager("Bot " + token,
+                intents,
                 Math.max(1, grp.getShardCount()),
                 new ThreadGroup(CrystalShard.THREAD_GROUP, "Bot#" + currentTimeMillis()),
                 grp.getGatewayUri()
@@ -152,8 +164,7 @@ public interface DiscordBot {
             private final REST<DiscordBot> restClient;
             private final List<Shard> shards;
             private final List<WebSocket<GatewayEvent>> webSockets;
-            private final EventHub<GatewayEvent, DiscordBotEvent> mainEventHub;
-            private final DiscordBotEventType.Container eventTypeContainer;
+            private final int intent;
 
             @Override
             public ThreadPool getThreadPool() {
@@ -175,23 +186,9 @@ public interface DiscordBot {
                 return shards;
             }
 
-            @Override
-            public DiscordBotEventType.Container getEventTypeContainer() {
-                return eventTypeContainer;
-            }
-
-            @Override
-            public EventHub<GatewayEvent, DiscordBotEvent> getEventHub() {
-                return mainEventHub;
-            }
-
-            @Override
-            public DiscordBotEventType getBaseEventType() {
-                return eventTypeContainer.TYPE_BASE;
-            }
-
-            private ShardingManager(String token, int shards, ThreadGroup threadGroup, URI gatewayUri) {
+            private ShardingManager(String token, int intent, int shards, ThreadGroup threadGroup, URI gatewayUri) {
                 this.token = token;
+                this.intent = intent;
                 this.threadPool = ThreadPool.fixedSize(threadGroup, 8 * shards);
                 this.entityCache = new BasicCache<>(500);
                 this.restClient = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
