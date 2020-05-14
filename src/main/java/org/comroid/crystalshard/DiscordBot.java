@@ -9,8 +9,10 @@ import org.comroid.crystalshard.core.net.gateway.CloseCode;
 import org.comroid.crystalshard.core.net.rest.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.*;
+import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.BotBound;
+import org.comroid.crystalshard.model.channel.PermissionOverride;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
 import org.comroid.dreadpool.ThreadPool;
@@ -87,12 +89,6 @@ public interface DiscordBot {
         );
     }
 
-    @Internal
-    UserPresence updatePresence(UniObjectNode data);
-
-    @Internal
-    VoiceState updateVoiceState(UniObjectNode data);
-
     default <T extends DataContainer<DiscordBot>> REST<DiscordBot>.Request<T> request(Class<T> type) {
         return getRestClient().request(type)
                 .addHeader(CommonHeaderNames.AUTHORIZATION, "Bot " + getToken())
@@ -112,6 +108,11 @@ public interface DiscordBot {
                 .process()
                 .flatMap(ref -> ref)
                 .flatMap(Reference::wrap);
+    }
+
+    default Processor<Guild> getGuildByID(long id) {
+        return getSnowflakeByID(id)
+                .map(Guild.class::cast);
     }
 
     default Processor<User> getUserByID(long id) {
@@ -149,6 +150,15 @@ public interface DiscordBot {
     default Processor<PrivateTextChannel> getPrivateTextChannelByID(long id) {
         return getChannelByID(id).flatMap(Channel::asPrivateTextChannel);
     }
+
+    @Internal
+    UserPresence updatePresence(UniObjectNode data);
+
+    @Internal
+    VoiceState updateVoiceState(UniObjectNode data);
+
+    @Internal
+    PermissionOverride makeOverwrite(UniObjectNode data);
 
     interface Shard extends BotBound {
         int getShardID();

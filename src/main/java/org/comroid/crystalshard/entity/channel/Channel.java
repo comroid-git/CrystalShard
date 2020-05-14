@@ -1,12 +1,21 @@
 package org.comroid.crystalshard.entity.channel;
 
+import org.comroid.common.info.Described;
+import org.comroid.common.ref.IntEnum;
+import org.comroid.common.ref.Named;
 import org.comroid.common.ref.Specifiable;
+import org.comroid.crystalshard.CrystalShard;
+import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.Mentionable;
+import org.comroid.uniform.node.UniValueNode.ValueType;
+import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.bind.VarBind;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public interface Channel extends Snowflake, Mentionable, Specifiable<Channel> {
+public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, Named, Described {
     @Override
     default String getDefaultFormattedName() {
         return toString();
@@ -43,5 +52,62 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel> {
 
     default Optional<PrivateTextChannel> asPrivateTextChannel() {
         return as(PrivateTextChannel.class);
+    }
+
+    @Override
+    default String getName() {
+        return requireNonNull(Bind.Type).getDescription();
+    }
+
+    @Override
+    default String getDescription() {
+        return requireNonNull(Bind.Type).getDescription();
+    }
+
+    enum Type implements IntEnum, Named, Described {
+        GUILD_TEXT(0, "a text channel within a server"),
+        DM(1, "a direct message between users"),
+        GUILD_VOICE(2, "a voice channel within a server"),
+        GROUP_DM(3, "a direct message between multiple users"),
+        GUILD_CATEGORY(4, "an organizational category that contains up to 50 channels"),
+        GUILD_NEWS(5, "a channel that users can follow and crosspost into their own server"),
+        GUILD_STORE(6, "a channel in which game developers can sell their game on Discord");
+
+        private final int value;
+        private final String description;
+
+        @Override
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public String getName() {
+            return name();
+        }
+
+        Type(int value, String description) {
+            this.value = value;
+            this.description = description;
+        }
+
+        public static Type valueOf(int value) {
+            for (Type type : values()) {
+                if (type.value == value)
+                    return type;
+            }
+
+            throw new NoSuchElementException("ChannelType with value " + value);
+        }
+    }
+
+    interface Bind extends Snowflake.Bind {
+        GroupBind<Channel, DiscordBot> Root = new GroupBind<>(CrystalShard.SERIALIZATION_ADAPTER, "channel");
+        VarBind.TwoStage<Integer, Type> Type = Root.bind2stage("type", ValueType.INTEGER, Channel.Type::valueOf);
     }
 }
