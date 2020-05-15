@@ -26,4 +26,7 @@ public interface GuildMember extends User {
         ReBind.TwoStage<User, Long> ID
                 = UnderlyingUser.rebindSimple(Snowflake::getID);
     }
+
+    public class Partial {
+    }
 }

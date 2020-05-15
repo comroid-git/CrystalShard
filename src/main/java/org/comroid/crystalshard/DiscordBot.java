@@ -12,7 +12,10 @@ import org.comroid.crystalshard.core.net.rest.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.*;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.guild.GuildMember;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.crystalshard.model.channel.PermissionOverride;
@@ -58,9 +61,9 @@ public interface DiscordBot {
     List<DiscordAPI.Intent> getIntents();
 
     /**
-     * @deprecated Intents are mandatory in a future Discord API release
      * @param token The token of the bot
      * @return A running bot instance
+     * @deprecated Intents are mandatory in a future Discord API release
      */
     @Deprecated
     static DiscordBot start(String token) {
@@ -118,6 +121,10 @@ public interface DiscordBot {
                 .map(SnowflakeSelector::asGuild);
     }
 
+    default Processor<Role> getRoleByID(long id) {
+        return getSnowflakesByID(id).map(SnowflakeSelector::asRole);
+    }
+
     default Processor<User> getUserByID(long id) {
         return getSnowflakesByID(id).map(SnowflakeSelector::asUser);
     }
@@ -172,7 +179,13 @@ public interface DiscordBot {
     User updateUser(UniObjectNode data);
 
     @Internal
+    GuildMember updateGuildMember(UniObjectNode data);
+
+    @Internal
     PermissionOverride makeOverwrite(UniObjectNode data);
+
+    @Internal
+    Processor<Channel> resolveChannelMention(UniObjectNode data);
 
     interface Shard extends BotBound {
         int getShardID();
