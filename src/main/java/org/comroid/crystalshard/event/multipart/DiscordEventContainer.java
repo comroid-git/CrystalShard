@@ -9,21 +9,25 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public interface DiscordEventContainer<P extends DiscordEventPayload<DiscordEventType<P>>>
-        extends EventContainer<UniObjectNode, DiscordBot, DiscordEventType<P>, P> {
+public interface DiscordEventContainer<
+        T extends DiscordEventType<T, P>,
+        P extends DiscordEventPayload<T, P>>
+        extends EventContainer<UniObjectNode, DiscordBot, T, P> {
     Optional<DiscordAPI.Intent> getIntent();
 
     @Override
-    DiscordEventType<P> getType();
+    T getType();
 
-    default DiscordEventType<P> getBaseType() {
+    default DiscordEventType<? super T, ? super P> getBaseType() {
         return getType();
     }
 
-    final class Impl<P extends DiscordEventPayload<DiscordEventType<P>>>
-            implements DiscordEventContainer<P> {
+    final class Impl<
+            T extends DiscordEventType<T, P>,
+            P extends DiscordEventPayload<T, P>>
+            implements DiscordEventContainer<T, P> {
         private final @Nullable DiscordAPI.Intent intent;
-        private final DiscordEventType<P> type;
+        private final T type;
 
         @Override
         public Optional<DiscordAPI.Intent> getIntent() {
@@ -31,22 +35,24 @@ public interface DiscordEventContainer<P extends DiscordEventPayload<DiscordEven
         }
 
         @Override
-        public DiscordEventType<P> getType() {
+        public T getType() {
             return type;
         }
 
         public Impl(DiscordBot bot,
-            Class<P> payloadType,
-            Invocable.TypeMap<? extends P> payloadGenerator) {
-            this(bot, null, payloadType, payloadGenerator);
+                    Class<P> payloadType,
+                    Invocable.TypeMap<? extends P> payloadGenerator,
+                    DiscordEventType<T, P> type) {
+            this(bot, null, payloadType, payloadGenerator, type);
         }
 
         public Impl(DiscordBot bot,
                     @Nullable DiscordAPI.Intent intent,
                     Class<P> payloadType,
-                    Invocable.TypeMap<? extends P> payloadGenerator) {
+                    Invocable.TypeMap<? extends P> payloadGenerator,
+                    T type) {
             this.intent = intent;
-            this.type = new DiscordEventType.Base<>(bot, payloadType, payloadGenerator);
+            this.type = type;
         }
     }
 }

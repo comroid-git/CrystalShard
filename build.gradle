@@ -31,11 +31,11 @@ dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
     implementation 'com.google.flogger:flogger:0.5.1'
 
-    api 'org.comroid:common-util:1.4.1-SNAPSHOT'
-    implementation 'org.comroid:uniform:0.12.1-SNAPSHOT'
-    implementation 'org.comroid:dreadpool:0.1.1-SNAPSHOT'
-    implementation 'org.comroid:spellbind:0.11.0-SNAPSHOT'
-    //implementation 'org.comroid:listnr:0.1.0-SNAPSHOT'
+    api 'org.comroid:common-util:1.5.0-SNAPSHOT'
+    implementation 'org.comroid:listnr:1.0.0-SNAPSHOT'
+    implementation 'org.comroid:uniform:1.0.0-SNAPSHOT'
+    implementation 'org.comroid:dreadpool:0.10.0-SNAPSHOT'
+    implementation 'org.comroid:spellbind:0.20.0-SNAPSHOT'
 
     runtimeOnly 'com.google.flogger:flogger-system-backend:0.5.1'
     runtimeOnly 'com.alibaba:fastjson:1.2.68'

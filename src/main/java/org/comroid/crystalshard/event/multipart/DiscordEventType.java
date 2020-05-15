@@ -10,11 +10,15 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 
-public interface DiscordEventType<P extends DiscordEventPayload<? extends DiscordEventType<? super P>>>
-        extends EventType<UniObjectNode, DiscordBot, P>, BotBound {
-    final class Base<P extends DiscordEventPayload<? extends DiscordEventType<? super P>>>
-            extends EventType.Basic<UniObjectNode, DiscordBot, P>
-            implements DiscordEventType<P> {
+public interface DiscordEventType<
+        T extends DiscordEventType<T, P>,
+        P extends DiscordEventPayload<T, P>>
+        extends EventType<UniObjectNode, DiscordBot, T, P>, BotBound {
+    final class Base<
+            T extends DiscordEventType<T, P>,
+            P extends DiscordEventPayload<T, P>>
+            extends EventType.Basic<UniObjectNode, DiscordBot, T, P>
+            implements DiscordEventType<T, P> {
         private final Invocable.TypeMap<? extends P> instanceSupplier;
 
         @Override
@@ -38,9 +42,11 @@ public interface DiscordEventType<P extends DiscordEventPayload<? extends Discor
         }
     }
 
-    final class Combined<P extends DiscordEventPayload<? extends DiscordEventType<? super P>>>
-            extends EventType.Basic<UniObjectNode, DiscordBot, P>
-            implements DiscordEventType<P> {
+    final class Combined<
+            T extends DiscordEventType<T, P>,
+            P extends DiscordEventPayload<T, P>>
+            extends EventType.Basic<UniObjectNode, DiscordBot, T, P>
+            implements DiscordEventType<T, P> {
         private final Invocable.TypeMap<? extends P> instanceSupplier;
 
         @Override
@@ -57,7 +63,7 @@ public interface DiscordEventType<P extends DiscordEventPayload<? extends Discor
         public Combined(DiscordBot bot,
                         Class<P> payloadType,
                         Method payloadSubCreatorMethod,
-                        DiscordEventType<? extends P>... subTypes) {
+                        DiscordEventType<? extends T, ? extends P>... subTypes) {
             super(Arrays.asList(subTypes), payloadType, bot);
 
             this.instanceSupplier = Invocable.<P>ofMethodCall(payloadSubCreatorMethod).typeMapped();
