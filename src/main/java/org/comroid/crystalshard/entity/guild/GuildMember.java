@@ -22,7 +22,7 @@ public interface GuildMember extends User {
         GroupBind<GuildMember, DiscordBot> Root
                 = new GroupBind<>(CrystalShard.SERIALIZATION_ADAPTER, "guild_member");
         VarBind.DependentTwoStage<UniObjectNode, DiscordBot, User> UnderlyingUser
-                = Root.bindDependent("user", (bot, data) -> bot.getEntityCache().autoUpdate(User.class, data).get());
+                = Root.bindDependent("user", (bot, data) -> bot.getCache().autoUpdate(User.class, data).get());
         ReBind.TwoStage<User, Long> ID
                 = UnderlyingUser.rebindSimple(Snowflake::getID);
     }

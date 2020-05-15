@@ -12,6 +12,7 @@ import org.comroid.varbind.bind.VarBind;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface GuildChannel extends Channel, Named {
     @Override
@@ -22,6 +23,27 @@ public interface GuildChannel extends Channel, Named {
     @Override
     default String getAlternateFormattedName() {
         return getMentionTag();
+    }
+
+    default Guild getGuild() {
+        return requireNonNull(Bind.Guild);
+    }
+
+    default int getPosition() {
+        return requireNonNull(Bind.Position);
+    }
+
+    default Collection<PermissionOverride> getPermissionOverrides() {
+        return requireNonNull(Bind.PermissionOverrides);
+    }
+
+    @Override
+    default String getName() {
+        return requireNonNull(Bind.Name);
+    }
+
+    default Optional<ChannelCategory> getCategory() {
+        return wrap(Bind.Category);
     }
 
     interface Bind extends Channel.Bind {
@@ -35,5 +57,7 @@ public interface GuildChannel extends Channel, Named {
                 = Root.listDependent("permission_overwrites", DiscordBot::makeOverwrite, ArrayList::new);
         VarBind.OneStage<String> Name
                 = Root.bind1stage("name", ValueType.STRING);
+        VarBind.DependentTwoStage<Long, DiscordBot, ChannelCategory> Category
+                = Root.bindDependent("parent_id", ValueType.LONG, (bot, id) -> bot.getChannelCategoryByID(id).get());
     }
 }

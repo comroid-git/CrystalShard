@@ -1,4 +1,6 @@
 package org.comroid.crystalshard.entity.message;
 
-public interface Message {
+import org.comroid.crystalshard.entity.Snowflake;
+
+public interface Message extends Snowflake {
 }

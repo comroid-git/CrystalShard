@@ -69,9 +69,9 @@ public interface Guild extends Snowflake, Named {
         VarBind.TwoStage<Integer, ExplicitContentFilter> ExplicitContentFilterLevel
                 = Root.bind2stage("explicit_content_filter", UniValueNode.ValueType.INTEGER, ExplicitContentFilter::valueOf);
         ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, Role, List<Role>> Roles
-                = Root.listDependent("roles", (bot, data) -> bot.getEntityCache().autoUpdate(Role.class, data).get(), ArrayList::new);
+                = Root.listDependent("roles", (bot, data) -> bot.getCache().autoUpdate(Role.class, data).get(), ArrayList::new);
         ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, CustomEmoji, List<CustomEmoji>> Emojis
-                = Root.listDependent("emojis", (bot, data) -> bot.getEntityCache().autoUpdate(CustomEmoji.class, data).get(), ArrayList::new);
+                = Root.listDependent("emojis", (bot, data) -> bot.getCache().autoUpdate(CustomEmoji.class, data).get(), ArrayList::new);
         ArrayBind.TwoStage<String, GuildFeature, List<GuildFeature>> Features
                 = Root.list2stage("features", UniValueNode.ValueType.STRING, GuildFeature::valueOf, ArrayList::new);
         VarBind.TwoStage<Integer, MFALevel> MfaLevel
@@ -99,9 +99,9 @@ public interface Guild extends Snowflake, Named {
         ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, VoiceState, Set<VoiceState>> VoiceStates
                 = Root.listDependent("voice_states", DiscordBot::updateVoiceState, HashSet::new);
         ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, GuildMember, Set<GuildMember>> Members
-                = Root.listDependent("members", (bot, data) -> bot.getEntityCache().autoUpdate(GuildMember.Bind.Root, data).get(), HashSet::new);
+                = Root.listDependent("members", (bot, data) -> bot.getCache().autoUpdate(GuildMember.Bind.Root, data).get(), HashSet::new);
         ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, ? extends GuildChannel, Set<? extends GuildChannel>> Channels
-                = Root.listDependent("channels", (bot, data) -> bot.getEntityCache().autoUpdate(GuildChannel.Bind.Root, data).get(), HashSet::new);
+                = Root.listDependent("channels", (bot, data) -> bot.getCache().autoUpdate(GuildChannel.Bind.Root, data).get(), HashSet::new);
         ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, UserPresence, Set<UserPresence>> Presences
                 = Root.listDependent("presences", DiscordBot::updatePresence, HashSet::new);
         VarBind.OneStage<Integer> MaxPresences

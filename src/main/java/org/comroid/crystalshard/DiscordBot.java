@@ -3,6 +3,8 @@ package org.comroid.crystalshard;
 import org.comroid.common.func.Processor;
 import org.comroid.common.ref.Reference;
 import org.comroid.common.util.Bitmask;
+import org.comroid.crystalshard.core.cache.SnowflakeCache;
+import org.comroid.crystalshard.core.cache.SnowflakeSelector;
 import org.comroid.crystalshard.core.event.GatewayEvent;
 import org.comroid.crystalshard.core.event.GatewayRequestPayload;
 import org.comroid.crystalshard.core.net.gateway.CloseCode;
@@ -10,6 +12,7 @@ import org.comroid.crystalshard.core.net.rest.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.*;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.crystalshard.model.channel.PermissionOverride;
@@ -42,7 +45,7 @@ public interface DiscordBot {
 
     ThreadPool getThreadPool();
 
-    Cache<Long, Snowflake> getEntityCache();
+    SnowflakeCache getCache();
 
     REST<DiscordBot> getRestClient();
 
@@ -101,8 +104,8 @@ public interface DiscordBot {
                 .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, SERIALIZATION_ADAPTER.getMimeType());
     }
 
-    default Processor<? extends Snowflake> getSnowflakeByID(long id) {
-        return Reference.provided(() -> getEntityCache()
+    default Processor<SnowflakeSelector> getSnowflakesByID(long id) {
+        return Reference.provided(() -> getCache()
                 .stream(other -> id == other)
                 .findAny())
                 .process()
@@ -111,16 +114,16 @@ public interface DiscordBot {
     }
 
     default Processor<Guild> getGuildByID(long id) {
-        return getSnowflakeByID(id)
-                .map(Guild.class::cast);
+        return getSnowflakesByID(id)
+                .map(SnowflakeSelector::asGuild);
     }
 
     default Processor<User> getUserByID(long id) {
-        return getSnowflakeByID(id).map(User.class::cast);
+        return getSnowflakesByID(id).map(SnowflakeSelector::asUser);
     }
 
     default Processor<Channel> getChannelByID(long id) {
-        return getSnowflakeByID(id).map(Channel.class::cast);
+        return getSnowflakesByID(id).map(SnowflakeSelector::asChannel);
     }
 
     default Processor<TextChannel> getTextChannelByID(long id) {
@@ -133,6 +136,10 @@ public interface DiscordBot {
 
     default Processor<GuildChannel> getGuildChannelByID(long id) {
         return getChannelByID(id).flatMap(Channel::asGuildChannel);
+    }
+
+    default Processor<ChannelCategory> getChannelCategoryByID(long id) {
+        return getChannelByID(id).flatMap(Channel::asChannelCategory);
     }
 
     default Processor<GuildTextChannel> getGuildTextChannelByID(long id) {
@@ -151,11 +158,18 @@ public interface DiscordBot {
         return getChannelByID(id).flatMap(Channel::asPrivateTextChannel);
     }
 
+    default Processor<Message> getMessageByID(long id) {
+        return getSnowflakesByID(id).map(SnowflakeSelector::asMessage);
+    }
+
     @Internal
     UserPresence updatePresence(UniObjectNode data);
 
     @Internal
     VoiceState updateVoiceState(UniObjectNode data);
+
+    @Internal
+    User updateUser(UniObjectNode data);
 
     @Internal
     PermissionOverride makeOverwrite(UniObjectNode data);
@@ -182,7 +196,7 @@ public interface DiscordBot {
             }
 
             @Override
-            public Cache<Long, Snowflake> getEntityCache() {
+            public Cache<Long, Snowflake> getCache() {
                 return entityCache;
             }
 

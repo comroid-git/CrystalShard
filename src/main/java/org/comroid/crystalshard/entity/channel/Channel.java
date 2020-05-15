@@ -38,6 +38,10 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
         return as(GuildChannel.class);
     }
 
+    default Optional<ChannelCategory> asChannelCategory() {
+        return as(ChannelCategory.class);
+    }
+
     default Optional<PrivateChannel> asPrivateChannel() {
         return as(PrivateChannel.class);
     }
@@ -104,6 +108,10 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
 
             throw new NoSuchElementException("ChannelType with value " + value);
         }
+    }
+
+    default Channel.Type getType() {
+        return requireNonNull(Bind.Type);
     }
 
     interface Bind extends Snowflake.Bind {

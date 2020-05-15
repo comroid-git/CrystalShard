@@ -42,7 +42,7 @@ public interface DiscordEventContainer<
         public Impl(DiscordBot bot,
                     Class<P> payloadType,
                     Invocable.TypeMap<? extends P> payloadGenerator,
-                    DiscordEventType<T, P> type) {
+                    T type) {
             this(bot, null, payloadType, payloadGenerator, type);
         }
 

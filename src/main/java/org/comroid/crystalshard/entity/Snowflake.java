@@ -3,19 +3,20 @@ package org.comroid.crystalshard.entity;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.core.cache.SnowflakeCache;
+import org.comroid.crystalshard.core.cache.SnowflakeSelector;
 import org.comroid.crystalshard.model.BotBound;
+import org.comroid.uniform.cache.Cache;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.UniValueNode;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.comroid.varbind.container.DataContainer;
-import org.comroid.varbind.container.DataContainerBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Comparator;
-import java.util.Objects;
 
 public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContainer<DiscordBot> {
     Comparator<Snowflake> SNOWFLAKE_COMPARATOR = Comparator.comparingLong(flake -> flake.getID() >> 22);
@@ -39,8 +40,15 @@ public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContaine
     }
 
     abstract class Base extends BotBound.DataBase implements Snowflake {
-        protected Base(@Nullable UniObjectNode initialData, @NotNull DiscordBot dependencyObject) {
-            super(initialData, dependencyObject);
+        protected Base(DiscordBot bot, @Nullable UniObjectNode initialData) {
+            super(initialData, bot);
+
+            final long id = getID();
+            final SnowflakeCache entityCache = bot.getCache();
+            final SnowflakeSelector sel = entityCache.getReference(id, true)
+                    .requireNonNull("Assertion Failure");
+
+            sel.put(this);
         }
     }
 }
