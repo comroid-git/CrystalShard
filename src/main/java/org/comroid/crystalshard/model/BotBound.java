@@ -12,7 +12,7 @@ public interface BotBound {
     DiscordBot getBot();
 
     abstract class DataBase extends DataContainerBase<DiscordBot> implements BotBound {
-        protected DataBase(@Nullable UniObjectNode initialData, @NotNull DiscordBot dependencyObject) {
+        protected DataBase(@NotNull DiscordBot dependencyObject, @Nullable UniObjectNode initialData) {
             super(initialData, Objects.requireNonNull(dependencyObject));
         }
 

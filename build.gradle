@@ -33,6 +33,7 @@ dependencies {
 
     api 'org.comroid:common-util:1.5.0-SNAPSHOT'
     implementation 'org.comroid:listnr:1.0.0-SNAPSHOT'
+    implementation 'org.comroid:matrix:0.10.0-SNAPSHOT'
     implementation 'org.comroid:uniform:1.0.0-SNAPSHOT'
     implementation 'org.comroid:dreadpool:0.10.0-SNAPSHOT'
     implementation 'org.comroid:spellbind:0.20.0-SNAPSHOT'
