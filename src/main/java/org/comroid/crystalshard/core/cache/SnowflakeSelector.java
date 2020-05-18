@@ -7,6 +7,7 @@ import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.entity.webhook.Webhook;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class SnowflakeSelector {
     @SuppressWarnings("unchecked")
-    private static final Class<? extends Snowflake>[] managed = new Class[] {
+    private static final Class<? extends Snowflake>[] managed = new Class[]{
             Guild.class, User.class, Message.class, Channel.class, Role.class, CustomEmoji.class
     };
     private final long id;
@@ -46,6 +47,10 @@ public final class SnowflakeSelector {
 
     public CustomEmoji asCustomEmoji() {
         return as(CustomEmoji.class);
+    }
+
+    public Webhook asWebhook() {
+        return as(Webhook.class);
     }
 
     private <T extends Snowflake> T as(Class<T> type) {

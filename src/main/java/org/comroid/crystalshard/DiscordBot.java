@@ -17,8 +17,13 @@ import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.crystalshard.model.channel.PermissionOverride;
+import org.comroid.crystalshard.model.emoji.Emoji;
+import org.comroid.crystalshard.model.message.MessageActivity;
+import org.comroid.crystalshard.model.message.MessageApplication;
+import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
 import org.comroid.dreadpool.ThreadPool;
@@ -121,6 +126,11 @@ public interface DiscordBot {
                 .map(SnowflakeSelector::asGuild);
     }
 
+    default Processor<Webhook> getWebhookByID(long id) {
+        return getSnowflakesByID(id)
+                .map(SnowflakeSelector::asWebhook);
+    }
+
     default Processor<Role> getRoleByID(long id) {
         return getSnowflakesByID(id).map(SnowflakeSelector::asRole);
     }
@@ -182,10 +192,22 @@ public interface DiscordBot {
     GuildMember updateGuildMember(UniObjectNode data);
 
     @Internal
+    Emoji updateEmoji(UniObjectNode data);
+
+    @Internal
     PermissionOverride makeOverwrite(UniObjectNode data);
 
     @Internal
     Processor<Channel> resolveChannelMention(UniObjectNode data);
+
+    @Internal
+    Processor<MessageActivity> resolveMessageActivity(UniObjectNode data);
+
+    @Internal
+    Processor<MessageApplication> resolveMessageApplication(UniObjectNode data);
+
+    @Internal
+    Processor<MessageReference> resolveMessageReference(UniObjectNode data);
 
     interface Shard extends BotBound {
         int getShardID();
