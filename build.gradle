@@ -39,7 +39,7 @@ dependencies {
     implementation 'org.comroid:spellbind:0.20.0-SNAPSHOT'
 
     runtimeOnly 'com.google.flogger:flogger-system-backend:0.5.1'
-    runtimeOnly 'com.alibaba:fastjson:1.2.68'
+    runtimeOnly 'com.alibaba:fastjson:1.2.71'
 }
 
 assemble {
