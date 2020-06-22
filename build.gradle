@@ -3,24 +3,58 @@ apply plugin: 'java-library'
 group 'org.comroid'
 version '0.3.0-SNAPSHOT'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 tasks.findByName('wrapper').configure {
     gradleVersion = '6.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
-configurations {
-    compileClasspath {
-        resolutionStrategy.activateDependencyLocking()
+apply from: "gradle/vars.gradle"
+
+tasks.withType(Javadoc) {
+    source = sourceSets.main.java
+
+    options {
+        encoding = 'UTF-8'
+        /*
+        links = [
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://docs.oracle.com/javaee/7/api/"
+        ]
+        */
     }
 }
 
-apply from: "$rootDir/gradle/vars.gradle"
-apply from: "$rootDir/gradle/global.gradle"
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+
+    try {
+        archiveClassifier.set 'sources'
+    } catch (MissingPropertyException ignored) {
+        classifier = "sources"
+    }
+}
+
+task javadocJar(type: Jar) {
+    dependsOn 'javadoc'
+
+    from javadoc.destinationDir
+
+    try {
+        archiveClassifier.set 'javadoc'
+    } catch (MissingPropertyException ignored) {
+        classifier = "javadoc"
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenLocal()
     maven {
-        url "https://maven.jetbrains.space/comroid/repo"
+        url "https://maven.jetbrains.space/comroid/releases"
         credentials.username "Anonymous.User"
         credentials.password "anonymous"
     }
@@ -29,27 +63,14 @@ repositories {
 
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
+
+    implementation 'org.comroid:mutatio:0.10.1'
+    implementation 'org.comroid:common-util:1.5.4'
+    implementation 'org.comroid:uniform:0.16.0'
+    implementation 'org.comroid:varbind:0.20.0'
+    implementation 'org.comroid:restless:0.15.2'
+
     implementation 'com.google.flogger:flogger:0.5.1'
-
-    api 'org.comroid:common-util:1.5.0-SNAPSHOT'
-    implementation 'org.comroid:listnr:1.0.0-SNAPSHOT'
-    implementation 'org.comroid:matrix:0.10.0-SNAPSHOT'
-    implementation 'org.comroid:uniform:1.0.0-SNAPSHOT'
-    implementation 'org.comroid:dreadpool:0.10.0-SNAPSHOT'
-    implementation 'org.comroid:spellbind:0.20.0-SNAPSHOT'
-
-    runtimeOnly 'com.google.flogger:flogger-system-backend:0.5.1'
-    runtimeOnly 'com.alibaba:fastjson:1.2.68'
 }
 
-assemble {
-    dependsOn = getTasksByName('assemble', true)
-            .stream()
-            .filter { (it as Task).project.parent.equals(rootProject) }
-            .collect()
-
-    exportedProjects.stream()
-            .map { rootProject.findProject(it.toString()) }
-            .filter { !Objects.isNull(it) }
-            .forEach { it.apply from: "$rootDir/gradle/publishing.gradle" }
-}
+apply from: "gradle/publishing.gradle"

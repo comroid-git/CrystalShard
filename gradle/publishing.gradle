@@ -1,46 +1,5 @@
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse.BodyHandlers
-
-import static java.lang.System.getenv
-
-final HttpClient client = HttpClient.newBuilder().build()
-
-ext {
-    snapshot = project.version.endsWith('SNAPSHOT')
-
-    canSign = getenv().containsKey('GPG_KEYNAME') && getenv().containsKey('GPG_PASSPHRASE')
-    canPublishToSpace = getenv().containsKey('SPACE_PASSWORD') && getenv().containsKey('SPACE_USERNAME')
-    canPublishToSonatype = canSign && getenv().containsKey('SONATYPE_PASSWORD') && getenv().containsKey('SONATYPE_USERNAME')
-    canPublishToGitHub = !snapshot && canSign && getenv().containsKey('GITHUB_PASSWORD') && getenv().containsKey('GITHUB_USERNAME')
-}
-
-if (canSign) {
-    ext.'signing.gnupg.keyName' = getenv('GPG_KEYNAME')
-    ext.'signing.gnupg.passphrase' = getenv('GPG_PASSPHRASE')
-}
-
-if (canPublishToSpace) {
-    ext {
-        spaceUsername = getenv('SPACE_USERNAME')
-        spacePassword = getenv('SPACE_PASSWORD')
-    }
-}
-
-if (canPublishToSonatype) {
-    ext {
-        sonatypeUsername = getenv('SONATYPE_USERNAME')
-        sonatypePassword = getenv('SONATYPE_PASSWORD')
-    }
-}
-
-if (canPublishToGitHub) {
-    ext {
-        githubRegistryUrl = uri("https://maven.pkg.github.com/${userbase.toLowerCase()}/${rootProject.name.toLowerCase()}")
-        githubUsername = getenv('GITHUB_USERNAME')
-        githubPassword = getenv('GITHUB_PASSWORD')
-    }
-}
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.GenerateMavenPom
 
 apply plugin: 'maven-publish'
 
@@ -51,7 +10,9 @@ publishing {
         if (canPublishToSpace) {
             maven {
                 name = 'Space'
-                url = 'https://maven.jetbrains.space/comroid/repo'
+                url = snapshot
+                        ? 'https://maven.jetbrains.space/comroid/snapshot'
+                        : 'https://maven.jetbrains.space/comroid/release'
 
                 credentials {
                     username spaceUsername
@@ -126,26 +87,6 @@ publishing {
             System.out.println("Registered artifact publication: '${group}:${artifactId}:${project.version}' -> $project.projectDescription")
         }
     }
-}
-
-def artifactId = publishing.publications.mavenJava.artifactId
-
-// block sonatype release if exists
-tasks.findByName('publishMavenJavaPublicationToSonatypeRepository')?.onlyIf {
-    if (snapshot) return true
-
-    def uri = new URI(String.format("https://oss.sonatype.org/content/repositories/releases/%s/%s/%s/%s",
-            rootProject.group.toString().replace(".", "/"), // domain
-            artifactId,
-            project.version,
-            String.format("%s-%s.pom", artifactId, project.version)
-    ))
-    def response = client.send(HttpRequest.newBuilder(uri).GET().build(), BodyHandlers.ofString())
-    def code = response.statusCode()
-
-    System.out.printf("Checked for existing Sonatype Artifact: %s RETURNED %d\n", uri, code)
-
-    return code != 200
 }
 
 task generateGithubPom(type: GenerateMavenPom) {
