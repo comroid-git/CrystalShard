@@ -1,10 +1,7 @@
 package org.comroid.crystalshard;
 
 import org.comroid.crystalshard.core.cache.SnowflakeCache;
-import org.comroid.crystalshard.core.cache.SnowflakeSelector;
-import org.comroid.crystalshard.core.event.GatewayEvent;
 import org.comroid.crystalshard.core.event.GatewayRequestPayload;
-import org.comroid.crystalshard.core.net.gateway.CloseCode;
 import org.comroid.crystalshard.core.net.rest.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.*;
@@ -12,7 +9,6 @@ import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.GuildMember;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
-import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.BotBound;
@@ -24,18 +20,22 @@ import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
 import org.comroid.dreadpool.ThreadPool;
+import org.comroid.mutatio.proc.Processor;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
-import org.comroid.uniform.cache.BasicCache;
-import org.comroid.uniform.cache.Cache;
+import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.util.Bitmask;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.net.URI;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,7 +48,7 @@ public interface DiscordBot {
 
     ThreadPool getThreadPool();
 
-    SnowflakeCache getCache();
+    <F extends Snowflake> SnowflakeCache<F> getCache(Class<F> type);
 
     REST<DiscordBot> getRestClient();
 
@@ -110,10 +110,10 @@ public interface DiscordBot {
     default Processor<SnowflakeSelector> getSnowflakesByID(long id) {
         return Reference.provided(() -> getCache()
                 .stream(other -> id == other)
-                .findAny())
+                .findAny()
+                .orElse(null))
                 .process()
-                .flatMap(ref -> ref)
-                .flatMap(Reference::wrap);
+                .flatMap(Function.identity());
     }
 
     default Processor<Guild> getGuildByID(long id) {
@@ -139,35 +139,35 @@ public interface DiscordBot {
     }
 
     default Processor<TextChannel> getTextChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asTextChannel);
+        return getChannelByID(id).map(channel -> channel.asTextChannel().orElse(null));
     }
 
     default Processor<VoiceChannel> getVoiceChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asVoiceChannel);
+        return getChannelByID(id).map(channel -> channel.asVoiceChannel().orElse(null));
     }
 
     default Processor<GuildChannel> getGuildChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asGuildChannel);
+        return getChannelByID(id).map(channel -> channel.asGuildChannel().orElse(null));
     }
 
     default Processor<ChannelCategory> getChannelCategoryByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asChannelCategory);
+        return getChannelByID(id).map(channel -> channel.asChannelCategory().orElse(null));
     }
 
     default Processor<GuildTextChannel> getGuildTextChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asGuildTextChannel);
+        return getChannelByID(id).map(channel -> channel.asGuildTextChannel().orElse(null));
     }
 
     default Processor<GuildVoiceChannel> getGuildVoiceChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asGuildVoiceChannel);
+        return getChannelByID(id).map(channel -> channel.asGuildVoiceChannel().orElse(null));
     }
 
     default Processor<PrivateChannel> getPrivateChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asPrivateChannel);
+        return getChannelByID(id).map(channel -> channel.asPrivateChannel().orElse(null));
     }
 
     default Processor<PrivateTextChannel> getPrivateTextChannelByID(long id) {
-        return getChannelByID(id).flatMap(Channel::asPrivateTextChannel);
+        return getChannelByID(id).map(channel -> channel.asPrivateTextChannel().orElse(null));
     }
 
     default Processor<Message> getMessageByID(long id) {
@@ -207,26 +207,32 @@ public interface DiscordBot {
     interface Shard extends BotBound {
         int getShardID();
 
-        <T> WebSocket<T> getWebSocket();
+        WebSocket getWebSocket();
     }
 
     final class Support {
         private static final class ShardingManager implements DiscordBot {
             private final String token;
             private final ThreadPool threadPool;
-            private final Cache<Long, Snowflake> entityCache;
+            private final SnowflakeCache entityCache;
             private final REST<DiscordBot> restClient;
             private final List<Shard> shards;
-            private final List<WebSocket<GatewayEvent>> webSockets;
+            private final List<WebSocket> webSockets;
             private final int intent;
+
+            @Override
+            public String getToken() {
+                return token;
+            }
 
             @Override
             public ThreadPool getThreadPool() {
                 return threadPool;
             }
 
+
             @Override
-            public Cache<Long, Snowflake> getCache() {
+            public SnowflakeCache getCache() {
                 return entityCache;
             }
 
@@ -240,74 +246,85 @@ public interface DiscordBot {
                 return shards;
             }
 
+            @Override
+            public UserPresence updatePresence(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public VoiceState updateVoiceState(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public User updateUser(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public GuildMember updateGuildMember(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public Emoji updateEmoji(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public PermissionOverride makeOverwrite(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public Processor<Channel> resolveChannelMention(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public Processor<MessageActivity> resolveMessageActivity(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public Processor<MessageApplication> resolveMessageApplication(UniObjectNode data) {
+                return null;
+            }
+
+            @Override
+            public Processor<MessageReference> resolveMessageReference(UniObjectNode data) {
+                return null;
+            }
+
             private ShardingManager(String token, int intent, int shards, ThreadGroup threadGroup, URI gatewayUri) {
                 this.token = token;
                 this.intent = intent;
                 this.threadPool = ThreadPool.fixedSize(threadGroup, 8 * shards);
-                this.entityCache = new BasicCache<>(500);
+                this.entityCache = new SnowflakeCache(this, bind);
                 this.restClient = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
 
-                var socketHeaders = new WebSocket.Header.List().add("Authorization", token)
-                        .add("Content-Type", SERIALIZATION_ADAPTER.getMimeType());
+                final REST.Header.List socketHeaders = new REST.Header.List();
+                socketHeaders.add("Authorization", token);
+                socketHeaders.add("Content-Type", SERIALIZATION_ADAPTER.getMimeType());
 
-                List<WebSocket<GatewayEvent>> sockets
-                        =
-                        new ArrayList<>();
-                List<EventHub<DiscordBotEvent, DiscordBotEvent, GatewayEventType, DiscordBotEvent>> eventHubs
-                        =
-                        new ArrayList<>();
-                this.webSockets = IntStream.range(0, shards)
-                        .mapToObj(shardId -> {
-                            WebSocket<GatewayEvent> webSocket = HTTP_ADAPTER.createWebSocket(SERIALIZATION_ADAPTER,
-                                    socketHeaders,
-                                    threadPool,
-                                    gatewayUri,
-                                    this::preprocessWebsocketData
-                            )
-                                    .join();
-                            webSocket.setCloseCodeResolver(CloseCode::toString);
-
-                            webSocket.getEventHub()
-
-                            return webSocket;
-                        })
-                        .collect(Collectors.toUnmodifiableList());
-
-                this.mainEventHub = new EventHub<>(threadPool, this::preprocessEventData);
-                final EventAcceptor<EventType<GatewayEvent, String, GatewayEvent>, GatewayEvent> webSocketMessageForwarder
-                        = new EventAcceptor.Support.Abstract<>() {
-                    @Override
-                    public <T extends GatewayEvent> void acceptEvent(T eventPayload) {
-                        mainEventHub.publish(eventPayload);
-                    }
-
-                    @Override
-                    public boolean canAccept(EventType<GatewayEvent, ?, ?> eventType) {
-                        return true;
-                    }
-                };
-                webSockets.stream()
-                        .map(WebSocket::getEventHub)
-                        .forEach(hub -> hub.registerAcceptor(webSocketMessageForwarder));
-
-                this.eventTypeContainer = new DiscordBotEventType.Container(this);
-
-                this.shards = IntStream.range(0, shards)
+                this.webSockets = Collections.unmodifiableList(IntStream.range(0, shards)
+                        .mapToObj(shardId -> HTTP_ADAPTER.createWebSocket(
+                                SERIALIZATION_ADAPTER,
+                                threadPool,
+                                gatewayUri,
+                                socketHeaders))
+                        .map(CompletableFuture::join)
+                        .collect(Collectors.toList()));
+                this.shards = Collections.unmodifiableList(IntStream.range(0, shards)
                         .mapToObj(id -> new ShardImpl(this, id, webSockets.get(id)))
-                        .collect(Collectors.toUnmodifiableList());
-            }
-
-            private GatewayEvent preprocessWebsocketData(String s) {
-            }
-
-            private DiscordBotEvent preprocessEventData(GatewayEvent gatewayRequestPayload) {
+                        .collect(Collectors.toList()));
             }
         }
 
         private static final class ShardImpl implements Shard {
             private final ShardingManager shardingManager;
             private final int shardId;
-            private final WebSocket<GatewayEvent> webSocket;
+            private final WebSocket webSocket;
 
             @Override
             public int getShardID() {
@@ -315,7 +332,7 @@ public interface DiscordBot {
             }
 
             @Override
-            public WebSocket<?> getWebSocket() {
+            public WebSocket getWebSocket() {
                 return webSocket;
             }
 
@@ -325,7 +342,7 @@ public interface DiscordBot {
             }
 
             public ShardImpl(
-                    ShardingManager shardingManager, int shardId, WebSocket<GatewayEvent> webSocket
+                    ShardingManager shardingManager, int shardId, WebSocket webSocket
             ) {
                 this.shardingManager = shardingManager;
                 this.shardId = shardId;

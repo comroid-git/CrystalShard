@@ -1,21 +1,29 @@
 package org.comroid.crystalshard.core.cache;
 
-import org.comroid.common.map.TrieStringMap;
-import org.comroid.uniform.cache.BasicCache;
-import org.jetbrains.annotations.NotNull;
+import org.comroid.api.Junction;
+import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.model.BotBound;
+import org.comroid.trie.TrieMap;
+import org.comroid.varbind.DataContainerCache;
+import org.comroid.varbind.bind.VarBind;
 
-public final class SnowflakeCache extends BasicCache<Long, SnowflakeSelector> {
-    public SnowflakeCache() {
-        super(250, () -> new TrieStringMap<>(String::valueOf, Long::parseLong));
-    }
+public final class SnowflakeCache<F extends Snowflake> extends DataContainerCache<Long, F, DiscordBot> implements BotBound {
+    private final DiscordBot bot;
 
     @Override
-    public @NotNull Reference<Long, SnowflakeSelector> getReference(Long key, boolean createIfAbsent) {
-        final Reference<Long, SnowflakeSelector> ref = super.getReference(key, createIfAbsent);
+    public DiscordBot getBot() {
+        return bot;
+    }
 
-        if (ref.isNull())
-            ref.set(new SnowflakeSelector(key));
+    public SnowflakeCache(DiscordBot bot, VarBind<?, ? super DiscordBot, ?, Long> idBind) {
+        super(
+                250,
+                new TrieMap.Basic<>(Junction.of(String::valueOf, Long::parseLong), true),
+                idBind,
+                bot
+        );
 
-        return ref;
+        this.bot = bot;
     }
 }

@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.entity.channel;
 
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.core.cache.SnowflakeSelector;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.uniform.node.UniValueNode.ValueType;
 import org.comroid.varbind.bind.GroupBind;

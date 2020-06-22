@@ -1,14 +1,13 @@
 package org.comroid.crystalshard.entity.channel;
 
+import org.comroid.api.IntEnum;
+import org.comroid.api.Specifiable;
 import org.comroid.common.info.Described;
-import org.comroid.common.ref.IntEnum;
 import org.comroid.common.ref.Named;
-import org.comroid.common.ref.Specifiable;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.Mentionable;
-import org.comroid.uniform.node.UniValueNode.ValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 

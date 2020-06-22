@@ -1,9 +1,9 @@
 package org.comroid.crystalshard.core.net.rest;
 
 import org.comroid.crystalshard.DiscordAPI;
-import org.comroid.restless.endpoint.RestEndpoint;
+import org.comroid.restless.endpoint.AccessibleEndpoint;
 
-public enum DiscordEndpoint implements RestEndpoint {
+public enum DiscordEndpoint implements AccessibleEndpoint {
     GATEWAY("/gateway"),
     GATEWAY_BOT("/gateway/bot");
 
@@ -17,6 +17,11 @@ public enum DiscordEndpoint implements RestEndpoint {
     @Override
     public String getUrlExtension() {
         return extension;
+    }
+
+    @Override
+    public String[] getRegExpGroups() {
+        return new String[0];
     }
 
     DiscordEndpoint(String extension) {
