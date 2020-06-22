@@ -64,11 +64,12 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
-    implementation 'org.comroid:mutatio:0.10.1'
     implementation 'org.comroid:common-util:1.5.4'
+    implementation 'org.comroid:mutatio:0.10.1'
     implementation 'org.comroid:uniform:0.16.0'
     implementation 'org.comroid:varbind:0.20.0'
     implementation 'org.comroid:restless:0.15.2'
+    implementation 'org.comroid:dreadpool:0.10.0'
 
     implementation 'com.google.flogger:flogger:0.5.1'
 }
