@@ -1,8 +1,5 @@
 package org.comroid.crystalshard;
 
-import org.comroid.common.func.Processor;
-import org.comroid.common.ref.Reference;
-import org.comroid.common.util.Bitmask;
 import org.comroid.crystalshard.core.cache.SnowflakeCache;
 import org.comroid.crystalshard.core.cache.SnowflakeSelector;
 import org.comroid.crystalshard.core.event.GatewayEvent;
@@ -27,10 +24,8 @@ import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
 import org.comroid.dreadpool.ThreadPool;
-import org.comroid.listnr.model.EventType;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
-import org.comroid.restless.socket.WebSocket;
 import org.comroid.uniform.cache.BasicCache;
 import org.comroid.uniform.cache.Cache;
 import org.comroid.uniform.node.UniObjectNode;

@@ -1,8 +1,8 @@
 package org.comroid.crystalshard;
 
 import org.comroid.restless.HttpAdapter;
+import org.comroid.restless.adapter.jdk.JavaHttpAdapter;
 import org.comroid.uniform.SerializationAdapter;
-import org.comroid.uniform.adapter.http.jdk.JavaHttpAdapter;
 import org.comroid.uniform.adapter.json.fastjson.FastJSONLib;
 
 public final class CrystalShard {
