@@ -13,7 +13,7 @@ public interface BotBound {
 
     abstract class DataBase extends DataContainerBase<DiscordBot> implements BotBound {
         protected DataBase(@NotNull DiscordBot dependencyObject, @Nullable UniObjectNode initialData) {
-            super(initialData, Objects.requireNonNull(dependencyObject));
+            super(initialData, Objects.requireNonNull(dependencyObject, "Bot Object missing"));
         }
 
         @Override

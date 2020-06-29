@@ -5,7 +5,6 @@ import org.comroid.common.info.Described;
 import org.comroid.common.ref.Named;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannel;
 import org.comroid.crystalshard.entity.channel.GuildTextChannel;
 import org.comroid.crystalshard.entity.channel.GuildVoiceChannel;
@@ -32,6 +31,11 @@ import java.util.*;
 
 @Location(Guild.Bind.class)
 public interface Guild extends Snowflake, Named, Described {
+    @Override
+    default Type<? extends Snowflake> getType() {
+        return Type.GUILD;
+    }
+
     @Override
     default String getName() {
         return requireNonNull(Bind.Name);
@@ -94,8 +98,8 @@ public interface Guild extends Snowflake, Named, Described {
         return requireNonNull(Bind.MfaLevel);
     }
 
-    default Optional<Snowflake> getOwnerApplication() {
-        return requireNonNull(Bind.OwnerApplication);
+    default Optional<User> getOwnerApplication() {
+        return wrap(Bind.OwnerApplication);
     }
 
     default boolean isWidgetEnabled() {
@@ -222,7 +226,7 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<Long, DiscordBot, User, User> Owner
                 = Root.createBind("owner_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getUserByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.USER, id).get())
                 .onceEach()
                 .build();
         VarBind<Integer, DiscordBot, PermissionSet, PermissionSet> YourPermissions
@@ -240,7 +244,7 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<Long, DiscordBot, GuildVoiceChannel, GuildVoiceChannel> AfkChannel
                 = Root.createBind("afk_channel_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getGuildVoiceChannelByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.GUILD_VOICE_CHANNEL, id).get())
                 .onceEach()
                 .build();
         VarBind<Integer, DiscordBot, Integer, Integer> AfkTimeout
@@ -258,7 +262,7 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<Long, DiscordBot, GuildChannel, GuildChannel> GuildEmbedChannel
                 = Root.createBind("embed_channel_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getGuildChannelByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.GUILD_CHANNEL, id).get())
                 .onceEach()
                 .build();
         VarBind<Integer, DiscordBot, GuildVerificationLevel, GuildVerificationLevel> VerificationLevel
@@ -282,13 +286,17 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<UniObjectNode, DiscordBot, Role, ArrayList<Role>> Roles
                 = Root.createBind("roles")
                 .extractAsObject()
-                .andResolve((data, bot) -> bot.getCache(Role.class).autoUpdate(data).get())
+                .andResolve((data, bot) -> bot.getSnowflake(Type.ROLE, Snowflake.Bind.ID.getFrom(data))
+                        .wrap()
+                        .orElseGet(() -> Type.ROLE.create(bot, data)))
                 .intoCollection(ArrayList::new)
                 .build();
         VarBind<UniObjectNode, DiscordBot, CustomEmoji, ArrayList<CustomEmoji>> Emojis
                 = Root.createBind("emojis")
                 .extractAsObject()
-                .andResolve((data, bot) -> bot.getCache(CustomEmoji.class).autoUpdate(data).get())
+                .andResolve((data, bot) -> bot.getSnowflake(Type.CUSTOM_EMOJI, Snowflake.Bind.ID.getFrom(data))
+                        .wrap()
+                        .orElseGet(() -> Type.CUSTOM_EMOJI.create(bot, data)))
                 .intoCollection(ArrayList::new)
                 .build();
         VarBind<String, DiscordBot, GuildFeature, HashSet<GuildFeature>> Features
@@ -303,10 +311,10 @@ public interface Guild extends Snowflake, Named, Described {
                 .andRemap(MFALevel::valueOf)
                 .onceEach()
                 .build();
-        String OwnerApplication
+        VarBind<Long, DiscordBot, User, User> OwnerApplication
                 = Root.createBind("application_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getSnowflakesByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.USER, id).get())
                 .onceEach()
                 .build();
         VarBind<Boolean, DiscordBot, Boolean, Boolean> WidgetEnabled
@@ -318,25 +326,25 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<Long, DiscordBot, GuildChannel, GuildChannel> WidgetChannel
                 = Root.createBind("widget_channel_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getGuildChannelByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.GUILD_CHANNEL, id).get())
                 .onceEach()
                 .build();
         VarBind<Long, DiscordBot, GuildChannel, GuildChannel> SystemChannel
                 = Root.createBind("system_channel_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getGuildChannelByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.GUILD_CHANNEL, id).get())
                 .onceEach()
                 .build();
-        String SystemChannelFlags
+        VarBind<Integer, DiscordBot, Set<GuildSystemChannelFlag>, Set<GuildSystemChannelFlag>> SystemChannelFlags
                 = Root.createBind("system_channel_flags")
                 .extractAs(ValueType.INTEGER)
                 .andRemap(GuildSystemChannelFlag::valueOf)
-                .intoCollection(HashSet::new)
+                .onceEach()
                 .build();
         VarBind<Long, DiscordBot, GuildTextChannel, GuildTextChannel> RulesChannel
                 = Root.createBind("rules_channel_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getGuildTextChannelByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.GUILD_TEXT_CHANNEL, id).get())
                 .onceEach()
                 .build();
         VarBind<String, DiscordBot, Instant, Instant> YouJoinedAt
@@ -378,7 +386,9 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<UniObjectNode, DiscordBot, GuildChannel, HashSet<GuildChannel>> Channels
                 = Root.createBind("channels")
                 .extractAsObject()
-                .andResolve((data, bot) -> bot.getCache(Channel.class).autoUpdate(data).map(GuildChannel.class::cast).get())
+                .andResolve((data, bot) -> bot.getSnowflake(Type.GUILD_CHANNEL, Snowflake.Bind.ID.getFrom(data))
+                        .wrap()
+                        .orElseGet(() -> Type.GUILD_CHANNEL.create(bot, data)))
                 .intoCollection(HashSet::new)
                 .build();
         VarBind<UniObjectNode, DiscordBot, UserPresence, HashSet<UserPresence>> Presences
@@ -438,7 +448,7 @@ public interface Guild extends Snowflake, Named, Described {
         VarBind<Long, DiscordBot, GuildChannel, GuildChannel> PublicUpdatesChannel
                 = Root.createBind("public_updates_channel_id")
                 .extractAs(ValueType.LONG)
-                .andResolve((id, bot) -> bot.getGuildChannelByID(id).get())
+                .andResolve((id, bot) -> bot.getSnowflake(Type.GUILD_CHANNEL, id).get())
                 .onceEach()
                 .build();
         VarBind<Integer, DiscordBot, Integer, Integer> MaxVideoChannelUsers
@@ -462,8 +472,8 @@ public interface Guild extends Snowflake, Named, Described {
     }
 
     final class Base extends Snowflake.Base implements Guild {
-        protected Base(@Nullable UniObjectNode initialData, @NotNull DiscordBot dependencyObject) {
-            super(initialData, dependencyObject);
+        protected Base(DiscordBot bot, @Nullable UniObjectNode initialData) {
+            super(bot, initialData);
         }
     }
 }

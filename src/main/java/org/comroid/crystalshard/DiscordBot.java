@@ -1,16 +1,12 @@
 package org.comroid.crystalshard;
 
-import org.comroid.crystalshard.core.cache.SnowflakeCache;
 import org.comroid.crystalshard.core.event.GatewayRequestPayload;
 import org.comroid.crystalshard.core.net.rest.DiscordEndpoint;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.Snowflake.Type;
 import org.comroid.crystalshard.entity.channel.*;
-import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.GuildMember;
-import org.comroid.crystalshard.entity.guild.Role;
-import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.crystalshard.model.channel.PermissionOverride;
 import org.comroid.crystalshard.model.emoji.Emoji;
@@ -19,9 +15,8 @@ import org.comroid.crystalshard.model.message.MessageApplication;
 import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
-import org.comroid.dreadpool.ThreadPool;
+import org.comroid.matrix.Matrix2;
 import org.comroid.mutatio.proc.Processor;
-import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
 import org.comroid.restless.socket.WebSocket;
@@ -35,7 +30,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -46,9 +42,9 @@ import static org.comroid.crystalshard.CrystalShard.SERIALIZATION_ADAPTER;
 public interface DiscordBot {
     String getToken();
 
-    ThreadPool getThreadPool();
+    ScheduledExecutorService getExecutorService();
 
-    <F extends Snowflake> SnowflakeCache<F> getCache(Class<F> type);
+    Matrix2<Long, Type<? extends Snowflake>, ? extends Snowflake> getCache();
 
     REST<DiscordBot> getRestClient();
 
@@ -107,71 +103,10 @@ public interface DiscordBot {
                 .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, SERIALIZATION_ADAPTER.getMimeType());
     }
 
-    default Processor<SnowflakeSelector> getSnowflakesByID(long id) {
-        return Reference.provided(() -> getCache()
-                .stream(other -> id == other)
-                .findAny()
-                .orElse(null))
-                .process()
-                .flatMap(Function.identity());
-    }
-
-    default Processor<Guild> getGuildByID(long id) {
-        return getSnowflakesByID(id)
-                .map(SnowflakeSelector::asGuild);
-    }
-
-    default Processor<Webhook> getWebhookByID(long id) {
-        return getSnowflakesByID(id)
-                .map(SnowflakeSelector::asWebhook);
-    }
-
-    default Processor<Role> getRoleByID(long id) {
-        return getSnowflakesByID(id).map(SnowflakeSelector::asRole);
-    }
-
-    default Processor<User> getUserByID(long id) {
-        return getSnowflakesByID(id).map(SnowflakeSelector::asUser);
-    }
-
-    default Processor<Channel> getChannelByID(long id) {
-        return getSnowflakesByID(id).map(SnowflakeSelector::asChannel);
-    }
-
-    default Processor<TextChannel> getTextChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asTextChannel().orElse(null));
-    }
-
-    default Processor<VoiceChannel> getVoiceChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asVoiceChannel().orElse(null));
-    }
-
-    default Processor<GuildChannel> getGuildChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asGuildChannel().orElse(null));
-    }
-
-    default Processor<ChannelCategory> getChannelCategoryByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asChannelCategory().orElse(null));
-    }
-
-    default Processor<GuildTextChannel> getGuildTextChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asGuildTextChannel().orElse(null));
-    }
-
-    default Processor<GuildVoiceChannel> getGuildVoiceChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asGuildVoiceChannel().orElse(null));
-    }
-
-    default Processor<PrivateChannel> getPrivateChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asPrivateChannel().orElse(null));
-    }
-
-    default Processor<PrivateTextChannel> getPrivateTextChannelByID(long id) {
-        return getChannelByID(id).map(channel -> channel.asPrivateTextChannel().orElse(null));
-    }
-
-    default Processor<Message> getMessageByID(long id) {
-        return getSnowflakesByID(id).map(SnowflakeSelector::asMessage);
+    default <T extends Snowflake> Processor<T> getSnowflake(Type<T> type, long id) {
+        return Processor.ofReference(() -> getCache().get(id, type))
+                .filter(type.getTypeClass()::isInstance)
+                .map(type.getTypeClass()::cast);
     }
 
     @Internal
@@ -213,8 +148,8 @@ public interface DiscordBot {
     final class Support {
         private static final class ShardingManager implements DiscordBot {
             private final String token;
-            private final ThreadPool threadPool;
-            private final SnowflakeCache entityCache;
+            private final ScheduledExecutorService executorService;
+            private final Matrix2<Long, Type<? extends Snowflake>, ? extends Snowflake> entityCache;
             private final REST<DiscordBot> restClient;
             private final List<Shard> shards;
             private final List<WebSocket> webSockets;
@@ -226,13 +161,12 @@ public interface DiscordBot {
             }
 
             @Override
-            public ThreadPool getThreadPool() {
-                return threadPool;
+            public ScheduledExecutorService getExecutorService() {
+                return executorService;
             }
 
-
             @Override
-            public SnowflakeCache getCache() {
+            public Matrix2<Long, Type<? extends Snowflake>, ? extends Snowflake> getCache() {
                 return entityCache;
             }
 
@@ -244,6 +178,11 @@ public interface DiscordBot {
             @Override
             public List<Shard> getShards() {
                 return shards;
+            }
+
+            @Override
+            public List<DiscordAPI.Intent> getIntents() {
+                return null;
             }
 
             @Override
@@ -299,8 +238,8 @@ public interface DiscordBot {
             private ShardingManager(String token, int intent, int shards, ThreadGroup threadGroup, URI gatewayUri) {
                 this.token = token;
                 this.intent = intent;
-                this.threadPool = ThreadPool.fixedSize(threadGroup, 8 * shards);
-                this.entityCache = new SnowflakeCache(this, bind);
+                this.executorService = Executors.newScheduledThreadPool(8);
+                this.entityCache = Matrix2.create();
                 this.restClient = new REST<>(HTTP_ADAPTER, SERIALIZATION_ADAPTER, this);
 
                 final REST.Header.List socketHeaders = new REST.Header.List();
@@ -310,7 +249,7 @@ public interface DiscordBot {
                 this.webSockets = Collections.unmodifiableList(IntStream.range(0, shards)
                         .mapToObj(shardId -> HTTP_ADAPTER.createWebSocket(
                                 SERIALIZATION_ADAPTER,
-                                threadPool,
+                                executorService,
                                 gatewayUri,
                                 socketHeaders))
                         .map(CompletableFuture::join)

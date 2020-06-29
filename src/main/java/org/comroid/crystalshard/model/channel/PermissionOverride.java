@@ -17,7 +17,7 @@ public interface PermissionOverride extends DataContainer<DiscordBot>, BotBound 
     default <O extends Snowflake & Settable> Processor<O> getRelated(Class<O> asType) {
         return ref(Bind.RelatedId)
                 .process()
-                .flatMap(id -> getBot().getSnowflakeByID(id).wrap())
+                .flatMap(id -> getBot().getSnowflake(id).wrap())
                 .filter(asType::isInstance)
                 .map(asType::cast);
     }

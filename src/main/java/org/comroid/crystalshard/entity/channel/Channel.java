@@ -109,7 +109,7 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
         }
     }
 
-    default Channel.Type getType() {
+    default Snowflake.Type<? extends Snowflake> getType() {
         return requireNonNull(Bind.Type);
     }
 

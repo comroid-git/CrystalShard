@@ -1,10 +1,12 @@
 package org.comroid.crystalshard.model.guild;
 
+import org.comroid.api.BitmaskEnum;
 import org.comroid.common.info.Described;
-import org.comroid.common.util.Bitmask;
+
+import java.util.Set;
 
 @SuppressWarnings("PointlessBitwiseExpression")
-public enum GuildSystemChannelFlag implements Bitmask.Enum, Described {
+public enum GuildSystemChannelFlag implements BitmaskEnum, Described {
     SUPPRESS_JOIN_NOTIFICATIONS(1 << 0, "Suppress member join notifications"),
     SUPPRESS_PREMIUM_SUBSCRIPTIONS(1 << 1, "Suppress server boost notifications");
 
@@ -24,5 +26,9 @@ public enum GuildSystemChannelFlag implements Bitmask.Enum, Described {
     GuildSystemChannelFlag(int value, String description) {
         this.value = value;
         this.description = description;
+    }
+
+    public static Set<GuildSystemChannelFlag> valueOf(int mask) {
+        return BitmaskEnum.valueOf(mask, GuildSystemChannelFlag.class);
     }
 }

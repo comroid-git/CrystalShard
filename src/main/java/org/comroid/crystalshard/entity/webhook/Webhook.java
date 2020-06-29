@@ -1,4 +1,6 @@
 package org.comroid.crystalshard.entity.webhook;
 
-public interface Webhook {
+import org.comroid.crystalshard.entity.Snowflake;
+
+public interface Webhook extends Snowflake {
 }
