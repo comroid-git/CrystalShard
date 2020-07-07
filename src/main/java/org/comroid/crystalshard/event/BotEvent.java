@@ -1,39 +1,20 @@
 package org.comroid.crystalshard.event;
 
-import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.event.multipart.DiscordEventContainer;
-import org.comroid.crystalshard.event.multipart.DiscordEventPayload;
-import org.comroid.crystalshard.event.multipart.DiscordEventType;
-import org.comroid.listnr.model.EventType;
-import org.comroid.uniform.node.UniObjectNode;
-
-import java.lang.reflect.Method;
+import org.comroid.listnr.EventType;
+import org.comroid.restless.socket.event.WebSocketPayload;
 
 /**
  * Any Discord Bot related Event
  */
-public interface BotEvent {
-    static Container container(DiscordBot socket) {
-        return new Container(socket);
+public abstract class BotEvent implements EventType<WebSocketPayload.Data, BotPayload> {
+    private final String dispatchName;
+
+    protected BotEvent(String dispatchName) {
+        this.dispatchName = dispatchName;
     }
 
-    interface Payload extends DiscordEventPayload<DiscordEventType<Payload>> {
-        DiscordBot getDiscordBot();
-    }
-
-    final class Container implements DiscordEventContainer<Payload> {
-        public final DiscordEventType<Payload> Type;
-
-        @Override
-        public DiscordEventType<Payload> getType() {
-            return Type;
-        }
-
-        public Container(DiscordBot bot) {
-            this.Type = new DiscordEventType.Base<>(bot, Payload.class, this);
-        }
-
-        public Payload makePayload(DiscordBot bot, UniObjectNode data) {
-        }
+    @Override
+    public boolean test(WebSocketPayload.Data data) {
+        return data.getBody().get("t").asString().equals(dispatchName);
     }
 }

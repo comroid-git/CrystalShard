@@ -6,7 +6,7 @@ version '0.3.0-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-tasks.findByName('wrapper').configure {
+tasks.findByName('wrapper')?.configure {
     gradleVersion = '6.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
