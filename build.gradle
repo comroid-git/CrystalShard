@@ -64,11 +64,9 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
-    implementation 'org.comroid:common-util:1.5.5-SNAPSHOT'
-    implementation 'org.comroid:mutatio:0.11.0-SNAPSHOT'
-    implementation 'org.comroid:restless:0.16.0-SNAPSHOT'
-    implementation 'org.comroid:matrix:0.10.2-SNAPSHOT'
-    implementation 'org.comroid:listnr:0.10.0-SNAPSHOT'
+    implementation project(':common-util:restless')
+    implementation project(':common-util:matrix')
+    implementation project(':common-util:listnr')
 
     implementation 'com.google.flogger:flogger:0.5.1'
 }
