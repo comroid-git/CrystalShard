@@ -1,4 +1,4 @@
-package org.comroid.crystalshard.core.net.rest;
+package org.comroid.crystalshard.core.rest;
 
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.restless.endpoint.AccessibleEndpoint;
