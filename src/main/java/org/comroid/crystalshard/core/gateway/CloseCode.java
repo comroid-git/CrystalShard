@@ -1,4 +1,4 @@
-package org.comroid.crystalshard.core.net.gateway;
+package org.comroid.crystalshard.core.gateway;
 
 import java.util.Optional;
 

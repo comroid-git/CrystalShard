@@ -64,9 +64,15 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
-    implementation project(':common-util:restless')
-    implementation project(':common-util:matrix')
-    implementation project(':common-util:listnr')
+    api project(':common-util:restless') == null
+            ? 'org.comroid:restless:0.16.0-SNAPSHOT'
+            : project(':common-util:restless')
+    api project(':common-util:matrix') == null
+            ? 'org.comroid:matrix:0.10.2-SNAPSHOT'
+            : project(':common-util:matrix')
+    api project(':common-util:listnr') == null
+            ? 'org.comroid:listnr:0.10.0-SNAPSHOT'
+            : project(':common-util:listnr')
 
     implementation 'com.google.flogger:flogger:0.5.1'
 }
