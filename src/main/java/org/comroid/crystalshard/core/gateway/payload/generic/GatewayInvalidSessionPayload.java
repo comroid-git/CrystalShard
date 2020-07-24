@@ -4,24 +4,27 @@ import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
 import org.comroid.uniform.ValueType;
-import org.comroid.varbind.annotation.Location;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
-public final class GatewayHelloPayload extends AbstractGatewayPayload {
+public final class GatewayInvalidSessionPayload extends AbstractGatewayPayload {
     @RootBind
-    public static final GroupBind<GatewayHelloPayload, DiscordBot> Root
-            = BaseGroup.subGroup("gateway-hello", GatewayHelloPayload.class);
-    public static final VarBind<Integer, DiscordBot, Integer, Integer> HeartbeatInterval
-            = Root.createBind("heartbeat_interval")
-            .extractAs(ValueType.INTEGER)
+    public static final GroupBind<GatewayInvalidSessionPayload, DiscordBot> Root
+            = BaseGroup.rootGroup("gateway-invalid-session");
+    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> Resumable
+            = Root.createBind("")
+            .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
 
-    public GatewayHelloPayload(GatewayPayloadWrapper gpw) {
+    public boolean isResumable() {
+        return requireNonNull(Resumable);
+    }
+
+    public GatewayInvalidSessionPayload(GatewayPayloadWrapper gpw) {
         super(gpw);
     }
 }

@@ -21,10 +21,10 @@ import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
 import org.comroid.listnr.EventManager;
-import org.comroid.listnr.EventType;
 import org.comroid.listnr.impl.ChildEventManager;
 import org.comroid.listnr.impl.UnderlyingEventManager;
 import org.comroid.matrix.Matrix2;
+import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.proc.Processor;
 import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
@@ -32,7 +32,6 @@ import org.comroid.mutatio.span.Span;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.REST;
 import org.comroid.restless.socket.WebSocket;
-import org.comroid.restless.socket.event.WebSocketEvent;
 import org.comroid.restless.socket.event.WebSocketPayload;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.Bitmask;
@@ -41,7 +40,6 @@ import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -73,10 +71,10 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
     List<DiscordBot.Shard> getShards();
 
     @Experimental
-    Collection<DiscordAPI.Intent> getIntents();
+    Pipe<?, DiscordAPI.Intent> getActiveIntents();
 
     default int getIntentAsInteger() {
-        return getIntents().stream()
+        return getActiveIntents().stream()
                 .map(DiscordAPI.Intent::getValue)
                 .collect(Bitmask.collector());
     }
@@ -193,12 +191,9 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
                 extends ChildEventManager<DiscordBot, GatewayPayload, DiscordBotEvent<? extends DiscordBotPayload>, DiscordBotPayload>
                 implements DiscordBot {
             private final Matrix2<Long, Type<? extends Snowflake>, ? extends Snowflake> entityCache;
-            //todo Intent usage
-            private final Span<DiscordAPI.Intent> activeIntents
-                    = Span.<DiscordAPI.Intent>make().initialValues(DiscordAPI.Intent.values()).span();
             private final ScheduledExecutorService executorService;
             private final REST<DiscordBot> restClient;
-            private final List<Shard> shards;
+            private final Span<Shard> shards;
             private final String token;
 
             @Override
@@ -237,8 +232,12 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
             }
 
             @Override
-            public Collection<DiscordAPI.Intent> getIntents() {
-                return Collections.unmodifiableCollection(activeIntents);
+            public Pipe<?, DiscordAPI.Intent> getActiveIntents() {
+                return getListeningTypes()
+                        .flatMap(DiscordBotEvent::getCommonCause)
+                        .filter(GatewayEvent.class::isInstance)
+                        .map(GatewayEvent.class::cast)
+                        .flatMap(GatewayEvent::getIntent);
             }
 
             @Override

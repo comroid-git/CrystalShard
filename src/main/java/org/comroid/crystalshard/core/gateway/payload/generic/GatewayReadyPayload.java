@@ -15,8 +15,7 @@ import org.comroid.varbind.bind.VarBind;
 
 import java.util.HashSet;
 
-@Location(GatewayReadyPayload.class)
-public class GatewayReadyPayload extends AbstractGatewayPayload {
+public final class GatewayReadyPayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayReadyPayload, DiscordBot> Root
             = BaseGroup.subGroup("gateway-ready", GatewayReadyPayload.class);
