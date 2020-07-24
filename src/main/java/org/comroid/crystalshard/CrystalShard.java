@@ -1,6 +1,7 @@
 package org.comroid.crystalshard;
 
 import org.comroid.crystalshard.core.gateway.Gateway;
+import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.uniform.SerializationAdapter;
@@ -15,11 +16,12 @@ public final class CrystalShard {
     public static SerializationAdapter<?, ?, ?> SERIALIZATION_ADAPTER;
 
     public static CompletableFuture<Gateway> createGateway(
+            FutureReference<DiscordBot> botRef,
             ScheduledExecutorService executorService,
             URI webSocketURI,
             REST.Header.List socketHeaders
     ) {
         return HTTP_ADAPTER.createWebSocket(SERIALIZATION_ADAPTER, executorService, webSocketURI, socketHeaders)
-                .thenApply(Gateway::new);
+                .thenApply(ws -> new Gateway(botRef, executorService, ws));
     }
 }

@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.core.gateway.payload.generic;
 
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.core.event.GatewayPayloadWrapper;
+import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
 import org.comroid.varbind.annotation.Location;
 import org.comroid.varbind.annotation.RootBind;

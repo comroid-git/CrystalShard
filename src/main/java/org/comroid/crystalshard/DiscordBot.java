@@ -1,10 +1,10 @@
 package org.comroid.crystalshard;
 
-import org.comroid.crystalshard.core.event.GatewayEventDefinition;
-import org.comroid.crystalshard.core.event.GatewayPayloadWrapper;
-import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.crystalshard.core.rest.payload.GatewayBotRequestPayload;
+import org.comroid.crystalshard.core.gateway.Gateway;
+import org.comroid.crystalshard.core.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.core.gateway.event.GatewayPayload;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
+import org.comroid.crystalshard.core.rest.payload.GatewayBotRequestPayload;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.Snowflake.Type;
 import org.comroid.crystalshard.entity.channel.Channel;
@@ -20,8 +20,10 @@ import org.comroid.crystalshard.model.message.MessageApplication;
 import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.user.UserPresence;
 import org.comroid.crystalshard.voice.VoiceState;
-import org.comroid.listnr.AbstractEventManager;
 import org.comroid.listnr.EventManager;
+import org.comroid.listnr.EventType;
+import org.comroid.listnr.impl.ChildEventManager;
+import org.comroid.listnr.impl.UnderlyingEventManager;
 import org.comroid.matrix.Matrix2;
 import org.comroid.mutatio.proc.Processor;
 import org.comroid.mutatio.ref.FutureReference;
@@ -36,6 +38,7 @@ import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.Bitmask;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.container.DataContainer;
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.Collection;
@@ -50,7 +53,7 @@ import java.util.stream.IntStream;
 import static org.comroid.crystalshard.CrystalShard.HTTP_ADAPTER;
 import static org.comroid.crystalshard.CrystalShard.SERIALIZATION_ADAPTER;
 
-public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordBotEvent, DiscordBotPayload> {
+public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, DiscordBotEvent<? extends DiscordBotPayload>, DiscordBotPayload> {
     String getToken();
 
     ScheduledExecutorService getExecutorService();
@@ -69,6 +72,7 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
 
     List<DiscordBot.Shard> getShards();
 
+    @Experimental
     Collection<DiscordAPI.Intent> getIntents();
 
     default int getIntentAsInteger() {
@@ -99,18 +103,18 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
         socketHeaders.add("Content-Type", SERIALIZATION_ADAPTER.getMimeType());
 
         final int shards = grp.getRecommendedShardCount();
-        final FutureReference<Support.ShardingManager> managerRef = new FutureReference<>();
+        final FutureReference<DiscordBot> managerRef = new FutureReference<>();
         final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
 
         final List<? extends WebSocket> webSockets = Collections.unmodifiableList(IntStream.range(0, shards)
                 .mapToObj(shardId -> CrystalShard.createGateway(
-                        SERIALIZATION_ADAPTER,
+                        managerRef,
                         executorService,
                         grp.getWebSocketURI(),
                         socketHeaders))
                 .map(connection -> connection.thenComposeAsync(webSocket -> {
-                    webSocket.eventPipe(WebSocketEvent.DATA)
-                            .filter(GatewayEventDefinition.HELLO.)
+                    webSocket.eventPipe(GatewayEvent.HELLO)
+                            // todo
                 }))
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList()));
@@ -180,11 +184,13 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
         int getShardID();
 
         WebSocket getWebSocket();
+
+        Gateway getGateway();
     }
 
     final class Support {
         private static final class ShardingManager
-                extends AbstractEventManager<GatewayPayloadWrapper, DiscordBotEvent, DiscordBotPayload>
+                extends ChildEventManager<DiscordBot, GatewayPayload, DiscordBotEvent<? extends DiscordBotPayload>, DiscordBotPayload>
                 implements DiscordBot {
             private final Matrix2<Long, Type<? extends Snowflake>, ? extends Snowflake> entityCache;
             //todo Intent usage
@@ -235,15 +241,22 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
                 return Collections.unmodifiableCollection(activeIntents);
             }
 
+            @Override
+            public DiscordBot getDependent() {
+                return this;
+            }
+
             private ShardingManager(
                     String token,
                     ScheduledExecutorService executorService,
                     List<Shard> allShards
             ) {
                 //noinspection unchecked
-                super(allShards.stream()
-                        .map(Shard::getWebSocket)
-                        .toArray(EventManager[]::new));
+                super(
+                        executorService,
+                        allShards.stream().map(Shard::getGateway).toArray(EventManager[]::new),
+                        DiscordBotEvent.cache.values().toArray(new DiscordBotEvent[0])
+                );
 
                 this.token = token;
                 this.entityCache = Matrix2.create();
@@ -304,11 +317,11 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
         }
 
         private static final class ShardImpl
-                extends AbstractEventManager<WebSocketPayload.Data, GatewayEventDefinition<? extends AbstractGatewayPayload>, AbstractGatewayPayload>
+                extends UnderlyingEventManager<DiscordBot, WebSocketPayload.Data, GatewayEvent<? extends GatewayPayload>, GatewayPayload>
                 implements Shard {
-            private final FutureReference<ShardingManager> shardingManager;
+            private final FutureReference<DiscordBot> shardingManager;
             private final int shardId;
-            private final WebSocket webSocket;
+            private final Gateway gateway;
 
             @Override
             public int getShardID() {
@@ -317,7 +330,7 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
 
             @Override
             public WebSocket getWebSocket() {
-                return webSocket;
+                return gateway.getWebSocket();
             }
 
             @Override
@@ -325,14 +338,24 @@ public interface DiscordBot extends EventManager<GatewayPayloadWrapper, DiscordB
                 return shardingManager.requireNonNull();
             }
 
+            @Override
+            public DiscordBot getDependent() {
+                return shardingManager.requireNonNull("ShardingManager");
+            }
+
             public ShardImpl(
-                    FutureReference<ShardingManager> shardingManager, int shardId, WebSocket webSocket
+                    FutureReference<DiscordBot> shardingManager, int shardId, Gateway gateway
             ) {
-                super(webSocket);
+                super(gateway);
 
                 this.shardingManager = shardingManager;
                 this.shardId = shardId;
-                this.webSocket = webSocket;
+                this.gateway = gateway;
+            }
+
+            @Override
+            public Gateway getGateway() {
+                return gateway;
             }
         }
     }

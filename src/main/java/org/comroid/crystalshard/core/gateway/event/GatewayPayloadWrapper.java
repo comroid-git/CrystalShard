@@ -1,4 +1,4 @@
-package org.comroid.crystalshard.core.event;
+package org.comroid.crystalshard.core.gateway.event;
 
 import org.comroid.api.Invocable;
 import org.comroid.crystalshard.DiscordBot;
@@ -39,10 +39,10 @@ public final class GatewayPayloadWrapper extends BotBound.DataBase {
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<String, DiscordBot, GatewayEventDefinition, GatewayEventDefinition> EventType
+    public static final VarBind<String, DiscordBot, ? extends GatewayEvent<? extends GatewayPayload>, ? extends GatewayEvent<? extends GatewayPayload>> EventType
             = Root.createBind("t")
             .extractAs(ValueType.STRING)
-            .andRemap(GatewayEventDefinition::valueOf)
+            .andRemap(GatewayEvent::valueOf)
             .onceEach()
             .build();
 

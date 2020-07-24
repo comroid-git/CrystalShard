@@ -1,23 +1,38 @@
 package org.comroid.crystalshard.core.gateway;
 
-import org.comroid.crystalshard.core.event.GatewayEventDefinition;
-import org.comroid.crystalshard.core.event.GatewayPayloadWrapper;
-import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.listnr.AbstractEventManager;
+import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.core.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.core.gateway.event.GatewayPayload;
 import org.comroid.listnr.EventManager;
+import org.comroid.listnr.impl.ChildEventManager;
+import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.socket.WebSocket;
+import org.comroid.restless.socket.event.WebSocketPayload;
 
-public final class Gateway extends AbstractEventManager<
-        GatewayPayloadWrapper,
-        GatewayEventDefinition<? extends AbstractGatewayPayload>,
-        AbstractGatewayPayload
-        > {
-    private final WebSocket socket;
+import java.util.concurrent.Executor;
 
-    public Gateway(WebSocket socket) {
-        //noinspection rawtypes
-        super((EventManager) socket);
+public final class Gateway extends ChildEventManager<DiscordBot, WebSocketPayload.Data, GatewayEvent<? extends GatewayPayload>, GatewayPayload> {
+    private final WebSocket webSocket;
+    private final FutureReference<DiscordBot> botRef;
 
-        this.socket = socket;
+    @Override
+    public DiscordBot getDependent() {
+        return botRef.requireNonNull("Dependency Object");
+    }
+
+    public WebSocket getWebSocket() {
+        return webSocket;
+    }
+
+    public Gateway(FutureReference<DiscordBot> botRef, Executor executor, WebSocket webSocket) {
+        //noinspection unchecked
+        super(
+                executor,
+                new EventManager[]{webSocket},
+                GatewayEvent.cache.values().toArray(new GatewayEvent[0])
+        );
+
+        this.botRef = botRef;
+        this.webSocket = webSocket;
     }
 }
