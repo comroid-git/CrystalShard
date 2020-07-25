@@ -30,6 +30,7 @@ public final class VoiceState extends BotBound.DataBase {
                     .requireNonNull(MessageSupplier.format("Channel with ID %d not found", id)))
             .onceEach()
             .build();
+    //todo
 
     public VoiceState(DiscordBot bot, UniObjectNode initialData) {
         super(bot, initialData);
