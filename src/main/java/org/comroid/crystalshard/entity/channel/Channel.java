@@ -8,8 +8,10 @@ import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.Mentionable;
+import org.comroid.crystalshard.model.guild.Invite;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,6 +25,20 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
     @Override
     default String getAlternateFormattedName() {
         return getMentionTag();
+    }
+
+    @Override
+    default String getName() {
+        return requireNonNull(Bind.Type).getDescription();
+    }
+
+    @Override
+    default String getDescription() {
+        return requireNonNull(Bind.Type).getDescription();
+    }
+
+    default Snowflake.Type<? extends Snowflake> getType() {
+        return requireNonNull(Bind.Type);
     }
 
     default Optional<TextChannel> asTextChannel() {
@@ -57,15 +73,8 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
         return as(PrivateTextChannel.class);
     }
 
-    @Override
-    default String getName() {
-        return requireNonNull(Bind.Type).getDescription();
-    }
-
-    @Override
-    default String getDescription() {
-        return requireNonNull(Bind.Type).getDescription();
-    }
+    @Internal
+    void addInvite(Invite invite);
 
     enum Type implements IntEnum, Named, Described {
         GUILD_TEXT(0, "a text channel within a server"),
@@ -107,10 +116,6 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
 
             throw new NoSuchElementException("ChannelType with value " + value);
         }
-    }
-
-    default Snowflake.Type<? extends Snowflake> getType() {
-        return requireNonNull(Bind.Type);
     }
 
     interface Bind extends Snowflake.Bind {

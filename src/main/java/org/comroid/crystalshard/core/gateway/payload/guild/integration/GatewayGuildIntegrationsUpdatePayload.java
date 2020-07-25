@@ -26,5 +26,7 @@ public final class GatewayGuildIntegrationsUpdatePayload extends AbstractGateway
 
     public GatewayGuildIntegrationsUpdatePayload(GatewayPayloadWrapper gpw) {
         super(gpw);
+
+        requireNonNull(guild, "Initial computation failed");
     }
 }

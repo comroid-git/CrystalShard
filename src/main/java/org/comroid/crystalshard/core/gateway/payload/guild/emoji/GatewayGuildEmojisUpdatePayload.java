@@ -44,5 +44,7 @@ public final class GatewayGuildEmojisUpdatePayload extends AbstractGatewayPayloa
 
     public GatewayGuildEmojisUpdatePayload(GatewayPayloadWrapper gpw) {
         super(gpw);
+
+        getGuild().updateEmojis(getEmojis());
     }
 }

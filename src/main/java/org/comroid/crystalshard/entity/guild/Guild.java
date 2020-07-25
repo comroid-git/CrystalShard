@@ -9,6 +9,7 @@ import org.comroid.crystalshard.entity.channel.GuildChannel;
 import org.comroid.crystalshard.entity.channel.GuildTextChannel;
 import org.comroid.crystalshard.entity.channel.GuildVoiceChannel;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.crystalshard.model.guild.*;
 import org.comroid.crystalshard.model.permission.PermissionSet;
 import org.comroid.crystalshard.model.user.UserPresence;
@@ -16,6 +17,8 @@ import org.comroid.crystalshard.util.DiscordImage;
 import org.comroid.crystalshard.util.ImageType;
 import org.comroid.crystalshard.voice.VoiceRegion;
 import org.comroid.crystalshard.voice.VoiceState;
+import org.comroid.mutatio.ref.ReferenceIndex;
+import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.Location;
@@ -200,6 +203,8 @@ public interface Guild extends Snowflake, Named, Described {
     boolean banUser(User user);
     @Internal
     boolean unbanUser(User user);
+    @Internal
+    int updateEmojis(ReferenceIndex<Emoji> otherReferences);
 
     interface Bind extends Snowflake.Bind {
         @RootBind
