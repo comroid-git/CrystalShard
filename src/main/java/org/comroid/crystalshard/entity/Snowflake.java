@@ -9,6 +9,7 @@ import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.channel.*;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.guild.GuildMember;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.message.MessageAttachment;
@@ -119,7 +120,6 @@ public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContaine
         }
 
         @SafeVarargs
-        @SuppressWarnings("UnstableApiUsage")
         private Type(Class<T> typeClass, String name, Type<? super T>... parents) {
             this.typeClass = typeClass;
             this.name = name;
