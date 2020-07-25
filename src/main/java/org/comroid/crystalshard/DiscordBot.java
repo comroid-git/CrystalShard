@@ -161,9 +161,6 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
     GuildMember updateGuildMember(UniObjectNode data);
 
     @Internal
-    Emoji updateEmoji(UniObjectNode data);
-
-    @Internal
     PermissionOverride makeOverwrite(UniObjectNode data);
 
     @Internal

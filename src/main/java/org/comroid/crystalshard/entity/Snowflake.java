@@ -3,6 +3,7 @@ package org.comroid.crystalshard.entity;
 import org.comroid.api.BitmaskEnum;
 import org.comroid.api.Polyfill;
 import org.comroid.common.ref.Named;
+import org.comroid.common.ref.WrappedFormattable;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.DiscordBot;
@@ -31,7 +32,7 @@ import java.time.Instant;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 
-public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContainer<DiscordBot> {
+public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContainer<DiscordBot>, Named {
     Comparator<Snowflake> SNOWFLAKE_COMPARATOR = Comparator.comparingLong(flake -> flake.getID() >> 22);
     @Language("RegExp")
     String ID_REGEX = "\\d{12,20}"; //todo Improve Regex
@@ -49,6 +50,16 @@ public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContaine
     @Override
     default int compareTo(@NotNull Snowflake other) {
         return SNOWFLAKE_COMPARATOR.compare(this, other);
+    }
+
+    @Override
+    default String getName() {
+        return String.format("%s <id:%d>", getType(), getID());
+    }
+
+    @Override
+    default String getAlternateFormattedName() {
+        return String.valueOf(getID());
     }
 
     interface Bind {

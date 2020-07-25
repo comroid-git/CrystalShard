@@ -12,6 +12,7 @@ import org.comroid.crystalshard.entity.message.reaction.Reaction;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.embed.Embed;
+import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.crystalshard.model.message.*;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.UniValueNode.ValueType;
@@ -20,6 +21,8 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.comroid.varbind.container.DataContainer;
 import org.comroid.varbind.container.DataContainerBuilder;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
@@ -28,6 +31,11 @@ import java.util.Collection;
 import java.util.Set;
 
 public interface Message extends Snowflake {
+    ReactionBox getReactions(Emoji emoji);
+
+    @Internal
+    void clearReactions();
+
     final class Builder extends DataContainerBuilder<Builder, Message, DiscordBot> {
         public Builder(Class<Message> type, @Nullable DiscordBot dependencyObject) {
             super(type, dependencyObject);

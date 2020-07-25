@@ -22,6 +22,8 @@ import org.comroid.varbind.annotation.Location;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -189,6 +191,15 @@ public interface Guild extends Snowflake, Named, Described {
     default Optional<URL> getBannerURL(ImageType type) {
         return wrap(Bind.BannerHash).map(hash -> DiscordImage.GUILD_BANNER.url(getID(), hash, type));
     }
+
+    @Internal
+    boolean addUser(GuildMember guildMember);
+    @Internal
+    boolean removeUser(User user);
+    @Internal
+    boolean banUser(User user);
+    @Internal
+    boolean unbanUser(User user);
 
     interface Bind extends Snowflake.Bind {
         @RootBind
