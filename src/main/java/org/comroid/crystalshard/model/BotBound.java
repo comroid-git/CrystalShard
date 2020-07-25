@@ -1,12 +1,19 @@
 package org.comroid.crystalshard.model;
 
+import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.channel.Channel;
+import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.entity.user.User;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.container.DataContainerBase;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 public interface BotBound {
     DiscordBot getBot();
