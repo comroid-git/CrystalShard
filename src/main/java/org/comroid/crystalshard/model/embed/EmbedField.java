@@ -1,10 +1,9 @@
 package org.comroid.crystalshard.model.embed;
 
 import org.comroid.common.info.Described;
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.uniform.node.UniValueNode;
 import org.comroid.uniform.node.UniValueNode.ValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;

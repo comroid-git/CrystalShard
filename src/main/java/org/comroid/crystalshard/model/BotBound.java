@@ -35,13 +35,13 @@ public interface BotBound {
         public static final GroupBind<DataBase, DiscordBot> BaseGroup
                 = new GroupBind<>(CrystalShard.SERIALIZATION_ADAPTER, "crystalshard-base");
 
-        protected DataBase(DiscordBot bot, UniObjectNode initialData) {
-            super(initialData, Objects.requireNonNull(bot, "Bot Object missing"));
-        }
-
         @Override
         public final DiscordBot getBot() {
             return getDependent();
+        }
+
+        protected DataBase(DiscordBot bot, UniObjectNode initialData) {
+            super(initialData, Objects.requireNonNull(bot, "Bot Object missing"));
         }
     }
 }

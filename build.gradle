@@ -64,12 +64,9 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
-    api project(':common-util:restless') == null
+    api project(':guardian:restless') == null
             ? 'org.comroid:restless:0.16.0-SNAPSHOT'
-            : project(':common-util:restless')
-    api project(':common-util:matrix') == null
-            ? 'org.comroid:matrix:0.10.2-SNAPSHOT'
-            : project(':common-util:matrix')
+            : project(':guardian:restless')
     api project(':common-util:listnr') == null
             ? 'org.comroid:listnr:0.10.0-SNAPSHOT'
             : project(':common-util:listnr')

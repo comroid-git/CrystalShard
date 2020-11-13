@@ -43,12 +43,12 @@ public enum Permission implements Bitmask.Enum {
 
     private final int value;
 
-    Permission(int value) {
-        this.value = value;
-    }
-
     @Override
     public int getValue() {
         return value;
+    }
+
+    Permission(int value) {
+        this.value = value;
     }
 }

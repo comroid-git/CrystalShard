@@ -3,12 +3,14 @@ package org.comroid.crystalshard.entity.channel;
 import org.comroid.api.IntEnum;
 import org.comroid.api.Specifiable;
 import org.comroid.common.info.Described;
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.Mentionable;
 import org.comroid.crystalshard.model.guild.Invite;
+import org.comroid.uniform.ValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -16,7 +18,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, Named, Described {
+public interface Channel extends DiscordEntity, Mentionable, Specifiable<Channel>, Named, Described {
     @Override
     default String getDefaultFormattedName() {
         return toString();
@@ -37,7 +39,7 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
         return requireNonNull(Bind.Type).getDescription();
     }
 
-    default Snowflake.Type<? extends Snowflake> getType() {
+    default DiscordEntity.Type<? extends Snowflake> getType() {
         return requireNonNull(Bind.Type);
     }
 
@@ -118,7 +120,7 @@ public interface Channel extends Snowflake, Mentionable, Specifiable<Channel>, N
         }
     }
 
-    interface Bind extends Snowflake.Bind {
+    interface Bind extends DiscordEntity.Bind {
         GroupBind<Channel, DiscordBot> Root = new GroupBind<>(CrystalShard.SERIALIZATION_ADAPTER, "channel");
         VarBind.TwoStage<Integer, Type> Type = Root.bind2stage("type", ValueType.INTEGER, Channel.Type::valueOf);
     }

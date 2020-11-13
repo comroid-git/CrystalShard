@@ -4,7 +4,7 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.message.Message;
@@ -19,26 +19,26 @@ public final class GatewayMessageDeletePayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayMessageDeletePayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-message-delete");
-    public static final VarBind<Long, DiscordBot, Message, Message> message
+    public static final VarBind<Object, Long, Message, Message> message
             = Root.createBind("id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.MESSAGE, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.MESSAGE, id)
                     .requireNonNull(MessageSupplier.format("Message with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Long, DiscordBot, Channel, Channel> channel
+    public static final VarBind<Object, Long, Channel, Channel> channel
             = Root.createBind("channel_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.CHANNEL, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.CHANNEL, id)
                     .requireNonNull(MessageSupplier.format("Channel with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Long, DiscordBot, Guild, Guild> guild
+    public static final VarBind<Object, Long, Guild, Guild> guild
             = Root.createBind("guild_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.GUILD, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.GUILD, id)
                     .requireNonNull(MessageSupplier.format("Guild with ID %s not found", id)))
             .onceEach()
             .build();
@@ -51,17 +51,18 @@ public final class GatewayMessageDeletePayload extends AbstractGatewayPayload {
         return requireNonNull(channel);
     }
 
-    public @Nullable Guild getGuild() {
+    public @Nullable
+    Guild getGuild() {
         return get(guild);
-    }
-
-    public Processor<Guild> processGuild() {
-        return process(guild);
     }
 
     public GatewayMessageDeletePayload(GatewayPayloadWrapper gpw) {
         super(gpw);
 
-        getBot().getCache().remove(getMessage().getID(), Snowflake.Type.MESSAGE);
+        getBot().getCache().remove(getMessage().getID(), DiscordEntity.Type.MESSAGE);
+    }
+
+    public Processor<Guild> processGuild() {
+        return process(guild);
     }
 }

@@ -2,7 +2,7 @@ package org.comroid.crystalshard.entity.message;
 
 import org.comroid.common.iter.Span;
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.channel.GuildChannel;
 import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
@@ -21,7 +21,6 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.comroid.varbind.container.DataContainer;
 import org.comroid.varbind.container.DataContainerBuilder;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,25 +29,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
-public interface Message extends Snowflake {
+public interface Message extends DiscordEntity {
     ReactionBox getReactions(Emoji emoji);
 
     @Internal
     void clearReactions();
 
-    final class Builder extends DataContainerBuilder<Builder, Message, DiscordBot> {
-        public Builder(Class<Message> type, @Nullable DiscordBot dependencyObject) {
-            super(type, dependencyObject);
-        }
-
-        @Override
-        protected Message mergeVarCarrier(DataContainer<DiscordBot> dataContainer) {
-            return null; // todo
-        }
-    }
-
-    interface Bind extends Snowflake.Bind {
-        GroupBind<Message, DiscordBot> Root = Snowflake.Bind.Root.subGroup("message");
+    interface Bind extends DiscordEntity.Bind {
+        GroupBind<Message, DiscordBot> Root = DiscordEntity.Bind.Root.subGroup("message");
         VarBind.DependentTwoStage<Long, DiscordBot, TextChannel> Channel
                 = Root.bindDependent("channel_id", ValueType.LONG, (bot, id) -> bot.getTextChannelByID(id).requireNonNull());
         VarBind.DependentTwoStage<Long, DiscordBot, Guild> Guild
@@ -98,5 +86,16 @@ public interface Message extends Snowflake {
                 = Root.bindDependent("message_reference", (bot, data) -> bot.resolveMessageReference(data).get());
         VarBind.TwoStage<Integer, Set<MessageFlag>> Flags
                 = Root.bind2stage("flags", ValueType.INTEGER, MessageFlag::valueOf);
+    }
+
+    final class Builder extends DataContainerBuilder<Builder, Message, DiscordBot> {
+        public Builder(Class<Message> type, @Nullable DiscordBot dependencyObject) {
+            super(type, dependencyObject);
+        }
+
+        @Override
+        protected Message mergeVarCarrier(DataContainer<DiscordBot> dataContainer) {
+            return null; // todo
+        }
     }
 }

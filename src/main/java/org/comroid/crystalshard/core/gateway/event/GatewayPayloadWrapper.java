@@ -20,33 +20,34 @@ public final class GatewayPayloadWrapper extends BotBound.DataBase {
     @RootBind
     public static final GroupBind<GatewayPayloadWrapper, DiscordBot> Root
             = BaseGroup.subGroup("gateway-payload-wrapper", Invocable.ofConstructor(GatewayPayloadWrapper.class));
-    public static final VarBind<Integer, DiscordBot, GatewayOPCode, GatewayOPCode> OpCode
+    public static final VarBind<Object, Integer, GatewayOPCode, GatewayOPCode> OpCode
             = Root.createBind("op")
             .extractAs(ValueType.INTEGER)
             .andRemap(GatewayOPCode::valueOf)
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, UniObjectNode, UniObjectNode> EventData
+    public static final VarBind<Object, UniObjectNode, UniObjectNode, UniObjectNode> EventData
             = Root.createBind("d")
             .extractAsObject()
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Integer, DiscordBot, Integer, Integer> Sequence
+    public static final VarBind<Object, Integer, Integer, Integer> Sequence
             = Root.createBind("s")
             .extractAs(ValueType.INTEGER)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<String, DiscordBot, ? extends GatewayEvent<? extends GatewayPayload>, ? extends GatewayEvent<? extends GatewayPayload>> EventType
+    public static final VarBind<Object, String, ? extends GatewayEvent<? extends GatewayPayload>, ? extends GatewayEvent<? extends GatewayPayload>> EventType
             = Root.createBind("t")
             .extractAs(ValueType.STRING)
             .andRemap(GatewayEvent::valueOf)
             .onceEach()
             .build();
 
-    private final @Nullable WebSocketPayload.Data data;
+    private final @Nullable
+    WebSocketPayload.Data data;
 
     public Optional<WebSocketPayload.Data> getData() {
         return Optional.ofNullable(data);

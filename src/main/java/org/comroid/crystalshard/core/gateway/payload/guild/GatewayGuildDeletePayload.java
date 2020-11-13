@@ -4,7 +4,7 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.uniform.ValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -15,15 +15,15 @@ public final class GatewayGuildDeletePayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayGuildDeletePayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-guild-delete");
-    public static final VarBind<Long, DiscordBot, Guild, Guild> guild
+    public static final VarBind<Object, Long, Guild, Guild> guild
             = Root.createBind("id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.GUILD, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.GUILD, id)
                     .requireNonNull(MessageSupplier.format("Guild with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> unavailable
+    public static final VarBind<Object, Boolean, Boolean, Boolean> unavailable
             = Root.createBind("unavailable")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
@@ -45,6 +45,6 @@ public final class GatewayGuildDeletePayload extends AbstractGatewayPayload {
     public GatewayGuildDeletePayload(GatewayPayloadWrapper gpw) {
         super(gpw);
 
-        getBot().getCache().remove(getGuild().getID(), Snowflake.Type.GUILD);
+        getBot().getCache().remove(getGuild().getID(), DiscordEntity.Type.GUILD);
     }
 }

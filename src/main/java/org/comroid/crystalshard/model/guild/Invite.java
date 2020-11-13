@@ -2,7 +2,7 @@ package org.comroid.crystalshard.model.guild;
 
 import org.comroid.api.IntEnum;
 import org.comroid.api.Polyfill;
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
@@ -51,7 +51,8 @@ public final class Invite {
             this.value = value;
         }
 
-        public static @Nullable TargetUserType valueOf(int value) {
+        public static @Nullable
+        TargetUserType valueOf(int value) {
             for (TargetUserType type : values()) {
                 if (type.value == value)
                     return type;

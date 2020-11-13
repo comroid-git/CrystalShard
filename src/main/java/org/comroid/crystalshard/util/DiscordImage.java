@@ -77,4 +77,4 @@ public enum DiscordImage implements AccessibleEndpoint {
         this.extension = extension;
         this.regexp = regexp;
     }
-    }
+}

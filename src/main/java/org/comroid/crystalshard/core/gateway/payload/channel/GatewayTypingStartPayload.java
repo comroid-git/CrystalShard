@@ -21,34 +21,34 @@ public final class GatewayTypingStartPayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayTypingStartPayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-typing-start");
-    public static final VarBind<UniObjectNode, DiscordBot, Channel, Channel> channel
+    public static final VarBind<Object, UniObjectNode, Channel, Channel> channel
             = Root.createBind("channel_id")
             .extractAs(ValueType.LONG)
             .andConstruct(Channel.Bind.Root)
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, Guild, Guild> guild
+    public static final VarBind<Object, UniObjectNode, Guild, Guild> guild
             = Root.createBind("guild_id")
             .extractAs(ValueType.LONG)
             .andConstruct(Guild.Bind.Root)
             .onceEach()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, User, User> user
+    public static final VarBind<Object, UniObjectNode, User, User> user
             = Root.createBind("user_id")
             .extractAs(ValueType.LONG)
             .andConstruct(User.Bind.Root)
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Integer, DiscordBot, Instant, Instant> timestamp
+    public static final VarBind<Object, Integer, Instant, Instant> timestamp
             = Root.createBind("timestamp")
             .extractAs(ValueType.INTEGER)
             .andRemap(Instant::ofEpochSecond)
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, GuildMember, GuildMember> member
+    public static final VarBind<Object, UniObjectNode, GuildMember, GuildMember> member
             = Root.createBind("member")
             .extractAsObject()
             .andResolve((obj, bot) -> bot.updateGuildMember(obj))
@@ -59,31 +59,33 @@ public final class GatewayTypingStartPayload extends AbstractGatewayPayload {
         return requireNonNull(channel);
     }
 
-    public @Nullable Guild getGuild() {
+    public @Nullable
+    Guild getGuild() {
         return get(guild);
-    }
-
-    public Processor<Guild> processGuild() {
-        return process(guild);
     }
 
     public User getUser() {
         return requireNonNull(user);
     }
 
-    public Instant startedTypingAt() {
-        return requireNonNull(timestamp);
-    }
-
-    public @Nullable GuildMember getMember() {
+    public @Nullable
+    GuildMember getMember() {
         return get(member);
-    }
-
-    public Processor<GuildMember> processMember() {
-        return process(member);
     }
 
     public GatewayTypingStartPayload(GatewayPayloadWrapper gpw) {
         super(gpw);
+    }
+
+    public Processor<Guild> processGuild() {
+        return process(guild);
+    }
+
+    public Instant startedTypingAt() {
+        return requireNonNull(timestamp);
+    }
+
+    public Processor<GuildMember> processMember() {
+        return process(member);
     }
 }

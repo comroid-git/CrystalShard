@@ -1,10 +1,12 @@
 package org.comroid.crystalshard;
 
+import org.comroid.crystalshard.core.cache.SnowflakeCache;
 import org.comroid.crystalshard.core.gateway.Gateway;
 import org.comroid.crystalshard.core.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayload;
 import org.comroid.crystalshard.core.rest.DiscordEndpoint;
 import org.comroid.crystalshard.core.rest.payload.GatewayBotRequestPayload;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.Snowflake.Type;
 import org.comroid.crystalshard.entity.channel.Channel;
@@ -71,13 +73,15 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
     List<DiscordBot.Shard> getShards();
 
     @Experimental
-    Pipe<?, DiscordAPI.Intent> getActiveIntents();
+    Pipe<DiscordAPI.Intent> getActiveIntents();
 
     default int getIntentAsInteger() {
         return getActiveIntents().stream()
                 .map(DiscordAPI.Intent::getValue)
                 .collect(Bitmask.collector());
     }
+
+    SnowflakeCache getEntityCache();
 
     static DiscordBot start(String token) {
         if (!SERIALIZATION_ADAPTER.getMimeType().equals("application/json")) {
@@ -112,7 +116,7 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
                         socketHeaders))
                 .map(connection -> connection.thenComposeAsync(webSocket -> {
                     webSocket.eventPipe(GatewayEvent.HELLO)
-                            // todo
+                    // todo
                 }))
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList()));
@@ -142,7 +146,7 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
                 .addHeader(CommonHeaderNames.REQUEST_CONTENT_TYPE, SERIALIZATION_ADAPTER.getMimeType());
     }
 
-    default <T extends Snowflake> Processor<T> getSnowflake(Type<T> type, long id) {
+    default <T extends DiscordEntity> Processor<T> getSnowflake(Type<T> type, long id) {
         return Processor.ofReference(Reference.provided(() -> getCache().get(id, type)))
                 .filter(type.getTypeClass()::isInstance)
                 .map(type.getTypeClass()::cast);
@@ -229,7 +233,7 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
             }
 
             @Override
-            public Pipe<?, DiscordAPI.Intent> getActiveIntents() {
+            public Pipe<DiscordAPI.Intent> getActiveIntents() {
                 return getListeningTypes()
                         .flatMap(DiscordBotEvent::getCommonCause)
                         .filter(GatewayEvent.class::isInstance)
@@ -339,6 +343,11 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
                 return shardingManager.requireNonNull("ShardingManager");
             }
 
+            @Override
+            public Gateway getGateway() {
+                return gateway;
+            }
+
             public ShardImpl(
                     FutureReference<DiscordBot> shardingManager, int shardId, Gateway gateway
             ) {
@@ -347,11 +356,6 @@ public interface DiscordBot extends EventManager<DiscordBot, GatewayPayload, Dis
                 this.shardingManager = shardingManager;
                 this.shardId = shardId;
                 this.gateway = gateway;
-            }
-
-            @Override
-            public Gateway getGateway() {
-                return gateway;
             }
         }
     }

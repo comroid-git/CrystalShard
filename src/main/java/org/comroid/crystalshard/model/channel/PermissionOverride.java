@@ -3,7 +3,7 @@ package org.comroid.crystalshard.model.channel;
 import org.comroid.common.func.Processor;
 import org.comroid.crystalshard.CrystalShard;
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.BotBound;
@@ -14,7 +14,15 @@ import org.comroid.varbind.bind.VarBind;
 import org.comroid.varbind.container.DataContainer;
 
 public interface PermissionOverride extends DataContainer<DiscordBot>, BotBound {
-    default <O extends Snowflake & Settable> Processor<O> getRelated(Class<O> asType) {
+    default boolean isRoleRelated() {
+        return processRole().isPresent();
+    }
+
+    default boolean isUserRelated() {
+        return processUser().isPresent();
+    }
+
+    default <O extends DiscordEntity & Settable> Processor<O> getRelated(Class<O> asType) {
         return ref(Bind.RelatedId)
                 .process()
                 .flatMap(id -> getBot().getSnowflake(id).wrap())
@@ -26,16 +34,8 @@ public interface PermissionOverride extends DataContainer<DiscordBot>, BotBound 
         return getRelated(Role.class);
     }
 
-    default boolean isRoleRelated() {
-        return processRole().isPresent();
-    }
-
     default Processor<User> processUser() {
         return getRelated(User.class);
-    }
-
-    default boolean isUserRelated() {
-        return processUser().isPresent();
     }
 
     interface Settable {

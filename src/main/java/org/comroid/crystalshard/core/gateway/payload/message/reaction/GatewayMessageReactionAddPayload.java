@@ -4,7 +4,7 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.GuildMember;
@@ -23,44 +23,44 @@ public final class GatewayMessageReactionAddPayload extends AbstractGatewayPaylo
     @RootBind
     public static final GroupBind<GatewayMessageReactionAddPayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-message-reaction-add");
-    public static final VarBind<Long, DiscordBot, User, User> user
+    public static final VarBind<Object, Long, User, User> user
             = Root.createBind("user_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.USER, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.USER, id)
                     .requireNonNull(MessageSupplier.format("User with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Long, DiscordBot, Channel, Channel> channel
+    public static final VarBind<Object, Long, Channel, Channel> channel
             = Root.createBind("channel_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.CHANNEL, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.CHANNEL, id)
                     .requireNonNull(MessageSupplier.format("Channel with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Long, DiscordBot, Message, Message> message
+    public static final VarBind<Object, Long, Message, Message> message
             = Root.createBind("message_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.MESSAGE, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.MESSAGE, id)
                     .requireNonNull(MessageSupplier.format("Message with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Long, DiscordBot, Guild, Guild> guild
+    public static final VarBind<Object, Long, Guild, Guild> guild
             = Root.createBind("guild_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.GUILD, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.GUILD, id)
                     .requireNonNull(MessageSupplier.format("Guild with ID %d not found", id)))
             .onceEach()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, GuildMember, GuildMember> member
+    public static final VarBind<Object, UniObjectNode, GuildMember, GuildMember> member
             = Root.createBind("member")
             .extractAsObject()
             .andResolve((obj, bot) -> bot.updateGuildMember(obj))
             .onceEach()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, Emoji, Emoji> emoji
+    public static final VarBind<Object, UniObjectNode, Emoji, Emoji> emoji
             = Root.createBind("emoji")
             .extractAsObject()
             .andResolve(Emoji::find)
@@ -80,20 +80,14 @@ public final class GatewayMessageReactionAddPayload extends AbstractGatewayPaylo
         return requireNonNull(message);
     }
 
-    public @Nullable Guild getGuild() {
+    public @Nullable
+    Guild getGuild() {
         return get(guild);
     }
 
-    public Processor<Guild> processGuild() {
-        return process(guild);
-    }
-
-    public @Nullable GuildMember getGuildMember() {
+    public @Nullable
+    GuildMember getGuildMember() {
         return get(member);
-    }
-
-    public Processor<GuildMember> processGuildMember() {
-        return process(member);
     }
 
     public Emoji getEmoji() {
@@ -104,5 +98,13 @@ public final class GatewayMessageReactionAddPayload extends AbstractGatewayPaylo
         super(gpw);
 
         getMessage().getReactions(getEmoji()).increase(getUser());
+    }
+
+    public Processor<Guild> processGuild() {
+        return process(guild);
+    }
+
+    public Processor<GuildMember> processGuildMember() {
+        return process(member);
     }
 }

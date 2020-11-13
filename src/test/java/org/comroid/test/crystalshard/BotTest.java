@@ -12,6 +12,6 @@ public class BotTest {
     public static void main(String[] args) throws InterruptedException {
         bot.getWebSocket().
 
-        Thread.sleep(99999);
+                Thread.sleep(99999);
     }
 }

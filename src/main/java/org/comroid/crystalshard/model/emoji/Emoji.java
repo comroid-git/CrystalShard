@@ -1,9 +1,9 @@
 package org.comroid.crystalshard.model.emoji;
 
 import org.comroid.common.info.MessageSupplier;
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -14,7 +14,7 @@ public interface Emoji extends Named {
     static Emoji find(UniObjectNode data, DiscordBot bot) {
         return data.process("id")
                 .map(UniNode::asLong)
-                .<Emoji>flatMap(id -> bot.getSnowflake(Snowflake.Type.CUSTOM_EMOJI, id)
+                .<Emoji>flatMap(id -> bot.getSnowflake(DiscordEntity.Type.CUSTOM_EMOJI, id)
                         .peek(emoji -> emoji.updateFrom(data))
                         .or(() -> new CustomEmoji(bot, data)))
                 .or(data.process("name")

@@ -3,7 +3,7 @@ package org.comroid.crystalshard.core.gateway.payload.message;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
@@ -14,12 +14,12 @@ public final class GatewayMessageCreatePayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayMessageCreatePayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-message-create");
-    public static final VarBind<UniObjectNode, DiscordBot, Message, Message> message
+    public static final VarBind<Object, UniObjectNode, Message, Message> message
             = Root.createBind("")
             .extractAsObject()
             .andProvide(
-                    Snowflake.Bind.ID,
-                    (id, bot) -> bot.getSnowflake(Snowflake.Type.MESSAGE, id).get(),
+                    DiscordEntity.Bind.ID,
+                    (id, bot) -> bot.getSnowflake(DiscordEntity.Type.MESSAGE, id).get(),
                     Message.Bind.Root)
             .onceEach()
             .build();

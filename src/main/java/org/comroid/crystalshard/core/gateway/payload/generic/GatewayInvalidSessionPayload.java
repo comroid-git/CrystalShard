@@ -12,7 +12,7 @@ public final class GatewayInvalidSessionPayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayInvalidSessionPayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-invalid-session");
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> Resumable
+    public static final VarBind<Object, Boolean, Boolean, Boolean> Resumable
             = Root.createBind("")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()

@@ -13,7 +13,7 @@ public final class GatewayUserUpdatePayload extends AbstractGatewayPayload {
     @RootBind
     public static final GroupBind<GatewayUserUpdatePayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-user-update");
-    public static final VarBind<UniObjectNode, DiscordBot, User, User> user
+    public static final VarBind<Object, UniObjectNode, User, User> user
             = Root.createBind("")
             .extractAsObject()
             .andConstruct(User.Bind.Root)

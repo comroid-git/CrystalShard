@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.util;
 
-import org.comroid.common.ref.WrappedFormattable;
+import org.comroid.api.WrappedFormattable;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

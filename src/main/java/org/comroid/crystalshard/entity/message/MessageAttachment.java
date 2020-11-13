@@ -2,18 +2,17 @@ package org.comroid.crystalshard.entity.message;
 
 import org.comroid.common.Polyfill;
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.uniform.node.UniValueNode;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.uniform.node.UniValueNode.ValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
 import java.net.URL;
 
-public interface MessageAttachment extends Snowflake {
-    interface Bind extends Snowflake.Bind {
+public interface MessageAttachment extends DiscordEntity {
+    interface Bind extends DiscordEntity.Bind {
         GroupBind<MessageAttachment, DiscordBot> Root
-                = Snowflake.Bind.Root.subGroup("message_attachment");
+                = DiscordEntity.Bind.Root.subGroup("message_attachment");
         VarBind.OneStage<String> Filename
                 = Root.bind1stage("filename", ValueType.STRING);
         VarBind.OneStage<Integer> Size

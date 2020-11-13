@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.model.message;
 
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;

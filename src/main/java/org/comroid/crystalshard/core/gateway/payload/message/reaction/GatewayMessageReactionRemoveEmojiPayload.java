@@ -4,7 +4,7 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.core.gateway.event.GatewayPayloadWrapper;
 import org.comroid.crystalshard.core.gateway.payload.AbstractGatewayPayload;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.message.Message;
@@ -21,29 +21,29 @@ public final class GatewayMessageReactionRemoveEmojiPayload extends AbstractGate
     @RootBind
     public static final GroupBind<GatewayMessageReactionRemoveEmojiPayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-message-reaction-remove-emoji");
-    public static final VarBind<Long, DiscordBot, Channel, Channel> channel
+    public static final VarBind<Object, Long, Channel, Channel> channel
             = Root.createBind("channel_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.CHANNEL, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.CHANNEL, id)
                     .requireNonNull(MessageSupplier.format("Channel with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Long, DiscordBot, Guild, Guild> guild
+    public static final VarBind<Object, Long, Guild, Guild> guild
             = Root.createBind("guild_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.GUILD, id).get())
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.GUILD, id).get())
             .onceEach()
             .build();
-    public static final VarBind<Long, DiscordBot, Message, Message> message
+    public static final VarBind<Object, Long, Message, Message> message
             = Root.createBind("message_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.MESSAGE, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.MESSAGE, id)
                     .requireNonNull(MessageSupplier.format("Message with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, Emoji, Emoji> emoji
+    public static final VarBind<Object, UniObjectNode, Emoji, Emoji> emoji
             = Root.createBind("emoji")
             .extractAsObject()
             .andResolve(Emoji::find)
@@ -55,12 +55,9 @@ public final class GatewayMessageReactionRemoveEmojiPayload extends AbstractGate
         return requireNonNull(channel);
     }
 
-    public @Nullable Guild getGuild() {
+    public @Nullable
+    Guild getGuild() {
         return get(guild);
-    }
-
-    public Processor<Guild> processGuild() {
-        return process(guild);
     }
 
     public Message getMessage() {
@@ -75,5 +72,9 @@ public final class GatewayMessageReactionRemoveEmojiPayload extends AbstractGate
         super(gpw);
 
         getMessage().getReactions(getEmoji()).clear();
+    }
+
+    public Processor<Guild> processGuild() {
+        return process(guild);
     }
 }

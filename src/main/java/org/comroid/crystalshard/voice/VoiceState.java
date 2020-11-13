@@ -2,7 +2,7 @@ package org.comroid.crystalshard.voice;
 
 import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.GuildMember;
@@ -20,108 +20,99 @@ public final class VoiceState extends BotBound.DataBase {
     @RootBind
     public static final GroupBind<DataBase, DiscordBot> Root
             = BaseGroup.rootGroup("voice-state");
-    public static final VarBind<Long, DiscordBot, Guild, Guild> guild
+    public static final VarBind<Object, Long, Guild, Guild> guild
             = Root.createBind("guild_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.GUILD, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.GUILD, id)
                     .requireNonNull(MessageSupplier.format("Guild with ID %d not found", id)))
             .onceEach()
             .build();
-    public static final VarBind<Long, DiscordBot, Channel, Channel> channel
+    public static final VarBind<Object, Long, Channel, Channel> channel
             = Root.createBind("channel_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.CHANNEL, id).get())
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.CHANNEL, id).get())
             .onceEach()
             .build();
-    public static final VarBind<Long, DiscordBot, User, User> user
+    public static final VarBind<Object, Long, User, User> user
             = Root.createBind("user_id")
             .extractAs(ValueType.LONG)
-            .andResolve((id, bot) -> bot.getSnowflake(Snowflake.Type.USER, id)
+            .andResolve((id, bot) -> bot.getSnowflake(DiscordEntity.Type.USER, id)
                     .requireNonNull(MessageSupplier.format("User with ID %d not found", id)))
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<UniObjectNode, DiscordBot, GuildMember, GuildMember> member
+    public static final VarBind<Object, UniObjectNode, GuildMember, GuildMember> member
             = Root.createBind("member")
             .extractAsObject()
             .andResolve((obj, bot) -> bot.updateGuildMember(obj))
             .onceEach()
             .build();
-    public static final VarBind<String, DiscordBot, String, String> sessionId
+    public static final VarBind<Object, String, String, String> sessionId
             = Root.createBind("session_id")
             .extractAs(ValueType.STRING)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> deafened
+    public static final VarBind<Object, Boolean, Boolean, Boolean> deafened
             = Root.createBind("deaf")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> muted
+    public static final VarBind<Object, Boolean, Boolean, Boolean> muted
             = Root.createBind("mute")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> selfDeafened
+    public static final VarBind<Object, Boolean, Boolean, Boolean> selfDeafened
             = Root.createBind("self_deaf")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> selfMuted
+    public static final VarBind<Object, Boolean, Boolean, Boolean> selfMuted
             = Root.createBind("self_mute")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> selfStreaming
+    public static final VarBind<Object, Boolean, Boolean, Boolean> selfStreaming
             = Root.createBind("self_stream")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> selfVideo
+    public static final VarBind<Object, Boolean, Boolean, Boolean> selfVideo
             = Root.createBind("self_video")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Boolean, DiscordBot, Boolean, Boolean> suppressed
+    public static final VarBind<Object, Boolean, Boolean, Boolean> suppressed
             = Root.createBind("suppress")
             .extractAs(ValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();
 
-    public @Nullable Guild getGuild() {
+    public @Nullable
+    Guild getGuild() {
         return get(guild);
     }
 
-    public Processor<Guild> processGuild() {
-        return process(guild);
-    }
-
-    public @Nullable Channel getChannel() {
+    public @Nullable
+    Channel getChannel() {
         return get(channel);
-    }
-
-    public Processor<Channel> processChannel() {
-        return process(channel);
     }
 
     public User getUser() {
         return requireNonNull(user);
     }
 
-    public @Nullable GuildMember getGuildMember() {
+    public @Nullable
+    GuildMember getGuildMember() {
         return get(member);
-    }
-
-    public Processor<GuildMember> processGuildMember() {
-        return process(member);
     }
 
     public String getSessionID() {
@@ -158,5 +149,17 @@ public final class VoiceState extends BotBound.DataBase {
 
     public VoiceState(DiscordBot bot, UniObjectNode initialData) {
         super(bot, initialData);
+    }
+
+    public Processor<Guild> processGuild() {
+        return process(guild);
+    }
+
+    public Processor<Channel> processChannel() {
+        return process(channel);
+    }
+
+    public Processor<GuildMember> processGuildMember() {
+        return process(member);
     }
 }

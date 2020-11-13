@@ -1,11 +1,11 @@
 package org.comroid.crystalshard.entity.guild;
 
-import org.comroid.common.ref.Named;
-import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.api.Named;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.model.Mentionable;
 import org.comroid.crystalshard.model.channel.PermissionOverride;
 
-public interface Role extends Snowflake, Named, Mentionable, PermissionOverride.Settable {
+public interface Role extends DiscordEntity, Named, Mentionable, PermissionOverride.Settable {
     @Override
     default String getDefaultFormattedName() {
         return getName();

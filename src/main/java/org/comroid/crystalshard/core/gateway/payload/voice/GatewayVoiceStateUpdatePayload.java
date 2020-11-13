@@ -13,7 +13,7 @@ public final class GatewayVoiceStateUpdatePayload extends AbstractGatewayPayload
     @RootBind
     public static final GroupBind<GatewayVoiceStateUpdatePayload, DiscordBot> Root
             = BaseGroup.rootGroup("gateway-voice-state-update");
-    public static final VarBind<UniObjectNode, DiscordBot, DataBase, DataBase> state
+    public static final VarBind<Object, UniObjectNode, DataBase, DataBase> state
             = Root.createBind("")
             .extractAsObject()
             .andConstruct(VoiceState.Root)

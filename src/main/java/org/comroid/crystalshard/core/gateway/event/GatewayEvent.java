@@ -149,7 +149,8 @@ public final class GatewayEvent<GP extends GatewayPayload> implements EventType<
         cache.put(name, this);
     }
 
-    public static @Nullable GatewayEvent<? extends GatewayPayload> valueOf(String name) {
+    public static @Nullable
+    GatewayEvent<? extends GatewayPayload> valueOf(String name) {
         return Polyfill.uncheckedCast(cache.get(name));
     }
 

@@ -1,12 +1,13 @@
 package org.comroid.crystalshard.entity.guild;
 
 import org.comroid.crystalshard.DiscordBot;
+import org.comroid.crystalshard.entity.DiscordEntity;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.uniform.node.UniObjectNode;
 
-public final class CustomEmoji extends BotBound.DataBase implements Emoji, Snowflake {
+public final class CustomEmoji extends BotBound.DataBase implements Emoji, DiscordEntity {
     @Override
     public String getName() {
         return null;

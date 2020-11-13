@@ -41,7 +41,8 @@ public final class DiscordBotEvent<DBP extends DiscordBotPayload> implements Eve
         cache.put(name, this);
     }
 
-    public static @Nullable DiscordBotEvent<? extends GatewayPayload> valueOf(String name) {
+    public static @Nullable
+    DiscordBotEvent<? extends GatewayPayload> valueOf(String name) {
         return Polyfill.uncheckedCast(cache.get(name));
     }
 

@@ -15,21 +15,21 @@ public final class SessionStartLimit extends BotBound.DataBase {
     @RootBind
     public static final GroupBind<SessionStartLimit, DiscordBot> Root
             = BaseGroup.subGroup("session-start-limit", Invocable.ofConstructor(SessionStartLimit.class));
-    public static final VarBind<Integer, DiscordBot, Integer, Integer> TotalAllowed
+    public static final VarBind<Object, Integer, Integer, Integer> TotalAllowed
             = Root.createBind("total")
             .extractAs(ValueType.INTEGER)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Integer, DiscordBot, Integer, Integer> RemainingAllowed
+    public static final VarBind<Object, Integer, Integer, Integer> RemainingAllowed
             = Root.createBind("remaining")
             .extractAs(ValueType.INTEGER)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Integer, DiscordBot, Integer, Integer> ResetAfter
+    public static final VarBind<Object, Integer, Integer, Integer> ResetAfter
             = Root.createBind("reset_after")
             .extractAs(ValueType.INTEGER)
             .asIdentities()

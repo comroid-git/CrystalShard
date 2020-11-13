@@ -2,7 +2,7 @@ package org.comroid.crystalshard.model.user.activity;
 
 import org.comroid.api.IntEnum;
 import org.comroid.api.Polyfill;
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.model.BotBound;
 import org.comroid.uniform.ValueType;
@@ -17,21 +17,21 @@ public final class UserActivity extends BotBound.DataBase {
     @RootBind
     public static final GroupBind<DataBase, DiscordBot> Root
             = BaseGroup.rootGroup("user-activity");
-    public static final VarBind<String, DiscordBot, String, String> name
+    public static final VarBind<Object, String, String, String> name
             = Root.createBind("name")
             .extractAs(ValueType.STRING)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<Integer, DiscordBot, Type, Type> type
+    public static final VarBind<Object, Integer, Type, Type> type
             = Root.createBind("type")
             .extractAs(ValueType.INTEGER)
             .andRemap(Type::valueOf)
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<String, DiscordBot, URL, URL> url
+    public static final VarBind<Object, String, URL, URL> url
             = Root.createBind("url")
             .extractAs(ValueType.STRING)
             .andRemap(Polyfill::url)

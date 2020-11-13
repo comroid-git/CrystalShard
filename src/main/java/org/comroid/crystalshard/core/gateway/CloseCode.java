@@ -31,13 +31,8 @@ public enum CloseCode implements IntEnum {
                     "enabled or are not whitelisted for."
     );
 
-    private final int    code;
+    private final int code;
     private final String description;
-
-    CloseCode(int code, String description) {
-        this.code        = code;
-        this.description = description;
-    }
 
     @Override
     public int getValue() {
@@ -48,17 +43,9 @@ public enum CloseCode implements IntEnum {
         return description;
     }
 
-    public void fail() throws RuntimeException {
-        throw new RuntimeException(description);
-    }
-
-    public void fail(String messageDetail) throws RuntimeException {
-        throw new RuntimeException(description + " " + messageDetail);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("GatewayCloseCode{%d: %s}", code, description);
+    CloseCode(int code, String description) {
+        this.code = code;
+        this.description = description;
     }
 
     public static String toString(int code) {
@@ -73,5 +60,18 @@ public enum CloseCode implements IntEnum {
         }
 
         return Optional.empty();
+    }
+
+    public void fail() throws RuntimeException {
+        throw new RuntimeException(description);
+    }
+
+    public void fail(String messageDetail) throws RuntimeException {
+        throw new RuntimeException(description + " " + messageDetail);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("GatewayCloseCode{%d: %s}", code, description);
     }
 }

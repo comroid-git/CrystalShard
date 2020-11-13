@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.entity.channel;
 
-import org.comroid.common.ref.Named;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.DiscordBot;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.channel.PermissionOverride;
