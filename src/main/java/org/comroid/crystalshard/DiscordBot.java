@@ -8,18 +8,24 @@ import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.server.Ratelimiter;
-import org.comroid.restless.socket.WebSocket;
+import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebSocketPacket;
 import org.comroid.uniform.SerializationAdapter;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
-public final class DiscordBot implements ContextualProvider.Underlying {
-    private final FutureReference<? extends WebSocket> gateway;
+public abstract class DiscordBot implements ContextualProvider.Underlying, Closeable {
+    public final FutureReference<? extends Websocket> gateway;
     private final DiscordAPI context;
     private final String token;
     private final REST rest;
+    private final List<Consumer<DiscordBot>> readyTasks = new ArrayList<>();
 
     @Override
     public ContextualProvider getUnderlyingContextualProvider() {
@@ -30,9 +36,20 @@ public final class DiscordBot implements ContextualProvider.Underlying {
         return gateway.future.isDone();
     }
 
-    private DiscordBot(DiscordAPI context, String token) {
+    protected abstract String getToken();
+
+    protected void whenReady(Consumer<DiscordBot> readyTask) {
+        readyTasks.add(readyTask);
+    }
+
+    @Override
+    public void close() throws IOException {
+        gateway.future.join().close();
+    }
+
+    protected DiscordBot(DiscordAPI context) {
         this.context = context;
-        this.token = "Bot " + token;
+        this.token = "Bot " + getToken();
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);
         SerializationAdapter serializationAdapter = requireFromContext(SerializationAdapter.class);
@@ -49,7 +66,7 @@ public final class DiscordBot implements ContextualProvider.Underlying {
                 .thenComposeAsync(gbr -> {
                     REST.Header.List headers = new REST.Header.List();
 
-                    headers.add(CommonHeaderNames.AUTHORIZATION, this.token);
+                    headers.add(CommonHeaderNames.AUTHORIZATION, token);
                     headers.add(CommonHeaderNames.USER_AGENT, String.format(
                             "DiscordBot (%s, %s) %s",
                             CrystalShard.URL,
@@ -59,7 +76,7 @@ public final class DiscordBot implements ContextualProvider.Underlying {
 
                     return httpAdapter.createWebSocket(executor, gbr.uri.get(), headers);
                 }, executor)
-                .thenCompose(socket -> socket.getPacketPump()
+                .thenCompose(socket -> socket.getPacketPipeline()
                         .filter(packet -> packet.getType() == WebSocketPacket.Type.DATA)
                         .map(p -> p.getData().into(serializationAdapter::parse))
                         .filter(data -> data.get("op").asInt() == 10)
@@ -70,6 +87,6 @@ public final class DiscordBot implements ContextualProvider.Underlying {
     }
 
     private void startHeartbeat(int interval) {
+        // todo
     }
-
 }
