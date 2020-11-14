@@ -6,15 +6,22 @@ import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
-import org.comroid.restless.socket.WebSocketPacket;
 import org.comroid.restless.socket.Websocket;
+import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.node.UniNode;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-public final class Gateway implements ContextualProvider.Underlying {
+import java.io.Closeable;
+import java.io.IOException;
+
+public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final Websocket socket;
     private final Pipe<? extends GatewayEvent> eventPipeline;
     private final ContextualProvider context;
+
+    public Pipe<? extends WebsocketPacket> getPacketPipeline() {
+        return socket.getPacketPipeline();
+    }
 
     public Pipe<? extends GatewayEvent> getEventPipeline() {
         return eventPipeline;
@@ -29,9 +36,9 @@ public final class Gateway implements ContextualProvider.Underlying {
     public Gateway(ContextualProvider context, Websocket socket) {
         this.context = context;
         this.socket = socket;
-        this.eventPipeline = socket.getPacketPipeline()
-                .filter(packet -> packet.getType() == WebSocketPacket.Type.DATA)
-                .flatMap(WebSocketPacket::getData)
+        this.eventPipeline = getPacketPipeline()
+                .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
+                .flatMap(WebsocketPacket::getData)
                 .map(DiscordAPI.SERIALIZATION::parse)
                 .filter(data -> {
                     if (!OpCode.DISPATCH.test(data))
@@ -51,6 +58,7 @@ public final class Gateway implements ContextualProvider.Underlying {
      * @return The resulting GatewayEvent
      */
     private GatewayEvent dispatchPacket(UniNode data) {
+        return null; // todo
     }
 
     /**
@@ -59,5 +67,11 @@ public final class Gateway implements ContextualProvider.Underlying {
      * @param data The packet to handle
      */
     private void handlePacket(UniNode data) {
+        // todo
+    }
+
+    @Override
+    public void close() throws IOException {
+        socket.close();
     }
 }

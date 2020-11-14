@@ -1,15 +1,18 @@
 package org.comroid.crystalshard;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.gateway.Gateway;
+import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.event.HelloEvent;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
+import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.server.Ratelimiter;
-import org.comroid.restless.socket.Websocket;
-import org.comroid.restless.socket.WebSocketPacket;
+import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
 
 import java.io.Closeable;
@@ -21,11 +24,19 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 public abstract class DiscordBot implements ContextualProvider.Underlying, Closeable {
-    public final FutureReference<? extends Websocket> gateway;
+    public final FutureReference<? extends Gateway> gateway;
     private final DiscordAPI context;
     private final String token;
     private final REST rest;
     private final List<Consumer<DiscordBot>> readyTasks = new ArrayList<>();
+
+    public Pipe<? extends WebsocketPacket> getPacketPipeline() {
+        return gateway.into(Gateway::getPacketPipeline);
+    }
+
+    public Pipe<? extends GatewayEvent> getEventPipeline() {
+        return gateway.into(Gateway::getEventPipeline);
+    }
 
     @Override
     public ContextualProvider getUnderlyingContextualProvider() {
@@ -76,14 +87,19 @@ public abstract class DiscordBot implements ContextualProvider.Underlying, Close
 
                     return httpAdapter.createWebSocket(executor, gbr.uri.get(), headers);
                 }, executor)
-                .thenCompose(socket -> socket.getPacketPipeline()
-                        .filter(packet -> packet.getType() == WebSocketPacket.Type.DATA)
-                        .map(p -> p.getData().into(serializationAdapter::parse))
-                        .filter(data -> data.get("op").asInt() == 10)
-                        .peek(data -> startHeartbeat(data.get("d").get("heartbeat_interval").asInt()))
+                .thenApply(socket -> new Gateway(getUnderlyingContextualProvider(), socket))
+                .thenCompose(gateway -> gateway.getEventPipeline()
+                        .flatMap(HelloEvent.class)
                         .next()
-                        .thenApply(data -> socket))
+                        .thenApply(hello -> {
+                            hello.heartbeatInterval.consume(this::startHeartbeat);
+                            return gateway;
+                        }))
         );
+
+        whenReady(bot -> {
+            bot.getEventPipeline();
+        });
     }
 
     private void startHeartbeat(int interval) {
