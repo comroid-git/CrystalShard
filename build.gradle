@@ -71,6 +71,10 @@ dependencies {
             ? 'org.comroid:listnr:0.10.0-SNAPSHOT'
             : project(':common-util:listnr')
 
+    testImplementation project(':guardian:uniform').sourceSets.java8compat.output.classesDirs
+    testImplementation project(':guardian:restless').sourceSets.java11compat.output.classesDirs
+    testImplementation 'com.alibaba:fastjson:1.2.70'
+
     implementation 'com.google.flogger:flogger:0.5.1'
 }
 
