@@ -97,13 +97,13 @@ public abstract class DiscordBot implements ContextualProvider.Underlying, Close
                 .execute$deserializeSingle();
     }
 
-    protected void whenReady(Consumer<DiscordBot> readyTask) {
-        readyTasks.add(readyTask);
-    }
-
     @Override
     public void close() throws IOException {
         gateway.future.join().close();
+    }
+
+    protected void whenReady(Consumer<DiscordBot> readyTask) {
+        readyTasks.add(readyTask);
     }
 
     @NotNull
