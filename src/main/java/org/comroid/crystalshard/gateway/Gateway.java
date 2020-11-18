@@ -40,12 +40,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
                 .map(DiscordAPI.SERIALIZATION::parse)
-                .filter(data -> {
-                    if (!OpCode.DISPATCH.test(data))
-                        return true;
-                    handlePacket(data);
-                    return false;
-                })
+                .yield(OpCode.DISPATCH, this::handlePacket)
                 .map(this::dispatchPacket);
 
         AssertionException.expect(true, eventPipeline instanceof Pump, "eventPipeline instanceof Pump");
