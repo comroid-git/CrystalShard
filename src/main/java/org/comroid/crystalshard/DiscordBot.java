@@ -86,6 +86,11 @@ public abstract class DiscordBot implements ContextualProvider.Underlying, Close
         });
     }
 
+    @Override
+    public void close() throws IOException {
+        gateway.future.join().close();
+    }
+
     @Internal
     public <R extends AbstractRestResponse> CompletableFuture<R> newRequest(
             REST.Method method,
@@ -95,11 +100,6 @@ public abstract class DiscordBot implements ContextualProvider.Underlying, Close
                 .addHeaders(createHeaders())
                 .method(method)
                 .execute$deserializeSingle();
-    }
-
-    @Override
-    public void close() throws IOException {
-        gateway.future.join().close();
     }
 
     protected void whenReady(Consumer<DiscordBot> readyTask) {
