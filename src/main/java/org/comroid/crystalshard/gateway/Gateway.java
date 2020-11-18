@@ -74,4 +74,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     public void close() throws IOException {
         socket.close();
     }
+
+    public void sendHeartbeat() {
+        // todo
+    }
 }

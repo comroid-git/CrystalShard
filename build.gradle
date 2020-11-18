@@ -67,9 +67,7 @@ dependencies {
     api project(':guardian:restless') == null
             ? 'org.comroid:restless:0.16.0-SNAPSHOT'
             : project(':guardian:restless')
-    api project(':common-util:listnr') == null
-            ? 'org.comroid:listnr:0.10.0-SNAPSHOT'
-            : project(':common-util:listnr')
+    api project(':common-util:matrix')
 
     testImplementation project(':guardian:uniform').sourceSets.java8compat.output.classesDirs
     testImplementation project(':guardian:restless').sourceSets.java11compat.output.classesDirs

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 
-public final class GatewayBotResponse extends AbstractDataContainer {
+public final class GatewayBotResponse extends AbstractRestResponse {
     @RootBind
     public static final GroupBind<GatewayBotResponse> TYPE
             = BASETYPE.rootGroup("rest-gateway-bot-response");

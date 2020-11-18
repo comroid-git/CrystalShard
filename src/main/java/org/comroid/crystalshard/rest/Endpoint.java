@@ -1,17 +1,30 @@
 package org.comroid.crystalshard.rest;
 
 import org.comroid.crystalshard.DiscordAPI;
-import org.comroid.restless.endpoint.AccessibleEndpoint;
+import org.comroid.crystalshard.rest.response.AbstractRestResponse;
+import org.comroid.crystalshard.rest.response.GatewayBotResponse;
+import org.comroid.restless.endpoint.TypeBoundEndpoint;
+import org.comroid.varbind.bind.GroupBind;
 import org.intellij.lang.annotations.Language;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
-public enum Endpoint implements AccessibleEndpoint {
-    GATEWAY_BOT("/gateway/bot");
+public final class Endpoint<R extends AbstractRestResponse> implements TypeBoundEndpoint<R> {
+    public static final List<Endpoint<?>> values = new ArrayList<>();
+    public static final Endpoint<GatewayBotResponse> GATEWAY_BOT
+            = new Endpoint<>(GatewayBotResponse.TYPE, "/gateway/bot");
 
+    private final GroupBind<R> type;
     private final String extension;
     private final @Language("RegExp") String[] regexGroups;
     private final Pattern pattern;
+
+    @Override
+    public GroupBind<R> getBoundType() {
+        return type;
+    }
 
     @Override
     public String getUrlBase() {
@@ -33,9 +46,12 @@ public enum Endpoint implements AccessibleEndpoint {
         return pattern;
     }
 
-    Endpoint(String extension, @Language("RegExp") String... regexGroups) {
+    private Endpoint(GroupBind<R> type, String extension, @Language("RegExp") String... regexGroups) {
+        this.type = type;
         this.extension = extension;
         this.regexGroups = regexGroups;
         this.pattern = buildUrlPattern();
+
+        values.add(this);
     }
 }
