@@ -68,19 +68,17 @@ public abstract class DiscordBot implements ContextualProvider.Underlying, Close
         Ratelimiter ratelimiter = Ratelimiter.ofPool(executor, Endpoint.values.toArray(new RatelimitedEndpoint[0]));
 
         this.rest = new REST(context, executor, ratelimiter);
-        this.gateway = new FutureReference<>(newRequest(
-                REST.Method.GET,
-                Endpoint.GATEWAY_BOT
-        )
-                .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), createHeaders()))
-                .thenApply(socket -> new Gateway(getUnderlyingContextualProvider(), socket))
-                .thenCompose(gateway -> gateway.getEventPipeline()
-                        .flatMap(HelloEvent.class)
-                        .next()
-                        .thenApply(hello -> {
-                            hello.heartbeatInterval.consume(this::startHeartbeat);
-                            return gateway;
-                        })));
+        this.gateway = new FutureReference<>(
+                newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT)
+                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), createHeaders()))
+                        .thenApply(socket -> new Gateway(getUnderlyingContextualProvider(), socket))
+                        .thenCompose(gateway -> gateway.getEventPipeline()
+                                .flatMap(HelloEvent.class)
+                                .next()
+                                .thenApply(hello -> {
+                                    hello.heartbeatInterval.consume(this::startHeartbeat);
+                                    return gateway;
+                                })));
         gateway.future.thenRun(() -> readyTasks.forEach(task -> task.accept(this)));
 
         whenReady(bot -> {
