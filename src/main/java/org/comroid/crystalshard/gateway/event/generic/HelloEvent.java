@@ -1,6 +1,7 @@
-package org.comroid.crystalshard.gateway.event;
+package org.comroid.crystalshard.gateway.event.generic;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniObjectNode;

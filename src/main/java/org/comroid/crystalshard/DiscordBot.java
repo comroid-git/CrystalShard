@@ -3,7 +3,7 @@ package org.comroid.crystalshard;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.gateway.event.HelloEvent;
+import org.comroid.crystalshard.gateway.event.generic.HelloEvent;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.mutatio.pipe.Pipe;
