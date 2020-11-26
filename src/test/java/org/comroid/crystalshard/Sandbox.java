@@ -4,7 +4,7 @@ import org.comroid.common.io.FileHandle;
 import org.comroid.restless.adapter.jdk.JavaHttpAdapter;
 import org.comroid.uniform.adapter.json.fastjson.FastJSONLib;
 
-public final class Sandbox extends DiscordBot {
+public final class Sandbox extends DiscordBotShard {
     public static final FileHandle DIR = new FileHandle("/srv/dcb/tester/", true);
     public static final FileHandle LOGIN = DIR.createSubDir("login");
 

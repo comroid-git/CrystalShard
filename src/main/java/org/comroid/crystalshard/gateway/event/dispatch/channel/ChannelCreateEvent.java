@@ -2,6 +2,7 @@ package org.comroid.crystalshard.gateway.event.dispatch.channel;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.uniform.node.UniObjectNode;
@@ -15,7 +16,10 @@ public final class ChannelCreateEvent extends GatewayEvent {
     public static final VarBind<ChannelCreateEvent, UniObjectNode, Channel, Channel> CHANNEL
             = TYPE.createBind("")
             .extractAsObject()
-            .andResolve((cce, data) -> cce.requireFromContext(SnowflakeCache.class).resolveChannel(data))
+            .andProvideRef(
+                    Snowflake.ID,
+                    (event, id) -> event.requireFromContext(SnowflakeCache.class).getChannel(id),
+                    Channel.BASETYPE)
             .onceEach()
             .build();
 

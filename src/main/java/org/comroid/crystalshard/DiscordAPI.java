@@ -12,11 +12,17 @@ public final class DiscordAPI implements ContextualProvider {
     public static final String URL_BASE = "https://discord.com/api";
     public static SerializationAdapter SERIALIZATION = null;
     private final HttpAdapter httpAdapter;
+    private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;
+    private final Span<Object> members;
 
     @Override
     public Span<Object> getContextMembers() {
-        return Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService);
+        return members;
+    }
+
+    public SnowflakeCache getSnowflakeCache() {
+        return snowflakeCache;
     }
 
     public DiscordAPI(HttpAdapter httpAdapter) {
@@ -28,5 +34,9 @@ public final class DiscordAPI implements ContextualProvider {
 
         this.scheduledExecutorService = scheduledExecutorService;
         this.httpAdapter = httpAdapter;
+
+        this.snowflakeCache = new SnowflakeCache(this);
+
+        this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, snowflakeCache);
     }
 }

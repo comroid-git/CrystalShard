@@ -2,30 +2,37 @@ package org.comroid.crystalshard.entity;
 
 import org.comroid.api.BitmaskEnum;
 import org.comroid.api.Named;
+import org.comroid.crystalshard.entity.channel.Channel;
+import org.comroid.crystalshard.entity.channel.GuildChannel;
+import org.comroid.crystalshard.entity.channel.TextChannel;
+import org.comroid.crystalshard.entity.channel.VoiceChannel;
+import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.User;
 import org.comroid.util.Bitmask;
 
-public enum EntityType implements Named, BitmaskEnum<EntityType> {
-    SNOWFLAKE,
+public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum<EntityType<?>> {
+    public static final EntityType<Snowflake> SNOWFLAKE = new EntityType<>(Snowflake.class);
 
-    USER(SNOWFLAKE),
+    public static final EntityType<User> USER = new EntityType<>(User.class, SNOWFLAKE);
 
-    GUILD(SNOWFLAKE),
+    public static final EntityType<Guild> GUILD = new EntityType<>(Guild.class, SNOWFLAKE);
 
-    CHANNEL(SNOWFLAKE),
+    public static final EntityType<Channel> CHANNEL = new EntityType<>(Channel.class, SNOWFLAKE);
 
-    TEXT_CHANNEL(CHANNEL),
-    VOICE_CHANNEL(CHANNEL),
+    public static final EntityType<TextChannel> TEXT_CHANNEL = new EntityType<>(TextChannel.class, CHANNEL);
+    public static final EntityType<VoiceChannel> VOICE_CHANNEL = new EntityType<>(VoiceChannel.class, CHANNEL);
 
-    PRIVATE_CHANNEL(TEXT_CHANNEL),
-    GROUP_CHANNEL(TEXT_CHANNEL),
+    public static final EntityType<Void> PRIVATE_CHANNEL = new EntityType<>(Void.class, CHANNEL);
+    public static final EntityType<Void> GROUP_CHANNEL = new EntityType<>(Void.class, CHANNEL);
 
-    GUILD_CHANNEL(CHANNEL),
-    GUILD_TEXT_CHANNEL(GUILD_CHANNEL, TEXT_CHANNEL),
-    GUILD_VOICE_CHANNEL(GUILD_CHANNEL, VOICE_CHANNEL),
+    public static final EntityType<GuildChannel> GUILD_CHANNEL = new EntityType<>(GuildChannel.class, CHANNEL);
+    public static final EntityType<Void> GUILD_TEXT_CHANNEL = new EntityType<>(Void.class, GUILD_CHANNEL, TEXT_CHANNEL);
+    public static final EntityType<Void> GUILD_VOICE_CHANNEL = new EntityType<>(Void.class, GUILD_CHANNEL, VOICE_CHANNEL);
 
-    MESSAGE(SNOWFLAKE);
+    public static final EntityType<Void> MESSAGE = new EntityType<>(Void.class, SNOWFLAKE);
 
     private final int value;
+    private final Class<T> relatedClass;
 
     @Override
     public int getValue() {
@@ -34,10 +41,19 @@ public enum EntityType implements Named, BitmaskEnum<EntityType> {
 
     @Override
     public String getName() {
-        return name();
+        return relatedClass.getSimpleName();
     }
 
-    EntityType(EntityType... inherits) {
+    private EntityType(Class<T> relatedClass, EntityType<?>... inherits) {
+        this.relatedClass = relatedClass;
         this.value = Bitmask.combine(Bitmask.combine(inherits), Bitmask.nextFlag());
+    }
+
+    public Class<T> getRelatedClass() {
+        return relatedClass;
+    }
+
+    public boolean isInterface() {
+        return getRelatedClass().isInterface();
     }
 }

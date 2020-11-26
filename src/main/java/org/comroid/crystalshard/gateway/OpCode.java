@@ -3,11 +3,14 @@ package org.comroid.crystalshard.gateway;
 import org.comroid.api.IntEnum;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
+import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniNode;
+import org.comroid.uniform.node.UniObjectNode;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
-public enum OpCode implements IntEnum, Named, Described, Predicate<UniNode> {
+public enum OpCode implements IntEnum, Named, Described, Predicate<UniNode>, Function<UniObjectNode, UniObjectNode> {
     DISPATCH(0, "An event was dispatched."),
     HEARTBEAT(1, "Fired periodically by the client to keep the connection alive."),
     IDENTIFY(2, "Starts a new session during the initial handshake."),
@@ -46,5 +49,12 @@ public enum OpCode implements IntEnum, Named, Described, Predicate<UniNode> {
     @Override
     public boolean test(UniNode data) {
         return data.get("op").asInt() == value;
+    }
+
+    @Override
+    public UniObjectNode apply(UniObjectNode node) {
+        node.put("op", ValueType.INTEGER, value);
+
+        return node;
     }
 }
