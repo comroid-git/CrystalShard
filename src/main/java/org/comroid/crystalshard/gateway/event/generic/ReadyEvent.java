@@ -34,7 +34,7 @@ public final class ReadyEvent extends GatewayEvent {
                     Snowflake.ID,
                     (ready, id) -> ready.requireFromContext(DiscordBotShard.class)
                             .getSnowflakeCache()
-                            .getUserByID(id),
+                            .getUser(id),
                     User.TYPE)
             .onceEach()
             .setRequired()

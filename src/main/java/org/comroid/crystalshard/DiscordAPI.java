@@ -10,6 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public final class DiscordAPI implements ContextualProvider {
     public static final String URL_BASE = "https://discord.com/api";
+    public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     public static SerializationAdapter SERIALIZATION = null;
     private final HttpAdapter httpAdapter;
     private final SnowflakeCache snowflakeCache;

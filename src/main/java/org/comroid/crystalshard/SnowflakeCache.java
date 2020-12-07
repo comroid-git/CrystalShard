@@ -27,7 +27,7 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
         return getSnowflake(EntityType.CHANNEL, id);
     }
 
-    public Reference<User> getUserByID(long id) {
+    public Reference<User> getUser(long id) {
         return getSnowflake(EntityType.USER, id);
     }
 

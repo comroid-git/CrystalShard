@@ -9,6 +9,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.comroid.varbind.container.DataContainer;
 import org.comroid.varbind.container.DataContainerBase;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.Underlying {
@@ -20,6 +21,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
             .onceEach()
             .setRequired()
             .build();
+    @Language("RegExp") String ID_REGEX = "\\d{12,32}";
 
     long getID();
 
@@ -38,7 +40,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
 
         @Override
         public final long getID() {
-            return id.requireNonNull();
+            return id.assertion();
         }
 
         @Override

@@ -3,6 +3,7 @@ package org.comroid.crystalshard.rest;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
+import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
 import org.comroid.restless.endpoint.TypeBoundEndpoint;
 import org.comroid.varbind.bind.GroupBind;
 import org.intellij.lang.annotations.Language;
@@ -13,8 +14,12 @@ import java.util.regex.Pattern;
 
 public final class Endpoint<R extends AbstractRestResponse> implements TypeBoundEndpoint<R> {
     public static final List<Endpoint<?>> values = new ArrayList<>();
+
     public static final Endpoint<GatewayBotResponse> GATEWAY_BOT
             = new Endpoint<>(GatewayBotResponse.TYPE, "/gateway/bot");
+
+    public static final Endpoint<VoiceRegionsResponse> VOICE_REGIONS
+            = new Endpoint<>(VoiceRegionsResponse.TYPE, "/voice/regions");
 
     private final GroupBind<R> type;
     private final String extension;
