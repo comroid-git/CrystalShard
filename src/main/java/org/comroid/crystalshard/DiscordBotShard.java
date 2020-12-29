@@ -12,19 +12,15 @@ import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
-import org.comroid.restless.endpoint.RatelimitedEndpoint;
-import org.comroid.restless.server.Ratelimiter;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -32,7 +28,6 @@ import java.util.function.Consumer;
 public final class DiscordBotShard implements Bot {
     private final DiscordAPI context;
     private final String token;
-    private final REST rest;
     private final FutureReference<? extends Gateway> gateway;
     private final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
 
@@ -87,20 +82,16 @@ public final class DiscordBotShard implements Bot {
                 .assertion();
     }
 
-    private DiscordBotShard(DiscordAPI context, String token) {
+    public DiscordBotShard(DiscordAPI context, String token, int shardID) {
         this.context = context;
         this.token = "Bot " + token;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);
         SerializationAdapter serializationAdapter = requireFromContext(SerializationAdapter.class);
-        ScheduledExecutorService executor = getFromContext(ScheduledExecutorService.class)
-                .orElseGet(() -> Executors.newScheduledThreadPool(4));
-        Ratelimiter ratelimiter = Ratelimiter.ofPool(executor, Endpoint.values.toArray(new RatelimitedEndpoint[0]));
-
-        this.rest = new REST(context, executor, ratelimiter);
+        ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(
                 newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT)
-                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), createHeaders()))
+                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), createHeaders(token)))
                         .thenApply(socket -> new Gateway(getUnderlyingContextualProvider(), socket))
                         .thenCompose(gateway -> gateway.getEventPipeline()
                                 .flatMap(HelloEvent.class)
@@ -110,7 +101,7 @@ public final class DiscordBotShard implements Bot {
                                     return gateway;
                                 })));
         gateway.future
-                .thenAccept(gateway -> gateway.sendIdentify().join())
+                .thenAccept(gateway -> gateway.sendIdentify(shardID).join())
                 .thenRun(() -> readyTasks.forEach(task -> task.accept(this)));
     }
 
@@ -125,8 +116,9 @@ public final class DiscordBotShard implements Bot {
             REST.Method method,
             Endpoint<R> endpoint
     ) {
-        return rest.request(endpoint)
-                .addHeaders(createHeaders())
+        return context.getREST()
+                .request(endpoint)
+                .addHeaders(createHeaders(token))
                 .method(method)
                 .execute$deserializeSingle();
     }
@@ -138,7 +130,7 @@ public final class DiscordBotShard implements Bot {
     }
 
     @NotNull
-    private REST.Header.List createHeaders() {
+    static REST.Header.List createHeaders(String token) {
         REST.Header.List headers = new REST.Header.List();
 
         headers.add(CommonHeaderNames.AUTHORIZATION, token);

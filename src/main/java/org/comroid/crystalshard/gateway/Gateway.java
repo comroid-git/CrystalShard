@@ -14,6 +14,7 @@ import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
+import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -134,8 +135,10 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     @Internal
-    public CompletableFuture<ReadyEvent> sendIdentify() {
+    public CompletableFuture<ReadyEvent> sendIdentify(int shardID) {
         final UniObjectNode data = createPayloadBase(OpCode.IDENTIFY);
+
+        data.put("shard", ValueType.INTEGER, shardID);
 
         return socket.send(data.toString())
                 .thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
