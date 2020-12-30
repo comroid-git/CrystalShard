@@ -133,7 +133,7 @@ public final class DiscordBotShard implements Bot {
     static REST.Header.List createHeaders(String token) {
         REST.Header.List headers = new REST.Header.List();
 
-        headers.add(CommonHeaderNames.AUTHORIZATION, token);
+        headers.add(CommonHeaderNames.AUTHORIZATION, "Bot " + token);
         headers.add(CommonHeaderNames.USER_AGENT, String.format(
                 "DiscordBot (%s, %s) %s",
                 CrystalShard.URL,
