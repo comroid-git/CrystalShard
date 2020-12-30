@@ -1,5 +1,6 @@
 package org.comroid.crystalshard.gateway;
 
+import com.google.common.flogger.FluentLogger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.common.exception.AssertionException;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public final class Gateway implements ContextualProvider.Underlying, Closeable {
+    public static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
     public final @Internal
     Reference<Integer> heartbeatTime = Reference.create();
     public final @Internal
@@ -57,6 +59,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
+                .peek(data -> LOGGER.atFiner().log("Data received: " + data))
                 .map(DiscordAPI.SERIALIZATION::parse);
         this.eventPipeline = dataPipeline
                 .yield(OpCode.DISPATCH, this::handlePacket)
