@@ -1,5 +1,6 @@
 package org.comroid.crystalshard;
 
+import com.google.common.flogger.FluentLogger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.common.Disposable;
 import org.comroid.common.exception.AssertionException;
@@ -20,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
 public abstract class AbstractDiscordBot implements Bot {
+    private static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
     private final DiscordAPI context;
     private final Span<DiscordBotShard> shards;
     private final GatewayBotResponse gbr;
@@ -76,11 +78,7 @@ public abstract class AbstractDiscordBot implements Bot {
 
     @Override
     public final <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, Endpoint<R> endpoint) {
-        return context.getREST()
-                .request(endpoint)
-                .addHeaders(token.into(DiscordBotShard::createHeaders))
-                .method(method)
-                .execute$deserializeSingle();
+        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint);
     }
 
     @Override

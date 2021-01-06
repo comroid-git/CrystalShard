@@ -1,5 +1,6 @@
 package org.comroid.crystalshard;
 
+import com.google.common.flogger.FluentLogger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
@@ -9,13 +10,10 @@ import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
-import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
-import org.jetbrains.annotations.ApiStatus.Internal;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +22,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 public final class DiscordBotShard implements Bot {
+    private static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
     private final DiscordAPI context;
     private final String token;
     private final FutureReference<? extends Gateway> gateway;
@@ -82,6 +82,11 @@ public final class DiscordBotShard implements Bot {
                 .assertion();
     }
 
+    @Override
+    public <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, Endpoint<R> endpoint) {
+        return DiscordAPI.newRequest(context, token, method, endpoint);
+    }
+
     public DiscordBotShard(DiscordAPI context, String token, int shardID) {
         this.context = context;
         this.token = "Bot " + token;
@@ -90,8 +95,8 @@ public final class DiscordBotShard implements Bot {
         SerializationAdapter serializationAdapter = requireFromContext(SerializationAdapter.class);
         ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(
-                newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT)
-                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), createHeaders(token)))
+                DiscordAPI.newRequest(context, token, REST.Method.GET, Endpoint.GATEWAY_BOT)
+                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token)))
                         .thenApply(socket -> new Gateway(getUnderlyingContextualProvider(), socket))
                         .thenCompose(gateway -> gateway.getEventPipeline()
                                 .flatMap(HelloEvent.class)
@@ -99,10 +104,12 @@ public final class DiscordBotShard implements Bot {
                                 .thenApply(hello -> {
                                     hello.heartbeatInterval.consume(this::startHeartbeat);
                                     return gateway;
-                                })));
+                                }))
+                        .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, "Could not create Gateway")));
         gateway.future
                 .thenAccept(gateway -> gateway.sendIdentify(shardID).join())
-                .thenRun(() -> readyTasks.forEach(task -> task.accept(this)));
+                .thenRun(() -> readyTasks.forEach(task -> task.accept(this)))
+                .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, "Could not send Identify"));
     }
 
     @Override
@@ -110,37 +117,10 @@ public final class DiscordBotShard implements Bot {
         gateway.future.join().close();
     }
 
-    @Override
-    @Internal
-    public <R extends AbstractRestResponse> CompletableFuture<R> newRequest(
-            REST.Method method,
-            Endpoint<R> endpoint
-    ) {
-        return context.getREST()
-                .request(endpoint)
-                .addHeaders(createHeaders(token))
-                .method(method)
-                .execute$deserializeSingle();
-    }
-
     protected void whenReady(Consumer<DiscordBotShard> readyTask) {
         if (isReady())
             readyTask.accept(this);
         readyTasks.add(readyTask);
-    }
-
-    @NotNull
-    static REST.Header.List createHeaders(String token) {
-        REST.Header.List headers = new REST.Header.List();
-
-        headers.add(CommonHeaderNames.AUTHORIZATION, "Bot " + token);
-        headers.add(CommonHeaderNames.USER_AGENT, String.format(
-                "DiscordBot (%s, %s) %s",
-                CrystalShard.URL,
-                CrystalShard.VERSION.toSimpleString(),
-                CrystalShard.VERSION.toString())
-        );
-        return headers;
     }
 
     private void startHeartbeat(int interval) {
