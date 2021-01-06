@@ -54,7 +54,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     @Internal
-    public Gateway(ContextualProvider context, Websocket socket) {
+    public Gateway(DiscordAPI context, Websocket socket) {
         this.context = context;
         this.socket = socket;
         this.dataPipeline = getPacketPipeline()
@@ -72,8 +72,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.readyEvent = new FutureReference<>(getEventPipeline()
                 .flatMap(ReadyEvent.class)
                 .next()
-                .exceptionally(context.requireFromContext(DiscordAPI.class)
-                        .exceptionLogger(LOGGER, Level.SEVERE, "Could not receive READY Event")));
+                .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, "Could not receive READY Event")));
     }
 
     public String getSessionID() {

@@ -97,7 +97,7 @@ public final class DiscordBotShard implements Bot {
         this.gateway = new FutureReference<>(
                 DiscordAPI.newRequest(context, token, REST.Method.GET, Endpoint.GATEWAY_BOT)
                         .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token)))
-                        .thenApply(socket -> new Gateway(getUnderlyingContextualProvider(), socket))
+                        .thenApply(socket -> new Gateway(context, socket))
                         .thenCompose(gateway -> gateway.getEventPipeline()
                                 .flatMap(HelloEvent.class)
                                 .next()
