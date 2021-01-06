@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 public final class Gateway implements ContextualProvider.Underlying, Closeable {
     public static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
@@ -70,7 +71,9 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         // store latest ready event
         this.readyEvent = new FutureReference<>(getEventPipeline()
                 .flatMap(ReadyEvent.class)
-                .next());
+                .next()
+                .exceptionally(context.requireFromContext(DiscordAPI.class)
+                        .exceptionLogger(LOGGER, Level.SEVERE, "Could not receive READY Event")));
     }
 
     public String getSessionID() {
