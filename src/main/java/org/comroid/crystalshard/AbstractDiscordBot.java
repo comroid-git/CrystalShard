@@ -55,7 +55,8 @@ public abstract class AbstractDiscordBot implements Bot {
     public final int getCurrentShardID() throws UnsupportedOperationException {
         if (getShardCount() == 1)
             return 0;
-        throw new UnsupportedOperationException("There is no specific Shard");
+        return -1;
+        //throw new UnsupportedOperationException("There is no specific Shard");
     }
 
     @Override
