@@ -1,7 +1,7 @@
 package org.comroid.crystalshard;
 
 import org.comroid.common.io.FileHandle;
-import org.comroid.restless.adapter.jdk.JavaHttpAdapter;
+import org.comroid.restless.adapter.java.JavaHttpAdapter;
 import org.comroid.uniform.adapter.json.fastjson.FastJSONLib;
 
 public final class Sandbox extends DiscordBotShard {
