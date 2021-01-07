@@ -6,7 +6,7 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.matrix.Matrix2;
-import org.comroid.mutatio.proc.Processor;
+import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniObjectNode;
 
