@@ -18,7 +18,7 @@ public final class VoiceRegionsResponse extends AbstractRestResponse {
             = BASETYPE.rootGroup("voice-regions-response");
     public static final VarBind<VoiceRegionsResponse, UniObjectNode, VoiceRegion, ArrayList<VoiceRegion>> REGIONS
             = TYPE.createBind("")
-            .extractAsArray() // todo FFS just fix this
+            .extractAsArray()
             .andProvide(VoiceRegion.NAME, VoiceRegion::find, VoiceRegion.TYPE)
             .intoCollection(ArrayList::new)
             .build();

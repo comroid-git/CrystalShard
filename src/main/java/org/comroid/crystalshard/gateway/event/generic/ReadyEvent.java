@@ -8,6 +8,7 @@ import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.ref.Reference;
+import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -60,11 +61,11 @@ public final class ReadyEvent extends GatewayEvent {
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<ReadyEvent, UniArrayNode, UniArrayNode, UniArrayNode> SHARD
+    public static final VarBind<ReadyEvent, Integer, Integer, Span<Integer>> SHARD
             = TYPE.createBind("shard")
-            .extractAsArray()
+            .extractAsArray(ValueType.INTEGER)
             .asIdentities()
-            .onceEach() // identities once here, will be handled
+            .intoSpan()
             .setRequired()
             .build();
     public final Reference<Integer> version = getComputedReference(VERSION);
@@ -72,7 +73,7 @@ public final class ReadyEvent extends GatewayEvent {
     public final Reference<ArrayList<Channel>> privateChannels = getComputedReference(PRIVATE_CHANNELS);
     public final Reference<ArrayList<Guild>> guilds = getComputedReference(GUILDS);
     public final Reference<String> sessionID = getComputedReference(SESSION_ID);
-    public final Reference<UniArrayNode> shard = getComputedReference(SHARD);
+    public final Reference<Span<Integer>> shard = getComputedReference(SHARD);
 
     public ReadyEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
         super(context, initialData);

@@ -71,7 +71,7 @@ public final class DiscordBotShard implements Bot {
     public int getCurrentShardID() {
         return gateway.flatMap(gateway -> gateway.readyEvent)
                 .flatMap(readyEvent -> readyEvent.shard)
-                .map(array -> array.get(0).asInt())
+                .map(array -> array.get(0))
                 .assertion();
     }
 
@@ -79,7 +79,7 @@ public final class DiscordBotShard implements Bot {
     public int getShardCount() {
         return gateway.flatMap(gateway -> gateway.readyEvent)
                 .flatMap(readyEvent -> readyEvent.shard)
-                .map(array -> array.get(1).asInt())
+                .map(array -> array.get(1))
                 .assertion();
     }
 

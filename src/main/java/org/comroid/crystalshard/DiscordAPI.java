@@ -78,7 +78,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
 
     public <T> Function<Throwable, T> exceptionLogger(final Logger logger, final Level level, final String message) {
         return throwable -> {
-            logger.log(level, message);
+            logger.log(level, message, throwable);
             return null;
         };
     }
