@@ -1,6 +1,8 @@
 package org.comroid.crystalshard;
 
-import com.google.common.flogger.FluentLogger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
@@ -22,10 +24,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 public final class DiscordBotShard implements Bot {
-    private static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
+    private static final Logger logger = LogManager.getLogger();
     private final DiscordAPI context;
     private final String token;
     private final FutureReference<? extends Gateway> gateway;
@@ -96,7 +97,9 @@ public final class DiscordBotShard implements Bot {
         ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(
                 DiscordAPI.newRequest(context, token, REST.Method.GET, Endpoint.GATEWAY_BOT)
-                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token)))
+                        .thenCompose(gbr -> {
+                            return httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token));
+                        })
                         .thenApply(socket -> new Gateway(context, socket))
                         .thenCompose(gateway -> gateway.getEventPipeline()
                                 .flatMap(HelloEvent.class)
@@ -105,11 +108,11 @@ public final class DiscordBotShard implements Bot {
                                     hello.heartbeatInterval.consume(this::startHeartbeat);
                                     return gateway;
                                 }))
-                        .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, "Could not create Gateway")));
+                        .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not create Gateway")));
         gateway.future
                 .thenAccept(gateway -> gateway.sendIdentify(shardID).join())
                 .thenRun(() -> readyTasks.forEach(task -> task.accept(this)))
-                .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, "Could not send Identify"));
+                .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not send Identify"));
     }
 
     @Override

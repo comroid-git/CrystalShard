@@ -1,6 +1,8 @@
 package org.comroid.crystalshard;
 
-import com.google.common.flogger.FluentLogger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
@@ -12,6 +14,7 @@ import org.comroid.restless.endpoint.RatelimitedEndpoint;
 import org.comroid.restless.server.Ratelimiter;
 import org.comroid.uniform.SerializationAdapter;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -19,12 +22,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
-import java.util.logging.Level;
 
 public final class DiscordAPI extends ContextualProvider.Base {
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
-    private static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
+    private static final Logger logger = LogManager.getLogger();
     public static SerializationAdapter SERIALIZATION = null;
     private final HttpAdapter httpAdapter;
     private final REST rest;
@@ -45,7 +47,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
         return rest;
     }
 
-    @ApiStatus.Internal
+    @Internal
     public static <R extends AbstractRestResponse> CompletableFuture<R> newRequest(
             DiscordAPI context,
             String token,
@@ -57,7 +59,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
                 .addHeaders(createHeaders(token))
                 .method(method)
                 .execute$deserializeSingle()
-                .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, String.format("%s-Request @ %s", method, endpoint)));
+                .exceptionally(context.exceptionLogger(logger, Level.ERROR, String.format("%s-Request @ %s", method, endpoint)));
     }
 
     @NotNull
@@ -74,9 +76,9 @@ public final class DiscordAPI extends ContextualProvider.Base {
         return headers;
     }
 
-    public <T> Function<Throwable, T> exceptionLogger(final FluentLogger logger, final Level level, final String message) {
+    public <T> Function<Throwable, T> exceptionLogger(final Logger logger, final Level level, final String message) {
         return throwable -> {
-            logger.at(level).withCause(throwable).log(message);
+            logger.log(level, message);
             return null;
         };
     }

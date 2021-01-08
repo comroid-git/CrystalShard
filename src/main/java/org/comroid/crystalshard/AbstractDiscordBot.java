@@ -1,6 +1,7 @@
 package org.comroid.crystalshard;
 
-import com.google.common.flogger.FluentLogger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.common.Disposable;
 import org.comroid.common.exception.AssertionException;
@@ -21,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
 public abstract class AbstractDiscordBot implements Bot {
-    private static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
+    private static final Logger logger = LogManager.getLogger();
     private final DiscordAPI context;
     private final Span<DiscordBotShard> shards;
     private final GatewayBotResponse gbr;

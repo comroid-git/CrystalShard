@@ -70,6 +70,10 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
+    // logging dependencies
+    implementation 'org.apache.logging.log4j:log4j-api:2.11.0'
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.11.0'
+
     api project(':guardian:restless') == null
             ? 'org.comroid:restless:0.16.0-SNAPSHOT'
             : project(':guardian:restless')
@@ -78,8 +82,6 @@ dependencies {
     testImplementation project(':guardian:uniform').sourceSets.java8compat.output.classesDirs
     testImplementation project(':guardian:restless').sourceSets.java11compat.output.classesDirs
     testImplementation 'com.alibaba:fastjson:1.2.70'
-
-    implementation 'com.google.flogger:flogger:0.5.1'
 }
 
 apply from: "gradle/publishing.gradle"

@@ -1,6 +1,8 @@
 package org.comroid.crystalshard.gateway;
 
-import com.google.common.flogger.FluentLogger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.common.exception.AssertionException;
@@ -27,10 +29,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 
 public final class Gateway implements ContextualProvider.Underlying, Closeable {
-    public static final FluentLogger LOGGER = FluentLogger.forEnclosingClass();
+    private static final Logger logger = LogManager.getLogger();
     public final @Internal
     Reference<Integer> heartbeatTime = Reference.create();
     public final @Internal
@@ -60,7 +61,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
-                .peek(data -> LOGGER.atFiner().log("Data received: " + data))
+                .peek(data -> logger.trace("Data received: " + data))
                 .map(DiscordAPI.SERIALIZATION::parse);
         this.eventPipeline = dataPipeline
                 .yield(OpCode.DISPATCH, this::handlePacket)
@@ -68,11 +69,11 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
         AssertionException.expect(true, eventPipeline instanceof Pump, "eventPipeline instanceof Pump");
 
-        // store latest ready event
+        // store first ready event
         this.readyEvent = new FutureReference<>(getEventPipeline()
                 .flatMap(ReadyEvent.class)
                 .next()
-                .exceptionally(context.exceptionLogger(LOGGER, Level.SEVERE, "Could not receive READY Event")));
+                .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event")));
     }
 
     public String getSessionID() {
