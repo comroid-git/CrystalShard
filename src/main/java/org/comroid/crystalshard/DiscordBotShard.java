@@ -97,9 +97,7 @@ public final class DiscordBotShard implements Bot {
         ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(
                 DiscordAPI.newRequest(context, token, REST.Method.GET, Endpoint.GATEWAY_BOT)
-                        .thenCompose(gbr -> {
-                            return httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token));
-                        })
+                        .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token)))
                         .thenApply(socket -> new Gateway(context, socket))
                         .thenCompose(gateway -> gateway.getEventPipeline()
                                 .flatMap(HelloEvent.class)
@@ -111,7 +109,10 @@ public final class DiscordBotShard implements Bot {
                         .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not create Gateway")));
         gateway.future
                 .thenAccept(gateway -> gateway.sendIdentify(shardID).join())
-                .thenRun(() -> readyTasks.forEach(task -> task.accept(this)))
+                .thenRun(() -> {
+                    readyTasks.forEach(task -> task.accept(this));
+                    logger.info(String.format("%s - Shard %d is ready!", toString(), getCurrentShardID()));
+                })
                 .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not send Identify"));
     }
 
@@ -127,6 +128,8 @@ public final class DiscordBotShard implements Bot {
     }
 
     private void startHeartbeat(int interval) {
+        logger.debug(String.format("%s - Started heartbeating at interval: %d", toString(), interval));
+
         final Gateway gateway = getGateway();
 
         gateway.heartbeatTime.set(interval);
@@ -136,5 +139,10 @@ public final class DiscordBotShard implements Bot {
                 interval,
                 interval,
                 TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("DiscordBotShard<%s - Shard %d / %d>", getYourself(), getCurrentShardID(), getShardCount());
     }
 }

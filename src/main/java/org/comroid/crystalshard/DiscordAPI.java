@@ -59,7 +59,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
                 .addHeaders(createHeaders(token))
                 .method(method)
                 .execute$deserializeSingle()
-                .exceptionally(context.exceptionLogger(logger, Level.ERROR, String.format("%s-Request @ %s", method, endpoint)));
+                .exceptionally(context.exceptionLogger(logger, Level.ERROR, String.format("%s-Request @ %s", method, endpoint.getFullUrl())));
     }
 
     @NotNull
