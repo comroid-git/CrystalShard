@@ -105,6 +105,7 @@ public final class DiscordBotShard implements Bot {
                                 .peek(it -> logger.debug("DEBUG 2 - {} - {}", it.getClass().getSimpleName(), it)) // todo
                                 .next()
                                 .thenApply(hello -> {
+                                    logger.debug("DEBUG 3 - {} - {}", hello.getClass().getSimpleName(), hello);
                                     hello.heartbeatInterval.consume(this::startHeartbeat);
                                     return gateway;
                                 }))

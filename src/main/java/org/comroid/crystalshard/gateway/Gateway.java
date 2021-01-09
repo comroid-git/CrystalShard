@@ -47,8 +47,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     public Pipe<? extends GatewayEvent> getEventPipeline() {
-        return eventPipeline
-                .peek(it -> logger.debug("DEBUG {} - {} - {}", StackTraceUtils.callerClass(1), it.getClass().getSimpleName(), it)); // todo;
+        return eventPipeline;
     }
 
     @Override
@@ -74,13 +73,15 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .peek(event -> logger.trace("Gateway Event initialized: [{}] {}",
                         event.getClass().getSimpleName(), event));
 
-        AssertionException.expect(true, eventPipeline instanceof Pump, "eventPipeline instanceof Pump");
-
+        if (!(eventPipeline instanceof Pump))
+            throw new AssertionError("eventPipeline is not a Pump");
 
         // store first ready event
-        this.readyEvent = new FutureReference<>(getEventPipeline()
+        final Pipe<ReadyEvent> peek = getEventPipeline()
                 .flatMap(ReadyEvent.class)
-                .peek(it -> logger.debug("DEBUG 1 - {} - {}", it.getClass().getSimpleName(), it)) // todo
+                .peek(it -> logger.debug("DEBUG 1 - {} - {}", it.getClass().getSimpleName(), it));
+        peek.forEach(it -> logger.debug("DEBUG 5 - {} - {}", it.getClass().getSimpleName(), it));
+        this.readyEvent = new FutureReference<>(peek // todo
                 .next()
                 .thenApply(ready -> {
                     logger.debug("Ready Event received: " + ready);

@@ -12,6 +12,7 @@ import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 public final class ReadyEvent extends GatewayEvent {
+    @RootBind
     public static final GroupBind<ReadyEvent> TYPE
             = BASETYPE.rootGroup("ready");
     public static final VarBind<ReadyEvent, Integer, Integer, Integer> VERSION
