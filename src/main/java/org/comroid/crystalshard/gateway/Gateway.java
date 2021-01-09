@@ -19,6 +19,7 @@ import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.ValueType;
+import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -80,10 +81,9 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     .flatMap(HelloEvent.class)
                     .next()
                     .thenCompose(hello -> {
-                        hello.heartbeatInterval.ifPresentOrElse(heartbeatTime::set, () -> logger.warn("Unable to set heartbeat time!"));
+                        hello.heartbeatInterval.ifPresentOrElse(this::startHeartbeat, () -> logger.warn("Unable to set heartbeat time!"));
                         return sendIdentify(shard.getCurrentShardID());
                     })
-                    .thenAccept(ready -> startHeartbeat(heartbeatTime.assertion()))
                     .join();
         } catch (Throwable t) {
             throw new RuntimeException("Could not send Identify", t);
@@ -160,16 +160,22 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         UniObjectNode data = payload.putObject("d");
 
         data.put("token", ValueType.STRING, "Bot " + shard.getToken());
-        data.put("shard", ValueType.INTEGER, shardID);
         data.put("intents", ValueType.INTEGER, intents.assertion());
+
+        UniArrayNode shard = data.putArray("shard");
+        shard.put(0, ValueType.INTEGER, shardID);
+        shard.put(1, ValueType.INTEGER, this.shard.getShardCount());
 
         UniObjectNode prop = data.putObject("properties");
         prop.put("$os", ValueType.STRING, System.getProperty("os.name"));
         prop.put("$browser", ValueType.STRING, "CrystalShard");
-        prop.put("$device", ValueType.STRING, shard.getFromContext(AbstractDiscordBot.class)
+        prop.put("$device", ValueType.STRING, this.shard.getFromContext(AbstractDiscordBot.class)
                 .ifPresentMapOrElseGet(bot -> bot.getClass().getSimpleName(), () -> "CrystalShard"));
 
-        return socket.send(payload.toString()).thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
+        return socket.send(payload.toString())
+                .thenCombine(getEventPipeline()
+                        .flatMap(ReadyEvent.class).next(),
+                        (ws,ready)->ready);
     }
 
     private CompletableFuture<UniNode> awaitAck(Websocket socket) {

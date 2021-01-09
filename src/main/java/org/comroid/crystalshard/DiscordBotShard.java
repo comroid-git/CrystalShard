@@ -2,7 +2,6 @@ package org.comroid.crystalshard;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.comroid.api.BitmaskEnum;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
@@ -32,6 +31,7 @@ public final class DiscordBotShard implements Bot {
     public final DiscordAPI context;
     private final String token;
     private final int currentShardID;
+    private final int shardCount;
     private final FutureReference<? extends Gateway> gateway;
     @Internal
     public final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
@@ -78,10 +78,7 @@ public final class DiscordBotShard implements Bot {
 
     @Override
     public int getShardCount() {
-        return gateway.flatMap(gateway -> gateway.readyEvent)
-                .flatMap(readyEvent -> readyEvent.shard)
-                .map(array -> array.get(1))
-                .assertion();
+        return shardCount;
     }
 
     @Override
@@ -94,11 +91,12 @@ public final class DiscordBotShard implements Bot {
         return token;
     }
 
-    public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, GatewayIntent... intents) {
+    public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {
         context.plus(this);
         this.context = context;
         this.token = token;
         this.currentShardID = shardID;
+        this.shardCount = shardCount;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);
         SerializationAdapter serializationAdapter = requireFromContext(SerializationAdapter.class);
