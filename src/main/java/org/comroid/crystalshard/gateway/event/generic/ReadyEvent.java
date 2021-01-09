@@ -42,8 +42,8 @@ public final class ReadyEvent extends GatewayEvent {
             .build();
     public static final VarBind<ReadyEvent, UniObjectNode, Channel, ArrayList<Channel>> PRIVATE_CHANNELS
             = TYPE.createBind("private_channels")
-            .extractAsArray() // todo this wont work
-            .andConstruct(Channel.BASETYPE) // todo UniArrayNode @ EXTR is being overwritten
+            .extractAsArray()
+            .andConstruct(Channel.BASETYPE)
             .intoCollection(ArrayList::new)
             .setRequired()
             .build();
