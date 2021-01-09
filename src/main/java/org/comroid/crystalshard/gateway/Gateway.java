@@ -5,9 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
-import org.comroid.common.exception.AssertionException;
 import org.comroid.common.info.MessageSupplier;
+import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
@@ -17,19 +18,16 @@ import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
+import org.comroid.uniform.SerializationAdapter;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.util.StackTraceUtils;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private static final Logger logger = LogManager.getLogger();
@@ -40,7 +38,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final Websocket socket;
     private final Pipe<? extends UniNode> dataPipeline;
     private final Pipe<? extends GatewayEvent> eventPipeline;
-    private final DiscordAPI context;
+    private final DiscordBotShard shard;
 
     public Pipe<? extends WebsocketPacket> getPacketPipeline() {
         return socket.getPacketPipeline();
@@ -52,12 +50,12 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     @Override
     public ContextualProvider getUnderlyingContextualProvider() {
-        return context.plus(this);
+        return shard.plus(this);
     }
 
     @Internal
-    public Gateway(DiscordAPI context, Websocket socket) {
-        this.context = context;
+    public Gateway(DiscordBotShard shard, Websocket socket) {
+        this.shard = shard;
         this.socket = socket;
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
@@ -76,18 +74,40 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         if (!(eventPipeline instanceof Pump))
             throw new AssertionError("eventPipeline is not a Pump");
 
+        try {
+            getEventPipeline()
+                    .peek(System.out::println)
+                    .flatMap(HelloEvent.class)
+                    .next()
+                    .thenAccept(hello -> {
+                        final int interval = hello.heartbeatInterval.assertion("missing heartbeat value");
+                        startHeartbeat(interval);
+                    })
+                    .thenCompose(ref -> sendIdentify(shard.getCurrentShardID()))
+                    .join();
+        } catch (Throwable t) {
+            throw new RuntimeException("Could not send Identify", t);
+        }
         // store first ready event
-        final Pipe<ReadyEvent> peek = getEventPipeline()
+        this.readyEvent = new FutureReference<>(getEventPipeline()
                 .flatMap(ReadyEvent.class)
-                .peek(it -> logger.debug("DEBUG 1 - {} - {}", it.getClass().getSimpleName(), it));
-        peek.forEach(it -> logger.debug("DEBUG 5 - {} - {}", it.getClass().getSimpleName(), it));
-        this.readyEvent = new FutureReference<>(peek // todo
                 .next()
                 .thenApply(ready -> {
                     logger.debug("Ready Event received: " + ready);
                     return ready;
                 })
-                .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event")));
+                .exceptionally(shard.context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event")));
+    }
+
+    private void startHeartbeat(int interval) {
+        logger.debug("Shard {} - Started heartbeating at interval: {}", shard.getCurrentShardID(), interval);
+        heartbeatTime.set(interval);
+
+        requireFromContext(ScheduledExecutorService.class).scheduleAtFixedRate(
+                () -> sendHeartbeat().join(),
+                interval,
+                interval,
+                TimeUnit.MILLISECONDS);
     }
 
     public String getSessionID() {
@@ -101,7 +121,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 final DispatchEventType dispatchEventType = DispatchEventType.find(data)
                         .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()));
                 logger.trace("Handling Dispatch event as {} with data {}", dispatchEventType, innerData);
-                return dispatchEventType.createPayload(context, innerData.asObjectNode());
+                return dispatchEventType.createPayload(shard, innerData.asObjectNode());
             case IDENTIFY:
             case RESUME:
             case HEARTBEAT:
@@ -112,13 +132,13 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 logger.trace("Nothing to do here");
                 return null;
             case RECONNECT:
-                return new ReconnectEvent(context, innerData.asObjectNode());
+                return new ReconnectEvent(shard, innerData.asObjectNode());
             case INVALID_SESSION:
-                return new InvalidSessionEvent(context, innerData.asObjectNode());
+                return new InvalidSessionEvent(shard, innerData.asObjectNode());
             case HELLO:
-                return new HelloEvent(context, innerData.asObjectNode());
+                return new HelloEvent(shard, innerData.asObjectNode());
             case HEARTBEAT_ACK:
-                return new HeartbeatAckEvent(context, innerData.asObjectNode());
+                return new HeartbeatAckEvent(shard, innerData.asObjectNode());
         }
 
         throw new AssertionError("unreachable");
@@ -131,8 +151,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     @Internal
     public CompletableFuture<UniNode> sendHeartbeat() {
-        return socket.send(createPayloadBase(OpCode.HEARTBEAT).toString())
-                .thenCompose(this::awaitAck);
+        return socket.send(createPayloadBase(OpCode.HEARTBEAT).toString()).thenCompose(this::awaitAck);
     }
 
     @Internal
@@ -141,8 +160,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
         data.put("shard", ValueType.INTEGER, shardID);
 
-        return socket.send(data.toString())
-                .thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
+        return socket.send(data.toString()).thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
     }
 
     private CompletableFuture<UniNode> awaitAck(Websocket socket) {

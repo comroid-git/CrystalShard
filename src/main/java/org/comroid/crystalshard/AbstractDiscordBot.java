@@ -69,9 +69,9 @@ public abstract class AbstractDiscordBot implements Bot {
         this.context = context;
         this.token = Reference.create(token);
         this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT).join();
-        this.shards = IntStream.range(0, gbr.shards.assertion())
+        this.shards = IntStream.range(0, gbr.shards.assertion("shard count"))
                 .mapToObj(shardIndex -> {
-                    DiscordBotShard shard = new DiscordBotShard(context, token, shardIndex);
+                    DiscordBotShard shard = new DiscordBotShard(context, token, gbr.uri.assertion("ws uri"), shardIndex);
                     AssertionException.expect(shardIndex, shard.getCurrentShardID(), "shardID");
                     return shard;
                 })
