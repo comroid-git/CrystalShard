@@ -6,8 +6,7 @@ import org.comroid.api.Named;
 import org.comroid.crystalshard.gateway.OpCode;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelCreateEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildCreateEvent;
-import org.comroid.crystalshard.gateway.event.generic.HelloEvent;
-import org.comroid.crystalshard.gateway.event.generic.ReadyEvent;
+import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 
@@ -17,6 +16,9 @@ import java.util.function.Predicate;
 public enum DispatchEventType implements Named, Predicate<UniNode> {
     HELLO(HelloEvent.class),
     READY(ReadyEvent.class),
+    RESUMED(ResumedEvent.class),
+    RECONNECT(ReconnectEvent.class),
+    INVALID_SESSION(InvalidSessionEvent.class),
 
     CHANNEL_CREATE(ChannelCreateEvent.class),
 

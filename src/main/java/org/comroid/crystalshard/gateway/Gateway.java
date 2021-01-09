@@ -10,8 +10,7 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.gateway.event.generic.HelloEvent;
-import org.comroid.crystalshard.gateway.event.generic.ReadyEvent;
+import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
 import org.comroid.mutatio.ref.FutureReference;
@@ -95,18 +94,14 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         return readyEvent.flatMap(event -> event.sessionID).assertion();
     }
 
-    /**
-     * Handles any OPCode that is equal to {@link OpCode#DISPATCH}
-     *
-     * @param data The packet to handle
-     * @return The resulting GatewayEvent
-     */
     private GatewayEvent dispatchPacket(UniNode data, OpCode opCode) {
+        final UniNode innerData = data.get("d").asObjectNode();
         switch (opCode) {
             case DISPATCH:
-                return DispatchEventType.find(data)
-                        .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()))
-                        .createPayload(context, data.get("d").asObjectNode());
+                final DispatchEventType dispatchEventType = DispatchEventType.find(data)
+                        .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()));
+                logger.trace("Handling Dispatch event as {} with data {}", dispatchEventType, innerData);
+                return dispatchEventType.createPayload(context, innerData.asObjectNode());
             case IDENTIFY:
             case RESUME:
             case HEARTBEAT:
@@ -117,15 +112,16 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 logger.trace("Nothing to do here");
                 return null;
             case RECONNECT:
-                break;
+                return new ReconnectEvent(context, innerData.asObjectNode());
             case INVALID_SESSION:
-                break;
+                return new InvalidSessionEvent(context, innerData.asObjectNode());
             case HELLO:
-                return new HelloEvent(context, data.get("d").asObjectNode());
+                return new HelloEvent(context, innerData.asObjectNode());
             case HEARTBEAT_ACK:
-                break;
+                return new HeartbeatAckEvent(context, innerData.asObjectNode());
         }
-        return null;
+
+        throw new AssertionError("unreachable");
     }
 
     @Override
