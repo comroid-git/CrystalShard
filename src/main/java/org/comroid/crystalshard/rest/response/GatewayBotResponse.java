@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.ref.Reference;
-import org.comroid.uniform.ValueType;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
@@ -19,14 +19,14 @@ public final class GatewayBotResponse extends AbstractRestResponse {
             = BASETYPE.rootGroup("rest-gateway-bot-response");
     public static final VarBind<GatewayBotResponse, String, URI, URI> URL
             = TYPE.createBind("url")
-            .extractAs(ValueType.STRING)
+            .extractAs(StandardValueType.STRING)
             .andRemap(Polyfill::uri)
             .onceEach()
             .setRequired()
             .build();
     public static final VarBind<GatewayBotResponse, Integer, Integer, Integer> SHARDS
             = TYPE.createBind("shards")
-            .extractAs(ValueType.INTEGER)
+            .extractAs(StandardValueType.INTEGER)
             .asIdentities()
             .onceEach()
             .setRequired()
@@ -52,21 +52,21 @@ public final class GatewayBotResponse extends AbstractRestResponse {
                 = BASETYPE.rootGroup(GatewayBotResponse.TYPE, "session-start-limit");
         public static final VarBind<SessionStartLimit, Integer, Integer, Integer> TOTAL
                 = TYPE.createBind("total")
-                .extractAs(ValueType.INTEGER)
+                .extractAs(StandardValueType.INTEGER)
                 .asIdentities()
                 .onceEach()
                 .setRequired()
                 .build();
         public static final VarBind<SessionStartLimit, Integer, Integer, Integer> REMAINING
                 = TYPE.createBind("remaining")
-                .extractAs(ValueType.INTEGER)
+                .extractAs(StandardValueType.INTEGER)
                 .asIdentities()
                 .onceEach()
                 .setRequired()
                 .build();
         public static final VarBind<SessionStartLimit, Integer, Integer, Integer> RESET_AFTER
                 = TYPE.createBind("reset_after")
-                .extractAs(ValueType.INTEGER)
+                .extractAs(StandardValueType.INTEGER)
                 .asIdentities()
                 .onceEach()
                 .setRequired()

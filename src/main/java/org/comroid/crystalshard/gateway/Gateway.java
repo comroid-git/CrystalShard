@@ -18,7 +18,7 @@ import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
-import org.comroid.uniform.ValueType;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -159,17 +159,17 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         final UniObjectNode payload = createPayloadBase(OpCode.IDENTIFY);
         UniObjectNode data = payload.putObject("d");
 
-        data.put("token", ValueType.STRING, "Bot " + shard.getToken());
-        data.put("intents", ValueType.INTEGER, intents.assertion());
+        data.put("token", StandardValueType.STRING, "Bot " + shard.getToken());
+        data.put("intents", StandardValueType.INTEGER, intents.assertion());
 
         UniArrayNode shard = data.putArray("shard");
-        shard.put(0, ValueType.INTEGER, shardID);
-        shard.put(1, ValueType.INTEGER, this.shard.getShardCount());
+        shard.put(0, StandardValueType.INTEGER, shardID);
+        shard.put(1, StandardValueType.INTEGER, this.shard.getShardCount());
 
         UniObjectNode prop = data.putObject("properties");
-        prop.put("$os", ValueType.STRING, System.getProperty("os.name"));
-        prop.put("$browser", ValueType.STRING, "CrystalShard");
-        prop.put("$device", ValueType.STRING, this.shard.getFromContext(AbstractDiscordBot.class)
+        prop.put("$os", StandardValueType.STRING, System.getProperty("os.name"));
+        prop.put("$browser", StandardValueType.STRING, "CrystalShard");
+        prop.put("$device", StandardValueType.STRING, this.shard.getFromContext(AbstractDiscordBot.class)
                 .ifPresentMapOrElseGet(bot -> bot.getClass().getSimpleName(), () -> "CrystalShard"));
 
         return socket.send(payload.toString())

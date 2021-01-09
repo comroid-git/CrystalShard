@@ -7,7 +7,7 @@ import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
-import org.comroid.uniform.ValueType;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
@@ -25,21 +25,21 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             = BASETYPE.rootGroup("voice-region");
     public static final VarBind<VoiceRegion, String, String, String> ID
             = TYPE.createBind("id")
-            .extractAs(ValueType.STRING)
+            .extractAs(StandardValueType.STRING)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
     public static final VarBind<VoiceRegion, String, String, String> NAME
             = TYPE.createBind("name")
-            .extractAs(ValueType.STRING)
+            .extractAs(StandardValueType.STRING)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
     public static final VarBind<VoiceRegion, Boolean, Boolean, Boolean> IS_VIP
             = TYPE.createBind("vip")
-            .extractAs(ValueType.BOOLEAN)
+            .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .onceEach()
@@ -47,7 +47,7 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .build();
     public static final VarBind<VoiceRegion, Boolean, Boolean, Boolean> IS_OPTIMAL
             = TYPE.createBind("optimal")
-            .extractAs(ValueType.BOOLEAN)
+            .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .onceEach()
@@ -55,7 +55,7 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .build();
     public static final VarBind<VoiceRegion, Boolean, Boolean, Boolean> IS_DEPRECATED
             = TYPE.createBind("deprecated")
-            .extractAs(ValueType.BOOLEAN)
+            .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .onceEach()
@@ -63,7 +63,7 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .build();
     public static final VarBind<VoiceRegion, Boolean, Boolean, Boolean> IS_CUSTOM
             = TYPE.createBind("custom")
-            .extractAs(ValueType.BOOLEAN)
+            .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .onceEach()

@@ -9,8 +9,7 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
-import org.comroid.uniform.ValueType;
-import org.comroid.uniform.node.UniArrayNode;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
@@ -25,7 +24,7 @@ public final class ReadyEvent extends GatewayEvent {
             = BASETYPE.rootGroup("ready");
     public static final VarBind<ReadyEvent, Integer, Integer, Integer> VERSION
             = TYPE.createBind("v")
-            .extractAs(ValueType.INTEGER)
+            .extractAs(StandardValueType.INTEGER)
             .asIdentities()
             .onceEach()
             .setRequired()
@@ -58,14 +57,14 @@ public final class ReadyEvent extends GatewayEvent {
             .build();
     public static final VarBind<ReadyEvent, String, String, String> SESSION_ID
             = TYPE.createBind("session_id")
-            .extractAs(ValueType.STRING)
+            .extractAs(StandardValueType.STRING)
             .asIdentities()
             .onceEach()
             .setRequired()
             .build();
     public static final VarBind<ReadyEvent, Integer, Integer, Span<Integer>> SHARD
             = TYPE.createBind("shard")
-            .extractAsArray(ValueType.INTEGER)
+            .extractAsArray(StandardValueType.INTEGER)
             .asIdentities()
             .intoSpan()
             .setRequired()

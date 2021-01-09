@@ -2,7 +2,7 @@ package org.comroid.crystalshard.gateway.event.generic;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.uniform.ValueType;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
@@ -15,7 +15,7 @@ public final class InvalidSessionEvent extends GatewayEvent {
             = BASETYPE.rootGroup("invalid-session");
     public static final VarBind<InvalidSessionEvent, Boolean, Boolean, Boolean> IS_RESUMABLE
             = TYPE.createBind("")
-            .extractAs(ValueType.BOOLEAN)
+            .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
             .build();

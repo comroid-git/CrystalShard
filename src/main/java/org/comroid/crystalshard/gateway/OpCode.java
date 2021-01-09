@@ -3,7 +3,7 @@ package org.comroid.crystalshard.gateway;
 import org.comroid.api.IntEnum;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
-import org.comroid.uniform.ValueType;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 
@@ -53,7 +53,7 @@ public enum OpCode implements IntEnum, Named, Described, Predicate<UniNode>, Fun
 
     @Override
     public UniObjectNode apply(UniObjectNode node) {
-        node.put("op", ValueType.INTEGER, value);
+        node.put("op", StandardValueType.INTEGER, value);
 
         return node;
     }
