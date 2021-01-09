@@ -10,6 +10,7 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.event.generic.HelloEvent;
 import org.comroid.crystalshard.gateway.event.generic.ReadyEvent;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
@@ -61,10 +62,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
-                .peek(data -> logger.trace("Data received: " + data))
                 .map(DiscordAPI.SERIALIZATION::parse);
         this.eventPipeline = dataPipeline
-                .yield(OpCode.DISPATCH, this::handlePacket)
                 .map(this::dispatchPacket);
 
         AssertionException.expect(true, eventPipeline instanceof Pump, "eventPipeline instanceof Pump");
@@ -73,7 +72,16 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.readyEvent = new FutureReference<>(getEventPipeline()
                 .flatMap(ReadyEvent.class)
                 .next()
+                .thenApply(ready -> {
+                    logger.debug("Ready Event received: " + ready);
+                    return ready;
+                })
                 .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event")));
+        getPacketPipeline().filter(packet -> packet.getType() == WebsocketPacket.Type.CLOSE)
+                .forEach(packet -> {
+                    logger.info("WebSocket closed; shutting down");
+                    System.exit(1);
+                });
     }
 
     public String getSessionID() {
@@ -87,23 +95,12 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
      * @return The resulting GatewayEvent
      */
     private GatewayEvent dispatchPacket(UniNode data) {
-        if (!OpCode.DISPATCH.test(data))
-            throw new IllegalArgumentException("Cannot dispatch non DISPATCH packet");
-        return DispatchEventType.find(data)
-                .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()))
-                .createPayload(this, data.get("d").asObjectNode());
-    }
-
-    /**
-     * Handles any other OPCode than {@link OpCode#DISPATCH}
-     *
-     * @param data The packet to handle
-     */
-    private void handlePacket(UniNode data) {
         switch (IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
                 .requireNonNull(MessageSupplier.format("Invalid OP Code in data: %s", data))) {
             case DISPATCH:
-                throw new IllegalStateException("DISPATCH cannot be handled by packet handler");
+                return DispatchEventType.find(data)
+                        .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()))
+                        .createPayload(this, data.get("d").asObjectNode());
             case HEARTBEAT:
                 sendHeartbeat().join();
                 break;
@@ -123,10 +120,11 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             case INVALID_SESSION:
                 break;
             case HELLO:
-                break;
+                return new HelloEvent(context, data.get("d").asObjectNode());
             case HEARTBEAT_ACK:
                 break;
         }
+        return null;
     }
 
     @Override
