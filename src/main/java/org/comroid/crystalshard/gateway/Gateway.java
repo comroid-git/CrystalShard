@@ -79,11 +79,11 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             getEventPipeline()
                     .flatMap(HelloEvent.class)
                     .next()
-                    .thenCombine(sendIdentify(shard.getCurrentShardID()), (hello, ready) -> {
-                        final int interval = hello.heartbeatInterval.assertion("missing heartbeat value");
-                        startHeartbeat(interval);
-                        return ready;
+                    .thenCompose(hello -> {
+                        hello.heartbeatInterval.ifPresentOrElse(heartbeatTime::set, () -> logger.warn("Unable to set heartbeat time!"));
+                        return sendIdentify(shard.getCurrentShardID());
                     })
+                    .thenAccept(ready -> startHeartbeat(heartbeatTime.assertion()))
                     .join();
         } catch (Throwable t) {
             throw new RuntimeException("Could not send Identify", t);
