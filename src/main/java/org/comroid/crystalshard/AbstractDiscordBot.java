@@ -67,7 +67,7 @@ public abstract class AbstractDiscordBot implements Bot {
 
     protected AbstractDiscordBot(DiscordAPI context, String token) {
         this.context = context;
-        this.token = Reference.create(token);
+        this.token = Reference.constant(token);
         this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT).join();
         this.shards = IntStream.range(0, gbr.shards.assertion("shard count"))
                 .mapToObj(shardIndex -> {
@@ -81,6 +81,11 @@ public abstract class AbstractDiscordBot implements Bot {
     @Override
     public final <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, Endpoint<R> endpoint) {
         return DiscordAPI.newRequest(context, token.assertion(), method, endpoint);
+    }
+
+    @Override
+    public String getToken() {
+        return token.assertion();
     }
 
     @Override

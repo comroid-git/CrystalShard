@@ -28,4 +28,6 @@ public interface Bot extends ContextualProvider.Underlying, Closeable {
 
     @Internal
     <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, Endpoint<R> endpoint);
+
+    String getToken();
 }

@@ -6,9 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.common.info.MessageSupplier;
-import org.comroid.crystalshard.Bot;
-import org.comroid.crystalshard.DiscordAPI;
-import org.comroid.crystalshard.DiscordBotShard;
+import org.comroid.crystalshard.*;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
@@ -157,6 +155,14 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     @Internal
     public CompletableFuture<ReadyEvent> sendIdentify(int shardID) {
         final UniObjectNode data = createPayloadBase(OpCode.IDENTIFY);
+
+        data.put("token", ValueType.STRING, "Bot " + shard.getToken());
+
+        UniObjectNode prop = data.putObject("properties");
+        prop.put("$os", ValueType.STRING, System.getProperty("os.name"));
+        prop.put("$browser", ValueType.STRING, CrystalShard.toString);
+        prop.put("$device", ValueType.STRING, shard.getFromContext(AbstractDiscordBot.class)
+                .ifPresentMapOrElseGet(bot -> bot.getClass().getSimpleName(), () -> "CrystalShard"));
 
         data.put("shard", ValueType.INTEGER, shardID);
 

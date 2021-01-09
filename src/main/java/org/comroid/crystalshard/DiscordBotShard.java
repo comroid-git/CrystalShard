@@ -86,10 +86,15 @@ public final class DiscordBotShard implements Bot {
         return DiscordAPI.newRequest(context, token, method, endpoint);
     }
 
+    @Override
+    public String getToken() {
+        return token;
+    }
+
     public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID) {
         context.plus(this);
         this.context = context;
-        this.token = "Bot " + token;
+        this.token = token;
         this.currentShardID = shardID;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);
