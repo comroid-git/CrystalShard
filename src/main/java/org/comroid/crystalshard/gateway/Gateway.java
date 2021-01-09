@@ -64,7 +64,14 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .flatMap(WebsocketPacket::getData)
                 .map(DiscordAPI.SERIALIZATION::parse);
         this.eventPipeline = dataPipeline
-                .map(this::dispatchPacket);
+                .map(data -> {
+                    OpCode op = IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
+                            .assertion(MessageSupplier.format("Invalid OP Code in data: %s", data));
+                    logger.trace("Attempting to dispatch message as {}: {}", op.getName(), data);
+                    return dispatchPacket(data, op);
+                })
+                .peek(event -> logger.trace("Gateway Event initialized: [{}] {}",
+                        event.getClass().getSimpleName(), event));
 
         AssertionException.expect(true, eventPipeline instanceof Pump, "eventPipeline instanceof Pump");
 
@@ -94,28 +101,22 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
      * @param data The packet to handle
      * @return The resulting GatewayEvent
      */
-    private GatewayEvent dispatchPacket(UniNode data) {
-        switch (IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
-                .requireNonNull(MessageSupplier.format("Invalid OP Code in data: %s", data))) {
+    private GatewayEvent dispatchPacket(UniNode data, OpCode opCode) {
+        switch (opCode) {
             case DISPATCH:
                 return DispatchEventType.find(data)
                         .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()))
-                        .createPayload(this, data.get("d").asObjectNode());
-            case HEARTBEAT:
-                sendHeartbeat().join();
-                break;
+                        .createPayload(context, data.get("d").asObjectNode());
             case IDENTIFY:
-                // client sent only
-                break;
-            case PRESENCE_UPDATE:
-                break;
-            case VOICE_STATE_UPDATE:
-                break;
             case RESUME:
-                break;
-            case RECONNECT:
-                break;
+            case HEARTBEAT:
             case REQUEST_GUILD_MEMBERS:
+            case VOICE_STATE_UPDATE:
+            case PRESENCE_UPDATE:
+                // client sent only, unhandled
+                logger.trace("Nothing to do here");
+                return null;
+            case RECONNECT:
                 break;
             case INVALID_SESSION:
                 break;
