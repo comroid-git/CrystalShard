@@ -100,7 +100,9 @@ public final class DiscordBotShard implements Bot {
                         .thenCompose(gbr -> httpAdapter.createWebSocket(executor, gbr.uri.get(), DiscordAPI.createHeaders(token)))
                         .thenApply(socket -> new Gateway(context, socket))
                         .thenCompose(gateway -> gateway.getEventPipeline()
+                                .peek(it -> logger.debug("DEBUG 1 - {} - {}", it.getClass().getSimpleName(), it)) // todo
                                 .flatMap(HelloEvent.class)
+                                .peek(it -> logger.debug("DEBUG 2 - {} - {}", it.getClass().getSimpleName(), it)) // todo
                                 .next()
                                 .thenApply(hello -> {
                                     hello.heartbeatInterval.consume(this::startHeartbeat);
