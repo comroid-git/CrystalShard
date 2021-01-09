@@ -40,7 +40,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final Websocket socket;
     private final Pipe<? extends UniNode> dataPipeline;
     private final Pipe<? extends GatewayEvent> eventPipeline;
-    private final ContextualProvider context;
+    private final DiscordAPI context;
 
     public Pipe<? extends WebsocketPacket> getPacketPipeline() {
         return socket.getPacketPipeline();
