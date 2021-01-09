@@ -20,6 +20,7 @@ import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.util.StackTraceUtils;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
@@ -46,7 +47,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     public Pipe<? extends GatewayEvent> getEventPipeline() {
-        return eventPipeline;
+        return eventPipeline
+                .peek(it -> logger.debug("DEBUG {} - {} - {}", StackTraceUtils.callerClass(1), it.getClass().getSimpleName(), it)); // todo;
     }
 
     @Override
@@ -74,20 +76,17 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
         AssertionException.expect(true, eventPipeline instanceof Pump, "eventPipeline instanceof Pump");
 
+
         // store first ready event
         this.readyEvent = new FutureReference<>(getEventPipeline()
                 .flatMap(ReadyEvent.class)
+                .peek(it -> logger.debug("DEBUG 1 - {} - {}", it.getClass().getSimpleName(), it)) // todo
                 .next()
                 .thenApply(ready -> {
                     logger.debug("Ready Event received: " + ready);
                     return ready;
                 })
                 .exceptionally(context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event")));
-        getPacketPipeline().filter(packet -> packet.getType() == WebsocketPacket.Type.CLOSE)
-                .forEach(packet -> {
-                    logger.info("WebSocket closed; shutting down");
-                    System.exit(1);
-                });
     }
 
     public String getSessionID() {
