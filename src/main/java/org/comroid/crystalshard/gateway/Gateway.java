@@ -37,6 +37,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final Pipe<? extends UniNode> dataPipeline;
     private final Pipe<? extends GatewayEvent> eventPipeline;
     private final DiscordBotShard shard;
+    private final Reference<Integer> intents;
 
     public Pipe<? extends WebsocketPacket> getPacketPipeline() {
         return socket.getPacketPipeline();
@@ -52,9 +53,10 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     @Internal
-    public Gateway(DiscordBotShard shard, Websocket socket) {
+    public Gateway(DiscordBotShard shard, Websocket socket, int intents) {
         this.shard = shard;
         this.socket = socket;
+        this.intents = Reference.constant(intents);
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
@@ -74,7 +76,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
         try {
             getEventPipeline()
-                    .peek(System.out::println)
                     .flatMap(HelloEvent.class)
                     .next()
                     .thenAccept(hello -> {
@@ -154,17 +155,19 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     @Internal
     public CompletableFuture<ReadyEvent> sendIdentify(int shardID) {
-        final UniObjectNode data = createPayloadBase(OpCode.IDENTIFY);
+        final UniObjectNode data = createPayloadBase(OpCode.IDENTIFY).putObject("d");
 
         data.put("token", ValueType.STRING, "Bot " + shard.getToken());
 
         UniObjectNode prop = data.putObject("properties");
         prop.put("$os", ValueType.STRING, System.getProperty("os.name"));
-        prop.put("$browser", ValueType.STRING, CrystalShard.toString);
+        prop.put("$browser", ValueType.STRING, "CrystalShard");
         prop.put("$device", ValueType.STRING, shard.getFromContext(AbstractDiscordBot.class)
                 .ifPresentMapOrElseGet(bot -> bot.getClass().getSimpleName(), () -> "CrystalShard"));
 
         data.put("shard", ValueType.INTEGER, shardID);
+
+        data.put("intents", ValueType.INTEGER, intents.assertion());
 
         return socket.send(data.toString()).thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
     }

@@ -6,6 +6,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.common.Disposable;
 import org.comroid.common.exception.AssertionException;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
@@ -16,14 +17,14 @@ import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.IntStream;
 
 public abstract class AbstractDiscordBot implements Bot {
     private static final Logger logger = LogManager.getLogger();
     private final DiscordAPI context;
+    private final Set<GatewayIntent> intents;
     private final Span<DiscordBotShard> shards;
     private final GatewayBotResponse gbr;
     public final Reference<String> token;
@@ -65,13 +66,15 @@ public abstract class AbstractDiscordBot implements Bot {
         return shards.size();
     }
 
-    protected AbstractDiscordBot(DiscordAPI context, String token) {
+    protected AbstractDiscordBot(DiscordAPI context, String token, GatewayIntent... intents) {
         this.context = context;
         this.token = Reference.constant(token);
+        this.intents = new HashSet<>(Arrays.asList(intents));
         this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT).join();
         this.shards = IntStream.range(0, gbr.shards.assertion("shard count"))
                 .mapToObj(shardIndex -> {
-                    DiscordBotShard shard = new DiscordBotShard(context, token, gbr.uri.assertion("ws uri"), shardIndex);
+                    DiscordBotShard shard = new DiscordBotShard(context, token,
+                            gbr.uri.assertion("ws uri"), shardIndex, this.intents.toArray(new GatewayIntent[0]));
                     AssertionException.expect(shardIndex, shard.getCurrentShardID(), "shardID");
                     return shard;
                 })

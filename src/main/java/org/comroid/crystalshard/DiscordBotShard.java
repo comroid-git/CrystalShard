@@ -2,9 +2,11 @@ package org.comroid.crystalshard;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.comroid.api.BitmaskEnum;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
+import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
@@ -14,6 +16,7 @@ import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
+import org.comroid.util.Bitmask;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.IOException;
@@ -91,7 +94,7 @@ public final class DiscordBotShard implements Bot {
         return token;
     }
 
-    public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID) {
+    public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, GatewayIntent... intents) {
         context.plus(this);
         this.context = context;
         this.token = token;
@@ -101,7 +104,7 @@ public final class DiscordBotShard implements Bot {
         SerializationAdapter serializationAdapter = requireFromContext(SerializationAdapter.class);
         ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(httpAdapter.createWebSocket(executor, wsUri, DiscordAPI.createHeaders(token))
-                        .thenApply(socket -> new Gateway(this, socket)));
+                        .thenApply(socket -> new Gateway(this, socket, Bitmask.combine(intents))));
 
         gateway.into(gtw -> gtw.readyEvent).future
                 .thenRun(() -> {
