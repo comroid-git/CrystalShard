@@ -6,7 +6,9 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.common.info.MessageSupplier;
-import org.comroid.crystalshard.*;
+import org.comroid.crystalshard.AbstractDiscordBot;
+import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
@@ -16,7 +18,6 @@ import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
-import org.comroid.uniform.SerializationAdapter;
 import org.comroid.uniform.ValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -78,11 +79,11 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             getEventPipeline()
                     .flatMap(HelloEvent.class)
                     .next()
-                    .thenAccept(hello -> {
+                    .thenCombine(sendIdentify(shard.getCurrentShardID()), (hello, ready) -> {
                         final int interval = hello.heartbeatInterval.assertion("missing heartbeat value");
                         startHeartbeat(interval);
+                        return ready;
                     })
-                    .thenCompose(ref -> sendIdentify(shard.getCurrentShardID()))
                     .join();
         } catch (Throwable t) {
             throw new RuntimeException("Could not send Identify", t);
@@ -155,9 +156,12 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     @Internal
     public CompletableFuture<ReadyEvent> sendIdentify(int shardID) {
-        final UniObjectNode data = createPayloadBase(OpCode.IDENTIFY).putObject("d");
+        final UniObjectNode payload = createPayloadBase(OpCode.IDENTIFY);
+        UniObjectNode data = payload.putObject("d");
 
         data.put("token", ValueType.STRING, "Bot " + shard.getToken());
+        data.put("shard", ValueType.INTEGER, shardID);
+        data.put("intents", ValueType.INTEGER, intents.assertion());
 
         UniObjectNode prop = data.putObject("properties");
         prop.put("$os", ValueType.STRING, System.getProperty("os.name"));
@@ -165,11 +169,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         prop.put("$device", ValueType.STRING, shard.getFromContext(AbstractDiscordBot.class)
                 .ifPresentMapOrElseGet(bot -> bot.getClass().getSimpleName(), () -> "CrystalShard"));
 
-        data.put("shard", ValueType.INTEGER, shardID);
-
-        data.put("intents", ValueType.INTEGER, intents.assertion());
-
-        return socket.send(data.toString()).thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
+        return socket.send(payload.toString()).thenCompose(socket -> getEventPipeline().flatMap(ReadyEvent.class).next());
     }
 
     private CompletableFuture<UniNode> awaitAck(Websocket socket) {
