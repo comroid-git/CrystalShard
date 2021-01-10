@@ -118,7 +118,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     private GatewayEvent dispatchPacket(UniNode data, OpCode opCode) {
-        final UniNode innerData = data.get("d").asObjectNode();
+        final UniNode innerData = data.get("d");
         switch (opCode) {
             case DISPATCH:
                 final DispatchEventType dispatchEventType = DispatchEventType.find(data)
