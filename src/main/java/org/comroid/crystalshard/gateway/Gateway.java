@@ -27,6 +27,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 public final class Gateway implements ContextualProvider.Underlying, Closeable {
@@ -62,7 +63,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
-                .map(DiscordAPI.SERIALIZATION::parse);
+                .map(DiscordAPI.SERIALIZATION::parse)
+                .filter(Objects::nonNull);
         this.eventPipeline = dataPipeline
                 .map(data -> {
                     OpCode op = IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
@@ -70,6 +72,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     logger.trace("Attempting to dispatch message as {}: {}", op.getName(), data);
                     return dispatchPacket(data, op);
                 })
+                .filter(Objects::nonNull)
                 .peek(event -> logger.trace("Gateway Event initialized: [{}] {}",
                         event.getClass().getSimpleName(), event));
 
