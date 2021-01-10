@@ -4,8 +4,10 @@ import org.comroid.api.BitmaskEnum;
 import org.comroid.api.Named;
 import org.comroid.crystalshard.entity.channel.*;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.model.guild.GuildIntegration;
 import org.comroid.util.Bitmask;
 
 public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum<EntityType<?>> {
@@ -17,6 +19,10 @@ public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum
 
     public static final EntityType<Guild> GUILD
             = new EntityType<>(Guild.class, SNOWFLAKE);
+    public static final EntityType<Role> ROLE
+            = new EntityType<>(Role.class, SNOWFLAKE);
+    public static final EntityType<GuildIntegration> INTEGRATION
+            = new EntityType<>(GuildIntegration.class, SNOWFLAKE);
 
     public static final EntityType<Channel> CHANNEL
             = new EntityType<>(Channel.class, SNOWFLAKE);
