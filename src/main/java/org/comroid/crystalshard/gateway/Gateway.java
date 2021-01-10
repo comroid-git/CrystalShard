@@ -69,7 +69,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .map(data -> {
                     OpCode op = IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
                             .assertion(MessageSupplier.format("Invalid OP Code in data: %s", data));
-                    logger.trace("Attempting to dispatch message as {}: {}", op.getName(), data);
+                    logger.trace("Attempting to dispatch message as {}: {}", op.getName(), data.toString());
                     return dispatchPacket(data, op);
                 })
                 .filter(Objects::nonNull)
@@ -137,7 +137,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             case RECONNECT:
                 return new ReconnectEvent(shard, innerData.asObjectNode());
             case INVALID_SESSION:
-                return new InvalidSessionEvent(shard, innerData.asObjectNode());
+                return new InvalidSessionEvent(shard, innerData);
             case HELLO:
                 return new HelloEvent(shard, innerData.asObjectNode());
             case HEARTBEAT_ACK:

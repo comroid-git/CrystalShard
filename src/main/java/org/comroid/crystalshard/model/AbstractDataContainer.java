@@ -2,6 +2,7 @@ package org.comroid.crystalshard.model;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.container.DataContainerBase;
@@ -19,7 +20,7 @@ public abstract class AbstractDataContainer
         return context.plus(this);
     }
 
-    public AbstractDataContainer(ContextualProvider context, @Nullable UniObjectNode initialData) {
+    public AbstractDataContainer(ContextualProvider context, @Nullable UniNode initialData) {
         super(initialData);
 
         this.context = context;

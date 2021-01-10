@@ -2,6 +2,7 @@ package org.comroid.crystalshard.gateway.event.generic;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
@@ -20,7 +21,7 @@ public final class InvalidSessionEvent extends GatewayEvent {
             .onceEach()
             .build();
 
-    public InvalidSessionEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
+    public InvalidSessionEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 }
