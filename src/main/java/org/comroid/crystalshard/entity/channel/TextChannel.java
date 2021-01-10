@@ -1,4 +1,6 @@
 package org.comroid.crystalshard.entity.channel;
 
-public interface TextChannel extends Channel {
+import org.comroid.crystalshard.model.MessageTarget;
+
+public interface TextChannel extends Channel, MessageTarget {
 }

@@ -1,8 +1,11 @@
 package org.comroid.crystalshard.rest;
 
 import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
+import org.comroid.crystalshard.rest.response.message.SendMessageResponse;
 import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
 import org.comroid.restless.endpoint.TypeBoundEndpoint;
 import org.comroid.varbind.bind.GroupBind;
@@ -17,6 +20,9 @@ public final class Endpoint<R extends AbstractRestResponse> implements TypeBound
 
     public static final Endpoint<GatewayBotResponse> GATEWAY_BOT
             = new Endpoint<>(GatewayBotResponse.TYPE, "/gateway/bot");
+
+    public static final Endpoint<SendMessageResponse> SEND_MESSAGE
+            = new Endpoint<>(SendMessageResponse.TYPE, "/channels/%s/messages", Snowflake.ID_REGEX);
 
     public static final Endpoint<VoiceRegionsResponse> VOICE_REGIONS
             = new Endpoint<>(VoiceRegionsResponse.TYPE, "/voice/regions");

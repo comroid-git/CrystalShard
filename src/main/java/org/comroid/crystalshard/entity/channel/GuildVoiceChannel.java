@@ -1,4 +1,6 @@
 package org.comroid.crystalshard.entity.channel;
 
-public interface GuildVoiceChannel extends GuildChannel, VoiceChannel {
+import org.comroid.crystalshard.entity.channel.impl.AbstractVoiceChannel;
+
+public final class GuildVoiceChannel extends AbstractVoiceChannel implements GuildChannel, VoiceChannel {
 }

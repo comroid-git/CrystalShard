@@ -1,4 +1,6 @@
 package org.comroid.crystalshard.entity.channel;
 
-public interface GroupChannel extends TextChannel {
+import org.comroid.crystalshard.entity.channel.impl.AbstractTextChannel;
+
+public final class GroupChannel extends AbstractTextChannel implements TextChannel {
 }
