@@ -6,6 +6,7 @@ import org.intellij.lang.annotations.Language;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// todo: make endpoint structure to accept one parameter
 public enum ImageType implements Named {
     PNG("png"),
     JPEG("jpe?g"),
