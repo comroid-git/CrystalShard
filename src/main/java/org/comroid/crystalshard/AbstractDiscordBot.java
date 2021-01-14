@@ -8,7 +8,7 @@ import org.comroid.common.exception.AssertionException;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.crystalshard.rest.BoundEndpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.mutatio.pipe.Pipe;
@@ -70,7 +70,7 @@ public abstract class AbstractDiscordBot implements Bot {
         this.context = context;
         this.token = Reference.constant(token);
         this.intents = new HashSet<>(Arrays.asList(intents));
-        this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT).join();
+        this.gbr = newRequest(REST.Method.GET, BoundEndpoint.GATEWAY_BOT).join();
         int shardCount = gbr.shards.assertion("shard count");
         this.shards = IntStream.range(0, shardCount)
                 .mapToObj(shardIndex -> {
@@ -83,7 +83,7 @@ public abstract class AbstractDiscordBot implements Bot {
     }
 
     @Override
-    public final <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, Endpoint<R> endpoint) {
+    public final <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, BoundEndpoint<R> endpoint) {
         return DiscordAPI.newRequest(context, token.assertion(), method, endpoint);
     }
 

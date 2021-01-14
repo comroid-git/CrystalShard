@@ -3,11 +3,10 @@ package org.comroid.crystalshard;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.crystalshard.rest.BoundEndpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.restless.REST;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
@@ -27,7 +26,7 @@ public interface Bot extends ContextualProvider.Underlying, Closeable {
     int getShardCount();
 
     @Internal
-    <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, Endpoint<R> endpoint);
+    <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, BoundEndpoint<R> endpoint);
 
     String getToken();
 }

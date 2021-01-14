@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.crystalshard.rest.BoundEndpoint;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.CommonHeaderNames;
@@ -51,7 +51,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
             DiscordAPI context,
             String token,
             REST.Method method,
-            Endpoint<R> endpoint
+            BoundEndpoint<R> endpoint
     ) {
         return context.getREST()
                 .request(endpoint)
@@ -109,7 +109,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
 
         Ratelimiter ratelimiter = Ratelimiter.ofPool(
                 scheduledExecutorService,
-                Endpoint.values.toArray(new RatelimitedEndpoint[0])
+                BoundEndpoint.values.toArray(new RatelimitedEndpoint[0])
         );
         this.rest = new REST(this, scheduledExecutorService, ratelimiter);
 

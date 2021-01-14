@@ -2,13 +2,16 @@ package org.comroid.crystalshard.entity.channel;
 
 import org.comroid.crystalshard.SnowflakeCache;
 import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.model.MessageTarget;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.Contract;
 
 import java.time.Duration;
+import java.util.concurrent.CompletableFuture;
 
-public interface TextChannel extends Channel {
+public interface TextChannel extends Channel, MessageTarget {
     GroupBind<TextChannel> BASETYPE
             = Channel.BASETYPE.subGroup("text-channel");
     VarBind<TextChannel, Long, Message, Message> LAST_MESSAGE
@@ -24,4 +27,10 @@ public interface TextChannel extends Channel {
             .onceEach()
             .setRequired()
             .build();
+
+    @Override
+    @Contract("-> this")
+    default CompletableFuture<TextChannel> getTargetChannel() {
+        return CompletableFuture.completedFuture(this);
+    }
 }
