@@ -14,7 +14,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public class VoiceState extends AbstractDataContainer {
+public final class VoiceState extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<VoiceState> TYPE
             = BASETYPE.rootGroup("voice-state");
