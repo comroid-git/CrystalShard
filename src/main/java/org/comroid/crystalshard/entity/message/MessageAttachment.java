@@ -39,7 +39,7 @@ public final class MessageAttachment extends Snowflake.Abstract {
             .setRequired()
             .build();
     public static final VarBind<MessageAttachment, String, URL, URL> PROXY_URL
-            = TYPE.createBind("proxy_urL")
+            = TYPE.createBind("proxy_url")
             .extractAs(StandardValueType.STRING)
             .andRemap(Polyfill::url)
             .onceEach()
