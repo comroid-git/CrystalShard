@@ -2,6 +2,7 @@ package org.comroid.crystalshard.gateway.event.generic;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.DiscordBotShard;
+import org.comroid.crystalshard.SnowflakeCache;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
@@ -32,12 +33,7 @@ public final class ReadyEvent extends GatewayEvent {
     public static final VarBind<ReadyEvent, UniObjectNode, User, User> YOURSELF
             = TYPE.createBind("user")
             .extractAsObject()
-            .andProvideRef(
-                    Snowflake.ID,
-                    (ready, id) -> ready.requireFromContext(DiscordBotShard.class)
-                            .getSnowflakeCache()
-                            .getUser(id),
-                    User.TYPE)
+            .andProvideRef(Snowflake.ID, (ready, id) -> ready.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
             .onceEach()
             .setRequired()
             .build();

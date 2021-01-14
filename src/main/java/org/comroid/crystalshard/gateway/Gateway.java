@@ -123,7 +123,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             case DISPATCH:
                 final DispatchEventType dispatchEventType = DispatchEventType.find(data)
                         .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()));
-                logger.trace("Handling Dispatch event as {} with data {}", dispatchEventType, innerData);
+                logger.trace("Handling Dispatch event as {} with data {}", dispatchEventType, innerData.toString());
                 return dispatchEventType.createPayload(shard, innerData.asObjectNode());
             case IDENTIFY:
             case RESUME:
