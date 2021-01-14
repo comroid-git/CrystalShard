@@ -32,13 +32,15 @@ public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum
     public static final EntityType<VoiceChannel> VOICE_CHANNEL
             = new EntityType<>(VoiceChannel.class, CHANNEL);
 
-    public static final EntityType<PrivateChannel> PRIVATE_CHANNEL
-            = new EntityType<>(PrivateChannel.class, CHANNEL);
+    public static final EntityType<PrivateTextChannel> PRIVATE_CHANNEL
+            = new EntityType<>(PrivateTextChannel.class, TEXT_CHANNEL);
     public static final EntityType<GroupChannel> GROUP_CHANNEL
-            = new EntityType<>(GroupChannel.class, CHANNEL);
+            = new EntityType<>(GroupChannel.class, TEXT_CHANNEL);
 
     public static final EntityType<GuildChannel> GUILD_CHANNEL
             = new EntityType<>(GuildChannel.class, CHANNEL);
+    public static final EntityType<GuildChannelCategory> GUILD_CHANNEL_CATEGORY
+            = new EntityType<>(GuildChannelCategory.class, GUILD_CHANNEL);
     public static final EntityType<GuildTextChannel> GUILD_TEXT_CHANNEL
             = new EntityType<>(GuildTextChannel.class, GUILD_CHANNEL, TEXT_CHANNEL);
     public static final EntityType<GuildVoiceChannel> GUILD_VOICE_CHANNEL

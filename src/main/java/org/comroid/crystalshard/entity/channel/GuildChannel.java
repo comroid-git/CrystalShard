@@ -1,7 +1,64 @@
 package org.comroid.crystalshard.entity.channel;
 
+import org.comroid.crystalshard.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.model.channel.PermissionOverwrite;
+import org.comroid.mutatio.span.Span;
+import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.bind.VarBind;
+import org.comroid.varbind.bind.builder.BuilderStep3$Finishing;
 
 public interface GuildChannel extends Channel {
+    GroupBind<GuildChannel> BASETYPE
+            = Channel.BASETYPE.subGroup("guild-channel");
+    VarBind<GuildChannel, Long, Guild, Guild> GUILD
+            = BASETYPE.createBind("guild_id")
+            .extractAs(StandardValueType.LONG)
+            .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .onceEach()
+            .setRequired()
+            .build();
+    VarBind<GuildChannel, Integer, Integer, Integer> POSITION
+            = BASETYPE.createBind("position")
+            .extractAs(StandardValueType.INTEGER)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    VarBind<GuildChannel, UniObjectNode, PermissionOverwrite, Span<PermissionOverwrite>> PERMISSION_OVERWRITES
+            = BASETYPE.createBind("permission_overwrites")
+            .extractAsArray()
+            .andConstruct(PermissionOverwrite.TYPE)
+            .intoSpan()
+            .setRequired()
+            .build();
+    VarBind<GuildChannel, String, String, String> NAME
+            = BASETYPE.createBind("name")
+            .extractAs(StandardValueType.STRING)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    VarBind<GuildChannel, String, String, String> TOPIC
+            = BASETYPE.createBind("topic")
+            .extractAs(StandardValueType.STRING)
+            .asIdentities()
+            .onceEach()
+            .build();
+    VarBind<GuildChannel, Boolean, Boolean, Boolean> NSFW
+            = BASETYPE.createBind("nsfw")
+            .extractAs(StandardValueType.BOOLEAN)
+            .asIdentities()
+            .onceEach()
+            .build();
+    VarBind<GuildChannel, Long, GuildChannelCategory, GuildChannelCategory> CATEGORY
+            = BASETYPE.createBind("parent_id")
+            .extractAs(StandardValueType.LONG)
+            .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getChannelCategory(id))
+            .onceEach()
+            .build();
+
     Guild getGuild();
 }
