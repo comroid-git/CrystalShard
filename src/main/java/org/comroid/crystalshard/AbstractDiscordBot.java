@@ -34,6 +34,10 @@ public abstract class AbstractDiscordBot implements Bot {
     private final GatewayBotResponse gbr;
     public final Reference<String> token;
 
+    public Span<DiscordBotShard> getShards() {
+        return shards;
+    }
+
     @Override
     public final SnowflakeCache getSnowflakeCache() {
         return context.getSnowflakeCache();
