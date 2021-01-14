@@ -1,4 +1,4 @@
-package org.comroid.crystalshard.voice;
+package org.comroid.crystalshard.model.voice;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
@@ -42,14 +42,12 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
-            .onceEach()
             .setRequired()
             .build();
     public static final VarBind<VoiceRegion, Boolean, Boolean, Boolean> IS_OPTIMAL
             = TYPE.createBind("optimal")
             .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
-            .onceEach()
             .onceEach()
             .setRequired()
             .build();
@@ -58,14 +56,12 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
             .onceEach()
-            .onceEach()
             .setRequired()
             .build();
     public static final VarBind<VoiceRegion, Boolean, Boolean, Boolean> IS_CUSTOM
             = TYPE.createBind("custom")
             .extractAs(StandardValueType.BOOLEAN)
             .asIdentities()
-            .onceEach()
             .onceEach()
             .setRequired()
             .build();

@@ -2,7 +2,7 @@ package org.comroid.crystalshard.rest.response.voice;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.rest.response.AbstractRestResponse;
-import org.comroid.crystalshard.voice.VoiceRegion;
+import org.comroid.crystalshard.model.voice.VoiceRegion;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
