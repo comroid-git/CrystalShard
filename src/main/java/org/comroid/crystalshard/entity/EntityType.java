@@ -6,7 +6,11 @@ import org.comroid.crystalshard.entity.channel.*;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.entity.message.MessageApplication;
+import org.comroid.crystalshard.entity.message.MessageAttachment;
+import org.comroid.crystalshard.entity.message.MessageSticker;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
 import org.comroid.util.Bitmask;
 
@@ -16,6 +20,8 @@ public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum
 
     public static final EntityType<User> USER
             = new EntityType<>(User.class, SNOWFLAKE);
+    public static final EntityType<Webhook> WEBHOOK
+            = new EntityType<>(Webhook.class, SNOWFLAKE);
 
     public static final EntityType<Guild> GUILD
             = new EntityType<>(Guild.class, SNOWFLAKE);
@@ -48,6 +54,12 @@ public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum
 
     public static final EntityType<Message> MESSAGE
             = new EntityType<>(Message.class, SNOWFLAKE);
+    public static final EntityType<MessageAttachment> MESSAGE_ATTACHMENT
+            = new EntityType<>(MessageAttachment.class, SNOWFLAKE);
+    public static final EntityType<MessageApplication> MESSAGE_APPLICATION
+            = new EntityType<>(MessageApplication.class, SNOWFLAKE);
+    public static final EntityType<MessageSticker> MESSAGE_STICKER
+            = new EntityType<>(MessageSticker.class, SNOWFLAKE);
 
     private final int value;
     private final Class<T> relatedClass;

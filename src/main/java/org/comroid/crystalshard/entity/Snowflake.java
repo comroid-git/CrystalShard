@@ -25,7 +25,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
 
     long getID();
 
-    EntityType getEntityType();
+    EntityType<? extends Snowflake> getEntityType();
 
     default boolean equals(Snowflake other) {
         return getEntityType().equals(other.getEntityType())
@@ -35,7 +35,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
     @Internal
     abstract class Abstract extends DataContainerBase<Snowflake> implements Snowflake {
         public final Reference<Long> id = getComputedReference(ID);
-        private final EntityType entityType;
+        private final EntityType<? extends Snowflake> entityType;
         private final ContextualProvider context;
 
         @Override
@@ -44,7 +44,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
         }
 
         @Override
-        public final EntityType getEntityType() {
+        public final EntityType<? extends Snowflake> getEntityType() {
             return entityType;
         }
 
@@ -53,7 +53,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
             return context.plus(this);
         }
 
-        protected Abstract(ContextualProvider context, UniObjectNode data, EntityType entityType) {
+        protected Abstract(ContextualProvider context, UniObjectNode data, EntityType<? extends Snowflake> entityType) {
             super(data);
 
             this.context = context;

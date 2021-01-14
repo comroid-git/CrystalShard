@@ -6,6 +6,7 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannelCategory;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.matrix.Matrix2;
@@ -27,6 +28,10 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
 
     public Reference<Guild> getGuild(long id) {
         return getSnowflake(EntityType.GUILD, id);
+    }
+
+    public Reference<Role> getRole(long id) {
+        return getSnowflake(EntityType.ROLE, id);
     }
 
     public Reference<Channel> getChannel(long id) {
