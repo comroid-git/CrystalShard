@@ -9,6 +9,7 @@ import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.matrix.Matrix2;
 import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
@@ -48,6 +49,10 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
 
     public Reference<User> getUser(long id) {
         return getSnowflake(EntityType.USER, id);
+    }
+
+    public Reference<Webhook> getWebhook(long id) {
+        return getSnowflake(EntityType.WEBHOOK, id);
     }
 
     public <T extends Snowflake> Processor<T> getSnowflake(EntityType<T> type, long id) {

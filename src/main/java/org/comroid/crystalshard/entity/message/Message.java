@@ -12,8 +12,10 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.message.MessageActivity;
 import org.comroid.crystalshard.model.message.MessageReference;
+import org.comroid.crystalshard.model.message.Reaction;
 import org.comroid.crystalshard.model.message.embed.Embed;
 import org.comroid.mutatio.span.Span;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -21,7 +23,9 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class Message extends Snowflake.Abstract {
     @RootBind
@@ -123,10 +127,15 @@ public final class Message extends Snowflake.Abstract {
             .intoSpan()
             .setRequired()
             .build();
-    public static final VarBind<Message, UniObjectNode, UniObjectNode, Span<UniObjectNode>> REACTIONS
+    public static final VarBind<Message, UniObjectNode, Reaction, Span<Reaction>> REACTIONS
             = TYPE.createBind("reactions")
             .extractAsArray()
-            .asIdentities()
+            .andResolve((msg, obj) -> msg.reactions.computeIfAbsent(
+                    obj.process("id")
+                            .or(() -> obj.get("name"))
+                            .map(UniNode::asString)
+                            .assertion("Invalid data: " + obj),
+                    k -> new Reaction(msg, obj)))
             .intoSpan()
             .build();
     public static final VarBind<Message, String, String, String> NONCE
@@ -190,6 +199,7 @@ public final class Message extends Snowflake.Abstract {
             .andProvideRef(Message.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getMessage(id), Message.TYPE)
             .onceEach()
             .build();
+    private final Map<String, Reaction> reactions = new ConcurrentHashMap<>();
 
     public Message(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.MESSAGE);

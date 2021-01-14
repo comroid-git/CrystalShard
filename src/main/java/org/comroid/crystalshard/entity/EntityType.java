@@ -3,6 +3,7 @@ package org.comroid.crystalshard.entity;
 import org.comroid.api.BitmaskEnum;
 import org.comroid.api.Named;
 import org.comroid.crystalshard.entity.channel.*;
+import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
@@ -11,6 +12,7 @@ import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.crystalshard.entity.message.MessageSticker;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
+import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
 import org.comroid.util.Bitmask;
 
@@ -27,6 +29,8 @@ public final class EntityType<T extends Snowflake> implements Named, BitmaskEnum
             = new EntityType<>(Guild.class, SNOWFLAKE);
     public static final EntityType<Role> ROLE
             = new EntityType<>(Role.class, SNOWFLAKE);
+    public static final EntityType<CustomEmoji> CUSTOM_EMOJI
+            = new EntityType<>(CustomEmoji.class, SNOWFLAKE);
     public static final EntityType<GuildIntegration> INTEGRATION
             = new EntityType<>(GuildIntegration.class, SNOWFLAKE);
 
