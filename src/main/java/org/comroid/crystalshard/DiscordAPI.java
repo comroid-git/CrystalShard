@@ -58,7 +58,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
                 .addHeaders(createHeaders(token))
                 .method(method)
                 .execute$deserializeSingle()
-                .exceptionally(context.exceptionLogger(logger, Level.ERROR, String.format("%s-Request @ %s", method, endpoint.getFullUrl())));
+                .exceptionally(context.exceptionLogger(logger, Level.ERROR, String.format("%s-Request @ %s", method, endpoint.getFullUrl()), true));
     }
 
     @NotNull
@@ -75,9 +75,24 @@ public final class DiscordAPI extends ContextualProvider.Base {
         return headers;
     }
 
-    public <T> Function<Throwable, T> exceptionLogger(final Logger logger, final Level level, final String message) {
+    public <T> Function<Throwable, T> exceptionLogger(
+            final Logger logger,
+            final Level level,
+            final String message
+    ) {
+        return exceptionLogger(logger, level, message, true);
+    }
+
+    public <T> Function<Throwable, T> exceptionLogger(
+            final Logger logger,
+            final Level level,
+            final String message,
+            final boolean exitWhenHit
+    ) {
         return throwable -> {
             logger.log(level, message, throwable);
+            if (exitWhenHit)
+                System.exit(1);
             return null;
         };
     }

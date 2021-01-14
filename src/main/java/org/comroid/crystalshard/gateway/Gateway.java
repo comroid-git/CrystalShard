@@ -99,7 +99,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     logger.debug("Ready Event received: " + ready);
                     return ready;
                 })
-                .exceptionally(shard.context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event")));
+                .exceptionally(shard.context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event", true)));
     }
 
     private void startHeartbeat(int interval) {
