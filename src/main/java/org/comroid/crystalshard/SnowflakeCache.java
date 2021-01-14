@@ -14,6 +14,8 @@ import org.comroid.matrix.Matrix2;
 import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
 
+import java.util.Objects;
+
 public final class SnowflakeCache implements ContextualProvider.Underlying {
     public final Matrix2<EntityType, Long, Snowflake> matrix = Matrix2.create();
     private final ContextualProvider context;
@@ -56,6 +58,7 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
     }
 
     public <T extends Snowflake> Processor<T> getSnowflake(EntityType<T> type, long id) {
-        return matrix.getReference(type, id).flatMap(type.getRelatedClass());
+        return matrix.getReference(type, id, true)
+                .flatMap(Objects.requireNonNull(type, "Type is null").getRelatedClass());
     }
 }
