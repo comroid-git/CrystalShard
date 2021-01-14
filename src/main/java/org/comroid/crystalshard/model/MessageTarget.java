@@ -13,7 +13,6 @@ public interface MessageTarget extends ContextualProvider {
     TextChannel getTextChannel();
 
     default CompletableFuture<Message> sendText(String text) {
-        return requireFromContext(Bot.class)
-                .newRequest(REST.Method.POST, Endpoint.SEND_MESSAGE); // todo
+        return null; // todo
     }
 }

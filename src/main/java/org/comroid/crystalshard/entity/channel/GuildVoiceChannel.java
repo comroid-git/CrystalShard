@@ -25,6 +25,11 @@ public final class GuildVoiceChannel extends AbstractVoiceChannel implements Gui
     public static final GroupBind<GuildVoiceChannel> TYPE
             = GroupBind.<GuildVoiceChannel>combine("guild-voice-channel", GuildChannel.BASETYPE, VoiceChannel.BASETYPE);
 
+    @Override
+    public Guild getGuild() {
+        return null; // todo
+    }
+
     public GuildVoiceChannel(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.GUILD_VOICE_CHANNEL);
     }
