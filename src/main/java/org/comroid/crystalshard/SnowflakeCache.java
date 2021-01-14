@@ -17,7 +17,7 @@ import org.comroid.mutatio.ref.Reference;
 import java.util.Objects;
 
 public final class SnowflakeCache implements ContextualProvider.Underlying {
-    public final Matrix2<EntityType, Long, Snowflake> matrix = Matrix2.create();
+    private final Matrix2<EntityType, Long, Snowflake> matrix = Matrix2.create();
     private final ContextualProvider context;
 
     @Override
