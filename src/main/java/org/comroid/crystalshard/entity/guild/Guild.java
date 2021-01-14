@@ -22,6 +22,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
 import java.net.URL;
+import java.time.Instant;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
@@ -169,10 +170,10 @@ public final class Guild extends Snowflake.Abstract implements Named {
             .andResolveRef((guild, id) -> guild.requireFromContext(SnowflakeCache.class).getChannel(id))
             .onceEach()
             .build();
-    public static final VarBind<Guild, String, String, String> JOINED_AT
+    public static final VarBind<Guild, String, Instant, Instant> JOINED_AT
             = TYPE.createBind("joined_at")
             .extractAs(StandardValueType.STRING)
-            .asIdentities() // todo
+            .andRemap(Instant::parse)
             .onceEach()
             .build();
     public static final VarBind<Guild, Boolean, Boolean, Boolean> LARGE
