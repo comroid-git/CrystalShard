@@ -12,11 +12,11 @@ public enum ImageType implements Named {
     WebP("webp"),
     GIF("gif");
 
-    private final String regex;
+    private final @Language("RegExp") String regex;
 
     @Override
     public String getName() {
-        return name();
+        return name().toLowerCase();
     }
 
     @Language("RegExp")
@@ -24,7 +24,7 @@ public enum ImageType implements Named {
         return regex;
     }
 
-    ImageType(String regex) {
+    ImageType(@Language("RegExp") String regex) {
         this.regex = regex;
     }
 
