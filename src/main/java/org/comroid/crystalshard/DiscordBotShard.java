@@ -7,15 +7,18 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.rest.BoundEndpoint;
-import org.comroid.crystalshard.rest.response.AbstractRestResponse;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
+import org.comroid.restless.body.BodyBuilderType;
+import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.util.Bitmask;
+import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.IOException;
@@ -82,8 +85,14 @@ public final class DiscordBotShard implements Bot {
     }
 
     @Override
-    public <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, BoundEndpoint<R> endpoint) {
-        return DiscordAPI.newRequest(context, token, method, endpoint);
+    public <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            GroupBind<R> responseType,
+            BodyBuilderType<N> type,
+            Consumer<N> builder
+    ) {
+        return DiscordAPI.newRequest(context, token, method, endpoint, responseType, type, builder);
     }
 
     @Override

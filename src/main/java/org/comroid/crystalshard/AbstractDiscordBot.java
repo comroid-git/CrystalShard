@@ -8,17 +8,22 @@ import org.comroid.common.exception.AssertionException;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.rest.BoundEndpoint;
-import org.comroid.crystalshard.rest.response.AbstractRestResponse;
+import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
+import org.comroid.restless.body.BodyBuilderType;
+import org.comroid.restless.endpoint.CompleteEndpoint;
+import org.comroid.uniform.node.UniNode;
+import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.container.DataContainer;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 public abstract class AbstractDiscordBot implements Bot {
@@ -70,7 +75,7 @@ public abstract class AbstractDiscordBot implements Bot {
         this.context = context;
         this.token = Reference.constant(token);
         this.intents = new HashSet<>(Arrays.asList(intents));
-        this.gbr = newRequest(REST.Method.GET, BoundEndpoint.GATEWAY_BOT).join();
+        this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT, GatewayBotResponse.TYPE).join();
         int shardCount = gbr.shards.assertion("shard count");
         this.shards = IntStream.range(0, shardCount)
                 .mapToObj(shardIndex -> {
@@ -83,8 +88,14 @@ public abstract class AbstractDiscordBot implements Bot {
     }
 
     @Override
-    public final <R extends AbstractRestResponse> CompletableFuture<R> newRequest(REST.Method method, BoundEndpoint<R> endpoint) {
-        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint);
+    public final <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            GroupBind<R> responseType,
+            BodyBuilderType<N> type,
+            Consumer<N> builder
+    ) {
+        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint, responseType, type, builder);
     }
 
     @Override

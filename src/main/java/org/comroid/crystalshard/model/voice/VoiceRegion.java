@@ -4,7 +4,8 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.model.AbstractDataContainer;
-import org.comroid.crystalshard.rest.BoundEndpoint;
+import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.uniform.node.impl.StandardValueType;
@@ -92,7 +93,7 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
     @Internal
     public static CompletableFuture<Void> refreshCache(ContextualProvider context) {
         return context.requireFromContext(Bot.class)
-                .newRequest(REST.Method.GET, BoundEndpoint.VOICE_REGIONS)
+                .newRequest(REST.Method.GET, Endpoint.VOICE_REGIONS, VoiceRegionsResponse.TYPE)
                 .thenAccept(vrr -> vrr.regions.assertion()
                         .forEach(region -> {
                             String name = region.getName();

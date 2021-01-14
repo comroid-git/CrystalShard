@@ -4,15 +4,18 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.rest.BoundEndpoint;
-import org.comroid.crystalshard.rest.response.AbstractRestResponse;
+import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
-import org.comroid.restless.endpoint.RatelimitedEndpoint;
+import org.comroid.restless.body.BodyBuilderType;
+import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.server.Ratelimiter;
 import org.comroid.uniform.SerializationAdapter;
+import org.comroid.uniform.node.UniNode;
+import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class DiscordAPI extends ContextualProvider.Base {
@@ -47,18 +51,40 @@ public final class DiscordAPI extends ContextualProvider.Base {
     }
 
     @Internal
-    public static <R extends AbstractRestResponse> CompletableFuture<R> newRequest(
+    public static <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
             DiscordAPI context,
             String token,
             REST.Method method,
-            BoundEndpoint<R> endpoint
+            CompleteEndpoint endpoint,
+            GroupBind<R> responseType
     ) {
-        return context.getREST()
-                .request(endpoint)
-                .addHeaders(createHeaders(token))
-                .method(method)
+        return newRequest(context, token, method, endpoint, responseType, null, null);
+    }
+
+    @Internal
+    public static <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            DiscordAPI context,
+            String token,
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            GroupBind<R> responseType,
+            BodyBuilderType<N> type,
+            Consumer<N> builder
+    ) {
+        REST.Request<R> req = context.getREST()
+                .request(responseType)
+                .endpoint(endpoint)
+                .addHeaders(createHeaders(token));
+        if (type != null && builder != null)
+            req.buildBody(type, builder);
+        return req.method(method)
                 .execute$deserializeSingle()
-                .exceptionally(context.exceptionLogger(logger, Level.ERROR, String.format("%s-Request @ %s", method, endpoint.getFullUrl()), true));
+                .exceptionally(context.exceptionLogger(
+                        logger,
+                        Level.ERROR,
+                        String.format("%s-Request @ %s", method, endpoint.getSpec()),
+                        false
+                ));
     }
 
     @NotNull
@@ -109,7 +135,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
 
         Ratelimiter ratelimiter = Ratelimiter.ofPool(
                 scheduledExecutorService,
-                BoundEndpoint.values.toArray(new RatelimitedEndpoint[0])
+                Endpoint.values()
         );
         this.rest = new REST(this, scheduledExecutorService, ratelimiter);
 
