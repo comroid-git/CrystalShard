@@ -1,12 +1,29 @@
 package org.comroid.crystalshard;
 
-import org.comroid.restless.HttpAdapter;
-import org.comroid.uniform.SerializationAdapter;
-import org.comroid.uniform.adapter.http.jdk.JavaHttpAdapter;
-import org.comroid.uniform.adapter.json.fastjson.FastJSONLib;
+import org.comroid.api.Polyfill;
+import org.comroid.common.Version;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
 
 public final class CrystalShard {
-    public static final ThreadGroup THREAD_GROUP = new ThreadGroup("CrystalShard");
-    public static HttpAdapter HTTP_ADAPTER = new JavaHttpAdapter();
-    public static SerializationAdapter<?, ?, ?> SERIALIZATION_ADAPTER = FastJSONLib.fastJsonLib;
+    public static final URL URL = Polyfill.url("https://github.com/comroid-git/CrystalShard");
+    public static final Version VERSION;
+    public static final String toString;
+
+    static {
+        try (
+                InputStream is = ClassLoader.getSystemResource("crystalshard.properties").openStream()
+        ) {
+            Properties prop = new Properties();
+            prop.load(is);
+
+            VERSION = new Version(prop.getProperty("version"));
+            toString = String.format("CrystalShard @ v%s (%s)", VERSION, URL);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load CrystalShard", e);
+        }
+    }
 }

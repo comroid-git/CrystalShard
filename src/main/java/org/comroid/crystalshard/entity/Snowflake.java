@@ -1,54 +1,63 @@
 package org.comroid.crystalshard.entity;
 
-import org.comroid.crystalshard.CrystalShard;
+import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.DiscordAPI;
-import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.core.cache.SnowflakeCache;
-import org.comroid.crystalshard.core.cache.SnowflakeSelector;
-import org.comroid.crystalshard.model.BotBound;
-import org.comroid.uniform.cache.Cache;
+import org.comroid.mutatio.ref.Reference;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.uniform.node.UniValueNode;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.comroid.varbind.container.DataContainer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.comroid.varbind.container.DataContainerBase;
+import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
-import java.time.Instant;
-import java.util.Comparator;
+public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.Underlying {
+    GroupBind<Snowflake> BASETYPE = new GroupBind<>(DiscordAPI.SERIALIZATION, "snowflake");
+    VarBind<Snowflake, Long, Long, Long> ID
+            = BASETYPE.createBind("id")
+            .extractAs(StandardValueType.LONG)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    @Language("RegExp") String ID_REGEX = "\\d{12,32}";
 
-public interface Snowflake extends BotBound, Comparable<Snowflake>, DataContainer<DiscordBot> {
-    Comparator<Snowflake> SNOWFLAKE_COMPARATOR = Comparator.comparingLong(flake -> flake.getID() >> 22);
+    long getID();
 
-    default Instant getCreationTimestamp() {
-        return Instant.ofEpochMilli((getID() >> 22) + DiscordAPI.EPOCH);
+    EntityType<? extends Snowflake> getEntityType();
+
+    default boolean equals(Snowflake other) {
+        return getEntityType().equals(other.getEntityType())
+                && getID() == other.getID();
     }
 
-    default long getID() {
-        return requireNonNull(Bind.ID);
-    }
+    @Internal
+    abstract class Abstract extends DataContainerBase<Snowflake> implements Snowflake {
+        public final Reference<Long> id = getComputedReference(ID);
+        private final EntityType<? extends Snowflake> entityType;
+        private final ContextualProvider context;
 
-    @Override
-    default int compareTo(@NotNull Snowflake other) {
-        return SNOWFLAKE_COMPARATOR.compare(this, other);
-    }
+        @Override
+        public final long getID() {
+            return id.assertion();
+        }
 
-    interface Bind {
-        GroupBind<Snowflake, DiscordBot> Root = new GroupBind<>(CrystalShard.SERIALIZATION_ADAPTER, "snowflake");
-        VarBind.OneStage<Long> ID = Root.bind1stage("id", UniValueNode.ValueType.LONG);
-    }
+        @Override
+        public final EntityType<? extends Snowflake> getEntityType() {
+            return entityType;
+        }
 
-    abstract class Base extends BotBound.DataBase implements Snowflake {
-        protected Base(DiscordBot bot, @Nullable UniObjectNode initialData) {
-            super(initialData, bot);
+        @Override
+        public final ContextualProvider getUnderlyingContextualProvider() {
+            return context.plus(this);
+        }
 
-            final long id = getID();
-            final SnowflakeCache entityCache = bot.getCache();
-            final SnowflakeSelector sel = entityCache.getReference(id, true)
-                    .requireNonNull("Assertion Failure");
+        protected Abstract(ContextualProvider context, UniObjectNode data, EntityType<? extends Snowflake> entityType) {
+            super(data);
 
-            sel.put(this);
+            this.context = context;
+            this.entityType = entityType;
         }
     }
 }

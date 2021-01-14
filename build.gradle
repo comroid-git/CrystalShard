@@ -6,7 +6,7 @@ version '0.3.0-SNAPSHOT'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-tasks.findByName('wrapper').configure {
+tasks.findByName('wrapper')?.configure {
     gradleVersion = '6.2'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
@@ -49,6 +49,12 @@ task javadocJar(type: Jar) {
     }
 }
 
+processResources {
+    from(sourceSets.main.resources) {
+        expand project.properties
+    }
+}
+
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -64,14 +70,18 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:19.0.0'
 
-    implementation 'org.comroid:common-util:1.5.4'
-    implementation 'org.comroid:mutatio:0.10.1'
-    implementation 'org.comroid:uniform:0.16.0'
-    implementation 'org.comroid:varbind:0.20.0'
-    implementation 'org.comroid:restless:0.15.2'
-    implementation 'org.comroid:dreadpool:0.10.0'
+    // logging dependencies
+    implementation 'org.apache.logging.log4j:log4j-api:2.11.0'
+    testImplementation 'org.apache.logging.log4j:log4j-core:2.11.0'
 
-    implementation 'com.google.flogger:flogger:0.5.1'
+    api project(':guardian:restless') == null
+            ? 'org.comroid:restless:0.16.0-SNAPSHOT'
+            : project(':guardian:restless')
+    api project(':common-util:matrix')
+
+    testImplementation project(':guardian:uniform').sourceSets.java8compat.output.classesDirs
+    testImplementation project(':guardian:restless').sourceSets.java11compat.output.classesDirs
+    testImplementation 'com.alibaba:fastjson:1.2.70'
 }
 
 apply from: "gradle/publishing.gradle"

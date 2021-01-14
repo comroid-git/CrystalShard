@@ -1,34 +1,34 @@
 package org.comroid.crystalshard.entity.channel;
 
-import org.comroid.crystalshard.DiscordBot;
-import org.comroid.uniform.node.UniValueNode.ValueType;
+import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.entity.EntityType;
+import org.comroid.crystalshard.entity.channel.impl.AbstractTextChannel;
+import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
-import java.util.Optional;
+import java.time.Instant;
 
-public interface GuildTextChannel extends GuildChannel, TextChannel {
-    default Optional<String> getTopic() {
-        return wrap(Bind.Topic);
+public final class GuildTextChannel extends AbstractTextChannel implements GuildChannel, TextChannel {
+    @RootBind
+    public static final GroupBind<GuildTextChannel> TYPE
+            = GroupBind.<GuildTextChannel>combine("guild-text-channel", GuildChannel.BASETYPE, TextChannel.BASETYPE);
+    public static final VarBind<GuildTextChannel, String, Instant, Instant> LAST_PIN_TIMESTAMP
+            = TYPE.createBind("last_pin_timestamp")
+            .extractAs(StandardValueType.STRING)
+            .andRemap(Instant::parse)
+            .onceEach()
+            .build();
+
+    @Override
+    public Guild getGuild() {
+        return null; // Todo
     }
 
-    default boolean isNSFW() {
-        return requireNonNull(Bind.Nsfw);
-    }
-
-    default int getRatelimitPerUser() {
-        return requireNonNull(Bind.RatelimitPerUser);
-    }
-
-    interface Bind extends GuildChannel.Bind, TextChannel.Bind {
-        @SuppressWarnings("unchecked")
-        GroupBind<GuildTextChannel, DiscordBot> Root
-                = GroupBind.combine("guild_text_channel", GuildChannel.Bind.Root, TextChannel.Bind.Root);
-        VarBind.OneStage<String> Topic
-                = Root.bind1stage("topic", ValueType.STRING);
-        VarBind.OneStage<Boolean> Nsfw
-                = Root.bind1stage("nsfw", ValueType.BOOLEAN);
-        VarBind.OneStage<Integer> RatelimitPerUser
-                = Root.bind1stage("rate_limit_per_user", ValueType.INTEGER);
+    public GuildTextChannel(ContextualProvider context, UniObjectNode data) {
+        super(context, data, EntityType.GUILD_TEXT_CHANNEL);
     }
 }

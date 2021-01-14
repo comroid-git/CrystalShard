@@ -1,8 +1,10 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.common.ref.IntEnum;
+import org.comroid.api.IntEnum;
+import org.comroid.api.Named;
+import org.comroid.api.Rewrapper;
 
-public enum ExplicitContentFilter implements IntEnum {
+public enum ExplicitContentFilter implements IntEnum, Named {
     DISABLED(0),
     MEMBERS_WITHOUT_ROLES(1),
     ALL_MEMBERS(2);
@@ -18,12 +20,7 @@ public enum ExplicitContentFilter implements IntEnum {
         this.value = value;
     }
 
-    public static ExplicitContentFilter valueOf(int value) {
-        for (ExplicitContentFilter level : values()) {
-            if (level.value == value)
-                return level;
-        }
-
-        throw new IllegalArgumentException("Unknown ExplicitContentFilter level: " + value);
+    public static Rewrapper<ExplicitContentFilter> valueOf(int value) {
+        return IntEnum.valueOf(value, ExplicitContentFilter.class);
     }
 }

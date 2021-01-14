@@ -1,24 +1,30 @@
 package org.comroid.crystalshard.entity.channel;
 
-import org.comroid.crystalshard.DiscordBot;
-import org.comroid.crystalshard.entity.user.User;
+import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.entity.EntityType;
+import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.channel.impl.AbstractTextChannel;
+import org.comroid.mutatio.ref.Reference;
+import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.varbind.bind.ArrayBind;
+import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 
-public interface PrivateTextChannel extends PrivateChannel, TextChannel {
-    default Collection<User> getRecipients() {
-        return requireNonNull(Bind.Recipients);
-    }
+public final class PrivateTextChannel extends AbstractTextChannel implements TextChannel {
+    @RootBind
+    public static final GroupBind<PrivateTextChannel> TYPE
+            = TextChannel.BASETYPE.rootGroup("private-text-channel");
 
-    interface Bind extends PrivateChannel.Bind, TextChannel.Bind {
-        @SuppressWarnings("unchecked")
-        GroupBind<PrivateTextChannel, DiscordBot> Root
-                = GroupBind.combine("private_text_channel", PrivateChannel.Bind.Root, TextChannel.Bind.Root);
-        ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, User, Collection<User>> Recipients
-                = Root.listDependent("recipients", DiscordBot::updateUser, ArrayList::new);
+    public PrivateTextChannel(ContextualProvider context, UniObjectNode data) {
+        super(context, data, EntityType.PRIVATE_CHANNEL);
     }
 }

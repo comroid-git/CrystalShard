@@ -1,94 +1,273 @@
 package org.comroid.crystalshard.entity.message;
 
-import org.comroid.common.iter.Span;
-import org.comroid.crystalshard.DiscordBot;
+import org.comroid.api.*;
+import org.comroid.common.info.Described;
+import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.entity.channel.GuildChannel;
-import org.comroid.crystalshard.entity.channel.TextChannel;
+import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
-import org.comroid.crystalshard.entity.guild.GuildMember;
 import org.comroid.crystalshard.entity.guild.Role;
-import org.comroid.crystalshard.entity.message.reaction.Reaction;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
-import org.comroid.crystalshard.model.embed.Embed;
-import org.comroid.crystalshard.model.message.*;
+import org.comroid.crystalshard.model.message.MessageActivity;
+import org.comroid.crystalshard.model.message.MessageReference;
+import org.comroid.crystalshard.model.message.Reaction;
+import org.comroid.crystalshard.model.message.embed.Embed;
+import org.comroid.mutatio.span.Span;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.uniform.node.UniValueNode.ValueType;
-import org.comroid.varbind.bind.ArrayBind;
+import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.comroid.varbind.container.DataContainer;
-import org.comroid.varbind.container.DataContainerBuilder;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-public interface Message extends Snowflake {
-    final class Builder extends DataContainerBuilder<Builder, Message, DiscordBot> {
-        public Builder(Class<Message> type, @Nullable DiscordBot dependencyObject) {
-            super(type, dependencyObject);
-        }
+public final class Message extends Snowflake.Abstract {
+    @RootBind
+    public static final GroupBind<Message> TYPE
+            = BASETYPE.rootGroup("message");
+    public static final VarBind<Message, Long, Channel, Channel> CHANNEL
+            = TYPE.createBind("channel_id")
+            .extractAs(StandardValueType.LONG)
+            .andResolveRef((message, id) -> message.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, Long, Guild, Guild> GUILD
+            = TYPE.createBind("guild_id")
+            .extractAs(StandardValueType.LONG)
+            .andResolveRef((message, id) -> message.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .onceEach()
+            .build();
+    public static final VarBind<Message, UniObjectNode, User, User> AUTHOR
+            = TYPE.createBind("author")
+            .extractAsObject() // todo: handle WebHook author case
+            .andProvideRef(User.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, UniObjectNode, UniObjectNode> MEMBER
+            = TYPE.createBind("member")
+            .extractAsObject()
+            .asIdentities() // todo GuildMember stuff
+            .onceEach()
+            .build();
+    public static final VarBind<Message, String, String, String> CONTENT
+            = TYPE.createBind("content")
+            .extractAs(StandardValueType.STRING)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, String, Instant, Instant> TIMESTAMP
+            = TYPE.createBind("timestamp")
+            .extractAs(StandardValueType.STRING)
+            .andRemap(Instant::parse)
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, String, Instant, Instant> EDITED_TIMESTAMP
+            = TYPE.createBind("edited_timestamp")
+            .extractAs(StandardValueType.STRING)
+            .andRemap(Instant::parse)
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, Boolean, Boolean, Boolean> TTS
+            = TYPE.createBind("tts")
+            .extractAs(StandardValueType.BOOLEAN)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, Boolean, Boolean, Boolean> MENTIONS_EVERYONE
+            = TYPE.createBind("mention_everyone")
+            .extractAs(StandardValueType.BOOLEAN)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, User, Span<User>> MENTIONED_USERS
+            = TYPE.createBind("mentions")
+            .extractAsArray()
+            .andProvideRef(User.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .intoSpan()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, Role, Span<Role>> MENTIONED_ROLES
+            = TYPE.createBind("mention_roles")
+            .extractAsArray()
+            .andProvideRef(Role.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getRole(id), Role.TYPE)
+            .intoSpan()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, UniObjectNode, Span<UniObjectNode>> MENTIONED_CHANNELS
+            = TYPE.createBind("mention_channels")
+            .extractAsArray()
+            .asIdentities() // todo Handle ChannelMention Object
+            .intoSpan()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, MessageAttachment, Span<MessageAttachment>> ATTACHMENTS
+            = TYPE.createBind("attachments")
+            .extractAsArray()
+            .andConstruct(MessageAttachment.TYPE)
+            .intoSpan()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, Embed, Span<Embed>> EMBEDS
+            = TYPE.createBind("embeds")
+            .extractAsArray()
+            .andConstruct(Embed.TYPE)
+            .intoSpan()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, Reaction, Span<Reaction>> REACTIONS
+            = TYPE.createBind("reactions")
+            .extractAsArray()
+            .andResolve((msg, obj) -> msg.reactions.computeIfAbsent(
+                    obj.process("id")
+                            .or(() -> obj.get("name"))
+                            .map(UniNode::asString)
+                            .assertion("Invalid data: " + obj),
+                    k -> new Reaction(msg, obj)))
+            .intoSpan()
+            .build();
+    public static final VarBind<Message, String, String, String> NONCE
+            = TYPE.createBind("nonce")
+            .extractAs(StandardValueType.STRING)
+            .asIdentities()
+            .onceEach()
+            .build();
+    public static final VarBind<Message, Boolean, Boolean, Boolean> PINNED
+            = TYPE.createBind("pinned")
+            .extractAs(StandardValueType.BOOLEAN)
+            .asIdentities()
+            .onceEach()
+            .build();
+    public static final VarBind<Message, Long, Webhook, Webhook> WEBHOOK_AUTHOR
+            = TYPE.createBind("webhook_id")
+            .extractAs(StandardValueType.LONG)
+            .andResolveRef((msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.WEBHOOK, id))
+            .onceEach()
+            .build();
+    public static final VarBind<Message, Integer, Type, Type> MESSAGE_TYPE
+            = TYPE.createBind("type")
+            .extractAs(StandardValueType.INTEGER)
+            .andRemapRef(Type::valueOf)
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<Message, UniObjectNode, MessageActivity, MessageActivity> ACTIVITY
+            = TYPE.createBind("activity")
+            .extractAsObject()
+            .andConstruct(MessageActivity.TYPE)
+            .onceEach()
+            .build();
+    public static final VarBind<Message, UniObjectNode, MessageApplication, MessageApplication> APPLICATION
+            = TYPE.createBind("application")
+            .extractAsObject()
+            .andProvideRef(MessageApplication.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.MESSAGE_APPLICATION, id), MessageApplication.TYPE)
+            .onceEach()
+            .build();
+    public static final VarBind<Message, UniObjectNode, MessageReference, MessageReference> REFERENCE
+            = TYPE.createBind("message_reference")
+            .extractAsObject()
+            .andConstruct(MessageReference.TYPE)
+            .onceEach()
+            .build();
+    public static final VarBind<Message, Integer, Set<Flags>, Set<Flags>> FLAGS
+            = TYPE.createBind("flags")
+            .extractAs(StandardValueType.INTEGER)
+            .andRemap(Flags::valueOf)
+            .onceEach()
+            .build();
+    public static final VarBind<Message, UniObjectNode, MessageSticker, Span<MessageSticker>> STICKERS
+            = TYPE.createBind("stickers")
+            .extractAsArray()
+            .andProvideRef(MessageSticker.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.MESSAGE_STICKER, id), MessageSticker.TYPE)
+            .intoSpan()
+            .build();
+    public static final VarBind<Message, UniObjectNode, Message, Message> REFERENCED_MESSAGE
+            = TYPE.createBind("referenced_message")
+            .extractAsObject()
+            .andProvideRef(Message.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getMessage(id), Message.TYPE)
+            .onceEach()
+            .build();
+    private final Map<String, Reaction> reactions = new ConcurrentHashMap<>();
+
+    public Message(ContextualProvider context, UniObjectNode data) {
+        super(context, data, EntityType.MESSAGE);
+    }
+
+    public enum Type implements IntEnum, Named {
+        DEFAULT(0),
+        RECIPIENT_ADD(1),
+        RECIPIENT_REMOVE(2),
+        CALL(3),
+        CHANNEL_NAME_CHANGE(4),
+        CHANNEL_ICON_CHANGE(5),
+        CHANNEL_PINNED_MESSAGE(6),
+        GUILD_MEMBER_JOIN(7),
+        USER_PREMIUM_GUILD_SUBSCRIPTION(8),
+        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_1(9),
+        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_2(10),
+        USER_PREMIUM_GUILD_SUBSCRIPTION_TIER_3(11),
+        CHANNEL_FOLLOW_ADD(12),
+        GUILD_DISCOVERY_DISQUALIFIED(14),
+        GUILD_DISCOVERY_REQUALIFIED(15),
+        REPLY(19),
+        APPLICATION_COMMAND(20);
+
+        private final int value;
 
         @Override
-        protected Message mergeVarCarrier(DataContainer<DiscordBot> dataContainer) {
-            return null; // todo
+        public int getValue() {
+            return value;
+        }
+
+        Type(int value) {
+            this.value = value;
+        }
+
+        public static Rewrapper<Type> valueOf(int value) {
+            return IntEnum.valueOf(value, Type.class);
         }
     }
 
-    interface Bind extends Snowflake.Bind {
-        GroupBind<Message, DiscordBot> Root = Snowflake.Bind.Root.subGroup("message");
-        VarBind.DependentTwoStage<Long, DiscordBot, TextChannel> Channel
-                = Root.bindDependent("channel_id", ValueType.LONG, (bot, id) -> bot.getTextChannelByID(id).requireNonNull());
-        VarBind.DependentTwoStage<Long, DiscordBot, Guild> Guild
-                = Root.bindDependent("guild_id", ValueType.LONG, (bot, id) -> bot.getGuildByID(id).get());
-        VarBind.DependentTwoStage<UniObjectNode, DiscordBot, User> Author
-                = Root.bindDependent("author", DiscordBot::updateUser);
-        VarBind.DependentTwoStage<UniObjectNode, DiscordBot, GuildMember> AuthorMember
-                = Root.bindDependent("member", DiscordBot::updateGuildMember);
-        VarBind.OneStage<String> Content
-                = Root.bind1stage("content", ValueType.STRING);
-        VarBind.TwoStage<String, Instant> SentTimestamp
-                = Root.bind2stage("timestamp", ValueType.STRING, Instant::parse);
-        VarBind.TwoStage<String, Instant> EditedTimestamp
-                = Root.bind2stage("edited_timestamp", ValueType.STRING, Instant::parse);
-        VarBind.OneStage<Boolean> TTS
-                = Root.bind1stage("tts", ValueType.BOOLEAN);
-        VarBind.DependentTwoStage<UniObjectNode, DiscordBot, MessageMentions> AllowedMentions
-                = Root.bindDependent("allowed_mentions", MessageMentions.Bind.Root);
-        VarBind.OneStage<Boolean> MentionsEveryone
-                = Root.bind1stage("mention_everyone", ValueType.BOOLEAN);
-        ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, User, Collection<User>> MentionedUsers
-                = Root.listDependent("mentions", DiscordBot::updateUser, ArrayList::new);
-        ArrayBind.DependentTwoStage<Long, DiscordBot, Role, Collection<Role>> MentionedRoles
-                = Root.listDependent("mention_roles", ValueType.LONG, (bot, id) -> bot.getRoleByID(id).get(), ArrayList::new);
-        ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, GuildChannel, Collection<GuildChannel>> MentionedChannels
-                = Root.listDependent("mention_channels", (bot, data) -> bot.resolveChannelMention(data)
-                .flatMap(org.comroid.crystalshard.entity.channel.Channel::asGuildChannel).get(), ArrayList::new);
-        ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, MessageAttachment, Collection<MessageAttachment>> Attachments
-                = Root.listDependent("attachments", MessageAttachment.Bind.Root, ArrayList::new);
-        ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, Embed, Span<Embed>> Embeds
-                = Root.listDependent("embeds", Embed.Bind.Root, Span::new);
-        ArrayBind.DependentTwoStage<UniObjectNode, DiscordBot, Reaction, Collection<Reaction>> Reactions
-                = Root.listDependent("reactions", Reaction.Bind.Root, ArrayList::new);
-        VarBind.OneStage<String> Nonce
-                = Root.bind1stage("nonce", ValueType.STRING);
-        VarBind.OneStage<Boolean> Pinned
-                = Root.bind1stage("pinned", ValueType.BOOLEAN);
-        VarBind.DependentTwoStage<Long, DiscordBot, Webhook> AuthorWebhook
-                = Root.bindDependent("webhook_id", ValueType.LONG, (bot, id) -> bot.getWebhookByID(id).get());
-        VarBind.TwoStage<Integer, MessageType> Type
-                = Root.bind2stage("type", ValueType.INTEGER, MessageType::valueOf);
-        VarBind.DependentTwoStage<UniObjectNode, DiscordBot, MessageActivity> Activity
-                = Root.bindDependent("activity", (bot, data) -> bot.resolveMessageActivity(data).get());
-        VarBind.DependentTwoStage<UniObjectNode, DiscordBot, MessageApplication> Application
-                = Root.bindDependent("application", (bot, data) -> bot.resolveMessageApplication(data).get());
-        VarBind.DependentTwoStage<UniObjectNode, DiscordBot, MessageReference> Reference
-                = Root.bindDependent("message_reference", (bot, data) -> bot.resolveMessageReference(data).get());
-        VarBind.TwoStage<Integer, Set<MessageFlag>> Flags
-                = Root.bind2stage("flags", ValueType.INTEGER, MessageFlag::valueOf);
+    @SuppressWarnings("PointlessBitwiseExpression")
+    public enum Flags implements BitmaskEnum<Flags>, Named, Described {
+        CROSSPOSTED(1 << 0, "this message has been published to subscribed channels (via Channel Following)"),
+        IS_CROSSPOST(1 << 1, "this message originated from a message in another channel (via Channel Following)"),
+        SUPPRESS_EMBEDS(1 << 2, "do not include any embeds when serializing this message"),
+        SOURCE_MESSAGE_DELETED(1 << 3, "the source message for this crosspost has been deleted (via Channel Following)"),
+        URGENT(1 << 4, "this message came from the urgent message system");
+
+        private final int value;
+        private final String description;
+
+        @Override
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public String getDescription() {
+            return description;
+        }
+
+        Flags(int value, String description) {
+            this.value = value;
+            this.description = description;
+        }
+
+        public static Set<Flags> valueOf(int mask) {
+            return BitmaskEnum.valueOf(mask, Flags.class);
+        }
     }
 }

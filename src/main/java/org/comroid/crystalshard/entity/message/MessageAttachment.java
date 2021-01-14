@@ -1,30 +1,64 @@
 package org.comroid.crystalshard.entity.message;
 
-import org.comroid.common.Polyfill;
-import org.comroid.crystalshard.DiscordBot;
+import org.comroid.api.ContextualProvider;
+import org.comroid.api.Polyfill;
+import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.uniform.node.UniValueNode;
-import org.comroid.uniform.node.UniValueNode.ValueType;
+import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
 import java.net.URL;
 
-public interface MessageAttachment extends Snowflake {
-    interface Bind extends Snowflake.Bind {
-        GroupBind<MessageAttachment, DiscordBot> Root
-                = Snowflake.Bind.Root.subGroup("message_attachment");
-        VarBind.OneStage<String> Filename
-                = Root.bind1stage("filename", ValueType.STRING);
-        VarBind.OneStage<Integer> Size
-                = Root.bind1stage("size", ValueType.INTEGER);
-        VarBind.TwoStage<String, URL> Url
-                = Root.bind2stage("url", ValueType.STRING, Polyfill::url);
-        VarBind.TwoStage<String, URL> ProxyUrl
-                = Root.bind2stage("proxy_url", ValueType.STRING, Polyfill::url);
-        VarBind.OneStage<Integer> Height
-                = Root.bind1stage("height", ValueType.INTEGER);
-        VarBind.OneStage<Integer> Width
-                = Root.bind1stage("width", ValueType.INTEGER);
+public final class MessageAttachment extends Snowflake.Abstract {
+    @RootBind
+    public static final GroupBind<MessageAttachment> TYPE
+            = BASETYPE.rootGroup("message-attachment");
+    public static final VarBind<MessageAttachment, String, String, String> FILENAME
+            = TYPE.createBind("filename")
+            .extractAs(StandardValueType.STRING)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<MessageAttachment, Integer, Integer, Integer> SIZE
+            = TYPE.createBind("size")
+            .extractAs(StandardValueType.INTEGER)
+            .asIdentities()
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<MessageAttachment, String, URL, URL> SOURCE_URL
+            = TYPE.createBind("url")
+            .extractAs(StandardValueType.STRING)
+            .andRemap(Polyfill::url)
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<MessageAttachment, String, URL, URL> PROXY_URL
+            = TYPE.createBind("proxy_url")
+            .extractAs(StandardValueType.STRING)
+            .andRemap(Polyfill::url)
+            .onceEach()
+            .setRequired()
+            .build();
+    public static final VarBind<MessageAttachment, Integer, Integer, Integer> HEIGHT
+            = TYPE.createBind("height")
+            .extractAs(StandardValueType.INTEGER)
+            .asIdentities()
+            .onceEach()
+            .build();
+    public static final VarBind<MessageAttachment, Integer, Integer, Integer> WIDTH
+            = TYPE.createBind("width")
+            .extractAs(StandardValueType.INTEGER)
+            .asIdentities()
+            .onceEach()
+            .build();
+
+    public MessageAttachment(ContextualProvider context, UniObjectNode data) {
+        super(context, data, EntityType.MESSAGE_ATTACHMENT);
     }
 }

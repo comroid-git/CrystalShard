@@ -1,38 +1,146 @@
 package org.comroid.crystalshard;
 
-import org.comroid.common.util.Bitmask;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.mutatio.span.Span;
+import org.comroid.restless.CommonHeaderNames;
+import org.comroid.restless.HttpAdapter;
+import org.comroid.restless.REST;
+import org.comroid.restless.body.BodyBuilderType;
+import org.comroid.restless.endpoint.CompleteEndpoint;
+import org.comroid.restless.server.Ratelimiter;
+import org.comroid.uniform.SerializationAdapter;
+import org.comroid.uniform.node.UniNode;
+import org.comroid.varbind.bind.GroupBind;
+import org.comroid.varbind.container.DataContainer;
+import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.NotNull;
 
-public final class DiscordAPI {
-    public static final int    API_VERSION = 6;
-    public static final long   EPOCH       = 1420070400000L;
-    public static final String URL_BASE    = "https://discordapp.com/api/v" + API_VERSION;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-    public enum Intent implements Bitmask.Enum {
-        GUILDS(1),
-        GUILD_MEMBERS(1 << 1),
-        GUILD_BANS(1 << 2),
-        GUILD_EMOJIS(1 << 3),
-        GUILD_INTEGRATIONS(1 << 4),
-        GUILD_WEBHOOKS(1 << 5),
-        GUILD_INVITES(1 << 7),
-        GUILD_VOICE_STATES(1 << 7),
-        GUILD_PRESENCES(1 << 8),
-        GUILD_MESSAGES(1 << 9),
-        GUILD_MESSAGE_REACTIONS(1 << 10),
-        GUILD_MESSAGE_TYPING(1 << 11),
-        DIRECT_MESSAGES(1 << 12),
-        DIRECT_MESSAGE_REACTIONS(1 << 13),
-        DIRECT_MESSAGE_TYPING(1 << 14);
+public final class DiscordAPI extends ContextualProvider.Base {
+    public static final String URL_BASE = "https://discord.com/api";
+    public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
+    private static final Logger logger = LogManager.getLogger();
+    public static SerializationAdapter SERIALIZATION = null;
+    private final HttpAdapter httpAdapter;
+    private final REST rest;
+    private final SnowflakeCache snowflakeCache;
+    private final ScheduledExecutorService scheduledExecutorService;
+    private final Span<Object> members;
 
-        private final int mask;
+    @Override
+    public Span<Object> getContextMembers() {
+        return members;
+    }
 
-        @Override
-        public int getValue() {
-            return mask;
-        }
+    public SnowflakeCache getSnowflakeCache() {
+        return snowflakeCache;
+    }
 
-        Intent(int mask) {
-            this.mask = mask;
-        }
+    public REST getREST() {
+        return rest;
+    }
+
+    @Internal
+    public static <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            DiscordAPI context,
+            String token,
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            GroupBind<R> responseType
+    ) {
+        return newRequest(context, token, method, endpoint, responseType, null, null);
+    }
+
+    @Internal
+    public static <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            DiscordAPI context,
+            String token,
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            GroupBind<R> responseType,
+            BodyBuilderType<N> type,
+            Consumer<N> builder
+    ) {
+        REST.Request<R> req = context.getREST()
+                .request(responseType)
+                .endpoint(endpoint)
+                .addHeaders(createHeaders(token));
+        if (type != null && builder != null)
+            req.buildBody(type, builder);
+        return req.method(method)
+                .execute$deserializeSingle()
+                .exceptionally(context.exceptionLogger(
+                        logger,
+                        Level.ERROR,
+                        String.format("%s-Request @ %s", method, endpoint.getSpec()),
+                        false
+                ));
+    }
+
+    @NotNull
+    static REST.Header.List createHeaders(String token) {
+        REST.Header.List headers = new REST.Header.List();
+
+        headers.add(CommonHeaderNames.AUTHORIZATION, "Bot " + token);
+        headers.add(CommonHeaderNames.USER_AGENT, String.format(
+                "DiscordBot (%s, %s) %s",
+                CrystalShard.URL,
+                CrystalShard.VERSION.toSimpleString(),
+                CrystalShard.VERSION.toString())
+        );
+        return headers;
+    }
+
+    public <T> Function<Throwable, T> exceptionLogger(
+            final Logger logger,
+            final Level level,
+            final String message
+    ) {
+        return exceptionLogger(logger, level, message, true);
+    }
+
+    public <T> Function<Throwable, T> exceptionLogger(
+            final Logger logger,
+            final Level level,
+            final String message,
+            final boolean exitWhenHit
+    ) {
+        return throwable -> {
+            logger.log(level, message, throwable);
+            if (exitWhenHit)
+                System.exit(1);
+            return null;
+        };
+    }
+
+    public DiscordAPI(HttpAdapter httpAdapter) {
+        this(httpAdapter, Executors.newScheduledThreadPool(4));
+    }
+
+    public DiscordAPI(HttpAdapter httpAdapter, ScheduledExecutorService scheduledExecutorService) {
+        Objects.requireNonNull(SERIALIZATION, "SERIALIZATION must be provided");
+
+        this.scheduledExecutorService = scheduledExecutorService;
+        this.httpAdapter = httpAdapter;
+
+        Ratelimiter ratelimiter = Ratelimiter.ofPool(
+                scheduledExecutorService,
+                Endpoint.values()
+        );
+        this.rest = new REST(this, scheduledExecutorService, ratelimiter);
+
+        this.snowflakeCache = new SnowflakeCache(this);
+
+        this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, snowflakeCache);
     }
 }
