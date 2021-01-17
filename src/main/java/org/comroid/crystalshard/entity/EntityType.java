@@ -115,7 +115,9 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
             this.isCacheName = false;
             this.relatedCacheName = valueOf(value)
                     .stream()
+                    .peek(System.out::println)
                     .filter(et -> et.isCacheName)
+                    .peek(System.out::println)
                     .findFirst()
                     .map(Polyfill::<EntityType<? super T>>uncheckedCast)
                     .orElseThrow(() -> new NoSuchElementException("Could not find related cache name"));
@@ -125,7 +127,7 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
     }
 
     public static Set<EntityType<?>> valueOf(int mask) {
-        return BitmaskEnum.valueOf(mask, EntityType.class, cls -> values.toArray(new EntityType[0]));
+        return BitmaskEnum.valueOf(mask, values.toArray(new EntityType[0]));
     }
 
     public Class<T> getRelatedClass() {
