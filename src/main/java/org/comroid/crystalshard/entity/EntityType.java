@@ -23,6 +23,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 public final class EntityType<T extends Snowflake> implements BitmaskEnum<EntityType<?>>, Named {
+    private static final Collection<EntityType<?>> values = new ArrayList<>();
+
     public static final EntityType<Snowflake> SNOWFLAKE
             = new EntityType<>(Snowflake.class);
 
@@ -70,8 +72,6 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
             = new EntityType<>(MessageApplication.class);
     public static final EntityType<MessageSticker> MESSAGE_STICKER
             = new EntityType<>(MessageSticker.class);
-
-    private static final Collection<EntityType<?>> values = new ArrayList<>();
 
     private final int value;
     private final boolean isCacheName;
