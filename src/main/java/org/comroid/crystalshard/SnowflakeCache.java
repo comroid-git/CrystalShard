@@ -10,14 +10,16 @@ import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
-import org.comroid.matrix.Matrix2;
 import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
+import org.comroid.mutatio.ref.ReferenceMap;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class SnowflakeCache implements ContextualProvider.Underlying {
-    private final Matrix2<EntityType, Long, Snowflake> matrix = Matrix2.create();
+    private final ReferenceMap<String, Snowflake> cache = ReferenceMap.create();
     private final ContextualProvider context;
 
     @Override
@@ -58,7 +60,13 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
     }
 
     public <T extends Snowflake> Processor<T> getSnowflake(EntityType<T> type, long id) {
-        return matrix.getReference(type, id, true)
-                .flatMap(Objects.requireNonNull(type, "Type is null").getRelatedClass());
+        return cache.getReference(getKey(type, id), true)
+                .flatMap(type.getRelatedClass());
+    }
+
+    private <T extends Snowflake> String getKey(EntityType<T> type, long id) {
+        Objects.requireNonNull(type, "Type is null");
+
+        return String.format("%s#%d", type.getRelatedCacheName(), id);
     }
 }
