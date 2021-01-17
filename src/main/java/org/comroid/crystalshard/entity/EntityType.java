@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public final class EntityType<T extends Snowflake> implements BitmaskEnum<EntityType<?>>, Named {
     private static final Collection<EntityType<?>> values = new ArrayList<>();
@@ -109,25 +110,16 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
         } else if (inherits.length == 0) {
             this.value = Bitmask.combine(SNOWFLAKE.value, Bitmask.nextFlag());
             this.isCacheName = true;
-            this.relatedCacheName = null;
+            this.relatedCacheName = this;
         } else {
             this.value = Bitmask.combine(Bitmask.combine(inherits), Bitmask.nextFlag());
             this.isCacheName = false;
-            this.relatedCacheName = valueOf(value)
-                    .stream()
-                    .peek(System.out::println)
-                    .filter(et -> et.isCacheName)
-                    .peek(System.out::println)
+            this.relatedCacheName = Stream.of(inherits)
+                    .map(EntityType::getRelatedCacheName)
                     .findFirst()
                     .map(Polyfill::<EntityType<? super T>>uncheckedCast)
                     .orElseThrow(() -> new NoSuchElementException("Could not find related cache name"));
         }
-
-        values.add(this);
-    }
-
-    public static Set<EntityType<?>> valueOf(int mask) {
-        return BitmaskEnum.valueOf(mask, values.toArray(new EntityType[0]));
     }
 
     public Class<T> getRelatedClass() {
