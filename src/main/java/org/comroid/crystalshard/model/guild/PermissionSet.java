@@ -8,4 +8,8 @@ public final class PermissionSet extends HashSet<Permission> {
     public PermissionSet(int value) {
         super(BitmaskEnum.valueOf(value, Permission.class));
     }
+
+    public int getBitmask() {
+        return BitmaskEnum.toMask(toArray(new Permission[0]));
+    }
 }
