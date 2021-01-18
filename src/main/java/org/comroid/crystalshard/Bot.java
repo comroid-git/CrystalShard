@@ -1,6 +1,7 @@
 package org.comroid.crystalshard;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.pipe.Pipe;

@@ -3,7 +3,7 @@ package org.comroid.crystalshard.model.channel;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.api.Rewrapper;
-import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.AbstractDataContainer;

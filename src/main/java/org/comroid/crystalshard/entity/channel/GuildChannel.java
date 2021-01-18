@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.entity.channel;
 
-import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.channel.PermissionOverwrite;
 import org.comroid.mutatio.span.Span;
@@ -8,7 +8,6 @@ import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.comroid.varbind.bind.builder.BuilderStep3$Finishing;
 
 public interface GuildChannel extends Channel {
     GroupBind<GuildChannel> BASETYPE

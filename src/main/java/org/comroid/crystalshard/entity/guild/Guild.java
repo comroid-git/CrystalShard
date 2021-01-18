@@ -3,7 +3,7 @@ package org.comroid.crystalshard.entity.guild;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
-import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.cdn.CDNEndpoint;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
@@ -14,7 +14,6 @@ import org.comroid.crystalshard.model.guild.*;
 import org.comroid.crystalshard.model.voice.VoiceRegion;
 import org.comroid.crystalshard.model.voice.VoiceState;
 import org.comroid.mutatio.span.Span;
-import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -25,7 +24,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Function;
 
 public final class Guild extends Snowflake.Abstract implements Named {
     @RootBind

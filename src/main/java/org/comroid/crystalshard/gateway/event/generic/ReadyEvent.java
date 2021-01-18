@@ -1,8 +1,7 @@
 package org.comroid.crystalshard.gateway.event.generic;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.DiscordBotShard;
-import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;

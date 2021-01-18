@@ -1,8 +1,6 @@
 package org.comroid.crystalshard.model.message;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Rewrapper;
-import org.comroid.crystalshard.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.model.AbstractDataContainer;

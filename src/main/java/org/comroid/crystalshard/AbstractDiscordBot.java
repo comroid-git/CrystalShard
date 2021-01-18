@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.common.Disposable;
 import org.comroid.common.exception.AssertionException;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;

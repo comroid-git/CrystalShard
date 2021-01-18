@@ -1,4 +1,4 @@
-package org.comroid.crystalshard;
+package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.EntityType;

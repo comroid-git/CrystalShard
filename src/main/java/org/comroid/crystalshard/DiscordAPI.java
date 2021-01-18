@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.CommonHeaderNames;

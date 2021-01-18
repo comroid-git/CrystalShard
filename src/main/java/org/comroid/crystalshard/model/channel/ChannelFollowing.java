@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.channel;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.AbstractDataContainer;

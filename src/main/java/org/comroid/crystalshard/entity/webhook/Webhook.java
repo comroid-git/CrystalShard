@@ -3,7 +3,7 @@ package org.comroid.crystalshard.entity.webhook;
 import org.comroid.api.*;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.DiscordAPI;
-import org.comroid.crystalshard.SnowflakeCache;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
