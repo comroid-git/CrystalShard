@@ -36,7 +36,6 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
     abstract class Abstract extends DataContainerBase<Snowflake> implements Snowflake {
         public final Reference<Long> id = getComputedReference(ID);
         private final EntityType<? extends Snowflake> entityType;
-        private final ContextualProvider context;
 
         @Override
         public final long getID() {
@@ -48,15 +47,9 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
             return entityType;
         }
 
-        @Override
-        public final ContextualProvider getUnderlyingContextualProvider() {
-            return context;
-        }
-
         protected Abstract(ContextualProvider context, UniObjectNode data, EntityType<? extends Snowflake> entityType) {
-            super(data);
+            super(context, data);
 
-            this.context = context;
             this.entityType = entityType;
         }
     }
