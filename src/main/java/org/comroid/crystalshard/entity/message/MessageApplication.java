@@ -6,7 +6,6 @@ import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
-import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -18,7 +17,7 @@ import java.net.URL;
 public final class MessageApplication extends Snowflake.Abstract {
     @RootBind
     public static final GroupBind<MessageApplication> TYPE
-            = BASETYPE.rootGroup("message-application");
+            = BASETYPE.subGroup("message-application");
     public static final VarBind<MessageApplication, String, URL, URL> COVER_IMAGE
             = TYPE.createBind("cover_image")
             .extractAs(StandardValueType.STRING)

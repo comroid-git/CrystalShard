@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public final class HelloEvent extends GatewayEvent {
     @RootBind
     public static final GroupBind<HelloEvent> TYPE
-            = BASETYPE.rootGroup("hello");
+            = BASETYPE.subGroup("hello");
     public static final VarBind<HelloEvent, Integer, Integer, Integer> HEARTBEAT_INTERVAL
             = TYPE.createBind("heartbeat_interval")
             .extractAs(StandardValueType.INTEGER)

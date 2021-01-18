@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.model.message.embed;
 
 import org.comroid.api.Polyfill;
-import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -14,7 +13,7 @@ import java.net.URL;
 public class EmbedThumbnail extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedThumbnail> TYPE
-            = BASETYPE.rootGroup("embed-thumbnail");
+            = BASETYPE.subGroup("embed-thumbnail");
     public static final VarBind<EmbedThumbnail, String, URL, URL> THUMBNAIL_URL
             = TYPE.createBind("url")
             .extractAs(StandardValueType.STRING)

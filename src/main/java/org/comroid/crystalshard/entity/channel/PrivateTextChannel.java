@@ -9,7 +9,7 @@ import org.comroid.varbind.bind.GroupBind;
 public final class PrivateTextChannel extends AbstractTextChannel implements TextChannel {
     @RootBind
     public static final GroupBind<PrivateTextChannel> TYPE
-            = TextChannel.BASETYPE.rootGroup("private-text-channel");
+            = TextChannel.BASETYPE.subGroup("private-text-channel");
 
     PrivateTextChannel(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.PRIVATE_CHANNEL);

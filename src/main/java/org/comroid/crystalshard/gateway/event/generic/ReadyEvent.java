@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public final class ReadyEvent extends GatewayEvent {
     @RootBind
     public static final GroupBind<ReadyEvent> TYPE
-            = BASETYPE.rootGroup("ready");
+            = BASETYPE.subGroup("ready");
     public static final VarBind<ReadyEvent, Integer, Integer, Integer> VERSION
             = TYPE.createBind("v")
             .extractAs(StandardValueType.INTEGER)
@@ -32,7 +32,7 @@ public final class ReadyEvent extends GatewayEvent {
     public static final VarBind<ReadyEvent, UniObjectNode, User, User> YOURSELF
             = TYPE.createBind("user")
             .extractAsObject()
-            .andProvideRef(Snowflake.ID, (ready, id) -> ready.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .andResolve(User::resolve)
             .onceEach()
             .setRequired()
             .build();

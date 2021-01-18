@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public final class ResumedEvent extends GatewayEvent {
     @RootBind
     public static final GroupBind<ResumedEvent> TYPE
-            = BASETYPE.rootGroup("resumed");
+            = BASETYPE.subGroup("resumed");
 
     public ResumedEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
         super(context, initialData);

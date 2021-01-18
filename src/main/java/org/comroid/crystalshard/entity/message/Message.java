@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class Message extends Snowflake.Abstract {
     @RootBind
     public static final GroupBind<Message> TYPE
-            = BASETYPE.rootGroup("message");
+            = BASETYPE.subGroup("message");
     public static final VarBind<Message, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
@@ -44,7 +44,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, User, User> AUTHOR
             = TYPE.createBind("author")
             .extractAsObject() // todo: handle WebHook author case
-            .andProvideRef(User.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .andResolve(User::resolve)
             .build();
     public static final VarBind<Message, UniObjectNode, UniObjectNode, UniObjectNode> MEMBER
             = TYPE.createBind("member")
@@ -76,13 +76,13 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, User, Span<User>> MENTIONED_USERS
             = TYPE.createBind("mentions")
             .extractAsArray()
-            .andProvideRef(User.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .andResolve(User::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, Role, Span<Role>> MENTIONED_ROLES
             = TYPE.createBind("mention_roles")
             .extractAsArray()
-            .andProvideRef(Role.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getRole(id), Role.TYPE)
+            .andResolve(Role::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, UniObjectNode, Span<UniObjectNode>> MENTIONED_CHANNELS
@@ -140,7 +140,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, MessageApplication, MessageApplication> APPLICATION
             = TYPE.createBind("application")
             .extractAsObject()
-            .andProvideRef(MessageApplication.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.MESSAGE_APPLICATION, id), MessageApplication.TYPE)
+            .andResolve(MessageApplication::resolve)
             .build();
     public static final VarBind<Message, UniObjectNode, MessageReference, MessageReference> REFERENCE
             = TYPE.createBind("message_reference")
@@ -155,13 +155,13 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, MessageSticker, Span<MessageSticker>> STICKERS
             = TYPE.createBind("stickers")
             .extractAsArray()
-            .andProvideRef(MessageSticker.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.MESSAGE_STICKER, id), MessageSticker.TYPE)
+            .andResolve(MessageSticker::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, Message, Message> REFERENCED_MESSAGE
             = TYPE.createBind("referenced_message")
             .extractAsObject()
-            .andProvideRef(Message.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getMessage(id), Message.TYPE)
+            .andResolve(Message::resolve)
             .build();
     private final Map<String, Reaction> reactions = new ConcurrentHashMap<>();
 

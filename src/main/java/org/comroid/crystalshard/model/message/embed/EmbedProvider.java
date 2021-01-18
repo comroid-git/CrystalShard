@@ -13,7 +13,7 @@ import java.net.URL;
 public class EmbedProvider extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedProvider> TYPE
-            = BASETYPE.rootGroup("embed-provider");
+            = BASETYPE.subGroup("embed-provider");
     public static final VarBind<EmbedProvider, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)

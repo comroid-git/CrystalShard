@@ -27,7 +27,7 @@ import java.util.Set;
 
 public final class Guild extends Snowflake.Abstract implements Named {
     @RootBind
-    public static final GroupBind<Guild> TYPE = BASETYPE.rootGroup("guild");
+    public static final GroupBind<Guild> TYPE = BASETYPE.subGroup("guild");
     public static final VarBind<Guild, String, String, String> ICON_HASH
             = TYPE.createBind("icon")
             .extractAs(StandardValueType.STRING)

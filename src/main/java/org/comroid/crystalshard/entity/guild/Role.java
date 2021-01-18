@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.entity.guild;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
@@ -19,7 +18,7 @@ import java.awt.*;
 public final class Role extends Snowflake.Abstract implements Mentionable {
     @RootBind
     public static final GroupBind<Role> TYPE
-            = BASETYPE.rootGroup("role");
+            = BASETYPE.subGroup("role");
     public static final VarBind<Role, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)

@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public final class VoiceState extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<VoiceState> TYPE
-            = BASETYPE.rootGroup("voice-state");
+            = BASETYPE.subGroup("voice-state");
     public static final VarBind<VoiceState, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)

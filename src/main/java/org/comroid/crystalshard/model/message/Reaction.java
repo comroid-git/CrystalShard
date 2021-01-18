@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public final class Reaction extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<Reaction> TYPE
-            = BASETYPE.rootGroup("message-reaction");
+            = BASETYPE.subGroup("message-reaction");
     public static final VarBind<Reaction, Integer, Integer, Integer> COUNT
             = TYPE.createBind("count")
             .extractAs(StandardValueType.INTEGER)

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public final class VoiceRegionsResponse extends AbstractRestResponse {
     @RootBind
     public static final GroupBind<VoiceRegionsResponse> TYPE
-            = BASETYPE.rootGroup("voice-regions-response");
+            = BASETYPE.subGroup("voice-regions-response");
     public static final VarBind<VoiceRegionsResponse, UniObjectNode, VoiceRegion, ArrayList<VoiceRegion>> REGIONS
             = TYPE.createBind("")
             .extractAsArray()

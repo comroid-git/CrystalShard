@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public class SendMessageResponse extends AbstractRestResponse {
     @RootBind
     public static final GroupBind<SendMessageResponse> TYPE
-            = BASETYPE.rootGroup("rest-send-message-response");
+            = BASETYPE.subGroup("rest-send-message-response");
 
     protected SendMessageResponse(ContextualProvider context, @Nullable UniObjectNode initialData) {
         super(context, initialData);

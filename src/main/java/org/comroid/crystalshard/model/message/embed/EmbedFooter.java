@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.model.message.embed;
 
-import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
@@ -14,7 +13,7 @@ import java.net.URL;
 public class EmbedFooter extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedFooter> TYPE
-            = BASETYPE.rootGroup("embed-footer");
+            = BASETYPE.subGroup("embed-footer");
     public static final VarBind<EmbedFooter, String, String, String> TEXT
             = TYPE.createBind("text")
             .extractAs(StandardValueType.STRING)

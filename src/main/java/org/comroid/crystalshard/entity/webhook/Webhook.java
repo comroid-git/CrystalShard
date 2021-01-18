@@ -9,7 +9,6 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
-import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.MessageTarget;
@@ -37,7 +36,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     public static final Pattern URL_PATTERN = Pattern.compile("https://discord.com/api/webhooks/(?<id>\\d{12,32})/(?<token>" + TOKEN_REGEX + ")");
     @RootBind
     public static final GroupBind<Webhook> TYPE
-            = BASETYPE.rootGroup("webhook");
+            = BASETYPE.subGroup("webhook");
     public static final VarBind<Webhook, Integer, Type, Type> HOOK_TYPE
             = TYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)

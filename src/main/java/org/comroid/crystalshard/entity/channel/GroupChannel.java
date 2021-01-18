@@ -14,7 +14,7 @@ import org.comroid.varbind.bind.VarBind;
 public final class GroupChannel extends AbstractTextChannel implements TextChannel {
     @RootBind
     public static final GroupBind<GroupChannel> TYPE
-            = TextChannel.BASETYPE.rootGroup("group-channel");
+            = TextChannel.BASETYPE.subGroup("group-channel");
     public static final VarBind<GroupChannel, UniObjectNode, User, Span<User>> RECIPIENTS
             = TYPE.createBind("recipients")
             .extractAsArray()

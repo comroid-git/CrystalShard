@@ -10,7 +10,6 @@ import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
 import org.comroid.crystalshard.model.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.crystalshard.rest.Endpoint;
-import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.uniform.node.UniObjectNode;
@@ -18,17 +17,15 @@ import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 
 public final class User extends Snowflake.Abstract implements MessageTarget {
     @RootBind
     public static final GroupBind<User> TYPE
-            = BASETYPE.rootGroup("user");
+            = BASETYPE.subGroup("user");
     public static final VarBind<User, String, String, String> USERNAME
             = TYPE.createBind("username")
             .extractAs(StandardValueType.STRING)

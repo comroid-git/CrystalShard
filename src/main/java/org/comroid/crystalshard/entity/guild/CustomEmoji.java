@@ -12,7 +12,7 @@ import org.comroid.varbind.bind.GroupBind;
 public final class CustomEmoji extends Snowflake.Abstract implements Emoji {
     @RootBind
     public static final GroupBind<CustomEmoji> TYPE
-            = BASETYPE.rootGroup(Guild.TYPE, "custom-emoji");
+            = BASETYPE.subGroup(Guild.TYPE, "custom-emoji");
 
     private CustomEmoji(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.CUSTOM_EMOJI);

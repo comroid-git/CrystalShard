@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 public final class MessageReference extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<MessageReference> TYPE
-            = BASETYPE.rootGroup("message-reference");
+            = BASETYPE.subGroup("message-reference");
     public static final VarBind<MessageReference, Long, Message, Message> MESSAGE
             = TYPE.createBind("message_id")
             .extractAs(StandardValueType.LONG)

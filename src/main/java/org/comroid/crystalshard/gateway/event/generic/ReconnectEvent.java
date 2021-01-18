@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 public final class ReconnectEvent extends GatewayEvent {
     @RootBind
     public static final GroupBind<ReconnectEvent> TYPE
-            = BASETYPE.rootGroup("reconnect");
+            = BASETYPE.subGroup("reconnect");
 
     public ReconnectEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
         super(context, initialData);

@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class VoiceRegion extends AbstractDataContainer implements Named {
     @RootBind
     public final static GroupBind<VoiceRegion> TYPE
-            = BASETYPE.rootGroup("voice-region");
+            = BASETYPE.subGroup("voice-region");
     public static final VarBind<VoiceRegion, String, String, String> ID
             = TYPE.createBind("id")
             .extractAs(StandardValueType.STRING)

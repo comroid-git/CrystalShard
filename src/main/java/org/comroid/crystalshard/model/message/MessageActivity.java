@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public final class MessageActivity extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<MessageActivity> TYPE
-            = BASETYPE.rootGroup("message-activity");
+            = BASETYPE.subGroup("message-activity");
     public static final VarBind<MessageActivity, Integer, Rewrapper<Type>, Rewrapper<Type>> ACTIVITY_TYPE
             = TYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)

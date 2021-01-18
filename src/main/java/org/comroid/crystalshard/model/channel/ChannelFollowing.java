@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public final class ChannelFollowing extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<ChannelFollowing> TYPE
-            = BASETYPE.rootGroup("channel-following");
+            = BASETYPE.subGroup("channel-following");
     public static final VarBind<ChannelFollowing, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)

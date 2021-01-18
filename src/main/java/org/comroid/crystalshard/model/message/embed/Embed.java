@@ -21,7 +21,7 @@ import java.time.Instant;
 public final class Embed extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<Embed> TYPE
-            = BASETYPE.rootGroup("embed");
+            = BASETYPE.subGroup("embed");
     public static final VarBind<Embed, String, String, String> TITLE
             = TYPE.createBind("title")
             .extractAs(StandardValueType.STRING)

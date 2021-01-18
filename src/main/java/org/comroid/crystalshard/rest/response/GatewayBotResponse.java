@@ -16,7 +16,7 @@ import java.net.URI;
 public final class GatewayBotResponse extends AbstractRestResponse {
     @RootBind
     public static final GroupBind<GatewayBotResponse> TYPE
-            = BASETYPE.rootGroup("rest-gateway-bot-response");
+            = BASETYPE.subGroup("rest-gateway-bot-response");
     public static final VarBind<GatewayBotResponse, String, URI, URI> URL
             = TYPE.createBind("url")
             .extractAs(StandardValueType.STRING)
@@ -49,7 +49,7 @@ public final class GatewayBotResponse extends AbstractRestResponse {
     public static class SessionStartLimit extends AbstractDataContainer {
         @RootBind
         public static final GroupBind<SessionStartLimit> TYPE
-                = BASETYPE.rootGroup(GatewayBotResponse.TYPE, "session-start-limit");
+                = BASETYPE.subGroup(GatewayBotResponse.TYPE, "session-start-limit");
         public static final VarBind<SessionStartLimit, Integer, Integer, Integer> TOTAL
                 = TYPE.createBind("total")
                 .extractAs(StandardValueType.INTEGER)

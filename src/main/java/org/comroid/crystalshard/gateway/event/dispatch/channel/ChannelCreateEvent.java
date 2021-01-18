@@ -12,14 +12,11 @@ import org.jetbrains.annotations.Nullable;
 
 public final class ChannelCreateEvent extends GatewayEvent {
     public static final GroupBind<ChannelCreateEvent> TYPE
-            = BASETYPE.rootGroup("channel-create");
+            = BASETYPE.subGroup("channel-create");
     public static final VarBind<ChannelCreateEvent, UniObjectNode, Channel, Channel> CHANNEL
             = TYPE.createBind("")
             .extractAsObject()
-            .andProvideRef(
-                    Snowflake.ID,
-                    (event, id) -> event.requireFromContext(SnowflakeCache.class).getChannel(id),
-                    Channel.BASETYPE)
+            .andResolve(Channel::resolve)
             .onceEach()
             .build();
 

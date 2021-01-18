@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class RoleTags extends AbstractDataContainer {
     public static final GroupBind<RoleTags> TYPE
-            = BASETYPE.rootGroup(Role.TYPE, "role-tags");
+            = BASETYPE.subGroup(Role.TYPE, "role-tags");
     public static final VarBind<RoleTags, Long, User, User> BOT_ID
             = TYPE.createBind("bot_id")
             .extractAs(StandardValueType.LONG)

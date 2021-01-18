@@ -6,7 +6,6 @@ import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
-import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -17,7 +16,7 @@ import org.comroid.varbind.bind.VarBind;
 public final class MessageSticker extends Snowflake.Abstract {
     @RootBind
     public static final GroupBind<MessageSticker> TYPE
-            = BASETYPE.rootGroup("message-sticker");
+            = BASETYPE.subGroup("message-sticker");
     public static final VarBind<MessageSticker, Long, Long, Long> PACK
             = TYPE.createBind("pack_id")
             .extractAs(StandardValueType.LONG)
