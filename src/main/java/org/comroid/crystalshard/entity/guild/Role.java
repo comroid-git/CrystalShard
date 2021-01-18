@@ -17,7 +17,7 @@ import java.awt.*;
 public final class Role extends Snowflake.Abstract implements Mentionable {
     @RootBind
     public static final GroupBind<Role> TYPE
-            = BASETYPE.rootGroup(Guild.TYPE, "role");
+            = BASETYPE.rootGroup("role");
     public static final VarBind<Role, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)

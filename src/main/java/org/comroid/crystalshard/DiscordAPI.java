@@ -88,10 +88,12 @@ public final class DiscordAPI extends ContextualProvider.Base {
     }
 
     @NotNull
-    static REST.Header.List createHeaders(String token) {
+    @Internal
+    public static REST.Header.List createHeaders(String token) {
         REST.Header.List headers = new REST.Header.List();
 
-        headers.add(CommonHeaderNames.AUTHORIZATION, "Bot " + token);
+        if (token != null)
+            headers.add(CommonHeaderNames.AUTHORIZATION, "Bot " + token);
         headers.add(CommonHeaderNames.USER_AGENT, String.format(
                 "DiscordBot (%s, %s) %s",
                 CrystalShard.URL,
@@ -141,6 +143,6 @@ public final class DiscordAPI extends ContextualProvider.Base {
 
         this.snowflakeCache = new SnowflakeCache(this);
 
-        this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, snowflakeCache);
+        this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, snowflakeCache, this);
     }
 }

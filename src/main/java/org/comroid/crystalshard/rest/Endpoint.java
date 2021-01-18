@@ -2,7 +2,10 @@ package org.comroid.crystalshard.rest;
 
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.restless.endpoint.AccessibleEndpoint;
+import org.comroid.restless.endpoint.CompleteEndpoint;
+import org.comroid.restless.endpoint.QueryParameter;
 import org.intellij.lang.annotations.Language;
 
 import java.util.regex.Pattern;
@@ -14,12 +17,14 @@ public enum Endpoint implements AccessibleEndpoint {
 
     SEND_MESSAGE("/channels/%s/messages", Snowflake.ID_REGEX),
 
-    VOICE_REGIONS("/voice/regions");
+    VOICE_REGIONS("/voice/regions"),
+
+    EXECUTE_WEBHOOK("/webhooks/%s/%s%s", Webhook.ID_REGEX, Webhook.TOKEN_REGEX, QueryParameter.regex("(true)|(false)"));
 
     private final String extension;
-    private final @Language("RegExp")
-    String[] regexps;
-    private final Pattern pattern = buildUrlPattern();
+    @Language("RegExp")
+    private final String[] regexps;
+    private final Pattern pattern;
 
     @Override
     public String getUrlBase() {
@@ -44,5 +49,6 @@ public enum Endpoint implements AccessibleEndpoint {
     Endpoint(String extension, @Language("RegExp") String... regexps) {
         this.extension = extension;
         this.regexps = regexps;
+        this.pattern = buildUrlPattern();
     }
 }

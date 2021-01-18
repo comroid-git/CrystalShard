@@ -2,16 +2,17 @@ package org.comroid.crystalshard.model;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
-import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
 import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.concurrent.CompletableFuture;
 
 public interface MessageTarget extends ContextualProvider {
+    @Internal
     CompletableFuture<? extends TextChannel> getTargetChannel();
 
     default CompletableFuture<Message> sendText(String text) {

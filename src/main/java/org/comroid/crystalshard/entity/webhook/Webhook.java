@@ -1,24 +1,39 @@
 package org.comroid.crystalshard.entity.webhook;
 
-import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
-import org.comroid.api.Named;
-import org.comroid.api.Rewrapper;
+import org.comroid.api.*;
 import org.comroid.common.info.Described;
+import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
+import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.model.MessageTarget;
+import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.mutatio.ref.Reference;
+import org.comroid.restless.REST;
+import org.comroid.restless.body.BodyBuilderType;
+import org.comroid.restless.endpoint.QueryParameter;
+import org.comroid.uniform.SerializationAdapter;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.comroid.varbind.bind.builder.BuilderStep3$Finishing;
+import org.intellij.lang.annotations.Language;
 
-public final class Webhook extends Snowflake.Abstract {
+import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public final class Webhook extends Snowflake.Abstract implements Named, MessageTarget {
+    public static final @Language("RegExp")
+    String TOKEN_REGEX = "[a-zA-Z_\\d]{16,}";
+    public static final Pattern URL_PATTERN = Pattern.compile("https://discord.com/api/webhooks/(?<id>\\d{12,32})/(?<token>" + TOKEN_REGEX + ")");
     @RootBind
     public static final GroupBind<Webhook> TYPE
             = BASETYPE.rootGroup("webhook");
@@ -58,9 +73,59 @@ public final class Webhook extends Snowflake.Abstract {
             = TYPE.createBind("application_id")
             .extractAs(StandardValueType.LONG)
             .build();
+    public final Reference<String> token = getComputedReference(TOKEN);
 
     protected Webhook(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.WEBHOOK);
+    }
+
+    public static Webhook fromURL(DiscordAPI api, String url) {
+        final Matcher matcher = URL_PATTERN.matcher(url);
+
+        if (matcher.matches()) {
+            long id = Long.parseLong(Polyfill.regexGroupOrDefault(matcher, "id", "0"));
+            String token = Polyfill.regexGroupOrDefault(matcher, "token", null);
+
+            /*
+            return api.getREST()
+                    .request(Webhook.TYPE)
+                    .endpoint(Endpoint.EXECUTE_WEBHOOK, id, token, "")
+                    .method(REST.Method.POST)
+                    .addHeaders(DiscordAPI.createHeaders(null))
+                    .buildBody(BodyBuilderType.OBJECT, obj -> {})
+                    .execute$deserializeSingle()
+                    .join();
+             */
+
+            if (id == 0 || token == null)
+                throw new IllegalArgumentException("Could not extract parameters from URL: " + url);
+
+            UniObjectNode obj = api.requireFromContext(SerializationAdapter.class).createUniObjectNode();
+            obj.put(ID, id);
+            obj.put(TOKEN, token);
+
+            return new Webhook(api, obj);
+        } else throw new IllegalArgumentException("Invalid URL: " + url);
+    }
+
+    @Override
+    public CompletableFuture<? extends TextChannel> getTargetChannel() {
+        throw new AbstractMethodError();
+    }
+
+    @Override
+    public CompletableFuture<Message> sendText(String text) {
+        return token.ifPresentMapOrElseGet(
+                token -> requireFromContext(DiscordAPI.class)
+                        .getREST()
+                        .request(Message.TYPE)
+                        .endpoint(Endpoint.EXECUTE_WEBHOOK, getID(), token, QueryParameter.param("wait", true))
+                        .method(REST.Method.POST)
+                        .addHeaders(DiscordAPI.createHeaders(null))
+                        .buildBody(BodyBuilderType.OBJECT, obj -> obj.put("content", text))
+                        .execute$deserializeSingle(),
+                () -> Polyfill.failedFuture(new NoSuchElementException("Token is missing"))
+        );
     }
 
     public enum Type implements IntEnum, Named, Described {
