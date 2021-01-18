@@ -152,7 +152,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements AutoClo
     public void close() throws Exception {
         scheduledExecutorService.shutdown();
         for (Object each : members)
-            if (each instanceof AutoCloseable)
+            if (each instanceof AutoCloseable && each != this)
                 ((AutoCloseable) each).close();
     }
 }
