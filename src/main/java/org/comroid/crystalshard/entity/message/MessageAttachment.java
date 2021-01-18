@@ -5,6 +5,7 @@ import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -16,7 +17,7 @@ import java.net.URL;
 public final class MessageAttachment extends Snowflake.Abstract {
     @RootBind
     public static final GroupBind<MessageAttachment> TYPE
-            = BASETYPE.subGroup("message-attachment");
+            = BASETYPE.subGroup("message-attachment", MessageAttachment::resolve);
     public static final VarBind<MessageAttachment, String, String, String> FILENAME
             = TYPE.createBind("filename")
             .extractAs(StandardValueType.STRING)
@@ -62,7 +63,7 @@ public final class MessageAttachment extends Snowflake.Abstract {
         super(context, data, EntityType.MESSAGE_ATTACHMENT);
     }
 
-    public static MessageAttachment resolve(ContextualProvider context, UniObjectNode data) {
+    public static MessageAttachment resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getMessageAttachment, MessageAttachment::new);
     }
 }

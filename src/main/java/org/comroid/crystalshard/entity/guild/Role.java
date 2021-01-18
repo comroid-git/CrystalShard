@@ -7,6 +7,7 @@ import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.model.guild.PermissionSet;
 import org.comroid.crystalshard.model.guild.RoleTags;
 import org.comroid.crystalshard.model.message.Mentionable;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -18,7 +19,7 @@ import java.awt.*;
 public final class Role extends Snowflake.Abstract implements Mentionable {
     @RootBind
     public static final GroupBind<Role> TYPE
-            = BASETYPE.subGroup("role");
+            = BASETYPE.subGroup("role", Role::resolve);
     public static final VarBind<Role, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
@@ -79,7 +80,7 @@ public final class Role extends Snowflake.Abstract implements Mentionable {
         super(context, data, EntityType.ROLE);
     }
 
-    public static Role resolve(ContextualProvider context, UniObjectNode data) {
+    public static Role resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getRole, Role::new);
     }
 }

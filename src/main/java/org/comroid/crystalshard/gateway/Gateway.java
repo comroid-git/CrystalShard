@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.common.info.MessageSupplier;
-import org.comroid.crystalshard.AbstractDiscordBot;
+import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
@@ -179,7 +179,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         UniObjectNode prop = data.putObject("properties");
         prop.put("$os", StandardValueType.STRING, System.getProperty("os.name"));
         prop.put("$browser", StandardValueType.STRING, "CrystalShard");
-        prop.put("$device", StandardValueType.STRING, this.shard.getFromContext(AbstractDiscordBot.class)
+        prop.put("$device", StandardValueType.STRING, this.shard.getFromContext(DiscordBotBase.class)
                 .ifPresentMapOrElseGet(bot -> bot.getClass().getSimpleName(), () -> "CrystalShard"));
 
         return socket.send(payload.toString())

@@ -14,6 +14,7 @@ import org.comroid.crystalshard.model.guild.*;
 import org.comroid.crystalshard.model.voice.VoiceRegion;
 import org.comroid.crystalshard.model.voice.VoiceState;
 import org.comroid.mutatio.span.Span;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -27,7 +28,7 @@ import java.util.Set;
 
 public final class Guild extends Snowflake.Abstract implements Named {
     @RootBind
-    public static final GroupBind<Guild> TYPE = BASETYPE.subGroup("guild");
+    public static final GroupBind<Guild> TYPE = BASETYPE.subGroup("guild", Guild::resolve);
     public static final VarBind<Guild, String, String, String> ICON_HASH
             = TYPE.createBind("icon")
             .extractAs(StandardValueType.STRING)
@@ -237,7 +238,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
         super(context, data, EntityType.GUILD);
     }
 
-    public static Guild resolve(ContextualProvider context, UniObjectNode data) {
+    public static Guild resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getGuild, Guild::new);
     }
 }

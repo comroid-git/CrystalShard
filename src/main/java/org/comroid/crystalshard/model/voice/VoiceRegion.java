@@ -8,6 +8,7 @@ import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
@@ -23,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class VoiceRegion extends AbstractDataContainer implements Named {
     @RootBind
     public final static GroupBind<VoiceRegion> TYPE
-            = BASETYPE.subGroup("voice-region");
+            = BASETYPE.subGroup("voice-region", VoiceRegion::new);
     public static final VarBind<VoiceRegion, String, String, String> ID
             = TYPE.createBind("id")
             .extractAs(StandardValueType.STRING)
@@ -79,7 +80,7 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
         return null;
     }
 
-    public VoiceRegion(ContextualProvider context, @Nullable UniObjectNode initialData) {
+    public VoiceRegion(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 

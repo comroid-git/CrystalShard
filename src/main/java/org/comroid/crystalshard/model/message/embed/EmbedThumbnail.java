@@ -13,7 +13,8 @@ import java.net.URL;
 public class EmbedThumbnail extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedThumbnail> TYPE
-            = BASETYPE.subGroup("embed-thumbnail");
+            = BASETYPE.subGroup("embed-thumbnail",
+            (ctx, data) -> new EmbedThumbnail(ctx.as(Embed.class, "Context must be Embed"), data));
     public static final VarBind<EmbedThumbnail, String, URL, URL> THUMBNAIL_URL
             = TYPE.createBind("url")
             .extractAs(StandardValueType.STRING)

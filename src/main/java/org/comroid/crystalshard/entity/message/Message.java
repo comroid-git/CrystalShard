@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class Message extends Snowflake.Abstract {
     @RootBind
     public static final GroupBind<Message> TYPE
-            = BASETYPE.subGroup("message");
+            = BASETYPE.subGroup("message", Message::resolve);
     public static final VarBind<Message, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
@@ -169,7 +169,7 @@ public final class Message extends Snowflake.Abstract {
         super(context, data, EntityType.MESSAGE);
     }
 
-    public static Message resolve(ContextualProvider context, UniObjectNode data) {
+    public static Message resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getMessage, Message::new);
     }
 

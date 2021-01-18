@@ -13,7 +13,8 @@ import java.net.URL;
 public class EmbedFooter extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedFooter> TYPE
-            = BASETYPE.subGroup("embed-footer");
+            = BASETYPE.subGroup("embed-footer",
+            (ctx, data) -> new EmbedFooter(ctx.as(Embed.class, "Context must be Embed"), data));
     public static final VarBind<EmbedFooter, String, String, String> TEXT
             = TYPE.createBind("text")
             .extractAs(StandardValueType.STRING)

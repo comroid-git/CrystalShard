@@ -10,7 +10,8 @@ import org.jetbrains.annotations.Nullable;
 public class EmbedField extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedField> TYPE
-            = BASETYPE.subGroup("embed-field");
+            = BASETYPE.subGroup("embed-field",
+            (ctx, data) -> new EmbedField(ctx.as(Embed.class, "Context must be Embed"), data));
     public static final VarBind<EmbedField, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)

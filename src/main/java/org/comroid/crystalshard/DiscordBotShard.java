@@ -3,7 +3,6 @@ package org.comroid.crystalshard;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.ThrowingConsumer;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;

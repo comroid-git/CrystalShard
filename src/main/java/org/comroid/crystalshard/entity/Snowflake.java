@@ -1,6 +1,7 @@
 package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
@@ -37,6 +38,9 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
                 && getID() == other.getID();
     }
 
+    @Override
+    Rewrapper<Snowflake> self();
+
     @Internal
     static <R extends Snowflake> R resolve(
             ContextualProvider context,
@@ -65,6 +69,12 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
         @Override
         public final long getID() {
             return id.assertion();
+        }
+
+
+        @Override
+        public Rewrapper<Snowflake> self() {
+            return super.self();
         }
 
         @Override

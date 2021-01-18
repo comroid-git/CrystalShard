@@ -9,6 +9,7 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public final class ReadyEvent extends GatewayEvent {
     @RootBind
     public static final GroupBind<ReadyEvent> TYPE
-            = BASETYPE.subGroup("ready");
+            = BASETYPE.subGroup("ready", ReadyEvent::new);
     public static final VarBind<ReadyEvent, Integer, Integer, Integer> VERSION
             = TYPE.createBind("v")
             .extractAs(StandardValueType.INTEGER)
@@ -71,7 +72,7 @@ public final class ReadyEvent extends GatewayEvent {
     public final Reference<String> sessionID = getComputedReference(SESSION_ID);
     public final Reference<Span<Integer>> shard = getComputedReference(SHARD);
 
-    public ReadyEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
+    public ReadyEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 }

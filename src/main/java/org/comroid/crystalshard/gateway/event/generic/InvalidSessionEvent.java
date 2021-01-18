@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public final class InvalidSessionEvent extends GatewayEvent {
     @RootBind
     public static final GroupBind<InvalidSessionEvent> TYPE
-            = BASETYPE.subGroup("invalid-session");
+            = BASETYPE.subGroup("invalid-session", InvalidSessionEvent::new);
     public static final VarBind<InvalidSessionEvent, Boolean, Boolean, Boolean> IS_RESUMABLE
             = TYPE.createBind("")
             .extractAs(StandardValueType.BOOLEAN)

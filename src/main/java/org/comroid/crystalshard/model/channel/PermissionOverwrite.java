@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public final class PermissionOverwrite extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<PermissionOverwrite> TYPE
-            = BASETYPE.subGroup("permission-overwrite");
+            = BASETYPE.subGroup("permission-overwrite", PermissionOverwrite::new);
     public static final VarBind<PermissionOverwrite, Long, Snowflake, Snowflake> REFERENT
             = TYPE.createBind("id")
             .extractAs(StandardValueType.LONG)

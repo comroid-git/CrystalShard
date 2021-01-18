@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-public abstract class AbstractDiscordBot implements Bot {
+public class DiscordBotBase implements Bot {
     private static final Logger logger = LogManager.getLogger();
     private final DiscordAPI context;
     private final Set<GatewayIntent> intents;
@@ -76,7 +76,7 @@ public abstract class AbstractDiscordBot implements Bot {
         return shards.size();
     }
 
-    protected AbstractDiscordBot(DiscordAPI context, String token, GatewayIntent... intents) {
+    public DiscordBotBase(DiscordAPI context, String token, GatewayIntent... intents) {
         context.members.add(this);
         this.context = context;
         this.token = Reference.constant(token);

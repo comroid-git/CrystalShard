@@ -2,8 +2,10 @@ package org.comroid.crystalshard.rest.response;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
+import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.ref.Reference;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
@@ -16,7 +18,7 @@ import java.net.URI;
 public final class GatewayBotResponse extends AbstractRestResponse {
     @RootBind
     public static final GroupBind<GatewayBotResponse> TYPE
-            = BASETYPE.subGroup("rest-gateway-bot-response");
+            = BASETYPE.subGroup("rest-gateway-bot-response", GatewayBotResponse::new);
     public static final VarBind<GatewayBotResponse, String, URI, URI> URL
             = TYPE.createBind("url")
             .extractAs(StandardValueType.STRING)
@@ -42,14 +44,14 @@ public final class GatewayBotResponse extends AbstractRestResponse {
     public final Reference<Integer> shards = getComputedReference(SHARDS);
     public final Reference<SessionStartLimit> sessionStartLimit = getComputedReference(SESSION_START_LIMIT);
 
-    public GatewayBotResponse(ContextualProvider context, @Nullable UniObjectNode initialData) {
+    public GatewayBotResponse(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 
     public static class SessionStartLimit extends AbstractDataContainer {
         @RootBind
         public static final GroupBind<SessionStartLimit> TYPE
-                = BASETYPE.subGroup(GatewayBotResponse.TYPE, "session-start-limit");
+                = BASETYPE.subGroup(GatewayBotResponse.TYPE, "session-start-limit", SessionStartLimit::new);
         public static final VarBind<SessionStartLimit, Integer, Integer, Integer> TOTAL
                 = TYPE.createBind("total")
                 .extractAs(StandardValueType.INTEGER)
@@ -75,7 +77,7 @@ public final class GatewayBotResponse extends AbstractRestResponse {
         public final Reference<Integer> remaining = getComputedReference(REMAINING);
         public final Reference<Integer> resetAfter = getComputedReference(RESET_AFTER);
 
-        public SessionStartLimit(ContextualProvider context, @Nullable UniObjectNode initialData) {
+        public SessionStartLimit(ContextualProvider context, @Nullable UniNode initialData) {
             super(context, initialData);
         }
     }

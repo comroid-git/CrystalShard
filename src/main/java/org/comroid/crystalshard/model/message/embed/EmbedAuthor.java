@@ -13,7 +13,8 @@ import java.net.URL;
 public class EmbedAuthor extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedAuthor> TYPE
-            = BASETYPE.subGroup("embed-author");
+            = BASETYPE.subGroup("embed-author",
+            (ctx, data) -> new EmbedAuthor(ctx.as(Embed.class, "Context must be Embed"), data));
     public static final VarBind<EmbedAuthor, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)

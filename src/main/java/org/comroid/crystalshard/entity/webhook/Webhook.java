@@ -18,6 +18,7 @@ import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.restless.endpoint.QueryParameter;
 import org.comroid.uniform.SerializationAdapter;
+import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -36,7 +37,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     public static final Pattern URL_PATTERN = Pattern.compile("https://discord.com/api/webhooks/(?<id>\\d{12,32})/(?<token>" + TOKEN_REGEX + ")");
     @RootBind
     public static final GroupBind<Webhook> TYPE
-            = BASETYPE.subGroup("webhook");
+            = BASETYPE.subGroup("webhook", Webhook::resolve);
     public static final VarBind<Webhook, Integer, Type, Type> HOOK_TYPE
             = TYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)
@@ -79,7 +80,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
         super(context, data, EntityType.WEBHOOK);
     }
 
-    public static Webhook resolve(ContextualProvider context, UniObjectNode data) {
+    public static Webhook resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getWebhook, Webhook::new);
     }
 
