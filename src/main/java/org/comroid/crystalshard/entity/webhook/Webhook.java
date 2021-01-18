@@ -31,8 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class Webhook extends Snowflake.Abstract implements Named, MessageTarget {
-    public static final @Language("RegExp")
-    String TOKEN_REGEX = "[a-zA-Z_\\d]{16,}";
+    @Language("RegExp")
+    public static final String TOKEN_REGEX = "[a-zA-Z_\\-\\d]{16,}";
     public static final Pattern URL_PATTERN = Pattern.compile("https://discord.com/api/webhooks/(?<id>\\d{12,32})/(?<token>" + TOKEN_REGEX + ")");
     @RootBind
     public static final GroupBind<Webhook> TYPE
@@ -85,17 +85,6 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
         if (matcher.matches()) {
             long id = Long.parseLong(Polyfill.regexGroupOrDefault(matcher, "id", "0"));
             String token = Polyfill.regexGroupOrDefault(matcher, "token", null);
-
-            /*
-            return api.getREST()
-                    .request(Webhook.TYPE)
-                    .endpoint(Endpoint.EXECUTE_WEBHOOK, id, token, "")
-                    .method(REST.Method.POST)
-                    .addHeaders(DiscordAPI.createHeaders(null))
-                    .buildBody(BodyBuilderType.OBJECT, obj -> {})
-                    .execute$deserializeSingle()
-                    .join();
-             */
 
             if (id == 0 || token == null)
                 throw new IllegalArgumentException("Could not extract parameters from URL: " + url);

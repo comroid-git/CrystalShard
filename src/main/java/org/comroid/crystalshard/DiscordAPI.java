@@ -31,7 +31,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     private static final Logger logger = LogManager.getLogger();
     public static SerializationAdapter SERIALIZATION = null;
-    private final HttpAdapter httpAdapter;
+    public final HttpAdapter httpAdapter;
     private final REST rest;
     private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;

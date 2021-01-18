@@ -35,97 +35,73 @@ public final class Message extends Snowflake.Abstract {
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((message, id) -> message.requireFromContext(SnowflakeCache.class).getChannel(id))
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((message, id) -> message.requireFromContext(SnowflakeCache.class).getGuild(id))
-            .onceEach()
             .build();
     public static final VarBind<Message, UniObjectNode, User, User> AUTHOR
             = TYPE.createBind("author")
             .extractAsObject() // todo: handle WebHook author case
             .andProvideRef(User.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, UniObjectNode, UniObjectNode> MEMBER
             = TYPE.createBind("member")
             .extractAsObject()
             .asIdentities() // todo GuildMember stuff
-            .onceEach()
             .build();
     public static final VarBind<Message, String, String, String> CONTENT
             = TYPE.createBind("content")
             .extractAs(StandardValueType.STRING)
-            .asIdentities()
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, String, Instant, Instant> TIMESTAMP
             = TYPE.createBind("timestamp")
             .extractAs(StandardValueType.STRING)
             .andRemap(Instant::parse)
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, String, Instant, Instant> EDITED_TIMESTAMP
             = TYPE.createBind("edited_timestamp")
             .extractAs(StandardValueType.STRING)
             .andRemap(Instant::parse)
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, Boolean, Boolean, Boolean> TTS
             = TYPE.createBind("tts")
             .extractAs(StandardValueType.BOOLEAN)
-            .asIdentities()
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, Boolean, Boolean, Boolean> MENTIONS_EVERYONE
             = TYPE.createBind("mention_everyone")
             .extractAs(StandardValueType.BOOLEAN)
-            .asIdentities()
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, User, Span<User>> MENTIONED_USERS
             = TYPE.createBind("mentions")
             .extractAsArray()
             .andProvideRef(User.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
             .intoSpan()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, Role, Span<Role>> MENTIONED_ROLES
             = TYPE.createBind("mention_roles")
             .extractAsArray()
             .andProvideRef(Role.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getRole(id), Role.TYPE)
             .intoSpan()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, UniObjectNode, Span<UniObjectNode>> MENTIONED_CHANNELS
             = TYPE.createBind("mention_channels")
             .extractAsArray()
             .asIdentities() // todo Handle ChannelMention Object
             .intoSpan()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, MessageAttachment, Span<MessageAttachment>> ATTACHMENTS
             = TYPE.createBind("attachments")
             .extractAsArray()
             .andConstruct(MessageAttachment.TYPE)
             .intoSpan()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, Embed, Span<Embed>> EMBEDS
             = TYPE.createBind("embeds")
             .extractAsArray()
             .andConstruct(Embed.TYPE)
             .intoSpan()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, Reaction, Span<Reaction>> REACTIONS
             = TYPE.createBind("reactions")
@@ -141,51 +117,40 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, String, String, String> NONCE
             = TYPE.createBind("nonce")
             .extractAs(StandardValueType.STRING)
-            .asIdentities()
-            .onceEach()
             .build();
     public static final VarBind<Message, Boolean, Boolean, Boolean> PINNED
             = TYPE.createBind("pinned")
             .extractAs(StandardValueType.BOOLEAN)
-            .asIdentities()
-            .onceEach()
             .build();
     public static final VarBind<Message, Long, Webhook, Webhook> WEBHOOK_AUTHOR
             = TYPE.createBind("webhook_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.WEBHOOK, id))
-            .onceEach()
             .build();
     public static final VarBind<Message, Integer, Type, Type> MESSAGE_TYPE
             = TYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)
             .andRemapRef(Type::valueOf)
-            .onceEach()
-            .setRequired()
             .build();
     public static final VarBind<Message, UniObjectNode, MessageActivity, MessageActivity> ACTIVITY
             = TYPE.createBind("activity")
             .extractAsObject()
             .andConstruct(MessageActivity.TYPE)
-            .onceEach()
             .build();
     public static final VarBind<Message, UniObjectNode, MessageApplication, MessageApplication> APPLICATION
             = TYPE.createBind("application")
             .extractAsObject()
             .andProvideRef(MessageApplication.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.MESSAGE_APPLICATION, id), MessageApplication.TYPE)
-            .onceEach()
             .build();
     public static final VarBind<Message, UniObjectNode, MessageReference, MessageReference> REFERENCE
             = TYPE.createBind("message_reference")
             .extractAsObject()
             .andConstruct(MessageReference.TYPE)
-            .onceEach()
             .build();
     public static final VarBind<Message, Integer, Set<Flags>, Set<Flags>> FLAGS
             = TYPE.createBind("flags")
             .extractAs(StandardValueType.INTEGER)
             .andRemap(Flags::valueOf)
-            .onceEach()
             .build();
     public static final VarBind<Message, UniObjectNode, MessageSticker, Span<MessageSticker>> STICKERS
             = TYPE.createBind("stickers")
@@ -197,7 +162,6 @@ public final class Message extends Snowflake.Abstract {
             = TYPE.createBind("referenced_message")
             .extractAsObject()
             .andProvideRef(Message.ID, (msg, id) -> msg.requireFromContext(SnowflakeCache.class).getMessage(id), Message.TYPE)
-            .onceEach()
             .build();
     private final Map<String, Reaction> reactions = new ConcurrentHashMap<>();
 
