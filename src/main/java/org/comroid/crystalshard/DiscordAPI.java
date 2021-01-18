@@ -143,6 +143,6 @@ public final class DiscordAPI extends ContextualProvider.Base {
 
         this.snowflakeCache = new SnowflakeCache(this);
 
-        this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, snowflakeCache, this);
+        this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, rest, snowflakeCache, this);
     }
 }
