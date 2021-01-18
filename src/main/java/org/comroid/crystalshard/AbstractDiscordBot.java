@@ -8,7 +8,6 @@ import org.comroid.common.exception.AssertionException;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.Reference;
