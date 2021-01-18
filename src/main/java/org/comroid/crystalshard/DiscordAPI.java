@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class DiscordAPI extends ContextualProvider.Base implements AutoCloseable {
+public final class DiscordAPI extends ContextualProvider.Base {
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     private static final Logger logger = LogManager.getLogger();
@@ -146,13 +146,5 @@ public final class DiscordAPI extends ContextualProvider.Base implements AutoClo
         this.snowflakeCache = new SnowflakeCache(this);
 
         this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, rest, snowflakeCache, this);
-    }
-
-    @Override
-    public void close() throws Exception {
-        scheduledExecutorService.shutdown();
-        for (Object each : members)
-            if (each instanceof AutoCloseable && each != this)
-                ((AutoCloseable) each).close();
     }
 }

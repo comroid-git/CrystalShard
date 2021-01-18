@@ -61,28 +61,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.socket = socket;
         this.intents = Reference.constant(intents);
         this.dataPipeline = getPacketPipeline()
-                .yield(packet -> packet.getType() == WebsocketPacket.Type.DATA, packet -> {
-                    // handle non-data packets
-                    switch (packet.getType()) {
-                        case DATA:
-                            throw new AssertionError();
-                        case OPEN:
-                        case PING:
-                        case PONG:
-                            break;
-                        case ERROR:
-                            logger.error("Error in Gateway", packet.getError().assertion());
-                            break;
-                        case CLOSE:
-                            logger.warn("Websocket closed; shutting down. {}", packet.toString());
-                            try {
-                                shard.context.close();
-                            } catch (Exception e) {
-                                throw new RuntimeException("Error while shutting down", e);
-                            }
-                            break;
-                    }
-                })
+                .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
                 .map(DiscordAPI.SERIALIZATION::parse)
                 .filter(Objects::nonNull);
