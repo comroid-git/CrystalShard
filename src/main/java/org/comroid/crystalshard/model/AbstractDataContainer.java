@@ -17,7 +17,7 @@ public abstract class AbstractDataContainer
 
     @Override
     public ContextualProvider getUnderlyingContextualProvider() {
-        return context.plus(this);
+        return context;
     }
 
     public AbstractDataContainer(ContextualProvider context, @Nullable UniNode initialData) {

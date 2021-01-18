@@ -50,7 +50,7 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
 
         @Override
         public final ContextualProvider getUnderlyingContextualProvider() {
-            return context.plus(this);
+            return context;
         }
 
         protected Abstract(ContextualProvider context, UniObjectNode data, EntityType<? extends Snowflake> entityType) {
