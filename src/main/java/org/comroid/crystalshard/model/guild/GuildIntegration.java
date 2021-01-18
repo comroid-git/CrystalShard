@@ -12,10 +12,6 @@ public final class GuildIntegration extends Snowflake.Abstract {
     }
 
     public static GuildIntegration resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getGuildIntegration(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new GuildIntegration(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getGuildIntegration, GuildIntegration::new);
     }
 }

@@ -170,11 +170,7 @@ public final class Message extends Snowflake.Abstract {
     }
 
     public static Message resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getMessage(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new Message(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getMessage, Message::new);
     }
 
     public enum Type implements IntEnum, Named {

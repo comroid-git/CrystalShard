@@ -53,11 +53,7 @@ public final class MessageSticker extends Snowflake.Abstract {
     }
 
     public static MessageSticker resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getMessageSticker(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new MessageSticker(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getMessageSticker, MessageSticker::new);
     }
 
     public enum FormatType implements IntEnum {

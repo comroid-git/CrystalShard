@@ -56,7 +56,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     public static final VarBind<Webhook, UniObjectNode, User, User> CREATOR
             = TYPE.createBind("user")
             .extractAsObject()
-            .andProvideRef(User.ID, (hook, id) -> hook.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .andResolve(User::resolve)
             .build();
     public static final VarBind<Webhook, String, String, String> NAME
             = TYPE.createBind("name")
@@ -81,11 +81,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     }
 
     public static Webhook resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getWebhook(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new Webhook(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getWebhook, Webhook::new);
     }
 
     public static Webhook fromURL(DiscordAPI api, String url) {

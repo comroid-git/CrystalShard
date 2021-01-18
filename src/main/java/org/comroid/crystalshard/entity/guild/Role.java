@@ -81,10 +81,6 @@ public final class Role extends Snowflake.Abstract implements Mentionable {
     }
 
     public static Role resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getRole(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new Role(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getRole, Role::new);
     }
 }

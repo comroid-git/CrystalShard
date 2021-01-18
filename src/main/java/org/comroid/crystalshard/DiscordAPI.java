@@ -37,7 +37,7 @@ public final class DiscordAPI extends ContextualProvider.Base {
     private final REST rest;
     private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;
-    private final Span<Object> members;
+    final Span<Object> members;
 
     @Override
     public Span<Object> getContextMembers() {

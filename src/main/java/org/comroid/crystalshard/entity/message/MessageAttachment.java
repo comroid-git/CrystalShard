@@ -65,10 +65,6 @@ public final class MessageAttachment extends Snowflake.Abstract {
     }
 
     public static MessageAttachment resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getMessageAttachment(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new MessageAttachment(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getMessageAttachment, MessageAttachment::new);
     }
 }

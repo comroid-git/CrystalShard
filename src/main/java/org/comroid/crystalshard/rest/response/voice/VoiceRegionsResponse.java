@@ -19,7 +19,7 @@ public final class VoiceRegionsResponse extends AbstractRestResponse {
     public static final VarBind<VoiceRegionsResponse, UniObjectNode, VoiceRegion, ArrayList<VoiceRegion>> REGIONS
             = TYPE.createBind("")
             .extractAsArray()
-            .andProvide(VoiceRegion.NAME, VoiceRegion::find, VoiceRegion.TYPE)
+            .andResolve(VoiceRegion::find)
             .intoCollection(ArrayList::new)
             .build();
     public final Reference<ArrayList<VoiceRegion>> regions = getComputedReference(REGIONS);

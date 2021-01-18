@@ -25,32 +25,24 @@ public interface Channel extends Snowflake, Named {
             .build();
 
     static Channel resolve(ContextualProvider context, UniObjectNode data) {
-        final ChannelType type = CHANNEL_TYPE.getFrom(data);
-        final SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        final long id = Snowflake.ID.getFrom(data);
-
-        Reference<Channel> ref = cache.getChannel(id);
-        if (ref.isNonNull()) {
-            Channel channel = ref.assertion();
-            channel.updateFrom(data);
-            return channel;
-        }
-
-        switch (type) {
-            case GUILD_TEXT:
-                return new GuildTextChannel(context, data);
-            case DM:
-                return new PrivateTextChannel(context, data);
-            case GUILD_VOICE:
-                return new GuildVoiceChannel(context, data);
-            case GROUP_DM:
-                return new GroupChannel(context, data);
-            case GUILD_CATEGORY:
-                return new GuildChannelCategory(context, data);
-            case GUILD_NEWS:
-            case GUILD_STORE:
-            default:
-                throw new UnsupportedOperationException("unimplemented type: " + type);
-        }
+        return Snowflake.resolve(context, data, SnowflakeCache::getChannel, (ctx, obj) -> {
+            final ChannelType type = CHANNEL_TYPE.getFrom(obj);
+            switch (type) {
+                case GUILD_TEXT:
+                    return new GuildTextChannel(context, data);
+                case DM:
+                    return new PrivateTextChannel(context, data);
+                case GUILD_VOICE:
+                    return new GuildVoiceChannel(context, data);
+                case GROUP_DM:
+                    return new GroupChannel(context, data);
+                case GUILD_CATEGORY:
+                    return new GuildChannelCategory(context, data);
+                case GUILD_NEWS:
+                case GUILD_STORE:
+                default:
+                    throw new UnsupportedOperationException("unimplemented type: " + type);
+            }
+        });
     }
 }

@@ -84,6 +84,11 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
     }
 
     @Internal
+    public static @Nullable VoiceRegion find(ContextualProvider context, UniObjectNode data) {
+        return find(context, data.get(ID).asString());
+    }
+
+    @Internal
     public static @Nullable VoiceRegion find(ContextualProvider context, String name) {
         if (!cache.containsKey(name))
             refreshCache(context).join();

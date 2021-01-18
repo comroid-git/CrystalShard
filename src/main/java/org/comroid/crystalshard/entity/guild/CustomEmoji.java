@@ -19,10 +19,6 @@ public final class CustomEmoji extends Snowflake.Abstract implements Emoji {
     }
 
     public static CustomEmoji resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getCustomEmoji(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new CustomEmoji(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getCustomEmoji, CustomEmoji::new);
     }
 }

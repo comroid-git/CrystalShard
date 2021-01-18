@@ -7,10 +7,10 @@ import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
-import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.model.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.uniform.node.UniObjectNode;
@@ -18,10 +18,12 @@ import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 
 public final class User extends Snowflake.Abstract implements MessageTarget {
     @RootBind
@@ -96,11 +98,7 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
     }
 
     public static User resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getUser(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new User(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getUser, User::new);
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")

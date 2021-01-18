@@ -43,10 +43,6 @@ public final class MessageApplication extends Snowflake.Abstract {
     }
 
     public static MessageApplication resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getMessageApplication(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new MessageApplication(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getMessageApplication, MessageApplication::new);
     }
 }

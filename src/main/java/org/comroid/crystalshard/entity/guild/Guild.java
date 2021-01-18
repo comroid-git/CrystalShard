@@ -238,10 +238,6 @@ public final class Guild extends Snowflake.Abstract implements Named {
     }
 
     public static Guild resolve(ContextualProvider context, UniObjectNode data) {
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
-        long id = Snowflake.ID.getFrom(data);
-        return cache.getGuild(id)
-                .peek(it -> it.updateFrom(data))
-                .orElseGet(() -> new Guild(context, data));
+        return Snowflake.resolve(context, data, SnowflakeCache::getGuild, Guild::new);
     }
 }

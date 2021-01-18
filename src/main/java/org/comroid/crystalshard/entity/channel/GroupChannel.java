@@ -18,7 +18,7 @@ public final class GroupChannel extends AbstractTextChannel implements TextChann
     public static final VarBind<GroupChannel, UniObjectNode, User, Span<User>> RECIPIENTS
             = TYPE.createBind("recipients")
             .extractAsArray()
-            .andProvideRef(User.ID, (channel, id) -> channel.requireFromContext(SnowflakeCache.class).getUser(id), User.TYPE)
+            .andResolve(User::resolve)
             .intoSpan()
             .setRequired()
             .build();
