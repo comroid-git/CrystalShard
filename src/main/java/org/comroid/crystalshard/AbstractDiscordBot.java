@@ -77,6 +77,7 @@ public abstract class AbstractDiscordBot implements Bot {
     }
 
     protected AbstractDiscordBot(DiscordAPI context, String token, GatewayIntent... intents) {
+        context.plus(this);
         this.context = context;
         this.token = Reference.constant(token);
         this.intents = new HashSet<>(Arrays.asList(intents));

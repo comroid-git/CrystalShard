@@ -18,10 +18,10 @@ import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
-import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.uniform.node.impl.StandardValueType;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
@@ -61,7 +61,28 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.socket = socket;
         this.intents = Reference.constant(intents);
         this.dataPipeline = getPacketPipeline()
-                .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
+                .yield(packet -> packet.getType() == WebsocketPacket.Type.DATA, packet -> {
+                    // handle non-data packets
+                    switch (packet.getType()) {
+                        case DATA:
+                            throw new AssertionError();
+                        case OPEN:
+                        case PING:
+                        case PONG:
+                            break;
+                        case ERROR:
+                            logger.error("Error in Gateway", packet.getError().assertion());
+                            break;
+                        case CLOSE:
+                            logger.warn("Websocket closed; shutting down. {}", packet.toString());
+                            try {
+                                shard.context.close();
+                            } catch (Exception e) {
+                                throw new RuntimeException("Error while shutting down", e);
+                            }
+                            break;
+                    }
+                })
                 .flatMap(WebsocketPacket::getData)
                 .map(DiscordAPI.SERIALIZATION::parse)
                 .filter(Objects::nonNull);
@@ -177,8 +198,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
         return socket.send(payload.toString())
                 .thenCombine(getEventPipeline()
-                        .flatMap(ReadyEvent.class).next(),
-                        (ws,ready)->ready);
+                                .flatMap(ReadyEvent.class).next(),
+                        (ws, ready) -> ready);
     }
 
     private CompletableFuture<UniNode> awaitAck(Websocket socket) {

@@ -1,8 +1,6 @@
 package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.EntityType;
-import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannelCategory;
 import org.comroid.crystalshard.entity.guild.Guild;
@@ -13,10 +11,9 @@ import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferenceMap;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class SnowflakeCache implements ContextualProvider.Underlying {
     private final ReferenceMap<String, Snowflake> cache = ReferenceMap.create();
@@ -27,7 +24,8 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
         return context.plus(this);
     }
 
-    SnowflakeCache(ContextualProvider context) {
+    @Internal
+    public SnowflakeCache(ContextualProvider context) {
         this.context = context;
     }
 

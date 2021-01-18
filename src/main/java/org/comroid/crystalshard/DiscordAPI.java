@@ -20,6 +20,7 @@ import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Closeable;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -27,7 +28,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class DiscordAPI extends ContextualProvider.Base {
+public final class DiscordAPI extends ContextualProvider.Base implements AutoCloseable {
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     private static final Logger logger = LogManager.getLogger();
@@ -145,5 +146,13 @@ public final class DiscordAPI extends ContextualProvider.Base {
         this.snowflakeCache = new SnowflakeCache(this);
 
         this.members = Span.immutable(SERIALIZATION, httpAdapter, scheduledExecutorService, rest, snowflakeCache, this);
+    }
+
+    @Override
+    public void close() throws Exception {
+        scheduledExecutorService.shutdown();
+        for (Object each : members)
+            if (each instanceof AutoCloseable)
+                ((AutoCloseable) each).close();
     }
 }
