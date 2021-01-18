@@ -34,7 +34,7 @@ public final class GatewayBotResponse extends AbstractRestResponse {
     public static final VarBind<GatewayBotResponse, UniObjectNode, SessionStartLimit, SessionStartLimit> SESSION_START_LIMIT
             = TYPE.createBind("session_start_limit")
             .extractAsObject()
-            .andConstruct(SessionStartLimit.TYPE)
+            .andResolve(SessionStartLimit::new)
             .onceEach()
             .setRequired()
             .build();

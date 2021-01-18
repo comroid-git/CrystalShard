@@ -3,7 +3,6 @@ package org.comroid.crystalshard.entity.channel;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
-import org.comroid.crystalshard.entity.channel.impl.AbstractTextChannel;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniObjectNode;
@@ -44,7 +43,7 @@ public final class GroupChannel extends AbstractTextChannel implements TextChann
             .setRequired()
             .build();
 
-    public GroupChannel(ContextualProvider context, UniObjectNode data) {
+    GroupChannel(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.GROUP_CHANNEL);
     }
 }

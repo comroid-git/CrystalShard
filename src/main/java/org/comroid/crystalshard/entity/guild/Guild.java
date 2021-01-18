@@ -93,13 +93,13 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, UniObjectNode, Role, Span<Role>> ROLES
             = TYPE.createBind("roles")
             .extractAsArray()
-            .andConstruct(Role.TYPE)
+            .andResolve(Role::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Guild, UniObjectNode, CustomEmoji, Span<CustomEmoji>> EMOJIS
             = TYPE.createBind("emojis")
             .extractAsArray()
-            .andConstruct(CustomEmoji.TYPE)
+            .andResolve(CustomEmoji::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Guild, String, GuildFeature, Span<GuildFeature>> FEATURES
@@ -153,7 +153,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, UniObjectNode, VoiceState, Span<VoiceState>> VOICE_STATES
             = TYPE.createBind("voice_states")
             .extractAsArray()
-            .andConstruct(VoiceState.TYPE)
+            .andResolve(VoiceState::new)
             .intoSpan()
             .build();
     public static final VarBind<Guild, UniObjectNode, UniObjectNode, Span<UniObjectNode>> MEMBERS
@@ -165,7 +165,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, UniObjectNode, Channel, Span<Channel>> CHANNELS
             = TYPE.createBind("channels")
             .extractAsArray()
-            .andConstruct(Channel.BASETYPE)
+            .andResolve(Channel::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Guild, UniObjectNode, UniObjectNode, Span<UniObjectNode>> PRESENCES
@@ -233,7 +233,15 @@ public final class Guild extends Snowflake.Abstract implements Named {
         return null;
     }
 
-    public Guild(ContextualProvider context, UniObjectNode data) {
+    private Guild(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.GUILD);
+    }
+
+    public static Guild resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getGuild(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new Guild(context, data));
     }
 }

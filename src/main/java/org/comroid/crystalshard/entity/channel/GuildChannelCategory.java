@@ -13,7 +13,7 @@ public final class GuildChannelCategory extends Snowflake.Abstract implements Gu
         return null;
     }
 
-    protected GuildChannelCategory(ContextualProvider context, UniObjectNode data) {
+    GuildChannelCategory(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.GUILD_CHANNEL_CATEGORY);
     }
 }

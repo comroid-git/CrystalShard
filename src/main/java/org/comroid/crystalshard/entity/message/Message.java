@@ -94,13 +94,13 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, MessageAttachment, Span<MessageAttachment>> ATTACHMENTS
             = TYPE.createBind("attachments")
             .extractAsArray()
-            .andConstruct(MessageAttachment.TYPE)
+            .andResolve(MessageAttachment::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, Embed, Span<Embed>> EMBEDS
             = TYPE.createBind("embeds")
             .extractAsArray()
-            .andConstruct(Embed.TYPE)
+            .andResolve(Embed::new)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, Reaction, Span<Reaction>> REACTIONS
@@ -135,7 +135,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, MessageActivity, MessageActivity> ACTIVITY
             = TYPE.createBind("activity")
             .extractAsObject()
-            .andConstruct(MessageActivity.TYPE)
+            .andResolve(MessageActivity::new)
             .build();
     public static final VarBind<Message, UniObjectNode, MessageApplication, MessageApplication> APPLICATION
             = TYPE.createBind("application")
@@ -145,7 +145,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, MessageReference, MessageReference> REFERENCE
             = TYPE.createBind("message_reference")
             .extractAsObject()
-            .andConstruct(MessageReference.TYPE)
+            .andResolve(MessageReference::new)
             .build();
     public static final VarBind<Message, Integer, Set<Flags>, Set<Flags>> FLAGS
             = TYPE.createBind("flags")
@@ -165,8 +165,16 @@ public final class Message extends Snowflake.Abstract {
             .build();
     private final Map<String, Reaction> reactions = new ConcurrentHashMap<>();
 
-    public Message(ContextualProvider context, UniObjectNode data) {
+    private Message(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.MESSAGE);
+    }
+
+    public static Message resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getMessage(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new Message(context, data));
     }
 
     public enum Type implements IntEnum, Named {

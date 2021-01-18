@@ -39,14 +39,14 @@ public final class ReadyEvent extends GatewayEvent {
     public static final VarBind<ReadyEvent, UniObjectNode, Channel, ArrayList<Channel>> PRIVATE_CHANNELS
             = TYPE.createBind("private_channels")
             .extractAsArray()
-            .andConstruct(Channel.BASETYPE)
+            .andResolve(Channel::resolve)
             .intoCollection(ArrayList::new)
             .setRequired()
             .build();
     public static final VarBind<ReadyEvent, UniObjectNode, Guild, ArrayList<Guild>> GUILDS
             = TYPE.createBind("guilds")
             .extractAsArray()
-            .andConstruct(Guild.TYPE) // construct, because we are in READY event
+            .andResolve(Guild::resolve)
             .intoCollection(ArrayList::new)
             .setRequired()
             .build();

@@ -3,11 +3,16 @@ package org.comroid.crystalshard.entity;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannelCategory;
+import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.entity.message.MessageApplication;
+import org.comroid.crystalshard.entity.message.MessageAttachment;
+import org.comroid.crystalshard.entity.message.MessageSticker;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
+import org.comroid.crystalshard.model.guild.GuildIntegration;
 import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferenceMap;
@@ -33,6 +38,10 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
         return getSnowflake(EntityType.GUILD, id);
     }
 
+    public Reference<GuildIntegration> getGuildIntegration(long id) {
+        return getSnowflake(EntityType.GUILD_INTEGRATION, id);
+    }
+
     public Reference<Role> getRole(long id) {
         return getSnowflake(EntityType.ROLE, id);
     }
@@ -49,12 +58,28 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
         return getSnowflake(EntityType.MESSAGE, id);
     }
 
+    public Reference<MessageApplication> getMessageApplication(long id) {
+        return getSnowflake(EntityType.MESSAGE_APPLICATION, id);
+    }
+
+    public Reference<MessageAttachment> getMessageAttachment(long id) {
+        return getSnowflake(EntityType.MESSAGE_ATTACHMENT, id);
+    }
+
+    public Reference<MessageSticker> getMessageSticker(long id) {
+        return getSnowflake(EntityType.MESSAGE_STICKER, id);
+    }
+
     public Reference<User> getUser(long id) {
         return getSnowflake(EntityType.USER, id);
     }
 
     public Reference<Webhook> getWebhook(long id) {
         return getSnowflake(EntityType.WEBHOOK, id);
+    }
+
+    public Reference<CustomEmoji> getCustomEmoji(long id) {
+        return getSnowflake(EntityType.CUSTOM_EMOJI, id);
     }
 
     public <T extends Snowflake> Processor<T> getSnowflake(EntityType<T> type, long id) {

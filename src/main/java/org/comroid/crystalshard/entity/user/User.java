@@ -5,7 +5,9 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.model.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.crystalshard.rest.Endpoint;
@@ -89,8 +91,16 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
         );
     }
 
-    public User(ContextualProvider context, UniObjectNode data) {
+    private User(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.USER);
+    }
+
+    public static User resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getUser(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new User(context, data));
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")

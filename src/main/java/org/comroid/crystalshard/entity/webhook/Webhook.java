@@ -9,6 +9,7 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.MessageTarget;
@@ -75,8 +76,16 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
             .build();
     public final Reference<String> token = getComputedReference(TOKEN);
 
-    protected Webhook(ContextualProvider context, UniObjectNode data) {
+    private Webhook(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.WEBHOOK);
+    }
+
+    public static Webhook resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getWebhook(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new Webhook(context, data));
     }
 
     public static Webhook fromURL(DiscordAPI api, String url) {
@@ -98,7 +107,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
             obj.put(ID, id);
             obj.put(TOKEN, token);
 
-            return new Webhook(api, obj);
+            return Webhook.resolve(api, obj);
         } else throw new IllegalArgumentException("Invalid URL: " + url);
     }
 

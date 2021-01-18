@@ -26,7 +26,7 @@ public final class RoleTags extends AbstractDataContainer {
             = TYPE.createBind("integration_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((it, id) -> it.requireFromContext(Bot.class)
-                    .getSnowflakeCache().getSnowflake(EntityType.INTEGRATION, id))
+                    .getSnowflakeCache().getSnowflake(EntityType.GUILD_INTEGRATION, id))
             .onceEach()
             .build();
     public static final VarBind<RoleTags, Boolean, Boolean, Boolean> PREMIUM_SUBSCRIBER

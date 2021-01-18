@@ -4,6 +4,8 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
@@ -58,7 +60,15 @@ public final class MessageAttachment extends Snowflake.Abstract {
             .onceEach()
             .build();
 
-    public MessageAttachment(ContextualProvider context, UniObjectNode data) {
+    private MessageAttachment(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.MESSAGE_ATTACHMENT);
+    }
+
+    public static MessageAttachment resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getMessageAttachment(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new MessageAttachment(context, data));
     }
 }

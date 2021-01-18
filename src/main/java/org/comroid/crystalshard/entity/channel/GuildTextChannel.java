@@ -2,7 +2,6 @@ package org.comroid.crystalshard.entity.channel;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.EntityType;
-import org.comroid.crystalshard.entity.channel.impl.AbstractTextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
@@ -28,7 +27,7 @@ public final class GuildTextChannel extends AbstractTextChannel implements Guild
         return null; // Todo
     }
 
-    public GuildTextChannel(ContextualProvider context, UniObjectNode data) {
+    GuildTextChannel(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.GUILD_TEXT_CHANNEL);
     }
 }

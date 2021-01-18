@@ -5,6 +5,8 @@ import org.comroid.crystalshard.cdn.CDNEndpoint;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -36,7 +38,15 @@ public final class MessageApplication extends Snowflake.Abstract {
             .extractAs(StandardValueType.STRING)
             .build();
 
-    protected MessageApplication(ContextualProvider context, UniObjectNode data) {
+    private MessageApplication(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.MESSAGE_APPLICATION);
+    }
+
+    public static MessageApplication resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getMessageApplication(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new MessageApplication(context, data));
     }
 }

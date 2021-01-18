@@ -40,7 +40,7 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
             = new EntityType<>(Role.class);
     public static final EntityType<CustomEmoji> CUSTOM_EMOJI
             = new EntityType<>(CustomEmoji.class);
-    public static final EntityType<GuildIntegration> INTEGRATION
+    public static final EntityType<GuildIntegration> GUILD_INTEGRATION
             = new EntityType<>(GuildIntegration.class);
 
     public static final EntityType<Channel> CHANNEL

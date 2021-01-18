@@ -5,6 +5,8 @@ import org.comroid.api.IntEnum;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -46,8 +48,16 @@ public final class MessageSticker extends Snowflake.Abstract {
             .andRemapRef(FormatType::valueOf)
             .build();
 
-    protected MessageSticker(ContextualProvider context, UniObjectNode data) {
+    private MessageSticker(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.MESSAGE_STICKER);
+    }
+
+    public static MessageSticker resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getMessageSticker(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new MessageSticker(context, data));
     }
 
     public enum FormatType implements IntEnum {

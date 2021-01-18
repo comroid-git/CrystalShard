@@ -36,7 +36,7 @@ public final class Reaction extends AbstractDataContainer {
         if (emojiObject.isNull("id")/* <== todo test this*/)
             return UnicodeEmoji.getInstance(emojiObject.get("name").asString());
         else if (CustomEmoji.TYPE.isValidData(emojiObject))
-            return new CustomEmoji(context, emojiObject);
+            return CustomEmoji.resolve(context, emojiObject);
         return null;
     }
 

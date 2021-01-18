@@ -1,8 +1,10 @@
 package org.comroid.crystalshard.entity.guild;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.model.guild.PermissionSet;
 import org.comroid.crystalshard.model.guild.RoleTags;
 import org.comroid.crystalshard.model.message.Mentionable;
@@ -70,11 +72,19 @@ public final class Role extends Snowflake.Abstract implements Mentionable {
     public static final VarBind<Role, UniObjectNode, RoleTags, RoleTags> TAGS
             = TYPE.createBind("tags")
             .extractAsObject()
-            .andConstruct(RoleTags.TYPE)
+            .andResolve(RoleTags::new)
             .onceEach()
             .build();
 
-    public Role(ContextualProvider context, UniObjectNode data) {
+    private Role(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.ROLE);
+    }
+
+    public static Role resolve(ContextualProvider context, UniObjectNode data) {
+        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        long id = Snowflake.ID.getFrom(data);
+        return cache.getRole(id)
+                .peek(it -> it.updateFrom(data))
+                .orElseGet(() -> new Role(context, data));
     }
 }

@@ -29,7 +29,7 @@ public interface GuildChannel extends Channel {
     VarBind<GuildChannel, UniObjectNode, PermissionOverwrite, Span<PermissionOverwrite>> PERMISSION_OVERWRITES
             = BASETYPE.createBind("permission_overwrites")
             .extractAsArray()
-            .andConstruct(PermissionOverwrite.TYPE)
+            .andResolve(PermissionOverwrite::new)
             .intoSpan()
             .setRequired()
             .build();

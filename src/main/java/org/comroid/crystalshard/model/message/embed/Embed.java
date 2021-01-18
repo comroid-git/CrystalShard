@@ -61,43 +61,43 @@ public final class Embed extends AbstractDataContainer {
     public static final VarBind<Embed, UniObjectNode, EmbedFooter, EmbedFooter> FOOTER
             = TYPE.createBind("footer")
             .extractAsObject()
-            .andConstruct(EmbedFooter.TYPE)
+            .andResolve(EmbedFooter::new)
             .onceEach()
             .build();
     public static final VarBind<Embed, UniObjectNode, EmbedImage, EmbedImage> IMAGE
             = TYPE.createBind("image")
             .extractAsObject()
-            .andConstruct(EmbedImage.TYPE)
+            .andResolve(EmbedImage::new)
             .onceEach()
             .build();
     public static final VarBind<Embed, UniObjectNode, EmbedThumbnail, EmbedThumbnail> THUMBNAIL
             = TYPE.createBind("thumbnail")
             .extractAsObject()
-            .andConstruct(EmbedThumbnail.TYPE)
+            .andResolve(EmbedThumbnail::new)
             .onceEach()
             .build();
     public static final VarBind<Embed, UniObjectNode, EmbedVideo, EmbedVideo> VIDEO
             = TYPE.createBind("video")
             .extractAsObject()
-            .andConstruct(EmbedVideo.TYPE)
+            .andResolve(EmbedVideo::new)
             .onceEach()
             .build();
     public static final VarBind<Embed, UniObjectNode, EmbedProvider, EmbedProvider> PROVIDER
             = TYPE.createBind("provider")
             .extractAsObject()
-            .andConstruct(EmbedProvider.TYPE)
+            .andResolve(EmbedProvider::new)
             .onceEach()
             .build();
     public static final VarBind<Embed, UniObjectNode, EmbedAuthor, EmbedAuthor> AUTHOR
             = TYPE.createBind("author")
             .extractAsObject()
-            .andConstruct(EmbedAuthor.TYPE)
+            .andResolve(EmbedAuthor::new)
             .onceEach()
             .build();
     public static final VarBind<Embed, UniObjectNode, EmbedField, Span<EmbedField>> FIELDS
             = TYPE.createBind("fields")
             .extractAsArray()
-            .andConstruct(EmbedField.TYPE)
+            .andResolve(EmbedField::new)
             .intoSpan()
             .build();
 
