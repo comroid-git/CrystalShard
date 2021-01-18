@@ -84,6 +84,11 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
 
         if (matcher.matches()) {
             long id = Long.parseLong(Polyfill.regexGroupOrDefault(matcher, "id", "0"));
+
+            Reference<Webhook> cached = api.requireFromContext(SnowflakeCache.class).getWebhook(id);
+            if (cached.isNonNull())
+                return cached.assertion();
+
             String token = Polyfill.regexGroupOrDefault(matcher, "token", null);
 
             if (id == 0 || token == null)
