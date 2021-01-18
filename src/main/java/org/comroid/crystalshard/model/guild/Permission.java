@@ -57,7 +57,7 @@ public enum Permission implements BitmaskEnum<Permission>, Named, Described {
         this.description = description;
     }
 
-    public static Set<Permission> valueOf(int value) {
+    public static PermissionSet valueOf(int value) {
         return new PermissionSet(value);
     }
 }
