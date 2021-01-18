@@ -12,7 +12,7 @@ public final class HeartbeatAckEvent extends GatewayEvent {
     public static final GroupBind<HeartbeatAckEvent> TYPE
             = BASETYPE.rootGroup("heartbeat-ack");
 
-    public HeartbeatAckEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
-        super(context, initialData);
+    public HeartbeatAckEvent(ContextualProvider context) {
+        super(context, null);
     }
 }

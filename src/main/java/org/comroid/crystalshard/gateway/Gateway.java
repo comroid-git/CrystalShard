@@ -21,6 +21,7 @@ import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.uniform.node.UniValueNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -32,10 +33,12 @@ import java.util.concurrent.*;
 
 public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private static final Logger logger = LogManager.getLogger();
-    public final @Internal
-    Reference<Integer> heartbeatTime = Reference.create();
-    public final @Internal
-    FutureReference<ReadyEvent> readyEvent;
+    @Internal
+    public final Reference<Integer> heartbeatTime = Reference.create();
+    @Internal
+    private final Reference<Integer> sequence = Reference.create();
+    @Internal
+    public final FutureReference<ReadyEvent> readyEvent;
     private final Websocket socket;
     private final Pipe<? extends UniNode> dataPipeline;
     private final Pipe<? extends GatewayEvent> eventPipeline;
@@ -67,6 +70,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .filter(Objects::nonNull);
         this.eventPipeline = dataPipeline
                 .map(data -> {
+                    data.wrap("s").map(UniNode::asInt).ifPresent(sequence::set);
                     OpCode op = IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
                             .assertion(MessageSupplier.format("Invalid OP Code in data: %s", data));
                     logger.trace("Attempting to dispatch message as {}: {}", op.getName(), data.toString());
@@ -118,7 +122,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     private GatewayEvent dispatchPacket(UniNode data, OpCode opCode) {
-        final UniNode innerData = data.get("d");
+        final UniNode innerData = data.has("d") ? data.get("d") : UniValueNode.NULL;
         switch (opCode) {
             case DISPATCH:
                 final DispatchEventType dispatchEventType = DispatchEventType.find(data)
@@ -141,7 +145,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             case HELLO:
                 return new HelloEvent(shard, innerData.asObjectNode());
             case HEARTBEAT_ACK:
-                return new HeartbeatAckEvent(shard, innerData.asObjectNode());
+                return new HeartbeatAckEvent(shard);
         }
 
         throw new AssertionError("unreachable");
@@ -154,7 +158,10 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     @Internal
     public CompletableFuture<UniNode> sendHeartbeat() {
-        return socket.send(createPayloadBase(OpCode.HEARTBEAT).toString()).thenCompose(this::awaitAck);
+        UniObjectNode obj = createPayloadBase(OpCode.HEARTBEAT);
+        obj.put("d", sequence.orElse(0));
+
+        return socket.send(obj.toString()).thenCompose(this::awaitAck);
     }
 
     @Internal
