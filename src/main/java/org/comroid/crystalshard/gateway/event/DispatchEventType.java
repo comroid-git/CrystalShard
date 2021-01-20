@@ -5,9 +5,39 @@ import org.comroid.api.Named;
 import org.comroid.crystalshard.gateway.OpCode;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelCreateEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelDeleteEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelPinsUpdate;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.channel.pins.ChannelPinsUpdateEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildCreateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildDeleteEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.ban.GuildBanAddEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.ban.GuildBanRemoveEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.emoji.GuildEmojisUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.integrations.GuildIntegrationsUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.invite.InviteCreateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.invite.InviteDeleteEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.member.GuildMemberAddEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.member.GuildMemberChunkEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.member.GuildMemberRemoveEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.member.GuildMemberUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.role.GuildRoleCreateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.role.GuildRoleDeleteEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.role.GuildRoleUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.interaction.InteractionCreateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.MessageCreateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.MessageDeleteBulkEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.MessageDeleteEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.MessageUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.reaction.MessageReactionAddEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.reaction.MessageReactionRemoveAllEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.reaction.MessageReactionRemoveEmojiEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.message.reaction.MessageReactionRemoveEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.user.PresenceUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.user.TypingStartEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.user.UserUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.voice.VoiceServerUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.voice.VoiceStateUpdateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.webhook.WebhooksUpdateEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -29,56 +59,56 @@ public enum DispatchEventType implements Named, Predicate<UniNode> {
     CHANNEL_UPDATE(ChannelUpdateEvent::new),
     CHANNEL_DELETE(ChannelDeleteEvent::new),
 
-    CHANNEL_PINS_UPDATE(ChannelPinsUpdate::new),
+    CHANNEL_PINS_UPDATE(ChannelPinsUpdateEvent::new),
 
     // guild related
     GUILD_CREATE(GuildCreateEvent::new),
-    GUILD_UPDATE(),
-    GUILD_DELETE(),
+    GUILD_UPDATE(GuildUpdateEvent::new),
+    GUILD_DELETE(GuildDeleteEvent::new),
 
-    GUILD_BAN_ADD(),
-    GUILD_BAN_REMOVE(),
+    GUILD_BAN_ADD(GuildBanAddEvent::new),
+    GUILD_BAN_REMOVE(GuildBanRemoveEvent::new),
 
-    GUILD_EMOJIS_UPDATE(),
+    GUILD_EMOJIS_UPDATE(GuildEmojisUpdateEvent::new),
 
-    GUILD_INTEGRATIONS_UPDATE(),
+    GUILD_INTEGRATIONS_UPDATE(GuildIntegrationsUpdateEvent::new),
 
-    GUILD_MEMBER_ADD(),
-    GUILD_MEMBER_UPDATE(),
-    GUILD_MEMBER_REMOVE(),
-    GUILD_MEMBERS_CHUNK(),
+    GUILD_MEMBER_ADD(GuildMemberAddEvent::new),
+    GUILD_MEMBER_UPDATE(GuildMemberUpdateEvent::new),
+    GUILD_MEMBER_REMOVE(GuildMemberRemoveEvent::new),
+    GUILD_MEMBERS_CHUNK(GuildMemberChunkEvent::new),
 
-    GUILD_ROLE_CREATE(),
-    GUILD_ROLE_UPDATE(),
-    GUILD_ROLE_DELETE(),
+    GUILD_ROLE_CREATE(GuildRoleCreateEvent::new),
+    GUILD_ROLE_UPDATE(GuildRoleUpdateEvent::new),
+    GUILD_ROLE_DELETE(GuildRoleDeleteEvent::new),
 
-    INVITE_CREATE(),
-    INVITE_DELETE(),
+    INVITE_CREATE(InviteCreateEvent::new),
+    INVITE_DELETE(InviteDeleteEvent::new),
 
     // message related
-    MESSAGE_CREATE(),
-    MESSAGE_UPDATE(),
-    MESSAGE_DELETE(),
-    MESSAGE_DELETE_BULK(),
+    MESSAGE_CREATE(MessageCreateEvent::new),
+    MESSAGE_UPDATE(MessageUpdateEvent::new),
+    MESSAGE_DELETE(MessageDeleteEvent::new),
+    MESSAGE_DELETE_BULK(MessageDeleteBulkEvent::new),
 
-    MESSAGE_REACTION_ADD(),
-    MESSAGE_REACTION_REMOVE(),
-    MESSAGE_REACTION_REMOVE_EMOJI(),
-    MESSAGE_REACTION_REMOVE_ALL(),
+    MESSAGE_REACTION_ADD(MessageReactionAddEvent::new),
+    MESSAGE_REACTION_REMOVE(MessageReactionRemoveEvent::new),
+    MESSAGE_REACTION_REMOVE_EMOJI(MessageReactionRemoveEmojiEvent::new),
+    MESSAGE_REACTION_REMOVE_ALL(MessageReactionRemoveAllEvent::new),
 
     // misc
-    PRESENCE_UPDATE(),
-    TYPING_START(),
-    USER_UPDATE(),
+    PRESENCE_UPDATE(PresenceUpdateEvent::new),
+    TYPING_START(TypingStartEvent::new),
+    USER_UPDATE(UserUpdateEvent::new),
 
     // voice related
-    VOICE_STATE_UPDATE(),
-    VOICE_SERVER_UPDATE(),
+    VOICE_STATE_UPDATE(VoiceStateUpdateEvent::new),
+    VOICE_SERVER_UPDATE(VoiceServerUpdateEvent::new),
 
     // webhook
-    WEBHOOKS_UPDATE(),
+    WEBHOOKS_UPDATE(WebhooksUpdateEvent::new),
 
-    INTERACTION_CREATE();
+    INTERACTION_CREATE(InteractionCreateEvent::new);
 
     private final BiFunction<ContextualProvider, UniObjectNode, ? extends GatewayEvent> constructor;
 

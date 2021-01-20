@@ -10,7 +10,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public class ChannelUpdateEvent extends GatewayEvent {
+public final class ChannelUpdateEvent extends GatewayEvent {
     public static final GroupBind<ChannelUpdateEvent> TYPE
             = BASETYPE.subGroup("channel-update", ChannelUpdateEvent::new);
     public static final VarBind<ChannelUpdateEvent, UniObjectNode, Channel, Channel> CHANNEL

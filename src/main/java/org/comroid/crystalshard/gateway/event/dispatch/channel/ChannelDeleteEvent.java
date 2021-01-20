@@ -11,7 +11,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public class ChannelDeleteEvent extends GatewayEvent {
+public final class ChannelDeleteEvent extends GatewayEvent {
     public static final GroupBind<ChannelDeleteEvent> TYPE
             = BASETYPE.subGroup("channel-delete", ChannelDeleteEvent::new);
     public static final VarBind<ChannelDeleteEvent, UniObjectNode, Channel, Channel> CHANNEL
