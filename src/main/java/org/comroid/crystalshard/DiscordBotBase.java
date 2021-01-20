@@ -85,6 +85,8 @@ public class DiscordBotBase implements Bot {
     }
 
     public DiscordBotBase(DiscordAPI context, String token, GatewayIntent... intents) {
+        if (intents.length == 0)
+            intents = GatewayIntent.ALL_UNPRIVILEGED;
         context.members.add(this);
         this.context = context;
         this.token = Reference.constant(token);

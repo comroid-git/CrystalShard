@@ -136,7 +136,13 @@ public final class DiscordBotShard implements Bot {
          */
     }
 
-    private CompletableFuture<Gateway> initiateGateway(String token, URI wsUri, HttpAdapter httpAdapter, ScheduledExecutorService executor, GatewayIntent[] intents) {
+    private CompletableFuture<Gateway> initiateGateway(
+            String token,
+            URI wsUri,
+            HttpAdapter httpAdapter,
+            ScheduledExecutorService executor,
+            GatewayIntent[] intents
+    ) {
         return httpAdapter.createWebSocket(
                 executor,
                 t -> logger.error("Error in Gateway Websocket", t),

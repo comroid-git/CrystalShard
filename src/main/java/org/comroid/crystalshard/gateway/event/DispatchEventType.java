@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.gateway.event;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Invocable;
 import org.comroid.api.Named;
 import org.comroid.crystalshard.gateway.OpCode;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelCreateEvent;
@@ -11,30 +10,31 @@ import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 public enum DispatchEventType implements Named, Predicate<UniNode> {
-    HELLO(HelloEvent.class),
-    READY(ReadyEvent.class),
-    RESUMED(ResumedEvent.class),
-    RECONNECT(ReconnectEvent.class),
-    INVALID_SESSION(InvalidSessionEvent.class),
+    HELLO(HelloEvent::new),
+    READY(ReadyEvent::new),
+    RESUMED(ResumedEvent::new),
+    RECONNECT(ReconnectEvent::new),
+    INVALID_SESSION(InvalidSessionEvent::new),
 
-    CHANNEL_CREATE(ChannelCreateEvent.class),
+    CHANNEL_CREATE(ChannelCreateEvent::new),
 
-    GUILD_CREATE(GuildCreateEvent.class)
+    GUILD_CREATE(GuildCreateEvent::new)
 
     /* todo */;
 
-    private final Invocable<? extends GatewayEvent> invocable;
+    private final BiFunction<ContextualProvider, UniObjectNode, ? extends GatewayEvent> constructor;
 
     @Override
     public String getName() {
         return name();
     }
 
-    DispatchEventType(Class<? extends GatewayEvent> payloadClass) {
-        this.invocable = Invocable.ofClass(payloadClass);
+    DispatchEventType(BiFunction<ContextualProvider, UniObjectNode, ? extends GatewayEvent> constructor) {
+        this.constructor = constructor;
     }
 
     public static Optional<DispatchEventType> find(UniNode data) {
@@ -53,6 +53,6 @@ public enum DispatchEventType implements Named, Predicate<UniNode> {
     }
 
     public GatewayEvent createPayload(ContextualProvider context, UniObjectNode data) {
-        return invocable.autoInvoke(context, data);
+        return constructor.apply(context, data);
     }
 }

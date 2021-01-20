@@ -6,7 +6,7 @@ import org.comroid.uniform.node.UniObjectNode;
 import org.jetbrains.annotations.Nullable;
 
 public final class GuildCreateEvent extends GatewayEvent {
-    protected GuildCreateEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
+    public GuildCreateEvent(ContextualProvider context, @Nullable UniObjectNode initialData) {
         super(context, initialData); // todo
     }
 }

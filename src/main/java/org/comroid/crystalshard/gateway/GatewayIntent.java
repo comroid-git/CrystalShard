@@ -4,9 +4,11 @@ import org.comroid.api.BitmaskEnum;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
-import static org.comroid.crystalshard.gateway.event.DispatchEventType.*;
+import static org.comroid.crystalshard.gateway.event.DispatchEventType.GUILD_CREATE;
 
 @SuppressWarnings("PointlessBitwiseExpression")
 public enum GatewayIntent implements BitmaskEnum<GatewayIntent> {
@@ -26,6 +28,15 @@ public enum GatewayIntent implements BitmaskEnum<GatewayIntent> {
     DIRECT_MESSAGES(1 << 12),
     DIRECT_MESSAGE_REACTIONS(1 << 13),
     DIRECT_MESSAGE_TYPING(1 << 14);
+
+    public static final GatewayIntent[] ALL_UNPRIVILEGED;
+
+    static {
+        Set<GatewayIntent> yield = new HashSet<>(Arrays.asList(values()));
+        yield.remove(GUILD_PRESENCES);
+        yield.remove(GUILD_MEMBERS);
+        ALL_UNPRIVILEGED = yield.toArray(new GatewayIntent[0]);
+    }
 
     private final int value;
     private final DispatchEventType[] dispatchEventTypes;
