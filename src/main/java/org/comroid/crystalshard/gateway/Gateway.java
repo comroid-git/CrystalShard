@@ -144,7 +144,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 final InvalidSessionEvent invalidSessionEvent = new InvalidSessionEvent(shard, innerData);
 
                 if (invalidSessionEvent.isResumable()) {
-                    // reconnect using RESUME
+                    // TODO reconnect using RESUME
                 }
 
                 return invalidSessionEvent;
