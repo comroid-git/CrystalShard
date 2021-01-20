@@ -3,6 +3,7 @@ package org.comroid.crystalshard.gateway.event.dispatch.guild;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -11,7 +12,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public final class GuildCreateEvent extends GatewayEvent {
+public final class GuildCreateEvent extends DispatchEvent {
     @RootBind
     public static final GroupBind<GuildCreateEvent> TYPE
             = BASETYPE.subGroup("guild-create", GuildCreateEvent::new);

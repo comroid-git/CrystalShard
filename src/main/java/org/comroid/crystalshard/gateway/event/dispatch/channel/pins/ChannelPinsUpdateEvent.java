@@ -5,6 +5,7 @@ import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.bind.GroupBind;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 
-public final class ChannelPinsUpdateEvent extends GatewayEvent {
+public final class ChannelPinsUpdateEvent extends DispatchEvent {
     public static final GroupBind<ChannelPinsUpdateEvent> TYPE
             = BASETYPE.subGroup("channel-pins-update", ChannelPinsUpdateEvent::new);
     public static final VarBind<ChannelPinsUpdateEvent, Long, Guild, Guild> GUILD

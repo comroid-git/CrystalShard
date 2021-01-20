@@ -20,6 +20,7 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.net.URL;
 import java.time.Instant;
@@ -240,5 +241,18 @@ public final class Guild extends Snowflake.Abstract implements Named {
 
     public static Guild resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getGuild, Guild::new);
+    }
+
+    public final Span<Long> bannedUsers = new Span<>();
+
+    @Internal
+    public boolean setBannedState(User user, boolean state) {
+        final long id = user.getID();
+        final boolean contains = bannedUsers.contains(id);
+        if (state && !contains)
+            return bannedUsers.add(id);
+        else if (!state && contains)
+            return bannedUsers.remove(id);
+        return false;
     }
 }
