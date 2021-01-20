@@ -23,7 +23,7 @@ public final class PermissionOverwrite extends AbstractDataContainer {
     public static final VarBind<PermissionOverwrite, Long, Snowflake, Snowflake> REFERENT
             = TYPE.createBind("id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((po, id) -> po.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.SNOWFLAKE, id))
+            .andResolveRef((po, id) -> po.getCache().getSnowflake(EntityType.SNOWFLAKE, id))
             .onceEach()
             .setRequired()
             .build();

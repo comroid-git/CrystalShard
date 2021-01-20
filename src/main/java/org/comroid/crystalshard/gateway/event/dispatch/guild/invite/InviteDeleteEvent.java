@@ -23,12 +23,12 @@ public final class InviteDeleteEvent extends DispatchEvent {
     public static final VarBind<InviteDeleteEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((event, id) -> event.getCache().getChannel(id))
             .build();
     public static final VarBind<InviteDeleteEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public static final VarBind<InviteDeleteEvent, String, String, String> CODE
             = TYPE.createBind("code")

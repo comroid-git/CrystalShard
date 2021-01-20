@@ -19,12 +19,12 @@ public final class ChannelFollowing extends AbstractDataContainer {
     public static final VarBind<ChannelFollowing, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((flw, id) -> flw.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((flw, id) -> flw.getCache().getChannel(id))
             .build();
     public static final VarBind<ChannelFollowing, Long, Webhook, Webhook> WEBHOOK
             = TYPE.createBind("webhook_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((flw, id) -> flw.requireFromContext(SnowflakeCache.class).getWebhook(id))
+            .andResolveRef((flw, id) -> flw.getCache().getWebhook(id))
             .build();
 
     public ChannelFollowing(ContextualProvider context, @Nullable UniNode initialData) {

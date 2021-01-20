@@ -47,12 +47,12 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     public static final VarBind<Webhook, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((hook, id) -> hook.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((hook, id) -> hook.getCache().getGuild(id))
             .build();
     public static final VarBind<Webhook, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((hook, id) -> hook.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((hook, id) -> hook.getCache().getChannel(id))
             .build();
     public static final VarBind<Webhook, UniObjectNode, User, User> CREATOR
             = TYPE.createBind("user")
@@ -91,7 +91,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
         if (matcher.matches()) {
             long id = Long.parseLong(Polyfill.regexGroupOrDefault(matcher, "id", "0"));
 
-            Reference<Webhook> cached = api.requireFromContext(SnowflakeCache.class).getWebhook(id);
+            Reference<Webhook> cached = api.getCache().getWebhook(id);
             if (cached.isNonNull())
                 return cached.assertion();
 

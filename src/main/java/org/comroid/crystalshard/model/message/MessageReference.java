@@ -20,17 +20,17 @@ public final class MessageReference extends AbstractDataContainer {
     public static final VarBind<MessageReference, Long, Message, Message> MESSAGE
             = TYPE.createBind("message_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((msgref, id) -> msgref.requireFromContext(SnowflakeCache.class).getMessage(id))
+            .andResolveRef((msgref, id) -> msgref.getCache().getMessage(id))
             .build();
     public static final VarBind<MessageReference, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((msgref, id) -> msgref.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((msgref, id) -> msgref.getCache().getChannel(id))
             .build();
     public static final VarBind<MessageReference, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((msgref, id) -> msgref.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((msgref, id) -> msgref.getCache().getGuild(id))
             .build();
 
     public MessageReference(ContextualProvider context, @Nullable UniNode initialData) {

@@ -18,14 +18,14 @@ public final class RoleTags extends AbstractDataContainer {
             = TYPE.createBind("bot_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((it, id) -> it.requireFromContext(Bot.class)
-                    .getSnowflakeCache().getUser(id))
+                    .getCache().getUser(id))
             .onceEach()
             .build();
     public static final VarBind<RoleTags, Long, GuildIntegration, GuildIntegration> INTEGRATION_ID
             = TYPE.createBind("integration_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((it, id) -> it.requireFromContext(Bot.class)
-                    .getSnowflakeCache().getSnowflake(EntityType.GUILD_INTEGRATION, id))
+                    .getCache().getSnowflake(EntityType.GUILD_INTEGRATION, id))
             .onceEach()
             .build();
     public static final VarBind<RoleTags, Boolean, Boolean, Boolean> PREMIUM_SUBSCRIBER

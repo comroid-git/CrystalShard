@@ -30,7 +30,7 @@ public final class ChannelDeleteEvent extends DispatchEvent {
         super(context, initialData);
 
         this.channel = getComputedReference(CHANNEL).assertion();
-        if (!context.requireFromContext(SnowflakeCache.class)
+        if (!context.getCache()
                 .getReference(EntityType.CHANNEL, channel.getID())
                 .unset())
             throw new RuntimeException("Could not unset Cache Reference");

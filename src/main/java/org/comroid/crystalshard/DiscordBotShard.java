@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 
 public final class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
-    public final DiscordAPI context;
+    public final Context context;
     private final String token;
     private final long ownID;
     private final int currentShardID;
@@ -48,11 +48,6 @@ public final class DiscordBotShard implements Bot {
     @Override
     public long getOwnID() {
         return ownID;
-    }
-
-    @Override
-    public SnowflakeCache getSnowflakeCache() {
-        return context.getSnowflakeCache();
     }
 
     public Pipe<? extends WebsocketPacket> getPacketPipeline() {
@@ -106,7 +101,15 @@ public final class DiscordBotShard implements Bot {
             BodyBuilderType<N> type,
             Consumer<N> builder
     ) {
-        return DiscordAPI.newRequest(context, token, method, endpoint, responseType, type, builder);
+        return DiscordAPI.newRequest(
+                context.requireFromContext(DiscordAPI.class),
+                token,
+                method,
+                endpoint,
+                responseType,
+                type,
+                builder
+        );
     }
 
     @Override
@@ -115,16 +118,15 @@ public final class DiscordBotShard implements Bot {
     }
 
     public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {
-        context.members.add(this);
         this.context = context;
         this.token = token;
         this.ownID = DiscordAPI.getIdFromToken(token);
         this.currentShardID = shardID;
-        this.yourself = requireFromContext(SnowflakeCache.class).getUser(ownID);
+        this.yourself = getCache().getUser(ownID);
         this.shardCount = shardCount;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);
-        SerializationAdapter serializationAdapter = requireFromContext(SerializationAdapter.class);
+        SerializationAdapter<?,?,?> serializationAdapter = requireFromContext(SerializationAdapter.class);
         ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(initiateGateway(token, wsUri, httpAdapter, executor, intents));
 

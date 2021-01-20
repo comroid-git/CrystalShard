@@ -37,12 +37,12 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((message, id) -> message.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((message, id) -> message.getCache().getChannel(id))
             .build();
     public static final VarBind<Message, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((message, id) -> message.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((message, id) -> message.getCache().getGuild(id))
             .build();
     public static final VarBind<Message, UniObjectNode, User, User> AUTHOR
             = TYPE.createBind("author")
@@ -128,7 +128,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, Long, Webhook, Webhook> WEBHOOK_AUTHOR
             = TYPE.createBind("webhook_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((msg, id) -> msg.requireFromContext(SnowflakeCache.class).getSnowflake(EntityType.WEBHOOK, id))
+            .andResolveRef((msg, id) -> msg.getCache().getSnowflake(EntityType.WEBHOOK, id))
             .build();
     public static final VarBind<Message, Integer, Type, Type> MESSAGE_TYPE
             = TYPE.createBind("type")

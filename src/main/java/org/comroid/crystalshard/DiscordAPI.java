@@ -20,16 +20,16 @@ import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Closeable;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class DiscordAPI extends ContextualProvider.Base {
+public final class DiscordAPI extends ContextualProvider.Base implements Context {
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     private static final Logger logger = LogManager.getLogger();
@@ -39,6 +39,11 @@ public final class DiscordAPI extends ContextualProvider.Base {
     private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;
     final Span<Object> members;
+
+    @Override
+    public ContextualProvider getUnderlyingContextualProvider() {
+        return this;
+    }
 
     @Override
     public Span<Object> getContextMembers() {
@@ -118,28 +123,6 @@ public final class DiscordAPI extends ContextualProvider.Base {
         return Long.parseLong(num.toString());
     }
 
-    public <T> Function<Throwable, T> exceptionLogger(
-            final Logger logger,
-            final Level level,
-            final String message
-    ) {
-        return exceptionLogger(logger, level, message, true);
-    }
-
-    public <T> Function<Throwable, T> exceptionLogger(
-            final Logger logger,
-            final Level level,
-            final String message,
-            final boolean exitWhenHit
-    ) {
-        return throwable -> {
-            logger.log(level, message, throwable);
-            if (exitWhenHit)
-                System.exit(1);
-            return null;
-        };
-    }
-
     public DiscordAPI(HttpAdapter httpAdapter) {
         this(httpAdapter, Executors.newScheduledThreadPool(4));
     }
@@ -160,4 +143,5 @@ public final class DiscordAPI extends ContextualProvider.Base {
 
         this.members = Span.make().initialValues(SERIALIZATION, httpAdapter, scheduledExecutorService, rest, snowflakeCache, this).span();
     }
+
 }

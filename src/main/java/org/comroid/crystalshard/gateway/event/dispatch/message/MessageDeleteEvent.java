@@ -29,12 +29,12 @@ public final class MessageDeleteEvent extends DispatchEvent {
     public static final VarBind<MessageDeleteEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((event, id) -> event.getCache().getChannel(id))
             .build();
     public static final VarBind<MessageDeleteEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public final Message message;
     public final Reference<Channel> channel = getComputedReference(CHANNEL);
@@ -55,7 +55,7 @@ public final class MessageDeleteEvent extends DispatchEvent {
     public MessageDeleteEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
 
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        SnowflakeCache cache = context.getCache();
         long id = MESSAGE_ID.getFrom(initialData.asObjectNode());
         KeyedReference<String, Snowflake> ref = cache.getReference(EntityType.MESSAGE, id);
         this.message = ref.flatMap(Message.class).assertion("Message not found: " + id);

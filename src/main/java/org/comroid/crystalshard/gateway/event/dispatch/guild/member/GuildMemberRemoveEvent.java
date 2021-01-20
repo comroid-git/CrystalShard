@@ -21,7 +21,7 @@ public final class GuildMemberRemoveEvent extends DispatchEvent {
     public static final VarBind<GuildMemberRemoveEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
 
     public GuildMemberRemoveEvent(ContextualProvider context, @Nullable UniNode initialData) {

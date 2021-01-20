@@ -48,11 +48,6 @@ public class DiscordBotBase implements Bot {
     }
 
     @Override
-    public final SnowflakeCache getSnowflakeCache() {
-        return context.getSnowflakeCache();
-    }
-
-    @Override
     public final Pipe<? extends GatewayEvent> getEventPipeline() {
         return eventPipeline;
     }

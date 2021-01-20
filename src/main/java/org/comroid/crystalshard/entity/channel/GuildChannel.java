@@ -15,7 +15,7 @@ public interface GuildChannel extends Channel {
     VarBind<GuildChannel, Long, Guild, Guild> GUILD
             = BASETYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((channel, id) -> channel.getCache().getGuild(id))
             .build();
     VarBind<GuildChannel, Integer, Integer, Integer> POSITION
             = BASETYPE.createBind("position")
@@ -42,7 +42,7 @@ public interface GuildChannel extends Channel {
     VarBind<GuildChannel, Long, GuildChannelCategory, GuildChannelCategory> CATEGORY
             = BASETYPE.createBind("parent_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getChannelCategory(id))
+            .andResolveRef((channel, id) -> channel.getCache().getChannelCategory(id))
             .build();
 
     Guild getGuild();

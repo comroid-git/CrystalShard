@@ -1,7 +1,5 @@
 package org.comroid.crystalshard;
 
-import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
@@ -20,10 +18,8 @@ import java.io.Closeable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public interface Bot extends ContextualProvider.Underlying, Closeable {
+public interface Bot extends Context, Closeable {
     long getOwnID();
-
-    SnowflakeCache getSnowflakeCache();
 
     Pipe<? extends GatewayEvent> getEventPipeline();
 

@@ -49,7 +49,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, Long, User, User> OWNER
             = TYPE.createBind("owner_id")
             .extractAs(StandardValueType.LONG)
-            .andResolve((guild, owner) -> guild.requireFromContext(SnowflakeCache.class)
+            .andResolve((guild, owner) -> guild.getCache()
                     .getUser(owner).get())
             .build();
     public static final VarBind<Guild, String, VoiceRegion, VoiceRegion> VOICE_REGION
@@ -60,7 +60,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, Long, Channel, Channel> AFK_CHANNEL
             = TYPE.createBind("afk_channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolve((guild, channel) -> guild.requireFromContext(SnowflakeCache.class)
+            .andResolve((guild, channel) -> guild.getCache()
                     .getChannel(channel).get())
             .build();
     public static final VarBind<Guild, Integer, Integer, Integer> AFK_TIMEOUT
@@ -74,7 +74,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, Long, Channel, Channel> WIDGET_CHANNEL_ID
             = TYPE.createBind("widget_channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolve((guild, channel) -> guild.requireFromContext(SnowflakeCache.class)
+            .andResolve((guild, channel) -> guild.getCache()
                     .getChannel(channel).get())
             .build();
     public static final VarBind<Guild, Integer, VerificationLevel, VerificationLevel> VERIFICATION_LEVEL
@@ -118,12 +118,12 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, Long, User, User> OWNER_APPLICATION
             = TYPE.createBind("application_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((guild, id) -> guild.requireFromContext(SnowflakeCache.class).getUser(id))
+            .andResolveRef((guild, id) -> guild.getCache().getUser(id))
             .build();
     public static final VarBind<Guild, Long, Channel, Channel> SYSTEM_CHANNEL
             = TYPE.createBind("system_channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((guild, id) -> guild.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((guild, id) -> guild.getCache().getChannel(id))
             .build();
     public static final VarBind<Guild, Integer, Set<SystemChannelFlag>, Set<SystemChannelFlag>> SYSTEM_CHANNEL_FLAGS
             = TYPE.createBind("system_channel_flags")
@@ -133,7 +133,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, Long, Channel, Channel> RULES_CHANNEL
             = TYPE.createBind("rules_channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((guild, id) -> guild.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((guild, id) -> guild.getCache().getChannel(id))
             .build();
     public static final VarBind<Guild, String, Instant, Instant> JOINED_AT
             = TYPE.createBind("joined_at")
@@ -215,7 +215,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, Long, Channel, Channel> PUBLIC_UPDATES_CHANNEL
             = TYPE.createBind("public_updates_channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((guild, id) -> guild.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((guild, id) -> guild.getCache().getChannel(id))
             .build();
     public static final VarBind<Guild, Integer, Integer, Integer> MAX_VIDEO_CHANNEL_USERS
             = TYPE.createBind("max_video_channel_users")

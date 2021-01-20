@@ -33,7 +33,7 @@ public final class PresenceUpdateEvent extends DispatchEvent {
     public static final VarBind<PresenceUpdateEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public static final VarBind<PresenceUpdateEvent, String, UserStatus, UserStatus> STATUS
             = TYPE.createBind("status")

@@ -41,7 +41,7 @@ public final class GuildDeleteEvent extends DispatchEvent {
 
         UniObjectNode data = getComputedReference(GUILD_OBJ).assertion();
         this.wasKicked = !data.containsKey(Guild.UNAVAILABLE.getFieldName());
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        SnowflakeCache cache = context.getCache();
         long id = Snowflake.ID.getFrom(initialData.asObjectNode());
         KeyedReference<String, Snowflake> ref = cache.getReference(EntityType.GUILD, id);
         this.guild = ref.flatMap(Guild.class).assertion("Guild not found: " + id);

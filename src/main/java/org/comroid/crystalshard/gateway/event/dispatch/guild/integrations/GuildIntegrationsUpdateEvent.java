@@ -22,7 +22,7 @@ public final class GuildIntegrationsUpdateEvent extends DispatchEvent {
     public static final VarBind<GuildIntegrationsUpdateEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public final Reference<Guild> guild = getComputedReference(GUILD);
 

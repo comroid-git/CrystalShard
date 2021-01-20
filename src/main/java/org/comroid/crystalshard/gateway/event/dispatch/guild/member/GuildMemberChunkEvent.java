@@ -21,7 +21,7 @@ public final class GuildMemberChunkEvent extends DispatchEvent {
     public static final VarBind<GuildMemberChunkEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
 
     public GuildMemberChunkEvent(ContextualProvider context, @Nullable UniNode initialData) {

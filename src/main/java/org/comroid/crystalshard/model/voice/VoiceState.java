@@ -21,19 +21,19 @@ public final class VoiceState extends AbstractDataContainer {
     public static final VarBind<VoiceState, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((vs, id) -> vs.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((vs, id) -> vs.getCache().getGuild(id))
             .onceEach()
             .build();
     public static final VarBind<VoiceState, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((vs, id) -> vs.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((vs, id) -> vs.getCache().getChannel(id))
             .onceEach()
             .build();
     public static final VarBind<VoiceState, Long, User, User> USER
             = TYPE.createBind("user_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((vs, id) -> vs.requireFromContext(SnowflakeCache.class).getUser(id))
+            .andResolveRef((vs, id) -> vs.getCache().getUser(id))
             .onceEach()
             .build();
     public static final VarBind<VoiceState, UniObjectNode, UniObjectNode, UniObjectNode> GUILD_MEMBER

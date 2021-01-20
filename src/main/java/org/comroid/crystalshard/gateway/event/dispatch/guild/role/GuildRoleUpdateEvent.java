@@ -23,7 +23,7 @@ public final class GuildRoleUpdateEvent extends DispatchEvent {
     public static final VarBind<GuildRoleUpdateEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public static final VarBind<GuildRoleUpdateEvent, UniObjectNode, Role, Role> ROLE
             = TYPE.createBind("role")

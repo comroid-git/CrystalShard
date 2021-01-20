@@ -25,7 +25,7 @@ public final class GuildRoleDeleteEvent extends DispatchEvent {
     public static final VarBind<GuildRoleDeleteEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public static final VarBind<GuildRoleDeleteEvent, Long, Long, Long> ROLE
             = TYPE.createBind("role_id")
@@ -45,7 +45,7 @@ public final class GuildRoleDeleteEvent extends DispatchEvent {
     public GuildRoleDeleteEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
 
-        SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        SnowflakeCache cache = context.getCache();
         long id = ROLE.getFrom(initialData.asObjectNode());
         KeyedReference<String, Snowflake> ref = cache.getReference(EntityType.ROLE, id);
         this.role = ref.flatMap(Role.class).assertion("Role not found: " + id);

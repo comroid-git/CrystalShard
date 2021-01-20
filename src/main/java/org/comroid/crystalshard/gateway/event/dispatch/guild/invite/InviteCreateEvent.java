@@ -28,7 +28,7 @@ public final class InviteCreateEvent extends DispatchEvent {
     public static final VarBind<InviteCreateEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((event, id) -> event.getCache().getChannel(id))
             .build();
     public static final VarBind<InviteCreateEvent, String, String, String> CODE
             = TYPE.createBind("code")
@@ -42,7 +42,7 @@ public final class InviteCreateEvent extends DispatchEvent {
     public static final VarBind<InviteCreateEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public static final VarBind<InviteCreateEvent, UniObjectNode, User, User> INVITER
             = TYPE.createBind("inviter")

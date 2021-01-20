@@ -30,12 +30,12 @@ public final class MessageDeleteBulkEvent extends DispatchEvent {
     public static final VarBind<MessageDeleteBulkEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getChannel(id))
+            .andResolveRef((event, id) -> event.getCache().getChannel(id))
             .build();
     public static final VarBind<MessageDeleteBulkEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((event, id) -> event.requireFromContext(SnowflakeCache.class).getGuild(id))
+            .andResolveRef((event, id) -> event.getCache().getGuild(id))
             .build();
     public final long[] ids;
     public final Reference<Channel> channel = getComputedReference(CHANNEL);
@@ -52,7 +52,7 @@ public final class MessageDeleteBulkEvent extends DispatchEvent {
     public MessageDeleteBulkEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
 
-        final SnowflakeCache cache = context.requireFromContext(SnowflakeCache.class);
+        final SnowflakeCache cache = context.getCache();
         this.ids = getComputedReference(MESSAGE_IDS)
                 .assertion()
                 .stream()

@@ -28,12 +28,12 @@ public final class GroupChannel extends AbstractTextChannel implements TextChann
     public static final VarBind<GroupChannel, Long, User, User> OWNER
             = TYPE.createBind("owner_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getUser(id))
+            .andResolveRef((channel, id) -> channel.getCache().getUser(id))
             .build();
     public static final VarBind<GroupChannel, Long, User, User> OWNER_APPLICATION
             = TYPE.createBind("application_id")
             .extractAs(StandardValueType.LONG)
-            .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getUser(id))
+            .andResolveRef((channel, id) -> channel.getCache().getUser(id))
             .build();
 
     GroupChannel(ContextualProvider context, UniObjectNode data) {
