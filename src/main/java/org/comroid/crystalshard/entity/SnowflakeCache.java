@@ -3,7 +3,7 @@ package org.comroid.crystalshard.entity;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannelCategory;
-import org.comroid.crystalshard.entity.command.ApplicationCommand;
+import org.comroid.crystalshard.entity.command.Command;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
@@ -84,7 +84,7 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
         return getSnowflake(EntityType.CUSTOM_EMOJI, id);
     }
 
-    public Reference<ApplicationCommand> getApplicationCommand(long id) {
+    public Reference<Command> getApplicationCommand(long id) {
         return getSnowflake(EntityType.APPLICATION_COMMAND, id);
     }
 

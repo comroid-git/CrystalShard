@@ -4,7 +4,7 @@ import org.comroid.api.BitmaskEnum;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.channel.*;
-import org.comroid.crystalshard.entity.command.ApplicationCommand;
+import org.comroid.crystalshard.entity.command.Command;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
@@ -15,7 +15,6 @@ import org.comroid.crystalshard.entity.message.MessageSticker;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
-import org.comroid.crystalshard.ui.Interaction;
 import org.comroid.util.Bitmask;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public final class EntityType<T extends Snowflake> implements BitmaskEnum<EntityType<?>>, Named {
@@ -77,8 +75,8 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
     public static final EntityType<MessageSticker> MESSAGE_STICKER
             = new EntityType<>(MessageSticker.class);
 
-    public static final EntityType<ApplicationCommand> APPLICATION_COMMAND
-            = new EntityType<>(ApplicationCommand.class);
+    public static final EntityType<Command> APPLICATION_COMMAND
+            = new EntityType<>(Command.class);
 
     private final int value;
     private final boolean isCacheName;

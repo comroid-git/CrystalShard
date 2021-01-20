@@ -12,10 +12,10 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ApplicationCommandOptionChoice<T> extends AbstractDataContainer implements Named {
-    public static final GroupBind<ApplicationCommandOptionChoice<?>> TYPE
-            = BASETYPE.subGroup("application-command-option-choice", ApplicationCommandOptionChoice::resolve);
-    public static final VarBind<ApplicationCommandOptionChoice<?>, String, String, String> NAME
+public abstract class CommandOptionChoice<T> extends AbstractDataContainer implements Named {
+    public static final GroupBind<CommandOptionChoice<?>> TYPE
+            = BASETYPE.subGroup("application-command-option-choice", CommandOptionChoice::resolve);
+    public static final VarBind<CommandOptionChoice<?>, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
             .build();
@@ -33,7 +33,7 @@ public abstract class ApplicationCommandOptionChoice<T> extends AbstractDataCont
 
     protected abstract Reference<T> getValueReference();
 
-    private static ApplicationCommandOptionChoice<?> resolve(ContextualProvider context, UniNode data) {
+    private static CommandOptionChoice<?> resolve(ContextualProvider context, UniNode data) {
         UniValueNode target = data.get("value").asValueNode();
         if (target.getHeldType().equals(StandardValueType.STRING))
             return new OfString(context, data);
@@ -42,11 +42,11 @@ public abstract class ApplicationCommandOptionChoice<T> extends AbstractDataCont
         throw new AssertionError();
     }
 
-    private ApplicationCommandOptionChoice(ContextualProvider context, @Nullable UniNode initialData) {
+    private CommandOptionChoice(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 
-    public static final class OfString extends ApplicationCommandOptionChoice<String> {
+    public static final class OfString extends CommandOptionChoice<String> {
         @RootBind
         public static final GroupBind<OfString> TYPE
                 = BASETYPE.subGroup("application-command-option-choice:string");
@@ -65,7 +65,7 @@ public abstract class ApplicationCommandOptionChoice<T> extends AbstractDataCont
         }
     }
 
-    public static final class OfInteger extends ApplicationCommandOptionChoice<Integer> {
+    public static final class OfInteger extends CommandOptionChoice<Integer> {
         @RootBind
         public static final GroupBind<OfInteger> TYPE
                 = BASETYPE.subGroup("application-command-option-choice:integer");

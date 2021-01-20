@@ -13,22 +13,22 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public final class ApplicationCommandInteractionDataOption extends AbstractDataContainer implements Named {
+public final class CommandInteractionDataOption extends AbstractDataContainer implements Named {
     @RootBind
-    public static final GroupBind<ApplicationCommandInteractionDataOption> TYPE
-            = BASETYPE.subGroup("application-command-interaction-data-option", ApplicationCommandInteractionDataOption::new);
-    public static final VarBind<ApplicationCommandInteractionDataOption, String, String, String> NAME
+    public static final GroupBind<CommandInteractionDataOption> TYPE
+            = BASETYPE.subGroup("application-command-interaction-data-option", CommandInteractionDataOption::new);
+    public static final VarBind<CommandInteractionDataOption, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<ApplicationCommandInteractionDataOption, String, String, String> VALUE
+    public static final VarBind<CommandInteractionDataOption, String, String, String> VALUE
             = TYPE.createBind("value")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<ApplicationCommandInteractionDataOption, UniObjectNode, ApplicationCommandInteractionDataOption, Span<ApplicationCommandInteractionDataOption>> OPTIONS
+    public static final VarBind<CommandInteractionDataOption, UniObjectNode, CommandInteractionDataOption, Span<CommandInteractionDataOption>> OPTIONS
             = TYPE.createBind("options")
             .extractAsArray()
-            .andConstruct(ApplicationCommandInteractionDataOption.TYPE)
+            .andConstruct(CommandInteractionDataOption.TYPE)
             .intoSpan()
             .build();
     public final Reference<String> name = getComputedReference(NAME);
@@ -43,11 +43,11 @@ public final class ApplicationCommandInteractionDataOption extends AbstractDataC
         return value.assertion();
     }
 
-    public Span<ApplicationCommandInteractionDataOption> getOptions() {
+    public Span<CommandInteractionDataOption> getOptions() {
         return getComputedReference(OPTIONS).orElseGet(Span::empty);
     }
 
-    public ApplicationCommandInteractionDataOption(ContextualProvider context, @Nullable UniNode initialData) {
+    public CommandInteractionDataOption(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 }

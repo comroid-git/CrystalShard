@@ -1,10 +1,7 @@
 package org.comroid.crystalshard.gateway.event.dispatch.interaction;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.command.ApplicationCommand;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.guild.emoji.GuildEmojisUpdateEvent;
 import org.comroid.crystalshard.ui.Interaction;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;

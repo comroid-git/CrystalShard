@@ -4,10 +4,9 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
-import org.comroid.crystalshard.entity.command.ApplicationCommand;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.AbstractDataContainer;
-import org.comroid.crystalshard.model.command.ApplicationCommandInteractionData;
+import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
@@ -30,10 +29,10 @@ public final class Interaction extends AbstractDataContainer {
             .extractAs(StandardValueType.INTEGER)
             .andRemapRef(Type::valueOf)
             .build();
-    public static final VarBind<Interaction, UniObjectNode, ApplicationCommandInteractionData, ApplicationCommandInteractionData> DATA
+    public static final VarBind<Interaction, UniObjectNode, CommandInteractionData, CommandInteractionData> DATA
             = TYPE.createBind("data")
             .extractAsObject()
-            .andConstruct(ApplicationCommandInteractionData.TYPE)
+            .andConstruct(CommandInteractionData.TYPE)
             .build();
     public static final VarBind<Interaction, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")

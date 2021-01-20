@@ -14,45 +14,45 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ApplicationCommandOption extends AbstractDataContainer {
+public final class CommandOption extends AbstractDataContainer {
     @RootBind
-    public static final GroupBind<ApplicationCommandOption> TYPE
-            = BASETYPE.subGroup("application-command-option", ApplicationCommandOption::new);
-    public static final VarBind<ApplicationCommandOption, Integer, Type, Type> OPTION_TYPE
+    public static final GroupBind<CommandOption> TYPE
+            = BASETYPE.subGroup("application-command-option", CommandOption::new);
+    public static final VarBind<CommandOption, Integer, Type, Type> OPTION_TYPE
             = TYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)
             .andRemapRef(Type::valueOf)
             .build();
-    public static final VarBind<ApplicationCommandOption, String, String, String> NAME
+    public static final VarBind<CommandOption, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<ApplicationCommandOption, String, String, String> DESCRIPTION
+    public static final VarBind<CommandOption, String, String, String> DESCRIPTION
             = TYPE.createBind("description")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<ApplicationCommandOption, Boolean, Boolean, Boolean> IS_DEFAULT
+    public static final VarBind<CommandOption, Boolean, Boolean, Boolean> IS_DEFAULT
             = TYPE.createBind("default")
             .extractAs(StandardValueType.BOOLEAN)
             .build();
-    public static final VarBind<ApplicationCommandOption, Boolean, Boolean, Boolean> IS_REQUIRED
+    public static final VarBind<CommandOption, Boolean, Boolean, Boolean> IS_REQUIRED
             = TYPE.createBind("required")
             .extractAs(StandardValueType.BOOLEAN)
             .build();
-    public static final VarBind<ApplicationCommandOption, UniObjectNode, ApplicationCommandOptionChoice<?>, Span<ApplicationCommandOptionChoice<?>>> CHOICES
+    public static final VarBind<CommandOption, UniObjectNode, CommandOptionChoice<?>, Span<CommandOptionChoice<?>>> CHOICES
             = TYPE.createBind("choices")
             .extractAsArray()
-            .andConstruct(ApplicationCommandOptionChoice.TYPE)
+            .andConstruct(CommandOptionChoice.TYPE)
             .intoSpan()
             .build();
-    public static final VarBind<ApplicationCommandOption, UniObjectNode, ApplicationCommandOption, Span<ApplicationCommandOption>> OPTIONS
+    public static final VarBind<CommandOption, UniObjectNode, CommandOption, Span<CommandOption>> OPTIONS
             = TYPE.createBind("options")
             .extractAsArray()
             .andConstruct(TYPE)
             .intoSpan()
             .build();
 
-    public ApplicationCommandOption(ContextualProvider context, @Nullable UniNode initialData) {
+    public CommandOption(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
 
