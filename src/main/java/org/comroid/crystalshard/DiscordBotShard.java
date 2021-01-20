@@ -1,5 +1,6 @@
 package org.comroid.crystalshard;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
@@ -131,8 +133,12 @@ public final class DiscordBotShard implements Bot {
     }
 
     private CompletableFuture<Gateway> initiateGateway(String token, URI wsUri, HttpAdapter httpAdapter, ScheduledExecutorService executor, GatewayIntent[] intents) {
-        return httpAdapter.createWebSocket(executor, wsUri, DiscordAPI.createHeaders(token))
-                .thenApply(socket -> new Gateway(this, socket, Bitmask.combine(intents)));
+        return httpAdapter.createWebSocket(
+                executor,
+                t -> logger.error("Error in Gateway Websocket", t),
+                wsUri,
+                DiscordAPI.createHeaders(token)
+        ).thenApply(socket -> new Gateway(this, socket, Bitmask.combine(intents)));
     }
 
     @Override

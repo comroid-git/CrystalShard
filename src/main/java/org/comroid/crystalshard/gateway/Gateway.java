@@ -1,5 +1,6 @@
 package org.comroid.crystalshard.gateway;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
@@ -145,13 +146,14 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 try {
                     if (invalidSessionEvent.isResumable()) {
                         logger.warn("Invalid Session received; trying to resume using RESUME...");
-                        // TODO reconnect using RESUME
-                        sendResume().join();
+                        // reconnect using RESUME
+                        sendResume().exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Resume", true));;
                     } else {
                         logger.warn("Invalid Session received; trying to reconnect using IDENTIFY...");
-                        // TODO reconnect using IDENTIFY
+                        // reconnect using IDENTIFY
                         Thread.sleep(3000);
-                        sendIdentify(shard.getCurrentShardID()).join();
+                        sendIdentify(shard.getCurrentShardID())
+                                .exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Identify", true));
                     }
                 } catch (Throwable t) {
                     throw new RuntimeException("An Error occurred while reconnecting", t);
