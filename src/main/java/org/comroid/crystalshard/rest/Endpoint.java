@@ -2,9 +2,10 @@ package org.comroid.crystalshard.rest;
 
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.command.Command;
+import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.restless.endpoint.AccessibleEndpoint;
-import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.endpoint.QueryParameter;
 import org.intellij.lang.annotations.Language;
 
@@ -19,7 +20,12 @@ public enum Endpoint implements AccessibleEndpoint {
 
     VOICE_REGIONS("/voice/regions"),
 
-    EXECUTE_WEBHOOK("/webhooks/%s/%s%s", Webhook.ID_REGEX, Webhook.TOKEN_REGEX, QueryParameter.regex("(true)|(false)"));
+    EXECUTE_WEBHOOK("/webhooks/%s/%s%s", Webhook.ID_REGEX, Webhook.TOKEN_REGEX, QueryParameter.regex("(true)|(false)")),
+
+    APPLICATION_COMMANDS_GLOBAL("/applications/%s/commands", Snowflake.ID_REGEX),
+    APPLICATION_COMMANDS_GLOBAL_SPECIFIC("/applications/%s/commands/%s", Snowflake.ID_REGEX, Command.ID_REGEX),
+    APPLICATION_COMMANDS_GUILD("/applications/%s/guilds/%s/commands", Snowflake.ID_REGEX, Guild.ID_REGEX),
+    APPLICATION_COMMANDS_GUILD_SPECIFIC("/applications/%s/guilds/%s/commands/%s", Snowflake.ID_REGEX, Guild.ID_REGEX, Command.ID_REGEX);
 
     private final String extension;
     @Language("RegExp")

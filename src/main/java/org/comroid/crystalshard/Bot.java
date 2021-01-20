@@ -1,5 +1,6 @@
 package org.comroid.crystalshard;
 
+import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
@@ -55,7 +56,15 @@ public interface Bot extends Context, Closeable {
     }
 
     @Internal
-    default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+    default CompletableFuture<UniNode> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint
+    ) {
+        return Polyfill.uncheckedCast(newRequest(method, endpoint, null));
+    }
+
+    @Internal
+    default <R extends DataContainer<? super R>> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
             GroupBind<R> responseType

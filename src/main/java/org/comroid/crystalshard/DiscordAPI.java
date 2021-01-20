@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
@@ -23,11 +24,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public final class DiscordAPI extends ContextualProvider.Base implements Context {
     public static final String URL_BASE = "https://discord.com/api";
@@ -64,24 +63,14 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
             String token,
             REST.Method method,
             CompleteEndpoint endpoint,
-            GroupBind<R> responseType
-    ) {
-        return newRequest(context, token, method, endpoint, responseType, null, null);
-    }
-
-    @Internal
-    public static <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
-            DiscordAPI context,
-            String token,
-            REST.Method method,
-            CompleteEndpoint endpoint,
             GroupBind<R> responseType,
             BodyBuilderType<N> type,
             Consumer<N> builder
     ) {
-        REST.Request<R> req = context.getREST()
-                .request(responseType)
-                .endpoint(endpoint)
+        REST.Request<R> req = responseType == null
+                ? Polyfill.uncheckedCast(context.getREST().request())
+                : context.getREST().request(responseType);
+        req.endpoint(endpoint)
                 .addHeaders(createHeaders(token));
         if (type != null && builder != null)
             req.buildBody(type, builder);
