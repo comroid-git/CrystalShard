@@ -96,4 +96,8 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
 
         return String.format("%s#%d", type.getRelatedCacheName(), id);
     }
+
+    public int size() {
+        return cache.size();
+    }
 }

@@ -54,7 +54,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static final VarBind<Guild, String, VoiceRegion, VoiceRegion> VOICE_REGION
             = TYPE.createBind("region")
             .extractAs(StandardValueType.STRING)
-            .andResolve(VoiceRegion::find)
+            .andResolveRef(VoiceRegion::find)
             .build();
     public static final VarBind<Guild, Long, Channel, Channel> AFK_CHANNEL
             = TYPE.createBind("afk_channel_id")

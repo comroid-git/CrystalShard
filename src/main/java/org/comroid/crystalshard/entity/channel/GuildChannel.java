@@ -16,8 +16,6 @@ public interface GuildChannel extends Channel {
             = BASETYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getGuild(id))
-            .onceEach()
-            .setRequired()
             .build();
     VarBind<GuildChannel, Integer, Integer, Integer> POSITION
             = BASETYPE.createBind("position")
@@ -43,20 +41,15 @@ public interface GuildChannel extends Channel {
     VarBind<GuildChannel, String, String, String> TOPIC
             = BASETYPE.createBind("topic")
             .extractAs(StandardValueType.STRING)
-            .asIdentities()
-            .onceEach()
             .build();
     VarBind<GuildChannel, Boolean, Boolean, Boolean> NSFW
             = BASETYPE.createBind("nsfw")
             .extractAs(StandardValueType.BOOLEAN)
-            .asIdentities()
-            .onceEach()
             .build();
     VarBind<GuildChannel, Long, GuildChannelCategory, GuildChannelCategory> CATEGORY
             = BASETYPE.createBind("parent_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getChannelCategory(id))
-            .onceEach()
             .build();
 
     Guild getGuild();

@@ -81,12 +81,11 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     data.wrap("s").map(UniNode::asInt).ifPresent(sequence::set);
                     OpCode op = IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
                             .assertion(MessageSupplier.format("Invalid OP Code in data: %s", data));
-                    logger.trace("Attempting to dispatch message as {}: {}", op.getName(), data.toString());
+                    logger.debug("Attempting to dispatch message as {}: {}", op.getName(), data.toString());
                     return dispatchPacket(data, op);
                 })
                 .filter(Objects::nonNull)
-                .peek(event -> logger.trace("Gateway Event initialized: [{}] {}",
-                        event.getClass().getSimpleName(), event));
+                .peek(event -> logger.debug("Gateway Event initialization complete [{}]", event.getClass().getSimpleName()));
 
         if (!(eventPipeline instanceof Pump))
             throw new AssertionError("eventPipeline is not a Pump");
@@ -96,7 +95,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     .flatMap(HelloEvent.class)
                     .next()
                     .thenCompose(hello -> {
-                        hello.heartbeatInterval.ifPresentOrElse(this::startHeartbeat, () -> logger.warn("Unable to set heartbeat time!"));
+                        hello.heartbeatInterval.ifPresentOrElse(this::startHeartbeat,
+                                () -> logger.warn("Unable to set heartbeat time!"));
                         return sendIdentify(shard.getCurrentShardID());
                     })
                     .join();
@@ -109,7 +109,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .map(self -> new ShardBasedPresence(shard, self));
         getEventPipeline()
                 .flatMap(ReadyEvent.class)
-                .peek(ready -> logger.debug("New ReadyEvent received: " + ready))
+                .peek(ready -> logger.trace("New ReadyEvent received: " + ready))
                 .forEach(this.readyEvent::set);
     }
 

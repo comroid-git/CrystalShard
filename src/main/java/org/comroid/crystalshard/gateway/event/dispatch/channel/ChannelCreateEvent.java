@@ -18,7 +18,6 @@ public final class ChannelCreateEvent extends GatewayEvent {
             = TYPE.createBind("")
             .extractAsObject()
             .andResolve(Channel::resolve)
-            .onceEach()
             .build();
 
     public ChannelCreateEvent(ContextualProvider context, @Nullable UniNode initialData) {

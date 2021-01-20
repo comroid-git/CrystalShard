@@ -2,10 +2,13 @@ package org.comroid.crystalshard.model.voice;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
+import org.comroid.api.Rewrapper;
+import org.comroid.common.exception.AssertionException;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
+import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.uniform.node.UniNode;
@@ -18,6 +21,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -77,23 +81,24 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
 
     @Override
     public String getName() {
-        return null;
+        return name.assertion();
     }
 
-    public VoiceRegion(ContextualProvider context, @Nullable UniNode initialData) {
+    private VoiceRegion(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
+
+        cache.put(id.assertion(), this);
     }
 
     @Internal
     public static @Nullable VoiceRegion find(ContextualProvider context, UniObjectNode data) {
-        return find(context, data.get(ID).asString());
+        return find(context, data.get(ID).asString())
+                .orElseGet(() -> new VoiceRegion(context, data));
     }
 
     @Internal
-    public static @Nullable VoiceRegion find(ContextualProvider context, String name) {
-        if (!cache.containsKey(name))
-            refreshCache(context).join();
-        return cache.get(name);
+    public static @Nullable Rewrapper<VoiceRegion> find(ContextualProvider context, String name) {
+        return () -> cache.get(name);
     }
 
     @Internal
