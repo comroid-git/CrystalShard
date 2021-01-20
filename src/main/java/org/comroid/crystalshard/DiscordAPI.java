@@ -123,6 +123,10 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         return Long.parseLong(num.toString());
     }
 
+    public static int getShardIdForGuild(Bot bot, long id) {
+        return Math.toIntExact((id >> 22) % bot.getShardCount());
+    }
+
     public DiscordAPI(HttpAdapter httpAdapter) {
         this(httpAdapter, Executors.newScheduledThreadPool(4));
     }
