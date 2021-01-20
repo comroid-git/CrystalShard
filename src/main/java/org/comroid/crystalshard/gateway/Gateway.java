@@ -141,7 +141,13 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             case RECONNECT:
                 return new ReconnectEvent(shard, innerData.asObjectNode());
             case INVALID_SESSION:
-                return new InvalidSessionEvent(shard, innerData);
+                final InvalidSessionEvent invalidSessionEvent = new InvalidSessionEvent(shard, innerData);
+
+                if (invalidSessionEvent.isResumable()) {
+                    // reconnect using RESUME
+                }
+
+                return invalidSessionEvent;
             case HELLO:
                 return new HelloEvent(shard, innerData.asObjectNode());
             case HEARTBEAT_ACK:
