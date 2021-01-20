@@ -3,6 +3,8 @@ package org.comroid.crystalshard.entity.user;
 import org.comroid.api.BitmaskEnum;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
+import org.comroid.crystalshard.cdn.CDNEndpoint;
+import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
@@ -10,6 +12,7 @@ import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
 import org.comroid.crystalshard.model.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.uniform.node.UniNode;
@@ -20,6 +23,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.URL;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -80,6 +84,66 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
             .extractAs(StandardValueType.INTEGER)
             .andRemap(Flags::valueOf)
             .build();
+    public final Reference<String> username = getComputedReference(USERNAME);
+    public final Reference<String> discriminator = getComputedReference(DISCRIMINATOR);
+    public final Reference<String> avatarHash = getComputedReference(AVATAR_HASH);
+    public final Reference<Boolean> isBot = getComputedReference(IS_BOT);
+    public final Reference<Boolean> isSystemUser = getComputedReference(IS_SYSTEM);
+    public final Reference<Boolean> isMfaEnabled = getComputedReference(MFA_ENABLED);
+    public final Reference<Locale> preferredLocale = getComputedReference(LOCALE);
+    public final Reference<Boolean> isVerified = getComputedReference(IS_VERIFIED);
+    public final Reference<String> email = getComputedReference(EMAIL);
+    public final Reference<PremiumType> premiumType = getComputedReference(PREMIUM_TYPE);
+    public final Reference<Set<Flags>> allFlags = getComputedReference(FLAGS);
+    public final Reference<Set<Flags>> publicFlags = getComputedReference(PUBLIC_FLAGS);
+
+    public String getUsername() {
+        return username.assertion();
+    }
+
+    public String getDiscriminator() {
+        return discriminator.assertion();
+    }
+
+    public URL getAvatarURL(ImageType imageType) {
+        return avatarHash.into(hash -> CDNEndpoint.USER_AVATAR.complete(getID(), hash, imageType)).getURL();
+    }
+
+    public boolean isBot() {
+        return isBot.orElse(false);
+    }
+
+    public boolean isSystemUser() {
+        return isSystemUser.orElse(false);
+    }
+
+    public boolean isMfaEnabled() {
+        return isMfaEnabled.orElse(false);
+    }
+
+    public Locale getPreferredLocale() {
+        return preferredLocale.assertion();
+    }
+
+    public boolean isVerified() {
+        return isVerified.orElse(false);
+    }
+
+    public String getEMail() {
+        return email.assertion();
+    }
+
+    public PremiumType getPremiumType() {
+        return premiumType.assertion();
+    }
+
+    public Set<Flags> getAllFlags() {
+        return allFlags.assertion();
+    }
+
+    public Set<Flags> getPublicFlags() {
+        return publicFlags.assertion();
+    }
 
     @Override
     public CompletableFuture<PrivateTextChannel> getTargetChannel() {
@@ -102,22 +166,22 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
 
     @SuppressWarnings("PointlessBitwiseExpression")
     public enum Flags implements BitmaskEnum<Flags> {
-        DISCORD_EMPLOYEE(1<<0),
-        PARTNERED_SERVER_OWNER(1<<1),
-        EARLY_SUPPORTER(1<<9),
-        TEAM_USER(1<<10),
-        SYSTEM_USER(1<<12),
+        DISCORD_EMPLOYEE(1 << 0),
+        PARTNERED_SERVER_OWNER(1 << 1),
+        EARLY_SUPPORTER(1 << 9),
+        TEAM_USER(1 << 10),
+        SYSTEM_USER(1 << 12),
 
-        BUG_HUNTER_LEVEL_1(1<<3),
-        BUG_HUNTER_LEVEL_2(1<<14),
+        BUG_HUNTER_LEVEL_1(1 << 3),
+        BUG_HUNTER_LEVEL_2(1 << 14),
 
-        HYPESQUAD_EVENTS(1<<2),
-        HOUSE_BRAVERY(1<<6),
-        HOUSE_BRILLIANCE(1<<7),
-        HOUSE_BALANCE(1<<8),
+        HYPESQUAD_EVENTS(1 << 2),
+        HOUSE_BRAVERY(1 << 6),
+        HOUSE_BRILLIANCE(1 << 7),
+        HOUSE_BALANCE(1 << 8),
 
-        VERIFIED_BOT(1<<16),
-        EARLY_VERIFIED_BOT_DEVELOPER(1<<17);
+        VERIFIED_BOT(1 << 16),
+        EARLY_VERIFIED_BOT_DEVELOPER(1 << 17);
 
         private final int value;
 

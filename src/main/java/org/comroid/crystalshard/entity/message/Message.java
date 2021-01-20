@@ -2,10 +2,11 @@ package org.comroid.crystalshard.entity.message;
 
 import org.comroid.api.*;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
+import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.user.User;
@@ -14,6 +15,7 @@ import org.comroid.crystalshard.model.message.MessageActivity;
 import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.message.Reaction;
 import org.comroid.crystalshard.model.message.embed.Embed;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -107,7 +109,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, Reaction, Span<Reaction>> REACTIONS
             = TYPE.createBind("reactions")
             .extractAsArray()
-            .andResolve((msg, obj) -> msg.reactions.computeIfAbsent(
+            .andResolve((msg, obj) -> msg.reactionsCache.computeIfAbsent(
                     obj.process("id")
                             .or(() -> obj.get("name"))
                             .map(UniNode::asString)
@@ -164,7 +166,112 @@ public final class Message extends Snowflake.Abstract {
             .extractAsObject()
             .andResolve(Message::resolve)
             .build();
-    private final Map<String, Reaction> reactions = new ConcurrentHashMap<>();
+    private final Map<String, Reaction> reactionsCache = new ConcurrentHashMap<>();
+    public final Reference<Channel> channel = getComputedReference(CHANNEL);
+    public final Reference<Guild> guild = getComputedReference(GUILD);
+    public final Reference<User> author = getComputedReference(AUTHOR);
+    public final Reference<String> content = getComputedReference(CONTENT);
+    public final Reference<Instant> timestamp = getComputedReference(TIMESTAMP);
+    public final Reference<Instant> editedTimestamp = getComputedReference(EDITED_TIMESTAMP);
+    public final Reference<Boolean> isTTS = getComputedReference(TTS);
+    public final Reference<Boolean> mentionsEveryone = getComputedReference(MENTIONS_EVERYONE);
+    public final Reference<Span<User>> userMentions = getComputedReference(MENTIONED_USERS);
+    public final Reference<Span<Role>> roleMentions = getComputedReference(MENTIONED_ROLES);
+    public final Reference<Span<UniObjectNode>> channelMentions = getComputedReference(MENTIONED_CHANNELS); // todo
+    public final Reference<Span<MessageAttachment>> attachments = getComputedReference(ATTACHMENTS);
+    public final Reference<Span<Embed>> embeds = getComputedReference(EMBEDS);
+    public final Reference<Span<Reaction>> reactions = getComputedReference(REACTIONS);
+    public final Reference<Boolean> isPinned = getComputedReference(PINNED);
+    public final Reference<Type> messageType = getComputedReference(MESSAGE_TYPE);
+    public final Reference<MessageActivity> activity = getComputedReference(ACTIVITY);
+    public final Reference<MessageApplication> application = getComputedReference(APPLICATION);
+    public final Reference<MessageReference> messageReference = getComputedReference(REFERENCE);
+    public final Reference<Set<Flags>> flags = getComputedReference(FLAGS);
+    public final Reference<Span<MessageSticker>> stickers = getComputedReference(STICKERS);
+
+    public TextChannel getChannel() {
+        return channel.flatMap(TextChannel.class).assertion();
+    }
+
+    public Guild getGuild() {
+        return guild.assertion();
+    }
+
+    public User getUserAuthor() {
+        return author.assertion();
+    }
+
+    public String getContent() {
+        return content.assertion();
+    }
+
+    public Instant getTimestamp() {
+        return timestamp.assertion();
+    }
+
+    public Instant getEditedTimestamp() {
+        return editedTimestamp.assertion();
+    }
+
+    public boolean isTTS() {
+        return isTTS.assertion();
+    }
+
+    public boolean mentionsEveryone() {
+        return mentionsEveryone.assertion();
+    }
+
+    public Span<User> getUserMentions() {
+        return userMentions.orElseGet(Span::empty);
+    }
+
+    public Span<Role> getRoleMentions() {
+        return roleMentions.orElseGet(Span::empty);
+    }
+
+    public Span<UniObjectNode> getChannelMentions() {
+        return channelMentions.orElseGet(Span::empty);
+    }
+
+    public Span<MessageAttachment> getAttachments() {
+        return attachments.orElseGet(Span::empty);
+    }
+
+    public Span<Embed> getEmbeds() {
+        return embeds.orElseGet(Span::empty);
+    }
+
+    public Span<Reaction> getReactions() {
+        return reactions.orElseGet(Span::empty);
+    }
+
+    public boolean isPinned() {
+        return isPinned.assertion();
+    }
+
+    public Type getMessageType() {
+        return messageType.assertion();
+    }
+
+    public MessageActivity getActivity() {
+        return activity.assertion();
+    }
+
+    public MessageApplication getApplication() {
+        return application.assertion();
+    }
+
+    public MessageReference getMessageReference() {
+        return messageReference.assertion();
+    }
+
+    public Set<Flags> getFlags() {
+        return flags.assertion();
+    }
+
+    public Span<MessageSticker> getStickers() {
+        return stickers.orElseGet(Span::empty);
+    }
 
     private Message(ContextualProvider context, UniObjectNode data) {
         super(context, data, EntityType.MESSAGE);
