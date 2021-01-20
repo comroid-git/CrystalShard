@@ -10,11 +10,10 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.BotBasedPresence;
-import org.comroid.crystalshard.gateway.presence.OwnPresence;
-import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.mutatio.pipe.Pipe;
+import org.comroid.mutatio.pump.Pump;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
@@ -35,6 +34,7 @@ public class DiscordBotBase implements Bot {
     private final DiscordAPI context;
     private final Set<GatewayIntent> intents;
     private final Span<DiscordBotShard> shards;
+    private final Pipe<? extends GatewayEvent> eventPipeline;
     private final BotBasedPresence ownPresence;
     private final GatewayBotResponse gbr;
     public final Reference<String> token;
@@ -50,8 +50,7 @@ public class DiscordBotBase implements Bot {
 
     @Override
     public final Pipe<? extends GatewayEvent> getEventPipeline() {
-        // todo ?? ?? ??
-        return null;
+        return eventPipeline;
     }
 
     @Override
@@ -104,6 +103,7 @@ public class DiscordBotBase implements Bot {
                     return shard;
                 })
                 .collect(Span.collector());
+        this.eventPipeline = Pump.combine(shards.stream().map(DiscordBotShard::getEventPipeline));
         this.ownPresence = new BotBasedPresence(this, shards);
     }
 
