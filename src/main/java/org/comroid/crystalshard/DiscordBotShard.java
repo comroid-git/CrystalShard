@@ -1,6 +1,5 @@
 package org.comroid.crystalshard;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
@@ -9,6 +8,7 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.HttpAdapter;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public final class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
@@ -85,6 +84,11 @@ public final class DiscordBotShard implements Bot {
     @Override
     public int getShardCount() {
         return shardCount;
+    }
+
+    @Override
+    public ShardBasedPresence getOwnPresence() {
+        return gateway.flatMap(gtw -> gtw.ownPresence).assertion();
     }
 
     @Override

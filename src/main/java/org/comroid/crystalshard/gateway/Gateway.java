@@ -9,9 +9,12 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
+import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
+import org.comroid.crystalshard.gateway.presence.OwnPresence;
+import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
 import org.comroid.mutatio.ref.Reference;
@@ -21,7 +24,6 @@ import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.UniValueNode;
-import org.comroid.util.Bitmask;
 import org.comroid.util.StandardValueType;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -39,6 +41,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final Reference<Integer> sequence = Reference.create();
     @Internal
     public final Reference<ReadyEvent> readyEvent;
+    @Internal
+    public final Reference<ShardBasedPresence> ownPresence;
     private final Websocket socket;
     private final Pipe<? extends UniNode> dataPipeline;
     private final Pipe<? extends GatewayEvent> eventPipeline;
@@ -101,6 +105,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         }
         // store every latest ready event
         this.readyEvent = Reference.create();
+        this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
+                .map(self -> new ShardBasedPresence(shard, self));
         getEventPipeline()
                 .flatMap(ReadyEvent.class)
                 .peek(ready -> logger.debug("New ReadyEvent received: " + ready))

@@ -9,6 +9,9 @@ import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.presence.BotBasedPresence;
+import org.comroid.crystalshard.gateway.presence.OwnPresence;
+import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.mutatio.pipe.Pipe;
@@ -32,6 +35,7 @@ public class DiscordBotBase implements Bot {
     private final DiscordAPI context;
     private final Set<GatewayIntent> intents;
     private final Span<DiscordBotShard> shards;
+    private final BotBasedPresence ownPresence;
     private final GatewayBotResponse gbr;
     public final Reference<String> token;
 
@@ -76,6 +80,11 @@ public class DiscordBotBase implements Bot {
         return shards.size();
     }
 
+    @Override
+    public BotBasedPresence getOwnPresence() {
+        return ownPresence;
+    }
+
     public DiscordBotBase(DiscordAPI context, String token, GatewayIntent... intents) {
         context.members.add(this);
         this.context = context;
@@ -95,6 +104,7 @@ public class DiscordBotBase implements Bot {
                     return shard;
                 })
                 .collect(Span.collector());
+        this.ownPresence = new BotBasedPresence(this, shards);
     }
 
     @Override

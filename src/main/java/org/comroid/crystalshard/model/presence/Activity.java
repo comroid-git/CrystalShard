@@ -34,6 +34,13 @@ public final class Activity extends AbstractDataContainer {
             .andRemap(Instant::ofEpochMilli)
             .build();
 
+    public Activity(ContextualProvider context, Activity.Type type, String detail) {
+        this(context, null);
+
+        put(ACTIVITY_TYPE, type);
+        put(NAME, detail);
+    }
+
     public Activity(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
