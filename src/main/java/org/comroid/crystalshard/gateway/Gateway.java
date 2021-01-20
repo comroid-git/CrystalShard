@@ -147,13 +147,13 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     if (invalidSessionEvent.isResumable()) {
                         logger.warn("Invalid Session received; trying to resume using RESUME...");
                         // reconnect using RESUME
-                        sendResume().exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Resume", true));;
+                        sendResume().exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Resume"));;
                     } else {
                         logger.warn("Invalid Session received; trying to reconnect using IDENTIFY...");
                         // reconnect using IDENTIFY
                         Thread.sleep(3000);
                         sendIdentify(shard.getCurrentShardID())
-                                .exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Identify", true));
+                                .exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Identify"));
                     }
                 } catch (Throwable t) {
                     throw new RuntimeException("An Error occurred while reconnecting", t);
