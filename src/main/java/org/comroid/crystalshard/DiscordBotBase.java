@@ -83,6 +83,10 @@ public class DiscordBotBase implements Bot {
         this.intents = new HashSet<>(Arrays.asList(intents));
         this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT, GatewayBotResponse.TYPE).join();
         int shardCount = gbr.shards.assertion("shard count");
+
+        if (gbr.sessionStartLimit.flatMap(ssl -> ssl.remaining).assertion() == 0)
+            throw new IllegalStateException("Cannot connect; No remaining Session Starts");
+
         this.shards = IntStream.range(0, shardCount)
                 .mapToObj(shardIndex -> {
                     DiscordBotShard shard = new DiscordBotShard(context, token,
