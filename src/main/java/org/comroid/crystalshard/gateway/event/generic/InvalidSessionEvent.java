@@ -2,6 +2,7 @@ package org.comroid.crystalshard.gateway.event.generic;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.impl.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -19,8 +20,13 @@ public final class InvalidSessionEvent extends GatewayEvent {
             .asIdentities()
             .onceEach()
             .build();
+    public final Reference<Boolean> isResumable = getComputedReference(IS_RESUMABLE);
 
     public InvalidSessionEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
+    }
+
+    public boolean isResumable() {
+        return isResumable.assertion();
     }
 }
