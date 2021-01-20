@@ -3,7 +3,7 @@ package org.comroid.crystalshard.gateway;
 import org.comroid.api.IntEnum;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
-import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.util.StandardValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 

@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;

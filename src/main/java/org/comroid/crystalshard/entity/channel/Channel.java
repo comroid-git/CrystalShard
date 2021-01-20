@@ -2,15 +2,11 @@ package org.comroid.crystalshard.entity.channel;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
-import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
-import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.channel.ChannelType;
-import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
-import org.comroid.uniform.node.UniObjectNode;
-import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.util.StandardValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 

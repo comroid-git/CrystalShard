@@ -9,7 +9,7 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.model.guild.PermissionSet;
 import org.comroid.uniform.node.UniNode;
-import org.comroid.uniform.node.impl.StandardValueType;
+import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
