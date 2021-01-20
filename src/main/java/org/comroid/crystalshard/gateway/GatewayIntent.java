@@ -2,6 +2,7 @@ package org.comroid.crystalshard.gateway;
 
 import org.comroid.api.BitmaskEnum;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public enum GatewayIntent implements BitmaskEnum<GatewayIntent> {
     private final DispatchEventType[] dispatchEventTypes;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 

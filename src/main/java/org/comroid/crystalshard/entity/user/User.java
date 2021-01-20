@@ -18,6 +18,7 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 import java.util.Set;
@@ -121,7 +122,7 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
         private final int value;
 
         @Override
-        public int getValue() {
+        public @NotNull Integer getValue() {
             return value;
         }
 

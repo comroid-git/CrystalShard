@@ -2,6 +2,7 @@ package org.comroid.crystalshard.gateway.presence;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
+import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
@@ -75,6 +76,16 @@ public final class StatusUpdater implements Updater<Void>, ContextualProvider.Un
             return ((DiscordBotShard) bot).getGateway()
                     .getSocket().send(obj.toString())
                     .thenApply(nil -> null);
-        } else return
+        } else return CompletableFuture.allOf(
+                ((DiscordBotBase) bot).getShards()
+                        .stream()
+                        .map(shard -> {
+                            StatusUpdater updater = shard.updateOwnPresence();
+                            updater.newStatus = newStatus;
+                            updater.afkState = afkState;
+                            activities.forEach(updater::addActivity);
+                            return updater.update();
+                        })
+                        .toArray(CompletableFuture[]::new));
     }
 }

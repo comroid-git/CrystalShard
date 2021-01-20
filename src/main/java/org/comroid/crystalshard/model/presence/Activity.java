@@ -10,6 +10,7 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class Activity extends AbstractDataContainer {
@@ -41,7 +42,7 @@ public final class Activity extends AbstractDataContainer {
         private final String description;
 
         @Override
-        public int getValue() {
+        public @NotNull Integer getValue() {
             return value;
         }
 

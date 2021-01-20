@@ -32,7 +32,7 @@ public interface Bot extends ContextualProvider.Underlying, Closeable {
     int getShardCount();
 
     default StatusUpdater updateOwnPresence() {
-        return StatusUpdater.create(this);
+        return new StatusUpdater(this);
     }
 
     @Internal

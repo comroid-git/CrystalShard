@@ -4,6 +4,7 @@ import org.comroid.api.IntEnum;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
+import org.jetbrains.annotations.NotNull;
 
 public enum ChannelType implements IntEnum, Named, Described {
     GUILD_TEXT(0, "a text channel within a server"),
@@ -18,7 +19,7 @@ public enum ChannelType implements IntEnum, Named, Described {
     private final String description;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 

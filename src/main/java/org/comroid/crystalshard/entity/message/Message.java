@@ -21,6 +21,7 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.Map;
@@ -195,7 +196,7 @@ public final class Message extends Snowflake.Abstract {
         private final int value;
 
         @Override
-        public int getValue() {
+        public @NotNull Integer getValue() {
             return value;
         }
 
@@ -220,7 +221,7 @@ public final class Message extends Snowflake.Abstract {
         private final String description;
 
         @Override
-        public int getValue() {
+        public @NotNull Integer getValue() {
             return value;
         }
 

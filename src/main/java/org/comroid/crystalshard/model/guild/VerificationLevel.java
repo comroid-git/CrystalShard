@@ -4,6 +4,7 @@ import org.comroid.api.IntEnum;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
+import org.jetbrains.annotations.NotNull;
 
 public enum VerificationLevel implements IntEnum, Named, Described {
     NONE(0, "unrestricted"),
@@ -16,7 +17,7 @@ public enum VerificationLevel implements IntEnum, Named, Described {
     private final String description;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 

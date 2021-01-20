@@ -6,6 +6,7 @@ import org.comroid.common.info.Described;
 import org.comroid.util.StandardValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -27,7 +28,7 @@ public enum OpCode implements IntEnum, Named, Described, Predicate<UniNode>, Fun
     private final String description;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 

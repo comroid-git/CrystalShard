@@ -13,6 +13,7 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class PermissionOverwrite extends AbstractDataContainer {
@@ -59,7 +60,7 @@ public final class PermissionOverwrite extends AbstractDataContainer {
         private final int value;
 
         @Override
-        public int getValue() {
+        public @NotNull Integer getValue() {
             return value;
         }
 

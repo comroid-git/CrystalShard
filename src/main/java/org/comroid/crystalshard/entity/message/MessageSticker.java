@@ -12,6 +12,7 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
+import org.jetbrains.annotations.NotNull;
 
 // Todo Future patch @ discord is gonna update this
 public final class MessageSticker extends Snowflake.Abstract {
@@ -64,7 +65,7 @@ public final class MessageSticker extends Snowflake.Abstract {
         private final int value;
 
         @Override
-        public int getValue() {
+        public @NotNull Integer getValue() {
             return value;
         }
 

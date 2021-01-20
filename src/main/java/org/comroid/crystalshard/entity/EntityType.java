@@ -16,6 +16,7 @@ import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
 import org.comroid.util.Bitmask;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,7 +81,7 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
     private final Class<T> relatedClass;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 

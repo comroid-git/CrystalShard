@@ -3,6 +3,7 @@ package org.comroid.crystalshard.model.guild;
 import org.comroid.api.BitmaskEnum;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public enum SystemChannelFlag implements BitmaskEnum<SystemChannelFlag>, Named, 
     private final String description;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 

@@ -2,6 +2,7 @@ package org.comroid.crystalshard.model.user;
 
 import org.comroid.api.IntEnum;
 import org.comroid.api.Rewrapper;
+import org.jetbrains.annotations.NotNull;
 
 public enum PremiumType implements IntEnum {
     NONE(0),
@@ -11,7 +12,7 @@ public enum PremiumType implements IntEnum {
     private final int value;
 
     @Override
-    public int getValue() {
+    public @NotNull Integer getValue() {
         return value;
     }
 
