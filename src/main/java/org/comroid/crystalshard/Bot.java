@@ -4,6 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.presence.StatusUpdater;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
@@ -29,6 +30,10 @@ public interface Bot extends ContextualProvider.Underlying, Closeable {
     int getCurrentShardID();
 
     int getShardCount();
+
+    default StatusUpdater updateOwnPresence() {
+        return StatusUpdater.create(this);
+    }
 
     @Internal
     default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
