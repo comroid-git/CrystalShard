@@ -5,7 +5,6 @@ import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
-import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
 import org.comroid.mutatio.pipe.Pipe;
@@ -42,6 +41,10 @@ public interface Bot extends ContextualProvider.Underlying, Closeable {
 
     default CompletableFuture<Void> updateActivity(Activity.Type type, String detail) {
         return updatePresence(null, type, detail);
+    }
+
+    default CompletableFuture<Void> updatePresence(UserStatus status, String detail) {
+        return updatePresence(status, Activity.Type.PLAYING, detail);
     }
 
     default CompletableFuture<Void> updatePresence(UserStatus status, Activity.Type type, String detail) {

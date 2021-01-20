@@ -5,6 +5,7 @@ import org.comroid.api.IntEnum;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -27,7 +28,7 @@ public final class Activity extends AbstractDataContainer {
             = TYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)
             .andRemapRef(Type::valueOf)
-            .build(); // todo finish this
+            .build();
     public static final VarBind<Activity, Long, Instant, Instant> CREATED_AT
             = TYPE.createBind("created_at")
             .extractAs(StandardValueType.LONG)
@@ -46,7 +47,7 @@ public final class Activity extends AbstractDataContainer {
     }
 
     public enum Type implements IntEnum, Described {
-        GAME(0, "Playing {name}"),
+        PLAYING(0, "Playing {name}"),
         STREAMING(1, "Streaming {details}"),
         LISTENING(2, "Listening to {name}"),
         CUSTOM(4, "{emoji} {name}"),
