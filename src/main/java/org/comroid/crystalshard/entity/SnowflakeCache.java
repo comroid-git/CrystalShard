@@ -13,6 +13,7 @@ import org.comroid.crystalshard.entity.message.MessageSticker;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
+import org.comroid.mutatio.ref.KeyedReference;
 import org.comroid.mutatio.ref.Processor;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferenceMap;
@@ -83,8 +84,11 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
     }
 
     public <T extends Snowflake> Processor<T> getSnowflake(EntityType<T> type, long id) {
-        return cache.getReference(getKey(type, id), true)
-                .flatMap(type.getRelatedClass());
+        return getReference(type, id).flatMap(type.getRelatedClass());
+    }
+
+    public <T extends Snowflake> KeyedReference<String, Snowflake> getReference(EntityType<T> type, long id) {
+        return cache.getReference(getKey(type, id), true);
     }
 
     private <T extends Snowflake> String getKey(EntityType<T> type, long id) {

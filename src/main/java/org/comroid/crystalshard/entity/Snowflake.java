@@ -85,6 +85,10 @@ public interface Snowflake extends DataContainer<Snowflake>, ContextualProvider.
         protected Abstract(ContextualProvider context, UniObjectNode data, EntityType<? extends Snowflake> entityType) {
             super(context, data);
 
+            context.requireFromContext(SnowflakeCache.class)
+                    .getReference(entityType, getID())
+                    .set(this);
+
             this.entityType = entityType;
         }
     }
