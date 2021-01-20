@@ -10,14 +10,9 @@ public interface VoiceChannel extends Channel {
     VarBind<VoiceChannel, Integer, Integer, Integer> BITRATE
             = BASETYPE.createBind("bitrate")
             .extractAs(StandardValueType.INTEGER)
-            .asIdentities()
-            .onceEach()
-            .setRequired()
             .build();
     VarBind<VoiceChannel, Integer, Integer, Integer> USER_LIMIT
             = BASETYPE.createBind("user_limit")
             .extractAs(StandardValueType.INTEGER)
-            .asIdentities()
-            .onceEach()
             .build();
 }

@@ -20,23 +20,16 @@ public interface GuildChannel extends Channel {
     VarBind<GuildChannel, Integer, Integer, Integer> POSITION
             = BASETYPE.createBind("position")
             .extractAs(StandardValueType.INTEGER)
-            .asIdentities()
-            .onceEach()
-            .setRequired()
             .build();
     VarBind<GuildChannel, UniObjectNode, PermissionOverwrite, Span<PermissionOverwrite>> PERMISSION_OVERWRITES
             = BASETYPE.createBind("permission_overwrites")
             .extractAsArray()
             .andResolve(PermissionOverwrite::new)
             .intoSpan()
-            .setRequired()
             .build();
     VarBind<GuildChannel, String, String, String> NAME
             = BASETYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
-            .asIdentities()
-            .onceEach()
-            .setRequired()
             .build();
     VarBind<GuildChannel, String, String, String> TOPIC
             = BASETYPE.createBind("topic")

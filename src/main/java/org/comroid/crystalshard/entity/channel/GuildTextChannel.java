@@ -19,7 +19,6 @@ public final class GuildTextChannel extends AbstractTextChannel implements Guild
             = TYPE.createBind("last_pin_timestamp")
             .extractAs(StandardValueType.STRING)
             .andRemap(Instant::parse)
-            .onceEach()
             .build();
 
     @Override

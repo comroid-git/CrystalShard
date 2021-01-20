@@ -18,14 +18,11 @@ public interface TextChannel extends Channel, MessageTarget {
             = BASETYPE.createBind("last_message_id")
             .extractAs(StandardValueType.LONG)
             .andResolveRef((channel, id) -> channel.requireFromContext(SnowflakeCache.class).getMessage(id))
-            .onceEach()
             .build();
     VarBind<TextChannel, Integer, Duration, Duration> SLOWMODE_COOLDOWN
             = BASETYPE.createBind("rate_limit_per_user")
             .extractAs(StandardValueType.INTEGER)
             .andRemap(Duration::ofSeconds)
-            .onceEach()
-            .setRequired()
             .build();
 
     @Override
