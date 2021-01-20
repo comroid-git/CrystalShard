@@ -77,7 +77,8 @@ public final class StatusUpdater implements Updater<Void>, ContextualProvider.Un
             this.activities.forEach(activity -> activity.toObjectNode(activities.addObject()));
 
             return ((DiscordBotShard) bot).getGateway()
-                    .getSocket().send(obj.toString())
+                    .getSocket()
+                    .send(obj.toString())
                     .thenApply(nil -> null);
         } else return CompletableFuture.allOf(
                 ((DiscordBotBase) bot).getShards()
