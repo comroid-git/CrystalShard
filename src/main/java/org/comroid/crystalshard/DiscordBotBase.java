@@ -12,6 +12,8 @@ import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.BotBasedPresence;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
+import org.comroid.crystalshard.ui.CommandSetup;
+import org.comroid.crystalshard.ui.InteractionCore;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
 import org.comroid.mutatio.ref.Reference;
@@ -36,7 +38,8 @@ public class DiscordBotBase implements Bot {
     private final Span<DiscordBotShard> shards;
     private final Pipe<? extends GatewayEvent> eventPipeline;
     private final BotBasedPresence ownPresence;
-    public final Reference<String> token;
+    private final InteractionCore interactionCore;
+    protected final Reference<String> token;
 
     public Span<DiscordBotShard> getShards() {
         return shards;
@@ -108,6 +111,10 @@ public class DiscordBotBase implements Bot {
                 .collect(Span.collector());
         this.eventPipeline = Pump.combine(shards.stream().map(DiscordBotShard::getEventPipeline));
         this.ownPresence = new BotBasedPresence(this, shards);
+        this.interactionCore = getFromContext(CommandSetup.class)
+                .wrap()
+                .map(config -> new InteractionCore(this, config))
+                .orElse(null);
     }
 
     @Override

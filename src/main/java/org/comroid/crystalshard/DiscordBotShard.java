@@ -3,7 +3,6 @@ package org.comroid.crystalshard;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -126,7 +124,7 @@ public final class DiscordBotShard implements Bot {
         this.shardCount = shardCount;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);
-        SerializationAdapter<?,?,?> serializationAdapter = requireFromContext(SerializationAdapter.class);
+        SerializationAdapter<?, ?, ?> serializationAdapter = requireFromContext(SerializationAdapter.class);
         ScheduledExecutorService executor = requireFromContext(ScheduledExecutorService.class);
         this.gateway = new FutureReference<>(initiateGateway(token, wsUri, httpAdapter, executor, intents));
 
