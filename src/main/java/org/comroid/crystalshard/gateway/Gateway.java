@@ -21,6 +21,7 @@ import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.uniform.node.UniValueNode;
+import org.comroid.util.Bitmask;
 import org.comroid.util.StandardValueType;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
@@ -151,7 +152,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     } else {
                         logger.warn("Invalid Session received; trying to reconnect using IDENTIFY...");
                         // reconnect using IDENTIFY
-                        Thread.sleep(3000);
+                        // wait before identify
+                        Thread.sleep(1000);
                         sendIdentify(shard.getCurrentShardID())
                                 .exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Identify"));
                     }
