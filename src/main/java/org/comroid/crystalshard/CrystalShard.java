@@ -3,10 +3,8 @@ package org.comroid.crystalshard;
 import org.comroid.api.Polyfill;
 import org.comroid.common.Version;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Properties;
 
 public final class CrystalShard {
@@ -16,7 +14,7 @@ public final class CrystalShard {
 
     static {
         try (
-                InputStream is = ClassLoader.getSystemResource("org/comroid/crystalshard/crystalshard.properties").openStream()
+                InputStream is = ClassLoader.getSystemResource("org/comroid/crystalshard/info.properties").openStream()
         ) {
             final Properties prop = new Properties();
             prop.load(is);
