@@ -70,7 +70,7 @@ public final class StatusUpdater implements Updater<Void>, ContextualProvider.Un
             final UniObjectNode obj = ((DiscordBotShard) bot).getGateway()
                     .createPayloadBase(OpCode.PRESENCE_UPDATE);
             final UniObjectNode data = obj.putObject("d");
-            data.put("since", System.currentTimeMillis());
+            data.putNull("since");
             data.put("status", newStatus.getIdent());
             data.put("afk", afkState);
             final UniArrayNode activities = data.putArray("activities");
