@@ -100,7 +100,7 @@ public class DiscordBotBase implements Bot {
         final GatewayBotResponse gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT, GatewayBotResponse.TYPE).join();
         int shardCount = gbr.shards.assertion("shard count");
 
-        if (gbr.sessionStartLimit.flatMap(ssl -> ssl.remaining).assertion() == 0)
+        if (gbr.sessionStartLimit.test(GatewayBotResponse.SessionStartLimit::isBlocked))
             throw new IllegalStateException("Cannot connect; No remaining Session Starts");
 
         this.shards = IntStream.range(0, shardCount)

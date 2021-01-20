@@ -76,8 +76,24 @@ public final class GatewayBotResponse extends AbstractRestResponse {
         public final Reference<Integer> remaining = getComputedReference(REMAINING);
         public final Reference<Integer> resetAfter = getComputedReference(RESET_AFTER);
 
+        public int getTotal() {
+            return total.assertion();
+        }
+
+        public int getRemaining() {
+            return remaining.assertion();
+        }
+
+        public int getResetAfter() {
+            return resetAfter.assertion();
+        }
+
         public SessionStartLimit(ContextualProvider context, @Nullable UniNode initialData) {
             super(context, initialData);
+        }
+
+        public boolean isBlocked() {
+            return getRemaining() != 0;
         }
     }
 }
