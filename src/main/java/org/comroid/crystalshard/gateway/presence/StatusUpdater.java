@@ -4,6 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
+import org.comroid.crystalshard.gateway.OpCode;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
 import org.comroid.crystalshard.util.Updater;
@@ -66,11 +67,13 @@ public final class StatusUpdater implements Updater<Void>, ContextualProvider.Un
     @Override
     public CompletableFuture<Void> update() {
         if (bot instanceof DiscordBotShard) {
-            final UniObjectNode obj = requireFromContext(SerializationAdapter.class).createUniObjectNode();
-            obj.put("since", System.currentTimeMillis());
-            obj.put("status", newStatus.getIdent());
-            obj.put("afk", afkState);
-            final UniArrayNode activities = obj.putArray("activities");
+            final UniObjectNode obj = ((DiscordBotShard) bot).getGateway()
+                    .createPayloadBase(OpCode.PRESENCE_UPDATE);
+            final UniObjectNode data = obj.putObject("d");
+            data.put("since", System.currentTimeMillis());
+            data.put("status", newStatus.getIdent());
+            data.put("afk", afkState);
+            final UniArrayNode activities = data.putArray("activities");
             this.activities.forEach(activity -> activity.toObjectNode(activities.addObject()));
 
             return ((DiscordBotShard) bot).getGateway()

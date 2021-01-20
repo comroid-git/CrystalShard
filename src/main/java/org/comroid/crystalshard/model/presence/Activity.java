@@ -13,6 +13,8 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
+
 public final class Activity extends AbstractDataContainer {
     @RootBind
     public static final GroupBind<Activity> TYPE
@@ -26,6 +28,11 @@ public final class Activity extends AbstractDataContainer {
             .extractAs(StandardValueType.INTEGER)
             .andRemapRef(Type::valueOf)
             .build(); // todo finish this
+    public static final VarBind<Activity, Long, Instant, Instant> CREATED_AT
+            = TYPE.createBind("created_at")
+            .extractAs(StandardValueType.LONG)
+            .andRemap(Instant::ofEpochMilli)
+            .build();
 
     public Activity(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
