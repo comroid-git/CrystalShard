@@ -61,7 +61,7 @@ public final class DiscordBotShard implements Bot {
 
     @Override
     public boolean isReady() {
-        return gateway.future.isDone() && getGateway().readyEvent.future.isDone();
+        return gateway.future.isDone() && getGateway().readyEvent.isNonNull();
     }
 
     public Gateway getGateway() {
@@ -122,12 +122,12 @@ public final class DiscordBotShard implements Bot {
                 .map(closed -> initiateGateway(token, wsUri, httpAdapter, executor, intents))
                 .flatMap(FutureReference::new)
                 .forEach(this.gateway::set));
-         */
         gateway.into(gtw -> gtw.readyEvent).future
                 .thenRun(() -> {
                     readyTasks.forEach(task -> task.accept(this));
                     logger.info(String.format("%s - Shard %d is ready!", toString(), getCurrentShardID()));
                 });
+         */
     }
 
     private CompletableFuture<Gateway> initiateGateway(String token, URI wsUri, HttpAdapter httpAdapter, ScheduledExecutorService executor, GatewayIntent[] intents) {

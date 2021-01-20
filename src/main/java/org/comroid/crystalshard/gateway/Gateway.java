@@ -1,20 +1,18 @@
 package org.comroid.crystalshard.gateway;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
 import org.comroid.common.info.MessageSupplier;
-import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
-import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
@@ -38,7 +36,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     @Internal
     private final Reference<Integer> sequence = Reference.create();
     @Internal
-    public final FutureReference<ReadyEvent> readyEvent;
+    public final Reference<ReadyEvent> readyEvent;
     private final Websocket socket;
     private final Pipe<? extends UniNode> dataPipeline;
     private final Pipe<? extends GatewayEvent> eventPipeline;
@@ -99,15 +97,12 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         } catch (Throwable t) {
             throw new RuntimeException("Could not send Identify", t);
         }
-        // store first ready event
-        this.readyEvent = new FutureReference<>(getEventPipeline()
+        // store every latest ready event
+        this.readyEvent = Reference.create();
+        getEventPipeline()
                 .flatMap(ReadyEvent.class)
-                .next()
-                .thenApply(ready -> {
-                    logger.debug("Ready Event received: " + ready);
-                    return ready;
-                })
-                .exceptionally(shard.context.exceptionLogger(logger, Level.FATAL, "Could not receive READY Event", true)));
+                .peek(ready -> logger.debug("New ReadyEvent received: " + ready))
+                .forEach(this.readyEvent::set);
     }
 
     private void startHeartbeat(int interval) {
@@ -147,8 +142,19 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
             case INVALID_SESSION:
                 final InvalidSessionEvent invalidSessionEvent = new InvalidSessionEvent(shard, innerData);
 
-                if (invalidSessionEvent.isResumable()) {
-                    // TODO reconnect using RESUME
+                try {
+                    if (invalidSessionEvent.isResumable()) {
+                        logger.warn("Invalid Session received; trying to resume using RESUME...");
+                        // TODO reconnect using RESUME
+                        sendResume().join();
+                    } else {
+                        logger.warn("Invalid Session received; trying to reconnect using IDENTIFY...");
+                        // TODO reconnect using IDENTIFY
+                        Thread.sleep(3000);
+                        sendIdentify(shard.getCurrentShardID()).join();
+                    }
+                } catch (Throwable t) {
+                    throw new RuntimeException("An Error occurred while reconnecting", t);
                 }
 
                 return invalidSessionEvent;
@@ -196,6 +202,19 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .thenCombine(getEventPipeline()
                                 .flatMap(ReadyEvent.class).next(),
                         (ws, ready) -> ready);
+    }
+
+    @Internal
+    public CompletableFuture<ResumedEvent> sendResume() {
+        final UniObjectNode payload = createPayloadBase(OpCode.RESUME);
+        UniObjectNode data = payload.putObject("d");
+
+        data.put("token", "Bot " + shard.getToken());
+        data.put("session_id", readyEvent.flatMap(re -> re.sessionID).assertion("No Session ID found"));
+        data.put("seq", sequence.assertion("No Sequence number found"));
+
+        return socket.send(payload.toString())
+                .thenCombine(getEventPipeline().flatMap(ResumedEvent.class).next(), (ws, event) -> event);
     }
 
     private CompletableFuture<UniNode> awaitAck(Websocket socket) {
