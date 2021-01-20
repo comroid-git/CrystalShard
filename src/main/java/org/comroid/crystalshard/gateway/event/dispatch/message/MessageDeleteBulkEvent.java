@@ -52,7 +52,7 @@ public final class MessageDeleteBulkEvent extends DispatchEvent {
     public MessageDeleteBulkEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
 
-        final SnowflakeCache cache = context.getCache();
+        final SnowflakeCache cache = getCache();
         this.ids = getComputedReference(MESSAGE_IDS)
                 .assertion()
                 .stream()

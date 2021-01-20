@@ -55,7 +55,7 @@ public final class MessageDeleteEvent extends DispatchEvent {
     public MessageDeleteEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
 
-        SnowflakeCache cache = context.getCache();
+        SnowflakeCache cache = getCache();
         long id = MESSAGE_ID.getFrom(initialData.asObjectNode());
         KeyedReference<String, Snowflake> ref = cache.getReference(EntityType.MESSAGE, id);
         this.message = ref.flatMap(Message.class).assertion("Message not found: " + id);

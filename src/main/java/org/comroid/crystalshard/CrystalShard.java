@@ -6,6 +6,7 @@ import org.comroid.common.Version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Properties;
 
 public final class CrystalShard {
@@ -15,15 +16,15 @@ public final class CrystalShard {
 
     static {
         try (
-                InputStream is = ClassLoader.getSystemResource("crystalshard.properties").openStream()
+                InputStream is = ClassLoader.getSystemResource("org/comroid/crystalshard/crystalshard.properties").openStream()
         ) {
-            Properties prop = new Properties();
+            final Properties prop = new Properties();
             prop.load(is);
 
             VERSION = new Version(prop.getProperty("version"));
             toString = String.format("CrystalShard @ v%s (%s)", VERSION, URL);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not load CrystalShard", e);
+        } catch (Throwable e) {
+            throw new RuntimeException("Could not load CrystalShard properties", e);
         }
     }
 }

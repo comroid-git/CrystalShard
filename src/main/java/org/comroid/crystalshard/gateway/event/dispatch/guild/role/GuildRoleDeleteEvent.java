@@ -45,7 +45,7 @@ public final class GuildRoleDeleteEvent extends DispatchEvent {
     public GuildRoleDeleteEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
 
-        SnowflakeCache cache = context.getCache();
+        SnowflakeCache cache = getCache();
         long id = ROLE.getFrom(initialData.asObjectNode());
         KeyedReference<String, Snowflake> ref = cache.getReference(EntityType.ROLE, id);
         this.role = ref.flatMap(Role.class).assertion("Role not found: " + id);
