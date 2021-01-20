@@ -21,6 +21,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -103,6 +104,18 @@ public final class DiscordAPI extends ContextualProvider.Base {
                 CrystalShard.VERSION.toString())
         );
         return headers;
+    }
+
+    public static long getIdFromToken(String token) {
+        String decode = new String(Base64.getDecoder().decode(token));
+        StringBuilder num = new StringBuilder();
+        for (int i = 0; i < decode.length(); i++) {
+            char c = decode.charAt(i);
+            if (Character.isDigit(c))
+                num.append(c);
+            else break;
+        }
+        return Long.parseLong(num.toString());
     }
 
     public <T> Function<Throwable, T> exceptionLogger(

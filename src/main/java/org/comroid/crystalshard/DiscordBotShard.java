@@ -11,6 +11,7 @@ import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,11 +37,18 @@ public final class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
     public final DiscordAPI context;
     private final String token;
+    private final long ownID;
     private final int currentShardID;
     private final int shardCount;
     private final FutureReference<Gateway> gateway;
+    private final Reference<User> yourself;
     @Internal
     public final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
+
+    @Override
+    public long getOwnID() {
+        return ownID;
+    }
 
     @Override
     public SnowflakeCache getSnowflakeCache() {
@@ -71,9 +80,7 @@ public final class DiscordBotShard implements Bot {
 
     @Override
     public User getYourself() {
-        return gateway.flatMap(gateway -> gateway.readyEvent)
-                .flatMap(readyEvent -> readyEvent.yourself)
-                .assertion();
+        return yourself.assertion();
     }
 
     @Override
@@ -111,7 +118,9 @@ public final class DiscordBotShard implements Bot {
         context.members.add(this);
         this.context = context;
         this.token = token;
+        this.ownID = DiscordAPI.getIdFromToken(token);
         this.currentShardID = shardID;
+        this.yourself = requireFromContext(SnowflakeCache.class).getUser(ownID);
         this.shardCount = shardCount;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);

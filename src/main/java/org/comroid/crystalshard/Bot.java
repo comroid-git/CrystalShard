@@ -21,6 +21,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface Bot extends ContextualProvider.Underlying, Closeable {
+    long getOwnID();
+
     SnowflakeCache getSnowflakeCache();
 
     Pipe<? extends GatewayEvent> getEventPipeline();

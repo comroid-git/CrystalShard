@@ -36,11 +36,15 @@ public class DiscordBotBase implements Bot {
     private final Span<DiscordBotShard> shards;
     private final Pipe<? extends GatewayEvent> eventPipeline;
     private final BotBasedPresence ownPresence;
-    private final GatewayBotResponse gbr;
     public final Reference<String> token;
 
     public Span<DiscordBotShard> getShards() {
         return shards;
+    }
+
+    @Override
+    public long getOwnID() {
+        return token.into(DiscordAPI::getIdFromToken);
     }
 
     @Override
@@ -91,7 +95,9 @@ public class DiscordBotBase implements Bot {
         this.context = context;
         this.token = Reference.constant(token);
         this.intents = new HashSet<>(Arrays.asList(intents));
-        this.gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT, GatewayBotResponse.TYPE).join();
+
+        // start connection
+        final GatewayBotResponse gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT, GatewayBotResponse.TYPE).join();
         int shardCount = gbr.shards.assertion("shard count");
 
         if (gbr.sessionStartLimit.flatMap(ssl -> ssl.remaining).assertion() == 0)
