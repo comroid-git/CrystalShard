@@ -7,13 +7,16 @@ import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.entity.command.Command;
 import org.comroid.crystalshard.gateway.event.dispatch.interaction.InteractionCreateEvent;
+import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StreamOPs;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,7 +82,18 @@ public class InteractionCore implements Context {
                                         CommandDefinition def = config.getCommand(cmd.getName());
                                         if (def == null)
                                             return null;
+                                        if (isSyncedCorrectly(cmd, def))
+                                            return CompletableFuture.completedFuture(cmd);
+                                        /*
+                                        TODO:
+                                        endpoint seems to be broken at discords side;
+                                        always returns 400 - command already exists
+
                                         return updateGlobalCommand(cmd, def);
+
+                                        temporarily replaced with re-registering; as it will overwrite the old command
+                                         */
+                                        return registerGlobalCommand(def);
                                     })
                                     .filter(Objects::nonNull)
                             , // create nonexisting
@@ -107,7 +121,20 @@ public class InteractionCore implements Context {
                                         CommandDefinition def = config.getCommand(cmd.getName());
                                         if (def == null)
                                             return null;
+                                        if (isSyncedCorrectly(cmd, def)) {
+                                            logger.info("Not syncing {} as it is synced correctly", cmd);
+                                            return CompletableFuture.completedFuture(cmd);
+                                        }
+                                        /*
+                                        TODO:
+                                        endpoint seems to be broken at discords side;
+                                        always returns 400 - command already exists
+
                                         return updateGuildCommand(guildId, cmd, def);
+
+                                        temporarily replaced with re-registering; as it will overwrite the old command
+                                         */
+                                        return registerGuildCommand(guildId, def);
                                     })
                                     .filter(Objects::nonNull)
                             , // create nonexisting
@@ -116,6 +143,24 @@ public class InteractionCore implements Context {
                                     .map(def -> registerGuildCommand(guildId, def))
                     ).toArray(CompletableFuture<?>[]::new);
                 }).thenCompose(CompletableFuture::allOf);
+    }
+
+    private boolean isSyncedCorrectly(Command cmd, CommandDefinition def) {
+        return cmd.name.equals(def.name)
+                && cmd.description.equals(def.description)
+                && optionsEqual(cmd, def);
+    }
+
+    private boolean optionsEqual(Command command, CommandDefinition definition) {
+        final Span<CommandOption> optionsDef = definition.getComputedReference(Command.OPTIONS).orElseGet(Span::empty);
+        final Map<String, CommandOption> optionsSet = command.getComputedReference(Command.OPTIONS).orElseGet(Span::empty)
+                .stream()
+                .collect(Collectors.toMap(CommandOption::getName, Function.identity()));
+
+        if (optionsDef.isEmpty() && optionsSet.isEmpty())
+            return true;
+        return optionsDef.stream()
+                .allMatch(opt -> optionsSet.containsKey(opt.getName()) && optionsSet.get(opt.getName()).equals(opt));
     }
 
     private CompletableFuture<Command> updateGlobalCommand(Command original, CommandDefinition cmd) {

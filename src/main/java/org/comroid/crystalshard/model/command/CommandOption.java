@@ -20,6 +20,10 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 public final class CommandOption extends AbstractDataContainer implements Named, Described {
     @RootBind
     public static final GroupBind<CommandOption> TYPE
@@ -59,6 +63,8 @@ public final class CommandOption extends AbstractDataContainer implements Named,
             .build();
     public final Reference<String> name = getComputedReference(NAME);
     public final Reference<String> description = getComputedReference(DESCRIPTION);
+    public final Reference<Boolean> isDefault = getComputedReference(IS_DEFAULT);
+    public final Reference<Boolean> isRequired = getComputedReference(IS_REQUIRED);
 
     @Override
     public String getName() {
@@ -70,8 +76,43 @@ public final class CommandOption extends AbstractDataContainer implements Named,
         return description.assertion();
     }
 
+    public boolean isDefault() {
+        return isDefault.orElse(false);
+    }
+
+    public boolean isRequired() {
+        return isRequired.orElse(false);
+    }
+
+    public Span<CommandOptionChoice<?>> getChoices() {
+        return getComputedReference(CHOICES).orElseGet(Span::empty);
+    }
+
+    public Span<CommandOption> getOptions() {
+        return getComputedReference(OPTIONS).orElseGet(Span::empty);
+    }
+
     public CommandOption(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof CommandOption))
+            return false;
+        final CommandOption other = (CommandOption) o;
+        final Map<String, CommandOption> otherOptions = other.getOptions()
+                .stream()
+                .collect(Collectors.toMap(CommandOption::getName, Function.identity()));
+        return name.equals(other.name)
+                && description.equals(other.description)
+                && isDefault.equals(other.isDefault)
+                && isRequired.equals(other.isRequired)
+                && getOptions().stream()
+                .allMatch(opt -> otherOptions.containsKey(opt.getName())
+                        && otherOptions.get(opt.getName()).equals(opt))
+                && getChoices().stream()
+                .allMatch(choice -> other.getChoices().stream().anyMatch(choice::equals));
     }
 
     public enum Type implements IntEnum {

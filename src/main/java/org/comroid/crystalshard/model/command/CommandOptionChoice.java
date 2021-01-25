@@ -48,6 +48,15 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
         super(context, initialData);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof CommandOptionChoice))
+            return false;
+        final CommandOptionChoice<?> other = (CommandOptionChoice<?>) o;
+        return name.equals(other.name)
+                && value.equals(other.value);
+    }
+
     public static final class OfString extends CommandOptionChoice<String> {
         @RootBind
         public static final GroupBind<OfString> TYPE
