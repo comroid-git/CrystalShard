@@ -25,7 +25,9 @@ public enum Endpoint implements AccessibleEndpoint {
     APPLICATION_COMMANDS_GLOBAL("/applications/%s/commands", Snowflake.ID_REGEX),
     APPLICATION_COMMANDS_GLOBAL_SPECIFIC("/applications/%s/commands/%s", Snowflake.ID_REGEX, Command.ID_REGEX),
     APPLICATION_COMMANDS_GUILD("/applications/%s/guilds/%s/commands", Snowflake.ID_REGEX, Guild.ID_REGEX),
-    APPLICATION_COMMANDS_GUILD_SPECIFIC("/applications/%s/guilds/%s/commands/%s", Snowflake.ID_REGEX, Guild.ID_REGEX, Command.ID_REGEX);
+    APPLICATION_COMMANDS_GUILD_SPECIFIC("/applications/%s/guilds/%s/commands/%s", Snowflake.ID_REGEX, Guild.ID_REGEX, Command.ID_REGEX),
+
+    INTERACTION_CALLBACK("/interactions/%s/%s/callback", Command.ID_REGEX, "\\w+");
 
     private final String extension;
     @Language("RegExp")

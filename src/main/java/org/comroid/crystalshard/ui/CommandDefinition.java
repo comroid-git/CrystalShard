@@ -51,6 +51,14 @@ class CommandDefinition extends AbstractDataContainer implements Named, Describe
         return description.assertion();
     }
 
+    public Object getTarget() {
+        return target;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
     public boolean useGlobally() {
         return annotation.useGlobally();
     }

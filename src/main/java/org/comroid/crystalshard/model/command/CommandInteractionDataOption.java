@@ -21,9 +21,9 @@ public final class CommandInteractionDataOption extends AbstractDataContainer im
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<CommandInteractionDataOption, String, String, String> VALUE
+    public static final VarBind<CommandInteractionDataOption, Object, Object, Object> VALUE
             = TYPE.createBind("value")
-            .extractAs(StandardValueType.STRING)
+            .extractAs(StandardValueType.OBJECT)
             .build();
     public static final VarBind<CommandInteractionDataOption, UniObjectNode, CommandInteractionDataOption, Span<CommandInteractionDataOption>> OPTIONS
             = TYPE.createBind("options")
@@ -32,14 +32,14 @@ public final class CommandInteractionDataOption extends AbstractDataContainer im
             .intoSpan()
             .build();
     public final Reference<String> name = getComputedReference(NAME);
-    public final Reference<String> value = getComputedReference(VALUE);
+    public final Reference<Object> value = getComputedReference(VALUE);
 
     @Override
     public String getName() {
         return name.assertion();
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value.assertion();
     }
 

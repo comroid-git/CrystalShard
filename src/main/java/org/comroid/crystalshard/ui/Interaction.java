@@ -7,6 +7,7 @@ import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.model.command.CommandInteractionData;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
@@ -56,6 +57,41 @@ public final class Interaction extends AbstractDataContainer {
             = TYPE.createBind("version")
             .extractAs(StandardValueType.INTEGER)
             .build();
+    public final Reference<Long> id = getComputedReference(ID);
+    public final Reference<Type> type = getComputedReference(INTERACTION_TYPE);
+    public final Reference<CommandInteractionData> data = getComputedReference(DATA);
+    public final Reference<Guild> guild = getComputedReference(GUILD);
+    public final Reference<Channel> channel = getComputedReference(CHANNEL);
+    public final Reference<UniObjectNode> member = getComputedReference(MEMBER);
+    public final Reference<String> continuationToken = getComputedReference(CONTINUATION_TOKEN);
+
+    public long getId() {
+        return id.assertion();
+    }
+
+    public Type getType() {
+        return type.assertion();
+    }
+
+    public CommandInteractionData getData() {
+        return data.assertion();
+    }
+
+    public Guild getGuild() {
+        return guild.assertion();
+    }
+
+    public Channel getChannel() {
+        return channel.assertion();
+    }
+
+    public UniObjectNode getMember() {
+        return member.assertion();
+    }
+
+    public String getContinuationToken() {
+        return continuationToken.assertion();
+    }
 
     public Interaction(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);

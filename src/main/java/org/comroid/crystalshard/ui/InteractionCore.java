@@ -3,17 +3,27 @@ package org.comroid.crystalshard.ui;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Named;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.entity.command.Command;
+import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.gateway.event.dispatch.interaction.InteractionCreateEvent;
+import org.comroid.crystalshard.model.command.CommandInteractionData;
+import org.comroid.crystalshard.model.command.CommandInteractionDataOption;
 import org.comroid.crystalshard.model.command.CommandOption;
+import org.comroid.crystalshard.model.message.embed.Embed;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
+import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
+import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StreamOPs;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -60,8 +70,8 @@ public class InteractionCore implements Context {
                 Endpoint.APPLICATION_COMMANDS_GUILD.complete(getBot().getOwnID(), guildId),
                 UniNode::asArrayNode
         ).<List<Command>>thenApply(array -> array == null ? new ArrayList<>() : array.streamNodes()
-                        .map(data -> Command.resolve(this, data))
-                        .collect(Collectors.toList()))
+                .map(data -> Command.resolve(this, data))
+                .collect(Collectors.toList()))
                 .thenApply(Collections::unmodifiableList);
     }
 
@@ -200,6 +210,65 @@ public class InteractionCore implements Context {
     }
 
     private void handleInteraction(InteractionCreateEvent event) {
-        // todo
+        final Interaction interaction = event.getInteraction();
+        final UniObjectNode response = getSerializer().createUniObjectNode();
+
+        if (interaction.getType() == Interaction.Type.PING)
+            response.put("type", InteractionResponseType.PONG);
+        else {
+            final CommandInteractionData data = interaction.getData();
+            final CommandDefinition definition = config.getCommand(data.getCommandName());
+            if (definition == null)
+                throw new AssertionError("Unrecognized command: " + data.getCommand());
+            final Map<String, CommandInteractionDataOption> options = data.getOptions()
+                    .stream()
+                    .collect(Collectors.toMap(Named::getName, Function.identity()));
+            final Method method = definition.getMethod();
+            final Parameter[] parameters = method.getParameters();
+            final Object[] args = new Object[parameters.length];
+
+            for (int i = 0; i < parameters.length; i++) {
+                final String name = parameters[i].getName();
+                final CommandInteractionDataOption option = options.get(name);
+
+                if (option == null) {
+                    args[i] = event.getFromContext(parameters[i].getType()).orElse(null);
+                    continue;
+                }
+
+                // todo Handle Subcommand case ??
+
+                args[i] = option.getValue();
+            }
+
+            try {
+                final Object yield = method.invoke(definition.getTarget(), args);
+
+                if (yield instanceof String) {
+                    response.put("type", InteractionResponseType.CHANNEL_MESSAGE);
+                    final UniObjectNode responseMessage = response.putObject("data");
+                    responseMessage.put(Message.CONTENT, String.valueOf(yield));
+                } else if (yield instanceof Embed) {
+                    response.put("type", InteractionResponseType.CHANNEL_MESSAGE);
+                    final UniObjectNode responseMessage = response.putObject("data");
+                    responseMessage.put(Message.CONTENT, "");
+                    final UniArrayNode embeds = responseMessage.putArray(Message.EMBEDS);
+                    ((Embed) yield).toObjectNode(embeds.addObject());
+                } else if (yield == null) {
+                    response.put("type", InteractionResponseType.ACKNOWLEDGE_WITH_SOURCE);
+                } else response.put("type", InteractionResponseType.ACKNOWLEDGE);
+            } catch (Throwable t) {
+                response.put("type", InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE);
+
+                final UniObjectNode responseMessage = response.putObject("data");
+                responseMessage.put(Message.CONTENT, "The Command caused an internal exception: " + t);
+            }
+        }
+
+        getBot().newRequest(
+                REST.Method.POST,
+                Endpoint.INTERACTION_CALLBACK.complete(interaction.getId(), interaction.getContinuationToken()),
+                response
+        ).join();
     }
 }

@@ -3,6 +3,7 @@ package org.comroid.crystalshard.gateway.event.dispatch.interaction;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.crystalshard.ui.Interaction;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.annotation.RootBind;
@@ -19,10 +20,13 @@ public final class InteractionCreateEvent extends DispatchEvent {
             .extractAsObject()
             .andConstruct(Interaction.TYPE)
             .build();
+    public final Reference<Interaction> interaction = getComputedReference(INTERACTION);
+
+    public Interaction getInteraction() {
+        return interaction.assertion();
+    }
 
     public InteractionCreateEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
-
-        // todo Implement Interactions https://discord.com/developers/docs/interactions/slash-commands#interaction
     }
 }

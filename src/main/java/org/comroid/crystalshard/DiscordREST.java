@@ -105,6 +105,15 @@ public interface DiscordREST extends Context {
     }
 
     @Internal
+    default CompletableFuture<UniNode> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            Serializable body
+    ) {
+        return newRequest(method, endpoint, body, Function.identity());
+    }
+
+    @Internal
     default <R> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
