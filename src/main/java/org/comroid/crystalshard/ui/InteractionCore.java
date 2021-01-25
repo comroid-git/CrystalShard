@@ -45,7 +45,7 @@ public class InteractionCore implements Context {
         return getBot().newRequest(
                 REST.Method.GET,
                 Endpoint.APPLICATION_COMMANDS_GLOBAL.complete(getBot().getOwnID()))
-                .<List<Command>>thenApply(array -> array.isEmpty() ? new ArrayList<>() : array.streamNodes()
+                .<List<Command>>thenApply(array -> array == null ? new ArrayList<>() : array.streamNodes()
                         .map(data -> Command.resolve(this, data))
                         .collect(Collectors.toList()))
                 .thenApply(Collections::unmodifiableList);
@@ -55,7 +55,7 @@ public class InteractionCore implements Context {
         return getBot().newRequest(
                 REST.Method.GET,
                 Endpoint.APPLICATION_COMMANDS_GUILD.complete(getBot().getOwnID(), guildId))
-                .<List<Command>>thenApply(array -> array.isEmpty() ? new ArrayList<>() : array.streamNodes()
+                .<List<Command>>thenApply(array -> array == null ? new ArrayList<>() : array.streamNodes()
                         .map(data -> Command.resolve(this, data))
                         .collect(Collectors.toList()))
                 .thenApply(Collections::unmodifiableList);
