@@ -1,13 +1,11 @@
-package org.comroid.crystalshard.entity.command;
+package org.comroid.crystalshard.ui;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.Context;
-import org.comroid.crystalshard.entity.EntityType;
-import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.entity.SnowflakeCache;
+import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.model.command.CommandOption;
+import org.comroid.crystalshard.ui.annotation.SlashCommand;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
@@ -17,31 +15,31 @@ import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
-public final class Command extends Snowflake.Abstract implements Named, Described {
+import java.lang.reflect.Method;
+
+class CommandDefinition extends AbstractDataContainer implements Named, Described {
     @RootBind
-    public static final GroupBind<Command> TYPE
-            = BASETYPE.subGroup("application-command", Command::resolve);
-    public static final VarBind<Command, Long, Long, Long> PARENT_APP
-            = TYPE.createBind("application_id")
-            .extractAs(StandardValueType.LONG)
-            .build();
-    public static final VarBind<Command, String, String, String> NAME
+    public static final GroupBind<CommandDefinition> TYPE
+            = BASETYPE.subGroup("command-definition");
+    public static final VarBind<CommandDefinition, String, String, String> NAME
             = TYPE.createBind("name")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<Command, String, String, String> DESCRIPTION
+    public static final VarBind<CommandDefinition, String, String, String> DESCRIPTION
             = TYPE.createBind("description")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<Command, UniObjectNode, CommandOption, Span<CommandOption>> OPTIONS
+    public static final VarBind<CommandDefinition, UniObjectNode, CommandOption, Span<CommandOption>> OPTIONS
             = TYPE.createBind("options")
             .extractAsArray()
             .andConstruct(CommandOption.TYPE)
             .intoSpan()
             .build();
-    public final Reference<Long> parent = getComputedReference(PARENT_APP);
     public final Reference<String> name = getComputedReference(NAME);
     public final Reference<String> description = getComputedReference(DESCRIPTION);
+    private final Object target;
+    private final Method method;
+    private final SlashCommand annotation;
 
     @Override
     public String getName() {
@@ -53,11 +51,15 @@ public final class Command extends Snowflake.Abstract implements Named, Describe
         return description.assertion();
     }
 
-    private Command(Context context, UniObjectNode data) {
-        super(context, data, EntityType.APPLICATION_COMMAND);
+    public boolean useGlobally() {
+        return annotation.useGlobally();
     }
 
-    public static Command resolve(ContextualProvider context, UniNode data) {
-        return Snowflake.resolve(context, data, SnowflakeCache::getApplicationCommand, Command::new);
+    CommandDefinition(InteractionCore core, UniObjectNode data, Object target, Method method) {
+        super(core, data);
+
+        this.target = target;
+        this.method = method;
+        this.annotation = method.getAnnotation(SlashCommand.class);
     }
 }

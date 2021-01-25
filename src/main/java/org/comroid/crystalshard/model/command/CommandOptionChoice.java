@@ -2,6 +2,7 @@ package org.comroid.crystalshard.model.command;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
+import org.comroid.api.ValueType;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
@@ -35,11 +36,12 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
 
     private static CommandOptionChoice<?> resolve(ContextualProvider context, UniNode data) {
         UniValueNode target = data.get("value").asValueNode();
-        if (target.getHeldType().equals(StandardValueType.STRING))
+        ValueType<?> heldType = target.getHeldType();
+        if (heldType.equals(StandardValueType.STRING))
             return new OfString(context, data);
-        if (target.getHeldType().equals(StandardValueType.INTEGER))
+        if (heldType.isNumeric())
             return new OfInteger(context, data);
-        throw new AssertionError();
+        throw new IllegalArgumentException("Invalid value type: " + heldType.getName());
     }
 
     private CommandOptionChoice(ContextualProvider context, @Nullable UniNode initialData) {
@@ -82,5 +84,9 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
         private OfInteger(ContextualProvider context, @Nullable UniNode initialData) {
             super(context, initialData);
         }
+    }
+
+    public enum Type {
+        STRING, INTEGER
     }
 }

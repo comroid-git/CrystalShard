@@ -26,6 +26,8 @@ public interface Channel extends Snowflake, Named {
             final ChannelType type = CHANNEL_TYPE.getFrom(obj);
             switch (type) {
                 case GUILD_TEXT:
+                case GUILD_NEWS:
+                case GUILD_STORE:
                     return new GuildTextChannel(ctx, obj);
                 case DM:
                     return new PrivateTextChannel(ctx, obj);
@@ -35,10 +37,8 @@ public interface Channel extends Snowflake, Named {
                     return new GroupChannel(ctx, obj);
                 case GUILD_CATEGORY:
                     return new GuildChannelCategory(ctx, obj);
-                case GUILD_NEWS:
-                case GUILD_STORE:
                 default:
-                    throw new UnsupportedOperationException("unimplemented type: " + type);
+                    throw new UnsupportedOperationException("Unimplemented type " + type + "; data: " + data);
             }
         });
     }

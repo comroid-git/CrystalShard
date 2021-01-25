@@ -19,9 +19,7 @@ public interface MessageTarget extends ContextualProvider {
         return getTargetChannel().thenCompose(tc -> requireFromContext(Bot.class).newRequest(
                 REST.Method.POST,
                 Endpoint.SEND_MESSAGE.complete(tc.getID()),
-                Message.TYPE,
-                BodyBuilderType.OBJECT,
-                obj -> obj.put("content", text)
+                BodyBuilderType.OBJECT, obj -> obj.put("content", text), Message.TYPE
         ));
     }
 }

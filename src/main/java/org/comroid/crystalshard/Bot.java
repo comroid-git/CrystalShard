@@ -20,7 +20,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public interface Bot extends Context, Closeable {
-    long getOwnID();
+    default long getOwnID() {
+        return getYourself().getID();
+    }
 
     Pipe<? extends GatewayEvent> getEventPipeline();
 
@@ -69,16 +71,38 @@ public interface Bot extends Context, Closeable {
             CompleteEndpoint endpoint,
             GroupBind<R> responseType
     ) {
-        return newRequest(method, endpoint, responseType, null, null);
+        return newRequest(method, endpoint, (UniNode) null, responseType);
+    }
+
+    @Internal
+    default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            BodyBuilderType<N> type,
+            Consumer<N> builder,
+            GroupBind<R> responseType
+    ) {
+        N data = type.apply(getSerializer());
+        builder.accept(data);
+        return newRequest(method, endpoint, data, responseType);
+    }
+
+    @Internal
+    default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            DataContainer<?> body,
+            GroupBind<R> responseType
+    ) {
+        return newRequest(method, endpoint, body.toObjectNode(getSerializer()), responseType);
     }
 
     @Internal
     <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
-            GroupBind<R> responseType,
-            BodyBuilderType<N> type,
-            Consumer<N> builder
+            N body,
+            GroupBind<R> responseType
     );
 
     String getToken();

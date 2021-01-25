@@ -2,8 +2,6 @@ package org.comroid.crystalshard.model.channel;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
-import org.comroid.api.Rewrapper;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.AbstractDataContainer;
@@ -27,10 +25,10 @@ public final class PermissionOverwrite extends AbstractDataContainer {
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<PermissionOverwrite, Integer, ReferentType, ReferentType> REFERENT_TYPE
+    public static final VarBind<PermissionOverwrite, String, ReferentType, ReferentType> REFERENT_TYPE
             = TYPE.createBind("type")
-            .extractAs(StandardValueType.INTEGER)
-            .andRemapRef(ReferentType::valueOf)
+            .extractAs(StandardValueType.STRING)
+            .andRemap(ReferentType::find)
             .onceEach()
             .setRequired()
             .build();
@@ -68,8 +66,11 @@ public final class PermissionOverwrite extends AbstractDataContainer {
             this.value = value;
         }
 
-        public static Rewrapper<ReferentType> valueOf(int value) {
-            return IntEnum.valueOf(value, ReferentType.class);
+        public static ReferentType find(String value) {
+            for (ReferentType each : values())
+                if (each.name().equalsIgnoreCase(value))
+                    return each;
+            return null;
         }
     }
 }

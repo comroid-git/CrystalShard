@@ -10,10 +10,8 @@ import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
-import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
-import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
@@ -35,18 +33,12 @@ public final class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
     public final Context context;
     private final String token;
-    private final long ownID;
     private final int currentShardID;
     private final int shardCount;
     private final FutureReference<Gateway> gateway;
-    private final Reference<User> yourself;
+
     @Internal
     public final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
-
-    @Override
-    public long getOwnID() {
-        return ownID;
-    }
 
     public Pipe<? extends WebsocketPacket> getPacketPipeline() {
         return gateway.into(Gateway::getPacketPipeline);
@@ -73,7 +65,9 @@ public final class DiscordBotShard implements Bot {
 
     @Override
     public User getYourself() {
-        return yourself.assertion();
+        return gateway.flatMap(gtw -> gtw.readyEvent)
+                .flatMap(rdy -> rdy.yourself)
+                .assertion();
     }
 
     @Override
@@ -95,9 +89,7 @@ public final class DiscordBotShard implements Bot {
     public <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
-            GroupBind<R> responseType,
-            BodyBuilderType<N> type,
-            Consumer<N> builder
+            N body, GroupBind<R> responseType
     ) {
         return DiscordAPI.newRequest(
                 context.requireFromContext(DiscordAPI.class),
@@ -105,8 +97,7 @@ public final class DiscordBotShard implements Bot {
                 method,
                 endpoint,
                 responseType,
-                type,
-                builder
+                body
         );
     }
 
@@ -118,9 +109,7 @@ public final class DiscordBotShard implements Bot {
     public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {
         this.context = context;
         this.token = token;
-        this.ownID = DiscordAPI.getIdFromToken(token);
         this.currentShardID = shardID;
-        this.yourself = getCache().getUser(ownID);
         this.shardCount = shardCount;
 
         HttpAdapter httpAdapter = requireFromContext(HttpAdapter.class);

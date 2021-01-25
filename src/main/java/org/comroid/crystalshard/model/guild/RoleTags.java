@@ -7,11 +7,13 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
+import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class RoleTags extends AbstractDataContainer {
+    @RootBind
     public static final GroupBind<RoleTags> TYPE
             = BASETYPE.subGroup("role-tags", RoleTags::new);
     public static final VarBind<RoleTags, Long, User, User> BOT_ID

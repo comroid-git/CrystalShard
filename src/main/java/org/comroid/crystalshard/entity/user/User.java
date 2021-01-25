@@ -150,9 +150,7 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
         return requireFromContext(Bot.class).newRequest(
                 REST.Method.POST,
                 Endpoint.PRIVATE_CHANNELS,
-                PrivateTextChannel.TYPE,
-                BodyBuilderType.OBJECT,
-                obj -> obj.put("recipient_id", getID())
+                BodyBuilderType.OBJECT, obj -> obj.put("recipient_id", getID()), PrivateTextChannel.TYPE
         );
     }
 

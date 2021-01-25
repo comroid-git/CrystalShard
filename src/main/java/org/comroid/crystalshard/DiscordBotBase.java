@@ -5,21 +5,18 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.common.Disposable;
 import org.comroid.common.exception.AssertionException;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.BotBasedPresence;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
-import org.comroid.crystalshard.ui.CommandSetup;
 import org.comroid.crystalshard.ui.InteractionCore;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
-import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.varbind.bind.GroupBind;
@@ -28,7 +25,6 @@ import org.comroid.varbind.container.DataContainer;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 public class DiscordBotBase implements Bot {
@@ -46,13 +42,12 @@ public class DiscordBotBase implements Bot {
     }
 
     @Override
-    public long getOwnID() {
-        return token.into(DiscordAPI::getIdFromToken);
-    }
-
-    @Override
     public final Pipe<? extends GatewayEvent> getEventPipeline() {
         return eventPipeline;
+    }
+
+    public InteractionCore getInteractionCore() {
+        return interactionCore;
     }
 
     @Override
@@ -98,8 +93,10 @@ public class DiscordBotBase implements Bot {
         final GatewayBotResponse gbr = newRequest(REST.Method.GET, Endpoint.GATEWAY_BOT, GatewayBotResponse.TYPE).join();
         int shardCount = gbr.shards.assertion("shard count");
 
+        /*
         if (gbr.sessionStartLimit.test(GatewayBotResponse.SessionStartLimit::isBlocked))
             throw new IllegalStateException("Cannot connect; No remaining Session Starts");
+         */
 
         this.shards = IntStream.range(0, shardCount)
                 .mapToObj(shardIndex -> {
@@ -111,21 +108,16 @@ public class DiscordBotBase implements Bot {
                 .collect(Span.collector());
         this.eventPipeline = Pump.combine(shards.stream().map(DiscordBotShard::getEventPipeline));
         this.ownPresence = new BotBasedPresence(this, shards);
-        this.interactionCore = getFromContext(CommandSetup.class)
-                .wrap()
-                .map(config -> new InteractionCore(this, config))
-                .orElse(null);
+        this.interactionCore = new InteractionCore(this);
     }
 
     @Override
     public final <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
-            GroupBind<R> responseType,
-            BodyBuilderType<N> type,
-            Consumer<N> builder
+            N body, GroupBind<R> responseType
     ) {
-        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint, responseType, type, builder);
+        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint, responseType, body);
     }
 
     @Override

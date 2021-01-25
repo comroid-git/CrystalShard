@@ -64,16 +64,15 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
             REST.Method method,
             CompleteEndpoint endpoint,
             GroupBind<R> responseType,
-            BodyBuilderType<N> type,
-            Consumer<N> builder
+            N body
     ) {
         REST.Request<R> req = responseType == null
                 ? Polyfill.uncheckedCast(context.getREST().request())
                 : context.getREST().request(responseType);
         req.endpoint(endpoint)
                 .addHeaders(createHeaders(token));
-        if (type != null && builder != null)
-            req.buildBody(type, builder);
+        if (body != null && method != REST.Method.GET)
+            req.body(body.toString());
         return req.method(method)
                 .execute$deserializeSingle()
                 .exceptionally(context.exceptionLogger(

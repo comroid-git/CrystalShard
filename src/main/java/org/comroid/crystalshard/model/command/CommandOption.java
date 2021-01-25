@@ -2,8 +2,14 @@ package org.comroid.crystalshard.model.command;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntEnum;
+import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
+import org.comroid.common.info.Described;
+import org.comroid.crystalshard.entity.channel.Channel;
+import org.comroid.crystalshard.entity.guild.Role;
+import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -14,7 +20,7 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class CommandOption extends AbstractDataContainer {
+public final class CommandOption extends AbstractDataContainer implements Named, Described {
     @RootBind
     public static final GroupBind<CommandOption> TYPE
             = BASETYPE.subGroup("application-command-option", CommandOption::new);
@@ -51,6 +57,18 @@ public final class CommandOption extends AbstractDataContainer {
             .andConstruct(TYPE)
             .intoSpan()
             .build();
+    public final Reference<String> name = getComputedReference(NAME);
+    public final Reference<String> description = getComputedReference(DESCRIPTION);
+
+    @Override
+    public String getName() {
+        return name.assertion();
+    }
+
+    @Override
+    public String getDescription() {
+        return description.assertion();
+    }
 
     public CommandOption(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
@@ -79,6 +97,22 @@ public final class CommandOption extends AbstractDataContainer {
 
         public static Rewrapper<Type> valueOf(int value) {
             return IntEnum.valueOf(value, Type.class);
+        }
+
+        public static Type typeOf(Class<?> klass) {
+            if (String.class.equals(klass))
+                return STRING;
+            if (boolean.class.equals(klass) || Boolean.class.equals(klass))
+                return BOOLEAN;
+            if (int.class.equals(klass) || Integer.class.equals(klass))
+                return INTEGER;
+            if (User.class.isAssignableFrom(klass))
+                return USER;
+            if (Channel.class.isAssignableFrom(klass))
+                return CHANNEL;
+            if (Role.class.isAssignableFrom(klass))
+                return ROLE;
+            throw new IllegalArgumentException("Unknown type: " + klass);
         }
     }
 }
