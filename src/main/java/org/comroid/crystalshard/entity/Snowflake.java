@@ -52,7 +52,7 @@ public interface Snowflake extends DataContainer<Snowflake>, Context {
         final Context context = ctx.as(Context.class, "Bad context");
         return fineResolver.apply(
                 context.getCache(),
-                data.isValueNode()
+                data.isValueNode() || !data.has(ID)
                         ? data.asLong(0)
                         : ID.getFrom(data.asObjectNode()))
                 .peek(it -> it.updateFrom(data.asObjectNode()))
