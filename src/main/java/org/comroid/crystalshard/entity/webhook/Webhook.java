@@ -3,6 +3,7 @@ package org.comroid.crystalshard.entity.webhook;
 import org.comroid.api.*;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.crystalshard.DiscordREST;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
@@ -121,7 +122,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
                         .request(Message.TYPE)
                         .endpoint(Endpoint.EXECUTE_WEBHOOK, getID(), token, QueryParameter.param("wait", true))
                         .method(REST.Method.POST)
-                        .addHeaders(DiscordAPI.createHeaders(null))
+                        .addHeaders(DiscordREST.createHeaders(null))
                         .buildBody(BodyBuilderType.OBJECT, obj -> obj.put("content", text))
                         .execute$deserializeSingle(),
                 () -> Polyfill.failedFuture(new NoSuchElementException("Token is missing"))

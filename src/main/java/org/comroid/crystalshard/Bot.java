@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public interface Bot extends Context, Closeable {
+public interface Bot extends DiscordREST, Closeable {
     default long getOwnID() {
         return getYourself().getID();
     }
@@ -58,65 +58,6 @@ public interface Bot extends Context, Closeable {
             presence.addActivity(new Activity(this, type, detail));
         return presence.update();
     }
-
-    @Internal
-    default CompletableFuture<UniNode> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint
-    ) {
-        return Polyfill.uncheckedCast(newRequest(method, endpoint, null));
-    }
-
-    @Internal
-    default <R extends DataContainer<? super R>> CompletableFuture<R> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            GroupBind<R> responseType
-    ) {
-        return newRequest(method, endpoint, (UniNode) null, responseType);
-    }
-
-    @Internal
-    default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            BodyBuilderType<N> type,
-            Consumer<N> builder,
-            GroupBind<R> responseType
-    ) {
-        N data = type.apply(getSerializer());
-        builder.accept(data);
-        return newRequest(method, endpoint, data, responseType);
-    }
-
-    @Internal
-    default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            DataContainer<?> body,
-            GroupBind<R> responseType
-    ) {
-        return newRequest(method, endpoint, body.toObjectNode(getSerializer()), responseType);
-    }
-
-    @Internal
-    default <T extends DataContainer<? super T>, N extends UniNode> CompletableFuture<T> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            N body,
-            GroupBind<T> responseType
-    ) {
-        return newRequest(method, endpoint, body, responseType, Span::get);
-    }
-
-    @Internal
-    <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            N body,
-            GroupBind<T> responseType,
-            Function<Span<T>, R> spanResolver
-    );
 
     String getToken();
 }

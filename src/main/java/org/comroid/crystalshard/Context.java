@@ -12,6 +12,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 
 public interface Context extends ContextualProvider.Underlying {
+    default DiscordAPI getAPI() {
+        return requireFromContext(DiscordAPI.class);
+    }
+
     default SnowflakeCache getCache() {
         return requireFromContext(SnowflakeCache.class);
     }

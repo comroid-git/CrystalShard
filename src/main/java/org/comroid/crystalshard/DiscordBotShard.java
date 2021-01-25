@@ -88,24 +88,6 @@ public final class DiscordBotShard implements Bot {
     }
 
     @Override
-    public <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            N body,
-            GroupBind<T> responseType,
-            Function<Span<T>, R> spanResolver
-    ) {
-        return DiscordAPI.newRequest(
-                context.requireFromContext(DiscordAPI.class),
-                token,
-                method,
-                endpoint,
-                body, responseType,
-                spanResolver
-        );
-    }
-
-    @Override
     public String getToken() {
         return token;
     }
@@ -149,7 +131,7 @@ public final class DiscordBotShard implements Bot {
                 executor,
                 t -> logger.error("Error in Gateway Websocket", t),
                 wsUri,
-                DiscordAPI.createHeaders(token)
+                DiscordREST.createHeaders(token)
         ).thenApply(socket -> new Gateway(this, socket, Bitmask.combine(intents)));
     }
 

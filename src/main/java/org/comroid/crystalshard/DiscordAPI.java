@@ -8,7 +8,6 @@ import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
-import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.endpoint.CompleteEndpoint;
@@ -18,7 +17,6 @@ import org.comroid.uniform.node.UniNode;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Base64;
 import java.util.Objects;
@@ -56,6 +54,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         return rest;
     }
 
+    @Deprecated
     @Internal
     public static <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
             DiscordAPI context,
@@ -70,7 +69,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
                 ? Polyfill.uncheckedCast(context.getREST().request())
                 : context.getREST().request(responseType);
         req.endpoint(endpoint)
-                .addHeaders(createHeaders(token));
+                .addHeaders(DiscordREST.createHeaders(token));
         if (body != null && method != REST.Method.GET)
             req.body(body.toString());
         return req.method(method)
@@ -82,22 +81,6 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
                         String.format("%s-Request @ %s", method, endpoint.getSpec()),
                         false
                 ));
-    }
-
-    @NotNull
-    @Internal
-    public static REST.Header.List createHeaders(String token) {
-        REST.Header.List headers = new REST.Header.List();
-
-        if (token != null)
-            headers.add(CommonHeaderNames.AUTHORIZATION, "Bot " + token);
-        headers.add(CommonHeaderNames.USER_AGENT, String.format(
-                "DiscordBot (%s, %s) %s",
-                CrystalShard.URL,
-                CrystalShard.VERSION.toSimpleString(),
-                CrystalShard.VERSION.toString())
-        );
-        return headers;
     }
 
     public static long getIdFromToken(String token) {
