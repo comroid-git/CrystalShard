@@ -10,6 +10,7 @@ import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
+import org.comroid.mutatio.span.Span;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.endpoint.CompleteEndpoint;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
@@ -86,18 +88,20 @@ public final class DiscordBotShard implements Bot {
     }
 
     @Override
-    public <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+    public <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
-            N body, GroupBind<R> responseType
+            N body,
+            GroupBind<T> responseType,
+            Function<Span<T>, R> spanResolver
     ) {
         return DiscordAPI.newRequest(
                 context.requireFromContext(DiscordAPI.class),
                 token,
                 method,
                 endpoint,
-                responseType,
-                body
+                body, responseType,
+                spanResolver
         );
     }
 

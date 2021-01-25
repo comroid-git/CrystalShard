@@ -11,7 +11,6 @@ import org.comroid.mutatio.span.Span;
 import org.comroid.restless.CommonHeaderNames;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
-import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.server.Ratelimiter;
 import org.comroid.uniform.SerializationAdapter;
@@ -26,7 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class DiscordAPI extends ContextualProvider.Base implements Context {
     public static final String URL_BASE = "https://discord.com/api";
@@ -58,15 +57,16 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     }
 
     @Internal
-    public static <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+    public static <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
             DiscordAPI context,
             String token,
             REST.Method method,
             CompleteEndpoint endpoint,
-            GroupBind<R> responseType,
-            N body
+            N body,
+            GroupBind<T> responseType,
+            Function<Span<T>, R> spanResolver
     ) {
-        REST.Request<R> req = responseType == null
+        REST.Request<T> req = responseType == null
                 ? Polyfill.uncheckedCast(context.getREST().request())
                 : context.getREST().request(responseType);
         req.endpoint(endpoint)
@@ -74,7 +74,8 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         if (body != null && method != REST.Method.GET)
             req.body(body.toString());
         return req.method(method)
-                .execute$deserializeSingle()
+                .execute$deserialize()
+                .thenApply(spanResolver)
                 .exceptionally(context.exceptionLogger(
                         logger,
                         Level.ERROR,

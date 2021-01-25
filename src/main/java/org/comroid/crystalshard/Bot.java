@@ -7,6 +7,7 @@ import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
 import org.comroid.mutatio.pipe.Pipe;
+import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.restless.endpoint.CompleteEndpoint;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.io.Closeable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface Bot extends Context, Closeable {
     default long getOwnID() {
@@ -98,11 +100,22 @@ public interface Bot extends Context, Closeable {
     }
 
     @Internal
-    <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+    default <T extends DataContainer<? super T>, N extends UniNode> CompletableFuture<T> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
             N body,
-            GroupBind<R> responseType
+            GroupBind<T> responseType
+    ) {
+        return newRequest(method, endpoint, body, responseType, Span::get);
+    }
+
+    @Internal
+    <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
+            REST.Method method,
+            CompleteEndpoint endpoint,
+            N body,
+            GroupBind<T> responseType,
+            Function<Span<T>, R> spanResolver
     );
 
     String getToken();

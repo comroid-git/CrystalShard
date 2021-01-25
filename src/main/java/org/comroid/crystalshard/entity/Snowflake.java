@@ -53,7 +53,7 @@ public interface Snowflake extends DataContainer<Snowflake>, Context {
         return fineResolver.apply(
                 context.getCache(),
                 data.isValueNode()
-                        ? data.asLong()
+                        ? data.asLong(0)
                         : ID.getFrom(data.asObjectNode()))
                 .peek(it -> it.updateFrom(data.asObjectNode()))
                 .orElseGet(() -> {

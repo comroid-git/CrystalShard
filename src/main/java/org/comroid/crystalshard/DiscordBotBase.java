@@ -25,6 +25,7 @@ import org.comroid.varbind.container.DataContainer;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public class DiscordBotBase implements Bot {
@@ -112,12 +113,14 @@ public class DiscordBotBase implements Bot {
     }
 
     @Override
-    public final <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
+    public final <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
             REST.Method method,
             CompleteEndpoint endpoint,
-            N body, GroupBind<R> responseType
+            N body,
+            GroupBind<T> responseType,
+            Function<Span<T>, R> spanResolver
     ) {
-        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint, responseType, body);
+        return DiscordAPI.newRequest(context, token.assertion(), method, endpoint, body, responseType, spanResolver);
     }
 
     @Override
