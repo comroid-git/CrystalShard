@@ -51,6 +51,10 @@ public class CommandSetup {
                 .collect(Collectors.toSet()));
     }
 
+    public boolean addGuildDefinition(long guildId, CommandDefinition command) {
+        return getBindings(guildId).add(command.getName());
+    }
+
     private Set<String> getBindings(long guildId) {
         return guildBindings.computeIfAbsent(guildId, k -> new HashSet<>());
     }
@@ -75,7 +79,7 @@ public class CommandSetup {
         final UniObjectNode cmd = core.getSerializer().createUniObjectNode();
         final SlashCommand cmdDef = method.getAnnotation(SlashCommand.class);
 
-        cmd.put(Command.NAME, cmdDef.name().isEmpty() ? prefabName(method.getName()) : cmdDef.name());
+        cmd.put(Command.NAME, (cmdDef.name().isEmpty() ? prefabName(method.getName()) : cmdDef.name()).toLowerCase());
         cmd.put(Command.DESCRIPTION, cmdDef.description());
 
         final UniArrayNode options = cmd.putArray(Command.OPTIONS);
@@ -87,7 +91,7 @@ public class CommandSetup {
             final Option optDef = param.getAnnotation(Option.class);
 
             option.put(CommandOption.OPTION_TYPE, CommandOption.Type.typeOf(param.getType()));
-            option.put(CommandOption.NAME, optDef.name().isEmpty() ? prefabName(param.getName()) : optDef.name());
+            option.put(CommandOption.NAME, (optDef.name().isEmpty() ? prefabName(param.getName()) : optDef.name()).toLowerCase());
             option.put(CommandOption.DESCRIPTION, optDef.description());
             option.put(CommandOption.IS_DEFAULT, optDef.first());
             option.put(CommandOption.IS_REQUIRED, optDef.required());

@@ -28,10 +28,9 @@ public final class MessageApplication extends Snowflake.Abstract {
             = TYPE.createBind("description")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<MessageApplication, String, URL, URL> ICON
+    public static final VarBind<MessageApplication, String, String, String> ICON
             = TYPE.createBind("icon")
             .extractAs(StandardValueType.STRING)
-            .andResolve((msgapp, iconId) -> CDNEndpoint.APPLICATION_ICON.complete(msgapp.getID(), iconId, ImageType.PNG).getURL())
             .build();
     public static final VarBind<MessageApplication, String, String, String> NAME
             = TYPE.createBind("name")

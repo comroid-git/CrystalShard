@@ -17,7 +17,7 @@ import org.comroid.varbind.bind.VarBind;
 
 import java.lang.reflect.Method;
 
-class CommandDefinition extends AbstractDataContainer implements Named, Described {
+public class CommandDefinition extends AbstractDataContainer implements Named, Described {
     @RootBind
     public static final GroupBind<CommandDefinition> TYPE
             = BASETYPE.subGroup("command-definition");

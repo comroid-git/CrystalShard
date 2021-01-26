@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
+import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.entity.command.Command;
@@ -20,8 +21,8 @@ import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StreamOPs;
+import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
@@ -230,15 +231,21 @@ public class InteractionCore implements Context {
             for (int i = 0; i < parameters.length; i++) {
                 final String name = parameters[i].getName();
                 final CommandInteractionDataOption option = options.get(name);
+                final Class<?> type = parameters[i].getType();
 
                 if (option == null) {
-                    args[i] = event.getFromContext(parameters[i].getType()).orElse(null);
+                    args[i] = event.getFromContext(type).orElseGet(() -> Polyfill.uncheckedCast(getOrSafeFallback(type, null)));
                     continue;
                 }
 
                 // todo Handle Subcommand case ??
 
-                args[i] = option.getValue();
+                Object value = option.getValue();
+                value = getOrSafeFallback(type, value);
+                args[i] = value;
+
+                if (args[i] == null && type.isPrimitive())
+                    throw new IllegalStateException("Primitive parameter cannot be null");
             }
 
             try {
@@ -261,6 +268,7 @@ public class InteractionCore implements Context {
                 response.put("type", InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE);
 
                 final UniObjectNode responseMessage = response.putObject("data");
+                logger.error("A command caused an internal exception: " + definition, t);
                 responseMessage.put(Message.CONTENT, "The Command caused an internal exception: " + t);
             }
         }
@@ -270,5 +278,25 @@ public class InteractionCore implements Context {
                 Endpoint.INTERACTION_CALLBACK.complete(interaction.getId(), interaction.getContinuationToken()),
                 response
         ).join();
+    }
+
+    @Nullable
+    private Object getOrSafeFallback(Class<?> targetType, Object value) {
+        if (value == null) {
+            if (targetType.isPrimitive()) {
+                if (targetType.equals(boolean.class))
+                    value = false;
+                if (targetType.equals(int.class))
+                    value = 0;
+                if (targetType.equals(double.class))
+                    value = 0;
+            } else {
+                if (targetType.equals(Boolean.class))
+                    value = false;
+                if (targetType.equals(Number.class))
+                    value = 0;
+            }
+        }
+        return value;
     }
 }
