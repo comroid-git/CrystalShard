@@ -23,6 +23,10 @@ public final class GuildCreateEvent extends DispatchEvent {
             .build();
     public final Reference<Guild> guild = getComputedReference(GUILD);
 
+    public Guild getGuild() {
+        return guild.assertion();
+    }
+
     public GuildCreateEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);
     }
