@@ -1,111 +1,128 @@
 package org.comroid.crystalshard.model.message.embed;
 
-import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.common.info.Described;
+import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.span.Span;
-import org.comroid.uniform.node.UniNode;
+import org.comroid.uniform.model.Serializable;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
 
-public final class Embed extends AbstractDataContainer {
+public interface Embed extends Context, Serializable {
     @RootBind
-    public static final GroupBind<Embed> TYPE
-            = BASETYPE.subGroup("embed", Embed::new);
-    public static final VarBind<Embed, String, String, String> TITLE
+    GroupBind<MessageEmbed> TYPE
+            = AbstractDataContainer.BASETYPE.subGroup("embed", MessageEmbed::new);
+    VarBind<MessageEmbed, String, String, String> TITLE
             = TYPE.createBind("title")
             .extractAs(StandardValueType.STRING)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Embed, String, Type, Type> EMBED_TYPE
+    VarBind<MessageEmbed, String, Type, Type> EMBED_TYPE
             = TYPE.createBind("type")
             .extractAs(StandardValueType.STRING)
             .andRemap(Type::valueOf)
             .onceEach()
             .build();
-    public static final VarBind<Embed, String, String, String> DESCRIPTION
+    VarBind<MessageEmbed, String, String, String> DESCRIPTION
             = TYPE.createBind("description")
             .extractAs(StandardValueType.STRING)
             .asIdentities()
             .onceEach()
             .build();
-    public static final VarBind<Embed, String, URL, URL> TARGET_URL
+    VarBind<MessageEmbed, String, URL, URL> TARGET_URL
             = TYPE.createBind("url")
             .extractAs(StandardValueType.STRING)
             .andRemap(Polyfill::url)
             .onceEach()
             .build();
-    public static final VarBind<Embed, String, Instant, Instant> TIMESTAMP
+    VarBind<MessageEmbed, String, Instant, Instant> TIMESTAMP
             = TYPE.createBind("timestamp")
             .extractAs(StandardValueType.STRING)
             .andRemap(Instant::parse)
             .onceEach()
             .build();
-    public static final VarBind<Embed, Integer, Color, Color> COLOR
+    VarBind<MessageEmbed, Integer, Color, Color> COLOR
             = TYPE.createBind("color")
             .extractAs(StandardValueType.INTEGER)
             .andRemap(Color::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedFooter, EmbedFooter> FOOTER
+    VarBind<MessageEmbed, UniObjectNode, EmbedFooter, EmbedFooter> FOOTER
             = TYPE.createBind("footer")
             .extractAsObject()
             .andResolve(EmbedFooter::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedImage, EmbedImage> IMAGE
+    VarBind<MessageEmbed, UniObjectNode, EmbedImage, EmbedImage> IMAGE
             = TYPE.createBind("image")
             .extractAsObject()
             .andResolve(EmbedImage::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedThumbnail, EmbedThumbnail> THUMBNAIL
+    VarBind<MessageEmbed, UniObjectNode, EmbedThumbnail, EmbedThumbnail> THUMBNAIL
             = TYPE.createBind("thumbnail")
             .extractAsObject()
             .andResolve(EmbedThumbnail::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedVideo, EmbedVideo> VIDEO
+    VarBind<MessageEmbed, UniObjectNode, EmbedVideo, EmbedVideo> VIDEO
             = TYPE.createBind("video")
             .extractAsObject()
             .andResolve(EmbedVideo::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedProvider, EmbedProvider> PROVIDER
+    VarBind<MessageEmbed, UniObjectNode, EmbedProvider, EmbedProvider> PROVIDER
             = TYPE.createBind("provider")
             .extractAsObject()
             .andResolve(EmbedProvider::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedAuthor, EmbedAuthor> AUTHOR
+    VarBind<MessageEmbed, UniObjectNode, EmbedAuthor, EmbedAuthor> AUTHOR
             = TYPE.createBind("author")
             .extractAsObject()
             .andResolve(EmbedAuthor::new)
             .onceEach()
             .build();
-    public static final VarBind<Embed, UniObjectNode, EmbedField, Span<EmbedField>> FIELDS
+    VarBind<MessageEmbed, UniObjectNode, EmbedField, Span<EmbedField>> FIELDS
             = TYPE.createBind("fields")
             .extractAsArray()
             .andResolve(EmbedField::new)
             .intoSpan()
             .build();
 
-    public Embed(ContextualProvider context, @Nullable UniNode initialData) {
-        super(context, initialData);
-    }
+    Type getType();
 
-    public enum Type implements Named, Described {
+    String getTitle();
+
+    String getDescription();
+
+    String getUrl();
+
+    Instant getTimestamp();
+
+    Color getColor();
+
+    EmbedAuthor getAuthor();
+
+    EmbedThumbnail getThumbnail();
+
+    EmbedImage getImage();
+
+    EmbedFooter getFooter();
+
+    Span<EmbedField> getFields();
+
+    enum Type implements Named, Described {
         rich("generic embed rendered from embed attributes"),
         image("image embed"),
         video("video embed"),

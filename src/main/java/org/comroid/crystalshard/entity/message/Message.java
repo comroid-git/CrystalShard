@@ -15,6 +15,7 @@ import org.comroid.crystalshard.model.message.MessageActivity;
 import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.message.Reaction;
 import org.comroid.crystalshard.model.message.embed.Embed;
+import org.comroid.crystalshard.model.message.embed.MessageEmbed;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
@@ -103,7 +104,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, Embed, Span<Embed>> EMBEDS
             = TYPE.createBind("embeds")
             .extractAsArray()
-            .andResolve(Embed::new)
+            .andResolve(MessageEmbed::new)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, Reaction, Span<Reaction>> REACTIONS

@@ -14,7 +14,7 @@ public class EmbedVideo extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedVideo> TYPE
             = BASETYPE.subGroup("embed-video",
-            (ctx, data) -> new EmbedVideo(ctx.as(Embed.class, "Context must be Embed"), data));
+            (ctx, data) -> new EmbedVideo(ctx.as(MessageEmbed.class, "Context must be Embed"), data));
     public static final VarBind<EmbedVideo, String, URL, URL> IMAGE_URL
             = TYPE.createBind("url")
             .extractAs(StandardValueType.STRING)

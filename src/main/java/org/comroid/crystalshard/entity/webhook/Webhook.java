@@ -12,7 +12,8 @@ import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.model.MessageTarget;
+import org.comroid.crystalshard.model.message.MessageBuilder;
+import org.comroid.crystalshard.model.message.MessageTarget;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
@@ -110,12 +111,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     }
 
     @Override
-    public CompletableFuture<? extends TextChannel> getTargetChannel() {
-        throw new AbstractMethodError();
-    }
-
-    @Override
-    public CompletableFuture<Message> sendText(String text) {
+    public CompletableFuture<Message> executeMessage(MessageBuilder builder) {
         return token.ifPresentMapOrElseGet(
                 token -> requireFromContext(DiscordAPI.class)
                         .getREST()
@@ -123,7 +119,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
                         .endpoint(Endpoint.EXECUTE_WEBHOOK, getID(), token, QueryParameter.param("wait", true))
                         .method(REST.Method.POST)
                         .addHeaders(DiscordREST.createHeaders(null))
-                        .buildBody(BodyBuilderType.OBJECT, obj -> obj.put("content", text))
+                        .buildBody(BodyBuilderType.OBJECT, builder)
                         .execute$deserializeSingle(),
                 () -> Polyfill.failedFuture(new NoSuchElementException("Token is missing"))
         );

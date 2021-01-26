@@ -1,12 +1,14 @@
 package org.comroid.crystalshard.entity.channel;
 
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.message.Message;
-import org.comroid.crystalshard.model.MessageTarget;
+import org.comroid.crystalshard.model.message.MessageBuilder;
+import org.comroid.crystalshard.model.message.MessageTarget;
+import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.restless.REST;
+import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.jetbrains.annotations.Contract;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -26,8 +28,13 @@ public interface TextChannel extends Channel, MessageTarget {
             .build();
 
     @Override
-    @Contract("-> this")
-    default CompletableFuture<TextChannel> getTargetChannel() {
-        return CompletableFuture.completedFuture(this);
+    default CompletableFuture<Message> executeMessage(MessageBuilder builder) {
+        return getBot().newRequest(
+                REST.Method.POST,
+                Endpoint.SEND_MESSAGE,
+                BodyBuilderType.OBJECT,
+                builder,
+                Message.TYPE
+        );
     }
 }

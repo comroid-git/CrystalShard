@@ -9,7 +9,9 @@ import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
-import org.comroid.crystalshard.model.MessageTarget;
+import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.model.message.MessageBuilder;
+import org.comroid.crystalshard.model.message.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.ref.Reference;
@@ -145,13 +147,19 @@ public final class User extends Snowflake.Abstract implements MessageTarget {
         return publicFlags.assertion();
     }
 
-    @Override
-    public CompletableFuture<PrivateTextChannel> getTargetChannel() {
+    public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
         return requireFromContext(Bot.class).newRequest(
                 REST.Method.POST,
                 Endpoint.PRIVATE_CHANNELS,
-                BodyBuilderType.OBJECT, obj -> obj.put("recipient_id", getID()), PrivateTextChannel.TYPE
+                BodyBuilderType.OBJECT,
+                obj -> obj.put("recipient_id", getID()),
+                PrivateTextChannel.TYPE
         );
+    }
+
+    @Override
+    public CompletableFuture<Message> executeMessage(MessageBuilder builder) {
+        return openPrivateChannel().thenCompose(ptc -> ptc.executeMessage(builder));
     }
 
     private User(ContextualProvider context, UniObjectNode data) {

@@ -16,6 +16,7 @@ import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.function.BiFunction;
 
 public interface Snowflake extends DataContainer<Snowflake>, Context {
@@ -33,6 +34,10 @@ public interface Snowflake extends DataContainer<Snowflake>, Context {
     long getID();
 
     EntityType<? extends Snowflake> getEntityType();
+
+    default Instant getCreationTimestamp() {
+        return Instant.ofEpochMilli((getID() >> 22) + 1420070400000L);
+    }
 
     default boolean equals(Snowflake other) {
         return getEntityType().equals(other.getEntityType())
