@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 
-public class EmbedFooter extends EmbedMember {
+public final class EmbedFooter extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedFooter> TYPE
             = BASETYPE.subGroup("embed-footer",

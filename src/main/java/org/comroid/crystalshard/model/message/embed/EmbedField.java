@@ -8,7 +8,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public class EmbedField extends EmbedMember {
+public final class EmbedField extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedField> TYPE
             = BASETYPE.subGroup("embed-field",

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 
-public class EmbedProvider extends EmbedMember {
+public final class EmbedProvider extends EmbedMember {
     @RootBind
     public static final GroupBind<EmbedProvider> TYPE
             = BASETYPE.subGroup("embed-provider",
