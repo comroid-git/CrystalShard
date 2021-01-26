@@ -3,6 +3,9 @@ package org.comroid.crystalshard.gateway.event;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.crystalshard.gateway.OpCode;
+import org.comroid.crystalshard.gateway.event.dispatch.application.ApplicationCommandCreateEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.application.ApplicationCommandDeleteEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.application.ApplicationCommandUpdateEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelCreateEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelDeleteEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.channel.ChannelUpdateEvent;
@@ -95,6 +98,11 @@ public enum DispatchEventType implements Named, Predicate<UniNode> {
     MESSAGE_REACTION_REMOVE(MessageReactionRemoveEvent::new),
     MESSAGE_REACTION_REMOVE_EMOJI(MessageReactionRemoveEmojiEvent::new),
     MESSAGE_REACTION_REMOVE_ALL(MessageReactionRemoveAllEvent::new),
+
+    // application related
+    APPLICATION_COMMAND_CREATE(ApplicationCommandCreateEvent::new),
+    APPLICATION_COMMAND_UPDATE(ApplicationCommandUpdateEvent::new),
+    APPLICATION_COMMAND_DELETE(ApplicationCommandDeleteEvent::new),
 
     // misc
     PRESENCE_UPDATE(PresenceUpdateEvent::new),

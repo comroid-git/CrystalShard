@@ -295,14 +295,15 @@ public class InteractionCore implements Context {
 
                 final UniObjectNode responseMessage = response.putObject("data");
                 logger.error("A command caused an internal exception: " + definition, t);
-                responseMessage.put(Message.CONTENT, new StringBuilder()
+                StringBuilder base = new StringBuilder()
                         .append("The Command caused an internal exception")
                         .append('\n')
                         .append("```")
                         .append('\n')
-                        .append(" - ").append(t.getClass().getSimpleName())
-                        .append('\n')
-                        .append(" - ").append(t.getMessage())
+                        .append(" - ").append(t.getClass().getSimpleName());
+                if (t.getMessage() != null)
+                    base = base.append('\n').append(" - ").append(t.getMessage());
+                responseMessage.put(Message.CONTENT, base
                         .append('\n')
                         .append("```")
                         .toString());
