@@ -3,6 +3,7 @@ package org.comroid.crystalshard.ui;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.IntEnum;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.Context;
@@ -271,6 +272,11 @@ public class InteractionCore implements Context {
                 Object value = option.getValue();
                 value = getOrSafeFallback(type, value);
                 args[i] = value;
+
+                if (value instanceof Integer && Enum.class.isAssignableFrom(type) && IntEnum.class.isAssignableFrom(type)) {
+                    args[i] = IntEnum.valueOf((int) value, Polyfill.uncheckedCast(type)).orElse(null);
+                    continue;
+                }
 
                 if (args[i] == null && type.isPrimitive())
                     throw new IllegalStateException("Primitive parameter cannot be null");

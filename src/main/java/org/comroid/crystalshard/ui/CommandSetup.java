@@ -1,5 +1,6 @@
 package org.comroid.crystalshard.ui;
 
+import org.comroid.api.IntEnum;
 import org.comroid.crystalshard.entity.command.Command;
 import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.model.command.CommandOptionChoice;
@@ -100,18 +101,29 @@ public class CommandSetup {
             option.put(CommandOption.IS_DEFAULT, optDef.first());
             option.put(CommandOption.IS_REQUIRED, optDef.required());
 
-            final Choice[] choicesDef = optDef.choices();
-            if (choicesDef.length == 0)
-                continue;
-            final UniArrayNode choices = option.putArray(CommandOption.CHOICES);
-            for (Choice choiceDef : choicesDef) {
-                final UniObjectNode choice = choices.addObject();
+            if (IntEnum.class.isAssignableFrom(param.getType())) {
+                final UniArrayNode choices = option.putArray(CommandOption.CHOICES);
+                for (Object it : param.getType().getEnumConstants()) {
+                    final IntEnum each = (IntEnum) it;
+                    final UniObjectNode choice = choices.addObject();
 
-                choice.put(CommandOptionChoice.NAME, choiceDef.name());
-                final String cv = choiceDef.value();
-                if (cv.matches("\\d+"))
-                    choice.put(CommandOptionChoice.OfInteger.VALUE, Integer.parseInt(cv));
-                else choice.put(CommandOptionChoice.OfString.VALUE, cv);
+                    choice.put(CommandOptionChoice.NAME, each.getName());
+                    choice.put(CommandOptionChoice.OfInteger.VALUE, each.getValue());
+                }
+            } else {
+                final Choice[] choicesDef = optDef.choices();
+                if (choicesDef.length == 0)
+                    continue;
+                final UniArrayNode choices = option.putArray(CommandOption.CHOICES);
+                for (Choice choiceDef : choicesDef) {
+                    final UniObjectNode choice = choices.addObject();
+
+                    choice.put(CommandOptionChoice.NAME, choiceDef.name());
+                    final String cv = choiceDef.value();
+                    if (cv.matches("\\d+"))
+                        choice.put(CommandOptionChoice.OfInteger.VALUE, Integer.parseInt(cv));
+                    else choice.put(CommandOptionChoice.OfString.VALUE, cv);
+                }
             }
         }
 

@@ -145,7 +145,7 @@ public final class CommandOption extends AbstractDataContainer implements Named,
                 return STRING;
             if (boolean.class.equals(klass) || Boolean.class.equals(klass))
                 return BOOLEAN;
-            if (int.class.equals(klass) || Integer.class.equals(klass))
+            if (int.class.equals(klass) || Integer.class.equals(klass) || IntEnum.class.isAssignableFrom(klass))
                 return INTEGER;
             if (User.class.isAssignableFrom(klass))
                 return USER;
