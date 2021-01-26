@@ -13,7 +13,9 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.guild.*;
 import org.comroid.crystalshard.model.voice.VoiceRegion;
 import org.comroid.crystalshard.model.voice.VoiceState;
+import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
+import org.comroid.restless.REST;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
@@ -26,6 +28,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public final class Guild extends Snowflake.Abstract implements Named {
     @RootBind
@@ -254,5 +257,12 @@ public final class Guild extends Snowflake.Abstract implements Named {
         else if (!state && contains)
             return bannedUsers.remove(id);
         return false;
+    }
+
+    public CompletableFuture<?> leave() {
+        return getBot().newRequest(
+                REST.Method.DELETE,
+                Endpoint.GUILD_MEMBER_SPECIFIC.complete(getID(), getBot().getOwnID())
+        );
     }
 }
