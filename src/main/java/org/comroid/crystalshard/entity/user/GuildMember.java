@@ -192,7 +192,7 @@ public final class GuildMember extends AbstractDataContainer implements User {
     public static GuildMember resolve(Guild context, UniNode data) {
         if (!data.has(USER))
             return null;
-        User user = USER.getFrom(data.asObjectNode());
+        User user = SimpleUser.resolve(context, data.get(USER));
         return user.as(SimpleUser.class, "assertion").createGuildInstance(context, data.asObjectNode());
     }
 

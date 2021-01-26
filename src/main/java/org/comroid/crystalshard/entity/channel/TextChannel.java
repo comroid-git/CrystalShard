@@ -31,7 +31,7 @@ public interface TextChannel extends Channel, MessageTarget {
     default CompletableFuture<Message> executeMessage(MessageBuilder builder) {
         return getBot().newRequest(
                 REST.Method.POST,
-                Endpoint.SEND_MESSAGE,
+                Endpoint.SEND_MESSAGE.complete(getID()),
                 BodyBuilderType.OBJECT,
                 builder,
                 Message.TYPE

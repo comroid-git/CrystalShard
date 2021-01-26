@@ -205,23 +205,25 @@ public class EmbedBuilder implements Embed {
         if (description != null)
             embed.put(DESCRIPTION, description);
         if (url != null)
-            embed.put(TARGET_URL, url.toString());
+            embed.put(TARGET_URL, url);
         if (timestamp != null)
             embed.put(TIMESTAMP, timestamp.toString());
         if (color != null)
             embed.put(COLOR, color.getRGB());
         if (footer != null)
-            embed.put(FOOTER, footer.toUniNode());
+            footer.toObjectNode(embed.putObject(FOOTER));
         if (image != null)
-            embed.put(IMAGE, image.toUniNode());
+            image.toObjectNode(embed.putObject(IMAGE));
         if (thumbnail != null)
-            embed.put(THUMBNAIL, thumbnail.toUniNode());
+            thumbnail.toObjectNode(embed.putObject(THUMBNAIL));
         if (author != null)
-            embed.put(AUTHOR, author.toUniNode());
-        final UniArrayNode fields = embed.putArray(FIELDS);
-        this.fields.stream()
-                .map(DataContainer::toUniNode)
-                .forEach(fields::add);
+            author.toObjectNode(embed.putObject(AUTHOR));
+        if (fields.size() > 0) {
+            final UniArrayNode fields = embed.putArray(FIELDS);
+            this.fields.stream()
+                    .map(DataContainer::toUniNode)
+                    .forEach(fields::add);
+        }
 
         return embed;
     }

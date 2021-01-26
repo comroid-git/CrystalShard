@@ -28,7 +28,7 @@ public interface MessageTarget extends Context {
 
     default CompletableFuture<Message> sendEmbed(Embed embed) {
         return composeMessage()
-                .addEmbed(embed)
+                .setEmbed(embed)
                 .compose();
     }
 

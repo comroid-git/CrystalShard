@@ -49,7 +49,9 @@ public final class Interaction extends AbstractDataContainer {
     public static final VarBind<Interaction, UniObjectNode, GuildMember, GuildMember> MEMBER
             = TYPE.createBind("member")
             .extractAsObject()
-            .andResolve((context, data) -> GuildMember.resolve(context.getGuild(), data))
+            .andResolve((context, data) -> GuildMember.resolve(context.requireNonNull(GUILD), data))
+            .onceEach()
+            .addDependency(GUILD)
             .build();
     public static final VarBind<Interaction, String, String, String> CONTINUATION_TOKEN
             = TYPE.createBind("token")

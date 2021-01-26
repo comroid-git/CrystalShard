@@ -17,9 +17,9 @@ import java.util.function.Consumer;
 
 public final class MessageBuilder implements Composer<Message>, Consumer<UniObjectNode> {
     private final MessageTarget target;
-    private final Set<Embed> embeds = new HashSet<>();
     private StringBuilder contentBuilder = new StringBuilder();
     private boolean isTTS = false;
+    private Embed embed;
 
     public MessageBuilder(MessageTarget target) {
         this.target = target;
@@ -51,15 +51,15 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
         isTTS = tts;
     }
 
-    public MessageBuilder addEmbed(Embed embed) {
-        embeds.add(embed);
+    public MessageBuilder setEmbed(Embed embed) {
+        this.embed = embed;
         return this;
     }
 
-    public MessageBuilder addEmbed(Consumer<EmbedBuilder> builder) {
+    public MessageBuilder setEmbed(Consumer<EmbedBuilder> builder) {
         final EmbedBuilder embed = new EmbedBuilder(target);
         builder.accept(embed);
-        return addEmbed(embed);
+        return setEmbed(embed);
     }
 
     public EmbedComposer embed() {
@@ -68,14 +68,12 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
 
     @Override
     public void accept(final UniObjectNode data) {
-        if (contentBuilder.length() != 0)
-            data.put(Message.CONTENT, getContent());
+        String content = getContent();
+        if (!content.isEmpty())
+            data.put(Message.CONTENT, content);
         data.put(Message.TTS, isTTS);
-
-        final UniArrayNode embeds = data.putArray(Message.EMBEDS);
-        this.embeds.stream()
-                .map(Serializable::toUniNode)
-                .forEach(embeds::add);
+        if (embed != null)
+            data.put("embed", embed.toUniNode());
     }
 
     public final class EmbedComposer extends EmbedBuilder implements Composer<Message> {
@@ -85,7 +83,7 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
 
         @Override
         public CompletableFuture<Message> compose() {
-            return addEmbed(this).compose();
+            return setEmbed(this).compose();
         }
 
         @Override

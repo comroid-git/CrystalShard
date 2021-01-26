@@ -1,6 +1,7 @@
 package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannelCategory;
 import org.comroid.crystalshard.entity.command.Command;
@@ -22,6 +23,7 @@ import org.comroid.mutatio.ref.ReferenceMap;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public final class SnowflakeCache implements ContextualProvider.Underlying {
     private final ReferenceMap<String, Snowflake> cache = ReferenceMap.create();
@@ -95,6 +97,12 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
 
     public <T extends Snowflake> KeyedReference<String, Snowflake> getReference(EntityType<T> type, long id) {
         return cache.getReference(getKey(type, id), true);
+    }
+
+    public <T extends Snowflake> Stream<T> streamSnowflakes(EntityType<T> type) {
+        return cache.stream(key -> key.startsWith(type.getRelatedCacheName().getName()))
+                .flatMap(Rewrapper::stream)
+                .map(type.getRelatedClass()::cast);
     }
 
     private <T extends Snowflake> String getKey(EntityType<T> type, long id) {
