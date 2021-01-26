@@ -29,6 +29,10 @@ public class CommandSetup {
         return definedCommands.containsKey(name);
     }
 
+    public boolean hasCommand(long guildId, String name) {
+        return hasCommand(name) && getBindings(guildId).contains(name);
+    }
+
     public @Nullable CommandDefinition getCommand(String name) {
         return definedCommands.get(name);
     }

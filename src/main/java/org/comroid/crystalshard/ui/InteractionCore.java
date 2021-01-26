@@ -85,7 +85,7 @@ public class InteractionCore implements Context {
                 .thenApply(registered -> {
                     final List<String> existingNames = StreamOPs.map(registered, Command::getName);
 
-                    return Stream.concat(
+                    return Stream.concat(Stream.concat(
                             // update existing
                             registered.stream()
                                     .filter(cmd -> config.hasCommand(cmd.getName()))
@@ -104,27 +104,34 @@ public class InteractionCore implements Context {
 
                                         temporarily replaced with re-registering; as it will overwrite the old command
                                          */
+                                        logger.trace("Updating Global command {}", def.getName());
                                         return registerGlobalCommand(def);
                                     })
                                     .filter(Objects::nonNull)
                             , // create nonexisting
                             globalDefinitions.stream()
                                     .filter(def -> !existingNames.contains(def.getName()))
+                                    .peek(def -> logger.trace("Creating Global command {}", def.getName()))
                                     .map(this::registerGlobalCommand)
+                            ), // delete unregistered
+                            registered.stream()
+                                    .filter(cmd -> !config.hasCommand(cmd.getName()))
+                                    .peek(cmd -> logger.trace("Deleting Global command {}", cmd.getName()))
+                                    .map(this::unregisterGlobalCommand)
                     ).toArray(CompletableFuture<?>[]::new);
                 }).thenCompose(CompletableFuture::allOf);
     }
 
     public CompletableFuture<Void> synchronizeGuild(long guildId) {
-        final Set<CommandDefinition> globalDefinitions = config.getGuildDefinitions(guildId);
-        logger.debug("Synchronizing {} defined Commands for Guild {}...", globalDefinitions.size(), guildId);
+        final Set<CommandDefinition> guildDefinitions = config.getGuildDefinitions(guildId);
+        logger.debug("Synchronizing {} defined Commands for Guild {}...", guildDefinitions.size(), guildId);
 
         //noinspection unchecked
         return requestGuildCommands(guildId)
                 .thenApply(registered -> {
                     final List<String> existingNames = StreamOPs.map(registered, Command::getName);
 
-                    return Stream.concat(
+                    return Stream.concat(Stream.concat(
                             // update existing
                             registered.stream()
                                     .filter(cmd -> config.hasCommand(cmd.getName()))
@@ -132,10 +139,8 @@ public class InteractionCore implements Context {
                                         CommandDefinition def = config.getCommand(cmd.getName());
                                         if (def == null)
                                             return null;
-                                        if (isSyncedCorrectly(cmd, def)) {
-                                            logger.info("Not syncing {} as it is synced correctly", cmd);
+                                        if (isSyncedCorrectly(cmd, def))
                                             return CompletableFuture.completedFuture(cmd);
-                                        }
                                         /*
                                         TODO:
                                         endpoint seems to be broken at discords side;
@@ -145,13 +150,20 @@ public class InteractionCore implements Context {
 
                                         temporarily replaced with re-registering; as it will overwrite the old command
                                          */
+                                        logger.trace("Updating Guild command {} for {}", def.getName(), guildId);
                                         return registerGuildCommand(guildId, def);
                                     })
                                     .filter(Objects::nonNull)
                             , // create nonexisting
-                            globalDefinitions.stream()
+                            guildDefinitions.stream()
                                     .filter(def -> !existingNames.contains(def.getName()))
+                                    .peek(def -> logger.trace("Creating Guild command {} for {}", def.getName(), guildId))
                                     .map(def -> registerGuildCommand(guildId, def))
+                            ), // delete unregistered
+                            registered.stream()
+                                    .filter(cmd -> !config.hasCommand(guildId, cmd.getName()))
+                                    .peek(cmd -> logger.trace("Deleting Guild command {} for {}", cmd.getName(), guildId))
+                                    .map(cmd -> unregisterGuildCommand(guildId, cmd))
                     ).toArray(CompletableFuture<?>[]::new);
                 }).thenCompose(CompletableFuture::allOf);
     }
@@ -174,6 +186,15 @@ public class InteractionCore implements Context {
                 .allMatch(opt -> optionsSet.containsKey(opt.getName()) && optionsSet.get(opt.getName()).equals(opt));
     }
 
+    private CompletableFuture<Command> registerGlobalCommand(CommandDefinition cmd) {
+        return getBot().newRequest(
+                REST.Method.POST,
+                Endpoint.APPLICATION_COMMANDS_GLOBAL.complete(getBot().getOwnID()),
+                cmd,
+                Command.TYPE
+        );
+    }
+
     private CompletableFuture<Command> updateGlobalCommand(Command original, CommandDefinition cmd) {
         return getBot().newRequest(
                 REST.Method.PATCH,
@@ -183,10 +204,17 @@ public class InteractionCore implements Context {
         );
     }
 
-    private CompletableFuture<Command> registerGlobalCommand(CommandDefinition cmd) {
+    private CompletableFuture<UniNode> unregisterGlobalCommand(Command cmd) {
+        return getBot().newRequest(
+                REST.Method.DELETE,
+                Endpoint.APPLICATION_COMMANDS_GLOBAL_SPECIFIC.complete(getBot().getOwnID(), cmd.getID())
+        );
+    }
+
+    private CompletableFuture<Command> registerGuildCommand(long guildId, CommandDefinition cmd) {
         return getBot().newRequest(
                 REST.Method.POST,
-                Endpoint.APPLICATION_COMMANDS_GLOBAL.complete(getBot().getOwnID()),
+                Endpoint.APPLICATION_COMMANDS_GUILD.complete(getBot().getOwnID(), guildId),
                 cmd,
                 Command.TYPE
         );
@@ -201,12 +229,10 @@ public class InteractionCore implements Context {
         );
     }
 
-    private CompletableFuture<Command> registerGuildCommand(long guildId, CommandDefinition cmd) {
+    private CompletableFuture<UniNode> unregisterGuildCommand(long guildId, Command cmd) {
         return getBot().newRequest(
-                REST.Method.POST,
-                Endpoint.APPLICATION_COMMANDS_GUILD.complete(getBot().getOwnID(), guildId),
-                cmd,
-                Command.TYPE
+                REST.Method.DELETE,
+                Endpoint.APPLICATION_COMMANDS_GUILD_SPECIFIC.complete(getBot().getOwnID(), guildId, cmd.getID())
         );
     }
 
@@ -269,7 +295,17 @@ public class InteractionCore implements Context {
 
                 final UniObjectNode responseMessage = response.putObject("data");
                 logger.error("A command caused an internal exception: " + definition, t);
-                responseMessage.put(Message.CONTENT, "The Command caused an internal exception: " + t);
+                responseMessage.put(Message.CONTENT, new StringBuilder()
+                        .append("The Command caused an internal exception")
+                        .append('\n')
+                        .append("```")
+                        .append('\n')
+                        .append(" - ").append(t.getClass().getSimpleName())
+                        .append('\n')
+                        .append(" - ").append(t.getMessage())
+                        .append('\n')
+                        .append("```")
+                        .toString());
             }
         }
 
