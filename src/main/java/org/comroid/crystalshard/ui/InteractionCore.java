@@ -19,6 +19,7 @@ import org.comroid.crystalshard.gateway.event.dispatch.interaction.InteractionCr
 import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.crystalshard.model.command.CommandInteractionDataOption;
 import org.comroid.crystalshard.model.command.CommandOption;
+import org.comroid.crystalshard.model.message.embed.Embed;
 import org.comroid.crystalshard.model.message.embed.MessageEmbed;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.ui.annotation.Option;
@@ -317,12 +318,13 @@ public class InteractionCore implements Context {
                     response.put("type", InteractionResponseType.CHANNEL_MESSAGE);
                     final UniObjectNode responseMessage = response.putObject("data");
                     responseMessage.put(Message.CONTENT, String.valueOf(yield));
-                } else if (yield instanceof MessageEmbed) {
+                } else if (yield instanceof Embed) {
                     response.put("type", InteractionResponseType.CHANNEL_MESSAGE);
                     final UniObjectNode responseMessage = response.putObject("data");
                     responseMessage.put(Message.CONTENT, "");
                     final UniArrayNode embeds = responseMessage.putArray(Message.EMBEDS);
-                    ((MessageEmbed) yield).toObjectNode(embeds.addObject());
+                    final UniNode embed = ((Embed) yield).toUniNode();
+                    embeds.add(embed);
                 } else if (yield == null) {
                     response.put("type", InteractionResponseType.ACKNOWLEDGE_WITH_SOURCE);
                 } else response.put("type", InteractionResponseType.ACKNOWLEDGE);
