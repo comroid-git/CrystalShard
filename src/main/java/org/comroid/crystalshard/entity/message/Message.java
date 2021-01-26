@@ -15,7 +15,6 @@ import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.message.MessageActivity;
 import org.comroid.crystalshard.model.message.MessageReference;
 import org.comroid.crystalshard.model.message.Reaction;
-import org.comroid.crystalshard.model.message.embed.Embed;
 import org.comroid.crystalshard.model.message.embed.MessageEmbed;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
@@ -102,7 +101,7 @@ public final class Message extends Snowflake.Abstract {
             .andResolve(MessageAttachment::resolve)
             .intoSpan()
             .build();
-    public static final VarBind<Message, UniObjectNode, Embed, Span<Embed>> EMBEDS
+    public static final VarBind<Message, UniObjectNode, MessageEmbed, Span<MessageEmbed>> EMBEDS
             = TYPE.createBind("embeds")
             .extractAsArray()
             .andResolve(MessageEmbed::new)
@@ -181,7 +180,7 @@ public final class Message extends Snowflake.Abstract {
     public final Reference<Span<Role>> roleMentions = getComputedReference(MENTIONED_ROLES);
     public final Reference<Span<UniObjectNode>> channelMentions = getComputedReference(MENTIONED_CHANNELS); // todo
     public final Reference<Span<MessageAttachment>> attachments = getComputedReference(ATTACHMENTS);
-    public final Reference<Span<Embed>> embeds = getComputedReference(EMBEDS);
+    public final Reference<Span<MessageEmbed>> embeds = getComputedReference(EMBEDS);
     public final Reference<Span<Reaction>> reactions = getComputedReference(REACTIONS);
     public final Reference<Boolean> isPinned = getComputedReference(PINNED);
     public final Reference<Type> messageType = getComputedReference(MESSAGE_TYPE);
@@ -239,7 +238,7 @@ public final class Message extends Snowflake.Abstract {
         return attachments.orElseGet(Span::empty);
     }
 
-    public Span<Embed> getEmbeds() {
+    public Span<MessageEmbed> getEmbeds() {
         return embeds.orElseGet(Span::empty);
     }
 

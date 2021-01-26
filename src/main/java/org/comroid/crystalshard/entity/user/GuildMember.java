@@ -1,5 +1,6 @@
 package org.comroid.crystalshard.entity.user;
 
+import org.comroid.api.ContextualProvider;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
@@ -186,6 +187,13 @@ public final class GuildMember extends AbstractDataContainer implements User {
     @Override
     public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
         return base.openPrivateChannel();
+    }
+
+    public static GuildMember resolve(Guild context, UniNode data) {
+        if (!data.has(USER))
+            return null;
+        User user = USER.getFrom(data.asObjectNode());
+        return user.as(SimpleUser.class, "assertion").createGuildInstance(context, data.asObjectNode());
     }
 
     GuildMember(User baseUser, @Nullable UniNode initialData) {

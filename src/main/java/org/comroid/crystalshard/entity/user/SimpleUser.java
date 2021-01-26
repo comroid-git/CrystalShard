@@ -12,7 +12,6 @@ import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.crystalshard.rest.Endpoint;
-import org.comroid.mutatio.ref.KeyedReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferenceMap;
 import org.comroid.restless.REST;
@@ -133,7 +132,7 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
 
     @Internal
     public GuildMember createGuildInstance(Guild guild, UniObjectNode data) {
-        return new GuildMember(this, data);
+        return guildInstances.computeIfAbsent(guild.getID(), () -> new GuildMember(this, data));
     }
 
     @Override

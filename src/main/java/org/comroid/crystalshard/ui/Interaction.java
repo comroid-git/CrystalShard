@@ -5,6 +5,7 @@ import org.comroid.api.IntEnum;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.GuildMember;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.mutatio.ref.Reference;
@@ -45,10 +46,11 @@ public final class Interaction extends AbstractDataContainer {
             .extractAs(StandardValueType.LONG)
             .andResolveRef((ev, id) -> ev.getCache().getChannel(id))
             .build();
-    public static final VarBind<Interaction, UniObjectNode, UniObjectNode, UniObjectNode> MEMBER
+    public static final VarBind<Interaction, UniObjectNode, GuildMember, GuildMember> MEMBER
             = TYPE.createBind("member")
             .extractAsObject()
-            .build(); // todo GuildMember
+            .andResolve((context, data) -> GuildMember.resolve(context.getGuild(), data))
+            .build();
     public static final VarBind<Interaction, String, String, String> CONTINUATION_TOKEN
             = TYPE.createBind("token")
             .extractAs(StandardValueType.STRING)
@@ -62,7 +64,7 @@ public final class Interaction extends AbstractDataContainer {
     public final Reference<CommandInteractionData> data = getComputedReference(DATA);
     public final Reference<Guild> guild = getComputedReference(GUILD);
     public final Reference<Channel> channel = getComputedReference(CHANNEL);
-    public final Reference<UniObjectNode> member = getComputedReference(MEMBER);
+    public final Reference<GuildMember> member = getComputedReference(MEMBER);
     public final Reference<String> continuationToken = getComputedReference(CONTINUATION_TOKEN);
 
     public long getId() {
@@ -85,7 +87,7 @@ public final class Interaction extends AbstractDataContainer {
         return channel.assertion();
     }
 
-    public UniObjectNode getMember() {
+    public GuildMember getMember() {
         return member.assertion();
     }
 

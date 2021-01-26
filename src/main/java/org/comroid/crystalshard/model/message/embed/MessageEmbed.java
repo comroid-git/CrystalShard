@@ -42,7 +42,7 @@ public final class MessageEmbed extends AbstractDataContainer implements Embed {
 
     @Override
     public String getUrl() {
-        return url.assertion();
+        return url.into(URL::toExternalForm);
     }
 
     @Override

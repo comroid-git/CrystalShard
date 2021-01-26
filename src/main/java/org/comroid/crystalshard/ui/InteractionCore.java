@@ -274,7 +274,7 @@ public class InteractionCore implements Context {
 
                 if (option == null) {
                     if (User.class.isAssignableFrom(type))
-                        args[i] = null; // todo GuildMember
+                        args[i] = interaction.getMember();
                     else if (Channel.class.isAssignableFrom(type))
                         args[i] = interaction.getChannel();
                     else if (Guild.class.isAssignableFrom(type))
