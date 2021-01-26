@@ -68,6 +68,10 @@ public class CommandSetup {
         this.core = core;
     }
 
+    public CommandSetup readClass(Class<?> type) {
+        return readClass(null, type);
+    }
+
     public <T> CommandSetup readClass(T target) {
         return readClass(target, target.getClass());
     }
