@@ -23,6 +23,7 @@ import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StreamOPs;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
@@ -291,6 +292,9 @@ public class InteractionCore implements Context {
                     response.put("type", InteractionResponseType.ACKNOWLEDGE_WITH_SOURCE);
                 } else response.put("type", InteractionResponseType.ACKNOWLEDGE);
             } catch (Throwable t) {
+                if (t instanceof InvocationTargetException)
+                    t = t.getCause();
+
                 response.put("type", InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE);
 
                 final UniObjectNode responseMessage = response.putObject("data");
