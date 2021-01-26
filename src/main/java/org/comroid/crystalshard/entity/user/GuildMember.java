@@ -180,7 +180,12 @@ public final class GuildMember extends AbstractDataContainer implements User {
     }
 
     @Override
-    public CompletableFuture<GuildMember> asGuildMember(Guild guild) {
+    public Reference<GuildMember> asGuildMember(Guild guild) {
+        return Reference.constant(this);
+    }
+
+    @Override
+    public CompletableFuture<GuildMember> requestGuildMember(Guild guild) {
         return CompletableFuture.completedFuture(this);
     }
 

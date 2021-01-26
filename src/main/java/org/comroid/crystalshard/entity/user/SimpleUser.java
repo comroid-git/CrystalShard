@@ -120,7 +120,12 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
     }
 
     @Override
-    public CompletableFuture<GuildMember> asGuildMember(Guild guild) {
+    public Reference<GuildMember> asGuildMember(Guild guild) {
+        return guildInstances.process(guild.getID());
+    }
+
+    @Override
+    public CompletableFuture<GuildMember> requestGuildMember(Guild guild) {
         return guildInstances.process(guild.getID())
                 .map(CompletableFuture::completedFuture)
                 .orElseGet(() -> getBot().newRequest(

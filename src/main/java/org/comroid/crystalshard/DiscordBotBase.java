@@ -121,17 +121,14 @@ public class DiscordBotBase implements Bot {
     public final void close() throws IOException, Disposable.MultipleExceptions {
         final List<IOException> exceptions = new ArrayList<>();
 
-        shards.removeIf(discordBotShard -> {
+        shards.forEach(discordBotShard -> {
             try {
                 discordBotShard.close();
             } catch (IOException e) {
                 exceptions.add(e);
-                return false;
             }
-            return true;
         });
 
-        //noinspection ConstantConditions -> false positive
         if (exceptions.size() == 0)
             return;
         if (exceptions.size() == 1)

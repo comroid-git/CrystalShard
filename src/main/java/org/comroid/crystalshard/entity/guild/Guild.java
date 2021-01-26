@@ -9,6 +9,7 @@ import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
+import org.comroid.crystalshard.entity.user.GuildMember;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.guild.*;
 import org.comroid.crystalshard.model.voice.VoiceRegion;
@@ -161,10 +162,10 @@ public final class Guild extends Snowflake.Abstract implements Named {
             .andResolve(VoiceState::new)
             .intoSpan()
             .build();
-    public static final VarBind<Guild, UniObjectNode, UniObjectNode, Span<UniObjectNode>> MEMBERS
+    public static final VarBind<Guild, UniObjectNode, GuildMember, Span<GuildMember>> MEMBERS
             = TYPE.createBind("members")
             .extractAsArray()
-            .asIdentities() // todo
+            .andResolve(GuildMember::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Guild, UniObjectNode, Channel, Span<Channel>> CHANNELS

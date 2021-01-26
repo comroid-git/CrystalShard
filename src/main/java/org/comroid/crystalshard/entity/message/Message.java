@@ -12,9 +12,7 @@ import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
-import org.comroid.crystalshard.model.message.MessageActivity;
-import org.comroid.crystalshard.model.message.MessageReference;
-import org.comroid.crystalshard.model.message.Reaction;
+import org.comroid.crystalshard.model.message.*;
 import org.comroid.crystalshard.model.message.embed.MessageEmbed;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
@@ -29,9 +27,10 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class Message extends Snowflake.Abstract {
+public final class Message extends Snowflake.Abstract implements MessageTarget {
     @RootBind
     public static final GroupBind<Message> TYPE
             = BASETYPE.subGroup("message", Message::resolve);
@@ -280,6 +279,11 @@ public final class Message extends Snowflake.Abstract {
 
     public static Message resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getMessage, Message::new);
+    }
+
+    @Override
+    public CompletableFuture<Message> executeMessage(MessageBuilder builder) {
+        return getChannel().executeMessage(builder);
     }
 
     public enum Type implements IntEnum, Named {

@@ -71,12 +71,11 @@ public interface Snowflake extends DiscordDataContainer {
 
     @Internal
     abstract class Abstract extends DataContainerBase<DiscordDataContainer> implements Snowflake {
-        public final Reference<Long> id = getComputedReference(ID);
         private final EntityType<? extends Snowflake> entityType;
 
         @Override
         public final long getID() {
-            return id.assertion();
+            return getComputedReference(ID).assertion();
         }
 
 

@@ -8,6 +8,7 @@ import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.model.message.MessageBuilder;
 import org.comroid.crystalshard.model.message.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
+import org.comroid.mutatio.ref.Reference;
 
 import java.net.URL;
 import java.util.Locale;
@@ -16,6 +17,12 @@ import java.util.concurrent.CompletableFuture;
 
 public interface User extends Snowflake, MessageTarget {
     String getUsername();
+
+    default String getDisplayName(Guild inGuild) {
+        return asGuildMember(inGuild)
+                .flatMap(member -> member.nickname)
+                .orElseGet(this::getUsername);
+    }
 
     String getDiscriminator();
 
@@ -39,7 +46,9 @@ public interface User extends Snowflake, MessageTarget {
 
     URL getAvatarURL(ImageType imageType);
 
-    CompletableFuture<GuildMember> asGuildMember(Guild guild);
+    Reference<GuildMember> asGuildMember(Guild guild);
+
+    CompletableFuture<GuildMember> requestGuildMember(Guild guild);
 
     CompletableFuture<PrivateTextChannel> openPrivateChannel();
 

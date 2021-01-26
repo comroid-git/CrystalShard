@@ -362,24 +362,34 @@ public class InteractionCore implements Context {
         final CommandInteractionDataOption option = options.requireSingle();
         return Arrays.stream(tree.getDeclaredClasses())
                 .filter(it -> it.isAnnotationPresent(SlashCommand.class))
-                .filter(cls -> cls.getSimpleName().equalsIgnoreCase(option.getName()))
+                .filter(cls -> classFitsOption(option, cls))
                 .findAny()
                 .map(cls -> resolveCommandMethod(option.getOptions(), cls))
                 .orElseGet(() -> Arrays.stream(tree.getDeclaredMethods())
                         .filter(it -> it.isAnnotationPresent(SlashCommand.class))
-                        .filter(mtd -> mtd.getName().equalsIgnoreCase(option.getName()))
+                        .filter(mtd -> methodFitsOption(option, mtd))
                         .findAny()
-                        .orElse(null));
+                        .orElseThrow(() -> new NoSuchElementException("Could not find Method")));
     }
 
     private Span<CommandInteractionDataOption> resolveOptions(Span<CommandInteractionDataOption> options, Class<?> tree) {
         final CommandInteractionDataOption option = options.requireSingle();
         return Arrays.stream(tree.getDeclaredClasses())
                 .filter(it -> it.isAnnotationPresent(SlashCommand.class))
-                .filter(cls -> cls.getSimpleName().equalsIgnoreCase(option.getName()))
+                .filter(cls -> classFitsOption(option, cls))
                 .findAny()
                 .map(cls -> resolveOptions(option.getOptions(), cls))
                 .orElseGet(option::getOptions);
+    }
+
+    private boolean classFitsOption(CommandInteractionDataOption option, Class<?> cls) {
+        return cls.getSimpleName().equalsIgnoreCase(option.getName())
+                || cls.getAnnotation(SlashCommand.class).name().equalsIgnoreCase(option.getName());
+    }
+
+    private boolean methodFitsOption(CommandInteractionDataOption option, Method mtd) {
+        return mtd.getName().equalsIgnoreCase(option.getName())
+                || mtd.getAnnotation(SlashCommand.class).name().equalsIgnoreCase(option.getName());
     }
 
     private static String nameOfParameter(Parameter parameter) {
