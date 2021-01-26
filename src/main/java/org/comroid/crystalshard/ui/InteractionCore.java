@@ -273,7 +273,10 @@ public class InteractionCore implements Context {
                 value = getOrSafeFallback(type, value);
                 args[i] = value;
 
-                if (value instanceof Integer && Enum.class.isAssignableFrom(type) && IntEnum.class.isAssignableFrom(type)) {
+                if (value instanceof Integer
+                        && parameters[i].isAnnotationPresent(Option.class)
+                        && Enum.class.isAssignableFrom(type)
+                        && IntEnum.class.isAssignableFrom(type)) {
                     args[i] = IntEnum.valueOf((int) value, Polyfill.uncheckedCast(type)).orElse(null);
                     continue;
                 }
