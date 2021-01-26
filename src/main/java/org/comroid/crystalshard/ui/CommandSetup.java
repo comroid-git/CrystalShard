@@ -90,7 +90,7 @@ public class CommandSetup {
         final UniArrayNode options = cmd.putArray(Command.OPTIONS);
         for (Parameter param : method.getParameters()) {
             if (!param.isAnnotationPresent(Option.class))
-                continue; // TODO handle non-present annotation
+                continue; // handle non-present annotation => does it need handling though?
 
             final UniObjectNode option = options.addObject();
             final Option optDef = param.getAnnotation(Option.class);
