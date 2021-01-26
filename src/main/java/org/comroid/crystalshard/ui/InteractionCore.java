@@ -8,8 +8,13 @@ import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordBotBase;
+import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.command.Command;
+import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.dispatch.interaction.InteractionCreateEvent;
 import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.crystalshard.model.command.CommandInteractionDataOption;
@@ -263,23 +268,39 @@ public class InteractionCore implements Context {
                 final Class<?> type = parameters[i].getType();
 
                 if (option == null) {
-                    args[i] = event.getFromContext(type).orElseGet(() -> Polyfill.uncheckedCast(getOrSafeFallback(type, null)));
+                    if (User.class.isAssignableFrom(type))
+                        args[i] = null; // todo GuildMember
+                    else if (Channel.class.isAssignableFrom(type))
+                        args[i] = interaction.getChannel();
+                    else if (Guild.class.isAssignableFrom(type))
+                        args[i] = interaction.getGuild();
+                    else args[i] = event.getFromContext(type).orElseGet(() -> Polyfill.uncheckedCast(getOrSafeFallback(type, null)));
                     continue;
                 }
 
                 // todo Handle Subcommand case ??
 
                 Object value = option.getValue();
+                String string = String.valueOf(value);
                 value = getOrSafeFallback(type, value);
                 args[i] = value;
 
+                if (string.matches(Snowflake.ID_REGEX)) {
+                    final long id = Long.parseLong(string);
+                    if (parameters[i].isAnnotationPresent(Option.class)) {
+                        if (User.class.isAssignableFrom(type))
+                            args[i] = getCache().getUser(id).get();
+                        if (Channel.class.isAssignableFrom(type))
+                            args[i] = getCache().getChannel(id).get();
+                        if (Role.class.isAssignableFrom(type))
+                            args[i] = getCache().getRole(id).get();
+                    }
+                }
                 if (value instanceof Integer
                         && parameters[i].isAnnotationPresent(Option.class)
                         && Enum.class.isAssignableFrom(type)
-                        && IntEnum.class.isAssignableFrom(type)) {
+                        && IntEnum.class.isAssignableFrom(type))
                     args[i] = IntEnum.valueOf((int) value, Polyfill.uncheckedCast(type)).orElse(null);
-                    continue;
-                }
 
                 if (args[i] == null && type.isPrimitive())
                     throw new IllegalStateException("Primitive parameter cannot be null");
