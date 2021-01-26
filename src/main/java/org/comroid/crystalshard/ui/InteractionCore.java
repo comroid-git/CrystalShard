@@ -15,6 +15,7 @@ import org.comroid.crystalshard.model.command.CommandInteractionDataOption;
 import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.model.message.embed.Embed;
 import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.crystalshard.ui.annotation.Option;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
 import org.comroid.uniform.node.UniArrayNode;
@@ -256,7 +257,7 @@ public class InteractionCore implements Context {
             final Object[] args = new Object[parameters.length];
 
             for (int i = 0; i < parameters.length; i++) {
-                final String name = parameters[i].getName();
+                final String name = nameOfParameter(parameters[i]);
                 final CommandInteractionDataOption option = options.get(name);
                 final Class<?> type = parameters[i].getType();
 
@@ -319,6 +320,12 @@ public class InteractionCore implements Context {
                 Endpoint.INTERACTION_CALLBACK.complete(interaction.getId(), interaction.getContinuationToken()),
                 response
         ).join();
+    }
+
+    private static String nameOfParameter(Parameter parameter) {
+        if (parameter.isAnnotationPresent(Option.class))
+            return parameter.getAnnotation(Option.class).name();
+        return parameter.getName();
     }
 
     @Nullable
