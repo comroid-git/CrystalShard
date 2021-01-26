@@ -12,12 +12,15 @@ import org.comroid.uniform.node.UniObjectNode;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.unmodifiableSet;
 
@@ -78,20 +81,80 @@ public class CommandSetup {
 
     public <T> CommandSetup readClass(T target, Class<? extends T> type) {
         for (Method method : type.getDeclaredMethods())
-            readMethod(target, method);
+            if (target != null || Modifier.isStatic(method.getModifiers()))
+                readMethod(target, method);
+        for (Class<?> root : type.getDeclaredClasses())
+            if (root.isAnnotationPresent(SlashCommand.class))
+                readTree(target, root);
         return this;
     }
 
-    private CommandSetup readMethod(Object target, Method method) {
-        if (!method.isAnnotationPresent(SlashCommand.class))
-            throw new IllegalArgumentException("Invalid method; annotation @SlashCommand not present; " + method);
+    private void readTree(Object target, Class<?> root) {
+        if (!root.isAnnotationPresent(SlashCommand.class))
+            return;
+        final SlashCommand cmdDef = root.getAnnotation(SlashCommand.class);
         final UniObjectNode cmd = core.getSerializer().createUniObjectNode();
+
+        cmd.put(Command.NAME, (cmdDef.name().isEmpty() ? prefabName(root.getName()) : cmdDef.name()).toLowerCase());
+        cmd.put(Command.DESCRIPTION, cmdDef.description());
+
+        readSubOptions(cmd, root);
+
+        final CommandDefinition definition = new CommandDefinition(core, cmd, target, root);
+        definedCommands.put(definition.getName(), definition);
+    }
+
+    private void readSubOptions(UniObjectNode me, Class<?> root) {
+        if (!root.isAnnotationPresent(SlashCommand.class))
+            return;
+        final SlashCommand def = root.getAnnotation(SlashCommand.class);
+
+        me.put(CommandOption.NAME, (def.name().isEmpty() ? prefabName(root.getSimpleName()) : def.name()).toLowerCase());
+        me.put(CommandOption.DESCRIPTION, def.description());
+        me.put(CommandOption.OPTION_TYPE, CommandOption.Type.SUB_COMMAND_GROUP);
+
+        final UniArrayNode options = me.putArray(CommandOption.OPTIONS);
+        Stream.concat(Arrays.stream(root.getDeclaredClasses()), Arrays.stream(root.getDeclaredMethods()))
+                .filter(it -> it.isAnnotationPresent(SlashCommand.class))
+                .forEach(it -> {
+                    final UniObjectNode option = options.addObject();
+                    if (it instanceof Class)
+                        readSubOptions(option, (Class<?>) it);
+                    else if (it instanceof Method)
+                        readSubOptions(option, (Method) it);
+                    else throw new AssertionError();
+                });
+    }
+
+    private void readSubOptions(UniObjectNode me, Method method) {
+        if (!method.isAnnotationPresent(SlashCommand.class))
+            return;
+        final SlashCommand def = method.getAnnotation(SlashCommand.class);
+
+        me.put(CommandOption.NAME, (def.name().isEmpty() ? prefabName(method.getName()) : def.name()).toLowerCase());
+        me.put(CommandOption.DESCRIPTION, def.description());
+        me.put(CommandOption.OPTION_TYPE, CommandOption.Type.SUB_COMMAND);
+
+        readMethodOptions(me, method);
+    }
+
+    private void readMethod(Object target, Method method) {
+        if (!method.isAnnotationPresent(SlashCommand.class))
+            return;
         final SlashCommand cmdDef = method.getAnnotation(SlashCommand.class);
+        final UniObjectNode cmd = core.getSerializer().createUniObjectNode();
 
         cmd.put(Command.NAME, (cmdDef.name().isEmpty() ? prefabName(method.getName()) : cmdDef.name()).toLowerCase());
         cmd.put(Command.DESCRIPTION, cmdDef.description());
 
-        final UniArrayNode options = cmd.putArray(Command.OPTIONS);
+        readMethodOptions(cmd, method);
+
+        final CommandDefinition definition = new CommandDefinition(core, cmd, target, method);
+        definedCommands.put(definition.getName(), definition);
+    }
+
+    private void readMethodOptions(UniObjectNode me, Method method) {
+        final UniArrayNode options = me.putArray(Command.OPTIONS);
         for (Parameter param : method.getParameters()) {
             if (!param.isAnnotationPresent(Option.class))
                 continue; // handle non-present annotation => does it need handling though?
@@ -130,10 +193,6 @@ public class CommandSetup {
                 }
             }
         }
-
-        final CommandDefinition commandDef = new CommandDefinition(core, cmd, target, method);
-        definedCommands.put(commandDef.getName(), commandDef);
-        return this;
     }
 
     private static String prefabName(String name) {

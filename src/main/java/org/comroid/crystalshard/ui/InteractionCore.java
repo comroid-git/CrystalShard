@@ -22,6 +22,7 @@ import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.model.message.embed.Embed;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.ui.annotation.Option;
+import org.comroid.crystalshard.ui.annotation.SlashCommand;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
 import org.comroid.uniform.node.UniArrayNode;
@@ -255,10 +256,14 @@ public class InteractionCore implements Context {
             final CommandDefinition definition = config.getCommand(data.getCommandName());
             if (definition == null)
                 throw new AssertionError("Unrecognized command: " + data.getCommand());
-            final Map<String, CommandInteractionDataOption> options = data.getOptions()
+            final Method method = definition.isGroup()
+                    ? resolveCommandMethod(data.getOptions(), definition.getTargetClass())
+                    : definition.getTargetMethod();
+            final Map<String, CommandInteractionDataOption> options = (definition.isGroup()
+                    ? resolveOptions(data.getOptions(), definition.getTargetClass())
+                    : data.getOptions())
                     .stream()
                     .collect(Collectors.toMap(Named::getName, Function.identity()));
-            final Method method = definition.getMethod();
             final Parameter[] parameters = method.getParameters();
             final Object[] args = new Object[parameters.length];
 
@@ -274,11 +279,10 @@ public class InteractionCore implements Context {
                         args[i] = interaction.getChannel();
                     else if (Guild.class.isAssignableFrom(type))
                         args[i] = interaction.getGuild();
-                    else args[i] = event.getFromContext(type).orElseGet(() -> Polyfill.uncheckedCast(getOrSafeFallback(type, null)));
+                    else
+                        args[i] = event.getFromContext(type).orElseGet(() -> Polyfill.uncheckedCast(getOrSafeFallback(type, null)));
                     continue;
                 }
-
-                // todo Handle Subcommand case ??
 
                 Object value = option.getValue();
                 String string = String.valueOf(value);
@@ -329,7 +333,7 @@ public class InteractionCore implements Context {
                 response.put("type", InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE);
 
                 final UniObjectNode responseMessage = response.putObject("data");
-                logger.error("A command caused an internal exception: " + definition, t);
+                logger.error("A command caused an internal exception: " + definition.getName(), t);
                 StringBuilder base = new StringBuilder()
                         .append("The Command caused an internal exception")
                         .append('\n')
@@ -350,6 +354,30 @@ public class InteractionCore implements Context {
                 Endpoint.INTERACTION_CALLBACK.complete(interaction.getId(), interaction.getContinuationToken()),
                 response
         ).join();
+    }
+
+    private Method resolveCommandMethod(Span<CommandInteractionDataOption> options, Class<?> tree) {
+        final CommandInteractionDataOption option = options.requireSingle();
+        return Arrays.stream(tree.getDeclaredClasses())
+                .filter(it -> it.isAnnotationPresent(SlashCommand.class))
+                .filter(cls -> cls.getSimpleName().equalsIgnoreCase(option.getName()))
+                .findAny()
+                .map(cls -> resolveCommandMethod(option.getOptions(), cls))
+                .orElseGet(() -> Arrays.stream(tree.getDeclaredMethods())
+                        .filter(it -> it.isAnnotationPresent(SlashCommand.class))
+                        .filter(mtd -> mtd.getName().equalsIgnoreCase(option.getName()))
+                        .findAny()
+                        .orElse(null));
+    }
+
+    private Span<CommandInteractionDataOption> resolveOptions(Span<CommandInteractionDataOption> options, Class<?> tree) {
+        final CommandInteractionDataOption option = options.requireSingle();
+        return Arrays.stream(tree.getDeclaredClasses())
+                .filter(it -> it.isAnnotationPresent(SlashCommand.class))
+                .filter(cls -> cls.getSimpleName().equalsIgnoreCase(option.getName()))
+                .findAny()
+                .map(cls -> resolveOptions(option.getOptions(), cls))
+                .orElseGet(option::getOptions);
     }
 
     private static String nameOfParameter(Parameter parameter) {

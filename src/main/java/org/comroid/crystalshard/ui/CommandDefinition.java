@@ -15,6 +15,7 @@ import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 public class CommandDefinition extends AbstractDataContainer implements Named, Described {
@@ -38,7 +39,7 @@ public class CommandDefinition extends AbstractDataContainer implements Named, D
     public final Reference<String> name = getComputedReference(NAME);
     public final Reference<String> description = getComputedReference(DESCRIPTION);
     private final Object target;
-    private final Method method;
+    private final AnnotatedElement annotated;
     private final SlashCommand annotation;
 
     @Override
@@ -55,19 +56,27 @@ public class CommandDefinition extends AbstractDataContainer implements Named, D
         return target;
     }
 
-    public Method getMethod() {
-        return method;
+    public boolean isGroup() {
+        return annotated instanceof Class;
+    }
+
+    public Method getTargetMethod() {
+        return (Method) annotated;
+    }
+
+    public Class<?> getTargetClass() {
+        return (Class<?>) annotated;
     }
 
     public boolean useGlobally() {
         return annotation.useGlobally();
     }
 
-    CommandDefinition(InteractionCore core, UniObjectNode data, Object target, Method method) {
+    CommandDefinition(InteractionCore core, UniObjectNode data, Object target, AnnotatedElement annotated) {
         super(core, data);
 
         this.target = target;
-        this.method = method;
-        this.annotation = method.getAnnotation(SlashCommand.class);
+        this.annotated = annotated;
+        this.annotation = annotated.getAnnotation(SlashCommand.class);
     }
 }
