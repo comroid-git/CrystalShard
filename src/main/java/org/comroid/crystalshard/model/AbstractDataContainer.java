@@ -9,10 +9,8 @@ import org.comroid.varbind.container.DataContainerBase;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractDataContainer
-        extends DataContainerBase<AbstractDataContainer>
-        implements Context {
-    public static final GroupBind<AbstractDataContainer> BASETYPE
-            = new GroupBind<>(DiscordAPI.SERIALIZATION, "data-container");
+        extends DataContainerBase<DiscordDataContainer>
+        implements DiscordDataContainer {
 
     public AbstractDataContainer(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);

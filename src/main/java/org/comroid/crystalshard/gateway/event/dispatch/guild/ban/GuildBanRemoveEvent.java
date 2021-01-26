@@ -1,10 +1,9 @@
 package org.comroid.crystalshard.gateway.event.dispatch.guild.ban;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
@@ -27,7 +26,7 @@ public final class GuildBanRemoveEvent extends DispatchEvent {
     public static final VarBind<GuildBanRemoveEvent, UniObjectNode, User, User> USER
             = TYPE.createBind("user")
             .extractAsObject()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .build();
     public final Reference<Guild> guild = getComputedReference(GUILD);
     public final Reference<User> user = getComputedReference(USER);

@@ -3,6 +3,7 @@ package org.comroid.crystalshard.gateway.event.generic;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.ref.Reference;
@@ -31,7 +32,7 @@ public final class ReadyEvent extends GatewayEvent {
     public static final VarBind<ReadyEvent, UniObjectNode, User, User> YOURSELF
             = TYPE.createBind("user")
             .extractAsObject()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .onceEach()
             .setRequired()
             .build();

@@ -1,13 +1,10 @@
 package org.comroid.crystalshard.gateway.event.dispatch.user;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Rewrapper;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.interaction.InteractionCreateEvent;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.ClientStatus;
 import org.comroid.crystalshard.model.presence.UserStatus;
@@ -28,7 +25,7 @@ public final class PresenceUpdateEvent extends DispatchEvent {
     public static final VarBind<PresenceUpdateEvent, UniObjectNode, User, User> USER
             = TYPE.createBind("user")
             .extractAsObject()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .build();
     public static final VarBind<PresenceUpdateEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")

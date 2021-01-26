@@ -8,9 +8,9 @@ import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
-import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.message.Message;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.message.MessageBuilder;
 import org.comroid.crystalshard.model.message.MessageTarget;
@@ -59,7 +59,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
     public static final VarBind<Webhook, UniObjectNode, User, User> CREATOR
             = TYPE.createBind("user")
             .extractAsObject()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .build();
     public static final VarBind<Webhook, String, String, String> NAME
             = TYPE.createBind("name")

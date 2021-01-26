@@ -4,6 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordAPI;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.util.function.BiFunction;
 
-public interface Snowflake extends DataContainer<Snowflake>, Context {
+public interface Snowflake extends DiscordDataContainer {
     GroupBind<Snowflake> BASETYPE = new GroupBind<>(DiscordAPI.SERIALIZATION, "snowflake");
     VarBind<Snowflake, Long, Long, Long> ID
             = BASETYPE.createBind("id")
@@ -45,7 +46,7 @@ public interface Snowflake extends DataContainer<Snowflake>, Context {
     }
 
     @Override
-    Rewrapper<Snowflake> self();
+    Rewrapper<DiscordDataContainer> self();
 
     @Internal
     static <R extends Snowflake> R resolve(
@@ -69,7 +70,7 @@ public interface Snowflake extends DataContainer<Snowflake>, Context {
     }
 
     @Internal
-    abstract class Abstract extends DataContainerBase<Snowflake> implements Snowflake {
+    abstract class Abstract extends DataContainerBase<DiscordDataContainer> implements Snowflake {
         public final Reference<Long> id = getComputedReference(ID);
         private final EntityType<? extends Snowflake> entityType;
 
@@ -80,7 +81,7 @@ public interface Snowflake extends DataContainer<Snowflake>, Context {
 
 
         @Override
-        public Rewrapper<Snowflake> self() {
+        public Rewrapper<DiscordDataContainer> self() {
             return super.self();
         }
 

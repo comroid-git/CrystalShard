@@ -11,6 +11,7 @@ import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.message.MessageApplication;
 import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.crystalshard.entity.message.MessageSticker;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;

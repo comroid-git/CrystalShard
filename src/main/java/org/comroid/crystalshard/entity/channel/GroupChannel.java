@@ -1,8 +1,8 @@
 package org.comroid.crystalshard.entity.channel;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.EntityType;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniObjectNode;
@@ -18,7 +18,7 @@ public final class GroupChannel extends AbstractTextChannel implements TextChann
     public static final VarBind<GroupChannel, UniObjectNode, User, Span<User>> RECIPIENTS
             = TYPE.createBind("recipients")
             .extractAsArray()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .intoSpan()
             .build();
     public static final VarBind<GroupChannel, String, String, String> ICON_HASH // todo

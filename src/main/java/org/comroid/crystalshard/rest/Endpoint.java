@@ -4,6 +4,7 @@ import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.command.Command;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.restless.endpoint.AccessibleEndpoint;
 import org.comroid.restless.endpoint.QueryParameter;
@@ -17,6 +18,8 @@ public enum Endpoint implements AccessibleEndpoint {
     PRIVATE_CHANNELS("/users/@me/channels"),
 
     SEND_MESSAGE("/channels/%s/messages", Snowflake.ID_REGEX),
+
+    GUILD_MEMBER_SPECIFIC("/guilds/%s/members/%s", Guild.ID_REGEX, User.ID_REGEX),
 
     VOICE_REGIONS("/voice/regions"),
 

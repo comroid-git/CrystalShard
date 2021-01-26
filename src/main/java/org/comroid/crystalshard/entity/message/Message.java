@@ -9,6 +9,7 @@ import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.message.MessageActivity;
@@ -48,7 +49,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, User, User> AUTHOR
             = TYPE.createBind("author")
             .extractAsObject() // todo: handle WebHook author case
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .build();
     public static final VarBind<Message, UniObjectNode, UniObjectNode, UniObjectNode> MEMBER
             = TYPE.createBind("member")
@@ -80,7 +81,7 @@ public final class Message extends Snowflake.Abstract {
     public static final VarBind<Message, UniObjectNode, User, Span<User>> MENTIONED_USERS
             = TYPE.createBind("mentions")
             .extractAsArray()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .intoSpan()
             .build();
     public static final VarBind<Message, UniObjectNode, Role, Span<Role>> MENTIONED_ROLES

@@ -2,9 +2,9 @@ package org.comroid.crystalshard.gateway.event.dispatch.guild.invite;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
+import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.crystalshard.model.invite.TargetUserType;
@@ -47,7 +47,7 @@ public final class InviteCreateEvent extends DispatchEvent {
     public static final VarBind<InviteCreateEvent, UniObjectNode, User, User> INVITER
             = TYPE.createBind("inviter")
             .extractAsObject()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .build();
     public static final VarBind<InviteCreateEvent, Integer, Duration, Duration> MAX_AGE
             = TYPE.createBind("max_age")
@@ -61,7 +61,7 @@ public final class InviteCreateEvent extends DispatchEvent {
     public static final VarBind<InviteCreateEvent, UniObjectNode, User, User> TARGET_USER
             = TYPE.createBind("target_user")
             .extractAsObject()
-            .andResolve(User::resolve)
+            .andResolve(SimpleUser::resolve)
             .build();
     public static final VarBind<InviteCreateEvent, Integer, TargetUserType, TargetUserType> TARGET_USER_TYPE
             = TYPE.createBind("target_user_type")
