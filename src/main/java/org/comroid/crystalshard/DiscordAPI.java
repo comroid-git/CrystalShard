@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
+import org.comroid.common.Disposable;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.mutatio.span.Span;
@@ -18,14 +19,18 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public final class DiscordAPI extends ContextualProvider.Base implements Context {
+public final class DiscordAPI extends ContextualProvider.Base implements Context, Closeable {
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     private static final Logger logger = LogManager.getLogger();
@@ -120,4 +125,26 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         this.members = Span.make().initialValues(SERIALIZATION, httpAdapter, scheduledExecutorService, rest, snowflakeCache, this).span();
     }
 
+    @Override
+    public void close() throws Disposable.MultipleExceptions {
+        logger.warn("Shutting down Discord API Object and contextual relatives!");
+
+        List<Exception> exceptions = members.stream()
+                .filter(it -> !(it instanceof DiscordAPI))
+                .filter(AutoCloseable.class::isInstance)
+                .map(AutoCloseable.class::cast)
+                .map(closeable -> {
+                    try {
+                        closeable.close();
+                    } catch (Exception e) {
+                        return e;
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (exceptions.size() > 0)
+            throw new Disposable.MultipleExceptions("Exceptions occurred during shutdown", exceptions);
+        scheduledExecutorService.shutdown();
+    }
 }

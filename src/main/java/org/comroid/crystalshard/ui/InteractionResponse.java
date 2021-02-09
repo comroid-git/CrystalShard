@@ -19,7 +19,6 @@ public final class InteractionResponse extends AbstractDataContainer {
             .extractAs(StandardValueType.INTEGER)
             .andRemapRef(Type::valueOf)
             .build();
-    public static final int 
 
     InteractionResponse(InteractionCore core) {
         super(core, null);

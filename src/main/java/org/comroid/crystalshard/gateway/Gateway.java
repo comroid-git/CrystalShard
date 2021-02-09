@@ -179,6 +179,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     @Override
     public void close() throws IOException {
+        logger.debug("Closing Gateway of Shard {}", shard);
         socket.close();
     }
 

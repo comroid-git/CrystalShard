@@ -137,6 +137,7 @@ public final class DiscordBotShard implements Bot {
 
     @Override
     public void close() throws IOException {
+        logger.info("Closing Discord Bot Shard #{}", currentShardID);
         gateway.future.join().close();
     }
 

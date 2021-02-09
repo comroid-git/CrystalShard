@@ -34,6 +34,10 @@ import java.util.concurrent.CompletableFuture;
 public final class Guild extends Snowflake.Abstract implements Named {
     @RootBind
     public static final GroupBind<Guild> TYPE = BASETYPE.subGroup("guild", Guild::resolve);
+    public static final VarBind<Guild, String, String, String> NAME
+            = TYPE.createBind("name")
+            .extractAs(StandardValueType.STRING)
+            .build();
     public static final VarBind<Guild, String, String, String> ICON_HASH
             = TYPE.createBind("icon")
             .extractAs(StandardValueType.STRING)
@@ -236,7 +240,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
 
     @Override
     public String getName() {
-        return null;
+        return requireNonNull(NAME, "assertion");
     }
 
     private Guild(ContextualProvider context, UniObjectNode data) {

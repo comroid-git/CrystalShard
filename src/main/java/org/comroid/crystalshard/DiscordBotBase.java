@@ -119,6 +119,7 @@ public class DiscordBotBase implements Bot {
 
     @Override
     public final void close() throws IOException, Disposable.MultipleExceptions {
+        logger.info("Shutting down DiscordBotBase <{}>", getClass().getSimpleName());
         final List<IOException> exceptions = new ArrayList<>();
 
         shards.forEach(discordBotShard -> {

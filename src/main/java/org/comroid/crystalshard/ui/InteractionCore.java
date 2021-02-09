@@ -64,6 +64,12 @@ public class InteractionCore implements Context {
                 .forEach(this::handleInteraction);
     }
 
+    public CompletableFuture<Void> addCommandsToGuild(long guildId, CommandDefinition... commands) {
+        for (CommandDefinition cmd : commands)
+            config.addGuildDefinition(guildId, cmd);
+        return synchronizeGuild(guildId);
+    }
+
     public CompletableFuture<List<Command>> requestGlobalCommands() {
         return getBot().newRequest(
                 REST.Method.GET,
