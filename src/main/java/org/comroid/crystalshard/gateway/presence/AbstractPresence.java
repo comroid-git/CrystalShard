@@ -53,7 +53,7 @@ public abstract class AbstractPresence implements OwnPresence {
 
     @Override
     public final OwnPresence addActivity(Consumer<UniObjectNode> dataSetup) {
-        UniObjectNode obj = requireFromContext(SerializationAdapter.class).createUniObjectNode();
+        UniObjectNode obj = requireFromContext(SerializationAdapter.class).createObjectNode();
         dataSetup.accept(obj);
         return addActivity(new Activity(this, obj));
     }

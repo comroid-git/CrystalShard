@@ -196,7 +196,7 @@ public class EmbedBuilder implements Embed {
 
     @Override
     public UniNode toUniNode() {
-        final UniObjectNode embed = context.getSerializer().createUniObjectNode();
+        final UniObjectNode embed = context.getSerializer().createObjectNode();
 
         embed.put(EMBED_TYPE, type.getName());
 

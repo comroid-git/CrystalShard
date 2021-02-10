@@ -9,11 +9,9 @@ import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
-import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
-import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.pump.Pump;
@@ -246,6 +244,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     public UniObjectNode createPayloadBase(OpCode code) {
-        return code.apply(DiscordAPI.SERIALIZATION.createUniObjectNode());
+        return code.apply(DiscordAPI.SERIALIZATION.createObjectNode());
     }
 }

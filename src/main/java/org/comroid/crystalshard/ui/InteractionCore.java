@@ -20,7 +20,6 @@ import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.crystalshard.model.command.CommandInteractionDataOption;
 import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.model.message.embed.Embed;
-import org.comroid.crystalshard.model.message.embed.MessageEmbed;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.ui.annotation.Option;
 import org.comroid.crystalshard.ui.annotation.SlashCommand;
@@ -254,7 +253,7 @@ public class InteractionCore implements Context {
 
     private void handleInteraction(InteractionCreateEvent event) {
         final Interaction interaction = event.getInteraction();
-        final UniObjectNode response = getSerializer().createUniObjectNode();
+        final UniObjectNode response = getSerializer().createObjectNode();
 
         if (interaction.getType() == Interaction.Type.PING)
             response.put("type", InteractionResponseType.PONG);

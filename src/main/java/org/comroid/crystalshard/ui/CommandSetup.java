@@ -93,7 +93,7 @@ public class CommandSetup {
         if (!root.isAnnotationPresent(SlashCommand.class))
             return;
         final SlashCommand cmdDef = root.getAnnotation(SlashCommand.class);
-        final UniObjectNode cmd = core.getSerializer().createUniObjectNode();
+        final UniObjectNode cmd = core.getSerializer().createObjectNode();
 
         cmd.put(Command.NAME, (cmdDef.name().isEmpty() ? prefabName(root.getName()) : cmdDef.name()).toLowerCase());
         cmd.put(Command.DESCRIPTION, cmdDef.description());
@@ -142,7 +142,7 @@ public class CommandSetup {
         if (!method.isAnnotationPresent(SlashCommand.class))
             return;
         final SlashCommand cmdDef = method.getAnnotation(SlashCommand.class);
-        final UniObjectNode cmd = core.getSerializer().createUniObjectNode();
+        final UniObjectNode cmd = core.getSerializer().createObjectNode();
 
         cmd.put(Command.NAME, (cmdDef.name().isEmpty() ? prefabName(method.getName()) : cmdDef.name()).toLowerCase());
         cmd.put(Command.DESCRIPTION, cmdDef.description());

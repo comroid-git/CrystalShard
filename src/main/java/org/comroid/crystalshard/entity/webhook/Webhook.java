@@ -102,7 +102,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
             if (id == 0 || token == null)
                 throw new IllegalArgumentException("Could not extract parameters from URL: " + url);
 
-            UniObjectNode obj = api.requireFromContext(SerializationAdapter.class).createUniObjectNode();
+            UniObjectNode obj = api.requireFromContext(SerializationAdapter.class).createObjectNode();
             obj.put(ID, id);
             obj.put(TOKEN, token);
 
