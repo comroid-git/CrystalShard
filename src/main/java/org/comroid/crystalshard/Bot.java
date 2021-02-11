@@ -1,27 +1,29 @@
 package org.comroid.crystalshard;
 
-import org.comroid.api.Polyfill;
+import org.apache.logging.log4j.Logger;
+import org.comroid.annotations.Blocking;
+import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
+import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildCreateEvent;
+import org.comroid.crystalshard.gateway.event.generic.ReadyEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
 import org.comroid.mutatio.pipe.Pipe;
-import org.comroid.mutatio.span.Span;
-import org.comroid.restless.REST;
-import org.comroid.restless.body.BodyBuilderType;
-import org.comroid.restless.endpoint.CompleteEndpoint;
-import org.comroid.uniform.node.UniNode;
-import org.comroid.varbind.bind.GroupBind;
-import org.comroid.varbind.container.DataContainer;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public interface Bot extends DiscordREST, Closeable {
+    Logger getLogger();
+
     default long getOwnID() {
         return getYourself().getID();
     }
@@ -37,6 +39,8 @@ public interface Bot extends DiscordREST, Closeable {
     int getShardCount();
 
     OwnPresence getOwnPresence();
+
+    String getToken();
 
     default CompletableFuture<Void> updateStatus(UserStatus status) {
         return updatePresence(status, null, null);
@@ -58,6 +62,4 @@ public interface Bot extends DiscordREST, Closeable {
             presence.addActivity(new Activity(this, type, detail));
         return presence.update();
     }
-
-    String getToken();
 }

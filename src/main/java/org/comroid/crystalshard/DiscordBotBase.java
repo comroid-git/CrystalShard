@@ -43,6 +43,11 @@ public class DiscordBotBase implements Bot {
     }
 
     @Override
+    public Logger getLogger() {
+        return logger;
+    }
+
+    @Override
     public final Pipe<? extends GatewayEvent> getEventPipeline() {
         return eventPipeline;
     }

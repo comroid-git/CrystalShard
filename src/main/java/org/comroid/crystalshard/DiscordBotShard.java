@@ -47,6 +47,11 @@ public final class DiscordBotShard implements Bot {
     }
 
     @Override
+    public Logger getLogger() {
+        return logger;
+    }
+
+    @Override
     public Pipe<? extends GatewayEvent> getEventPipeline() {
         return gateway.into(Gateway::getEventPipeline);
     }
