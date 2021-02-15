@@ -58,12 +58,8 @@ processResources {
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
+    maven { url 'https://maven.comroid.org' }
     mavenLocal()
-    maven {
-        url "https://maven.jetbrains.space/comroid/releases"
-        credentials.username "Anonymous.User"
-        credentials.password "anonymous"
-    }
     jcenter()
 }
 
@@ -75,7 +71,7 @@ dependencies {
     testImplementation 'org.apache.logging.log4j:log4j-core:2.11.0'
 
     if (isAutoDeploy) {
-        implementation 'com.github.comroid-git.guardian:restless:master-SNAPSHOT'
+        implementation 'org.comroid:restless:0.+'
     } else {
         api project(':guardian:restless') == null
                 ? 'org.comroid:restless:0.16.0-SNAPSHOT'
