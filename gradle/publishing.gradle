@@ -1,12 +1,9 @@
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.tasks.GenerateMavenPom
-
 apply plugin: 'maven-publish'
 
 publishing {
     repositories {
         mavenLocal()
-
+/*
         if (canPublishToSpace) {
             maven {
                 name = 'Space'
@@ -34,6 +31,7 @@ publishing {
                 }
             }
         }
+ */
 
         if (canPublishToGitHub) {
             maven {
