@@ -3,6 +3,7 @@ package org.comroid.crystalshard;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
@@ -31,7 +32,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public final class DiscordBotShard implements Bot {
+public class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
     public final Context context;
     private final String token;
@@ -97,7 +98,11 @@ public final class DiscordBotShard implements Bot {
         return token;
     }
 
-    public DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {
+    protected DiscordBotShard(DiscordAPI context, String token, GatewayIntent... intents) {
+        this(context, token, Polyfill.uri("wss://gateway.discord.com"), 0, 1, intents);
+    }
+
+    DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {
         this.context = context;
         this.token = token;
         this.currentShardID = shardID;
