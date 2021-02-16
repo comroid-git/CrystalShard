@@ -27,6 +27,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.net.URL;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -143,10 +144,9 @@ public final class Guild extends Snowflake.Abstract implements Named {
             .extractAs(StandardValueType.LONG)
             .andResolveRef((guild, id) -> guild.getCache().getChannel(id))
             .build();
-    public static final VarBind<Guild, String, Instant, Instant> JOINED_AT
+    public static final VarBind<Guild, String, String, String> JOINED_AT
             = TYPE.createBind("joined_at")
             .extractAs(StandardValueType.STRING)
-            .andRemap(Instant::parse)
             .build();
     public static final VarBind<Guild, Boolean, Boolean, Boolean> LARGE
             = TYPE.createBind("large")

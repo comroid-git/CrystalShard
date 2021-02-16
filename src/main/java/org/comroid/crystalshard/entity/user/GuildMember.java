@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.entity.user;
 
-import org.comroid.api.ContextualProvider;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
@@ -51,10 +50,9 @@ public final class GuildMember extends AbstractDataContainer implements User {
             .andResolveRef((gmb, id) -> gmb.getCache().getRole(id))
             .intoSpan()
             .build();
-    public static final VarBind<GuildMember, String, Instant, Instant> JOINED_AT
+    public static final VarBind<GuildMember, String, String, String> JOINED_AT
             = TYPE.createBind("joined_at")
             .extractAs(StandardValueType.STRING)
-            .andRemap(Instant::parse)
             .build();
     public static final VarBind<GuildMember, String, Instant, Instant> PREMIUM_SINCE
             = TYPE.createBind("premium_since")
@@ -75,7 +73,7 @@ public final class GuildMember extends AbstractDataContainer implements User {
             .build();
     private final User base;
     public final Reference<String> nickname = getComputedReference(NICKNAME);
-    public final Reference<Instant> joinedAt = getComputedReference(JOINED_AT);
+    public final Reference<String> joinedAt = getComputedReference(JOINED_AT);
     public final Reference<Instant> premiumSince = getComputedReference(PREMIUM_SINCE);
     public final Reference<Boolean> isDeafened = getComputedReference(IS_DEAFENED);
     public final Reference<Boolean> isMuted = getComputedReference(IS_MUTED);
@@ -89,7 +87,7 @@ public final class GuildMember extends AbstractDataContainer implements User {
         return getComputedReference(ROLES).orElseGet(Span::empty);
     }
 
-    public Instant getJoinedAt() {
+    public String getJoinedAt() {
         return joinedAt.assertion();
     }
 
