@@ -84,9 +84,16 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 })
                 .filter(Objects::nonNull)
                 .peek(event -> logger.debug("Gateway Event initialization complete [{}]", event.getClass().getSimpleName()));
-
         if (!(eventPipeline instanceof Pump))
             throw new AssertionError("eventPipeline is not a Pump");
+        // store every latest ready event
+        this.readyEvent = Reference.create();
+        this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
+                .map(self -> new ShardBasedPresence(shard, self));
+        getEventPipeline()
+                .flatMap(ReadyEvent.class)
+                .peek(ready -> logger.trace("New ReadyEvent received: " + ready))
+                .forEach(this.readyEvent::set);
 
         try {
             getEventPipeline()
@@ -101,14 +108,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         } catch (Throwable t) {
             throw new RuntimeException("Could not send Identify", t);
         }
-        // store every latest ready event
-        this.readyEvent = Reference.create();
-        this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
-                .map(self -> new ShardBasedPresence(shard, self));
-        getEventPipeline()
-                .flatMap(ReadyEvent.class)
-                .peek(ready -> logger.trace("New ReadyEvent received: " + ready))
-                .forEach(this.readyEvent::set);
     }
 
     private void startHeartbeat(int interval) {
