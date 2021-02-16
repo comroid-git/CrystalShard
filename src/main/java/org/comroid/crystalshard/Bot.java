@@ -2,6 +2,7 @@ package org.comroid.crystalshard;
 
 import org.apache.logging.log4j.Logger;
 import org.comroid.annotations.Blocking;
+import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
@@ -21,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public interface Bot extends DiscordREST, Closeable {
+public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlying {
     Logger getLogger();
 
     default long getOwnID() {

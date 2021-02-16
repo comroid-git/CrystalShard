@@ -40,7 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class InteractionCore implements Context {
+public class InteractionCore implements Context, ContextualProvider.Underlying {
     private static final Logger logger = LogManager.getLogger();
     private final DiscordBotBase bot;
     private final CommandSetup config;

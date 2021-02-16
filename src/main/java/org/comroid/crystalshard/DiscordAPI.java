@@ -39,17 +39,6 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     private final REST rest;
     private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;
-    final Span<Object> members;
-
-    @Override
-    public ContextualProvider getUnderlyingContextualProvider() {
-        return this;
-    }
-
-    @Override
-    public Span<Object> getContextMembers() {
-        return members;
-    }
 
     public SnowflakeCache getSnowflakeCache() {
         return snowflakeCache;
@@ -109,6 +98,8 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     }
 
     public DiscordAPI(HttpAdapter httpAdapter, ScheduledExecutorService scheduledExecutorService) {
+        super((Base) SERIALIZATION, httpAdapter);
+
         Objects.requireNonNull(SERIALIZATION, "SERIALIZATION must be provided");
 
         this.scheduledExecutorService = scheduledExecutorService;
@@ -122,14 +113,14 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
 
         this.snowflakeCache = new SnowflakeCache(this);
 
-        this.members = Span.make().initialValues(SERIALIZATION, httpAdapter, scheduledExecutorService, rest, snowflakeCache, this).span();
+        addToContext(httpAdapter, scheduledExecutorService, rest, snowflakeCache);
     }
 
     @Override
     public void close() throws Disposable.MultipleExceptions {
         logger.warn("Shutting down Discord API Object and contextual relatives!");
 
-        List<Exception> exceptions = members.stream()
+        List<Exception> exceptions = streamContextMembers()
                 .filter(it -> !(it instanceof DiscordAPI))
                 .filter(AutoCloseable.class::isInstance)
                 .map(AutoCloseable.class::cast)

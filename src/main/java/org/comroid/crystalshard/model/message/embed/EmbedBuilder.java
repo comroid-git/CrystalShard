@@ -12,7 +12,7 @@ import java.awt.*;
 import java.time.Instant;
 import java.util.function.Predicate;
 
-public class EmbedBuilder implements Embed {
+public class EmbedBuilder implements Embed, ContextualProvider.Underlying {
     private final Context context;
     private final Span<EmbedField> fields = new Span<>();
     private Type type = Type.rich;

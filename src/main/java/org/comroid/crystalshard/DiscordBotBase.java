@@ -90,7 +90,7 @@ public class DiscordBotBase implements Bot {
     public DiscordBotBase(DiscordAPI context, String token, GatewayIntent... intents) {
         if (intents.length == 0)
             intents = GatewayIntent.ALL_UNPRIVILEGED;
-        context.members.add(this);
+        context.addToContext(this);
         this.context = context;
         this.token = Reference.constant(token);
         this.intents = new HashSet<>(Arrays.asList(intents));
@@ -144,6 +144,6 @@ public class DiscordBotBase implements Bot {
 
     @Override
     public final ContextualProvider getUnderlyingContextualProvider() {
-        return context.plus(this);
+        return context;
     }
 }

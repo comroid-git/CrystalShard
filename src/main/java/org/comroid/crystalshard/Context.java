@@ -11,7 +11,7 @@ import org.comroid.uniform.SerializationAdapter;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 
-public interface Context extends ContextualProvider.Underlying {
+public interface Context extends ContextualProvider {
     default DiscordAPI getAPI() {
         return requireFromContext(DiscordAPI.class);
     }
