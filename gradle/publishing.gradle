@@ -31,7 +31,6 @@ publishing {
                 }
             }
         }
- */
 
         if (canPublishToGitHub) {
             maven {
@@ -44,6 +43,7 @@ publishing {
                 }
             }
         }
+ */
     }
 
     publications {
