@@ -103,6 +103,7 @@ public class DiscordBotShard implements Bot {
     }
 
     DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {
+        context.addToContext(this);
         this.context = context;
         this.token = token;
         this.currentShardID = shardID;

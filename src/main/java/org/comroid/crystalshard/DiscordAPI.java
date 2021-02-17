@@ -20,7 +20,6 @@ import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class DiscordAPI extends ContextualProvider.Base implements Context, Closeable {
     public static final String URL_BASE = "https://discord.com/api";
@@ -120,8 +120,10 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     public void close() throws Disposable.MultipleExceptions {
         logger.warn("Shutting down Discord API Object and contextual relatives!");
 
-        List<Exception> exceptions = streamContextMembers()
-                .filter(it -> !(it instanceof DiscordAPI))
+        List<Exception> exceptions = Stream.concat(
+                streamContextMembers(true).filter(DiscordBotBase.class::isInstance),
+                streamContextMembers(true).filter(it -> !(it instanceof DiscordBotBase))
+        ).sequential()
                 .filter(AutoCloseable.class::isInstance)
                 .map(AutoCloseable.class::cast)
                 .map(closeable -> {
