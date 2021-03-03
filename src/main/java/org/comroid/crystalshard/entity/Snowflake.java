@@ -6,6 +6,7 @@ import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.model.DiscordDataContainer;
+import org.comroid.mutatio.model.Ref;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -50,7 +51,7 @@ public interface Snowflake extends DiscordDataContainer {
     static <R extends Snowflake> R resolve(
             ContextualProvider ctx,
             UniNode data,
-            BiFunction<SnowflakeCache, @NotNull Long, Reference<R>> fineResolver,
+            BiFunction<SnowflakeCache, @NotNull Long, Ref<R>> fineResolver,
             BiFunction<Context, UniObjectNode, R> fineConstructor
     ) {
         final Context context = ctx.as(Context.class, "Bad context");

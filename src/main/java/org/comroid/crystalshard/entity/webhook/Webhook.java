@@ -15,6 +15,7 @@ import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.message.MessageBuilder;
 import org.comroid.crystalshard.model.message.MessageTarget;
 import org.comroid.crystalshard.rest.Endpoint;
+import org.comroid.mutatio.model.Ref;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
@@ -93,7 +94,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
         if (matcher.matches()) {
             long id = Long.parseLong(Polyfill.regexGroupOrDefault(matcher, "id", "0"));
 
-            Reference<Webhook> cached = api.getCache().getWebhook(id);
+            Ref<Webhook> cached = api.getCache().getWebhook(id);
             if (cached.isNonNull())
                 return cached.assertion();
 
