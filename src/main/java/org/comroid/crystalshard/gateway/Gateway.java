@@ -13,9 +13,9 @@ import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
-import org.comroid.mutatio.pipe.Pipe;
-import org.comroid.mutatio.pump.Pump;
+import org.comroid.mutatio.model.RefPipe;
 import org.comroid.mutatio.ref.Reference;
+import org.comroid.mutatio.ref.ReferencePipe;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.node.UniArrayNode;
@@ -36,22 +36,22 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     @Internal
     public final Reference<Integer> heartbeatTime = Reference.create();
     @Internal
-    private final Reference<Integer> sequence = Reference.create();
-    @Internal
     public final Reference<ReadyEvent> readyEvent;
     @Internal
     public final Reference<ShardBasedPresence> ownPresence;
+    @Internal
+    private final Reference<Integer> sequence = Reference.create();
     private final Websocket socket;
-    private final Pipe<? extends UniNode> dataPipeline;
-    private final Pipe<? extends GatewayEvent> eventPipeline;
+    private final ReferencePipe<?, ?, WebsocketPacket.Type, UniNode> dataPipeline;
+    private final ReferencePipe<?, ?, WebsocketPacket.Type, GatewayEvent> eventPipeline;
     private final DiscordBotShard shard;
     private final Reference<Integer> intents;
 
-    public Pipe<? extends WebsocketPacket> getPacketPipeline() {
+    public RefPipe<?, ?, WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
         return socket.getPacketPipeline();
     }
 
-    public Pipe<? extends GatewayEvent> getEventPipeline() {
+    public RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> getEventPipeline() {
         return eventPipeline;
     }
 
@@ -62,6 +62,10 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     public Websocket getSocket() {
         return socket;
+    }
+
+    public String getSessionID() {
+        return readyEvent.flatMap(event -> event.sessionID).assertion();
     }
 
     @Internal
@@ -84,8 +88,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 })
                 .filter(Objects::nonNull)
                 .peek(event -> logger.debug("Gateway Event initialization complete [{}]", event.getClass().getSimpleName()));
-        if (!(eventPipeline instanceof Pump))
-            throw new AssertionError("eventPipeline is not a Pump");
         // store every latest ready event
         this.readyEvent = Reference.create();
         this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
@@ -93,7 +95,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         getEventPipeline()
                 .flatMap(ReadyEvent.class)
                 .peek(ready -> logger.trace("New ReadyEvent received: " + ready))
-                .forEach(this.readyEvent::set);
+                .peek(this.readyEvent::set);
 
         try {
             getEventPipeline()
@@ -119,10 +121,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 interval,
                 interval,
                 TimeUnit.MILLISECONDS);
-    }
-
-    public String getSessionID() {
-        return readyEvent.flatMap(event -> event.sessionID).assertion();
     }
 
     private GatewayEvent dispatchPacket(UniNode data, OpCode opCode) {
@@ -151,7 +149,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                     if (invalidSessionEvent.isResumable()) {
                         logger.warn("Invalid Session received; trying to resume using RESUME...");
                         // reconnect using RESUME
-                        sendResume().exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Resume"));;
+                        sendResume().exceptionally(shard.context.exceptionLogger(logger, Level.ERROR, "Could not Resume"));
                     } else {
                         logger.warn("Invalid Session received; trying to reconnect using IDENTIFY...");
                         // reconnect using IDENTIFY

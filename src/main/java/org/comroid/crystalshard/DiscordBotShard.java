@@ -9,18 +9,13 @@ import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
+import org.comroid.mutatio.model.RefPipe;
 import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
-import org.comroid.mutatio.span.Span;
 import org.comroid.restless.HttpAdapter;
-import org.comroid.restless.REST;
-import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
-import org.comroid.uniform.node.UniNode;
 import org.comroid.util.Bitmask;
-import org.comroid.varbind.bind.GroupBind;
-import org.comroid.varbind.container.DataContainer;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.IOException;
@@ -30,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
@@ -43,7 +37,7 @@ public class DiscordBotShard implements Bot {
     @Internal
     public final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
 
-    public Pipe<? extends WebsocketPacket> getPacketPipeline() {
+    public RefPipe<?, ?, WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
         return gateway.into(Gateway::getPacketPipeline);
     }
 
@@ -53,7 +47,7 @@ public class DiscordBotShard implements Bot {
     }
 
     @Override
-    public Pipe<? extends GatewayEvent> getEventPipeline() {
+    public RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> getEventPipeline() {
         return gateway.into(Gateway::getEventPipeline);
     }
 

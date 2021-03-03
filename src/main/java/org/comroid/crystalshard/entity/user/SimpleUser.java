@@ -98,7 +98,7 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
     public final Reference<PremiumType> premiumType = getComputedReference(PREMIUM_TYPE);
     public final Reference<Set<Flags>> allFlags = getComputedReference(FLAGS);
     public final Reference<Set<Flags>> publicFlags = getComputedReference(PUBLIC_FLAGS);
-    private final ReferenceMap<Long, GuildMember> guildInstances = ReferenceMap.create();
+    private final ReferenceMap<Long, GuildMember> guildInstances = new ReferenceMap<>();
 
     @Override
     public String getUsername() {
@@ -121,12 +121,12 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
 
     @Override
     public Reference<GuildMember> asGuildMember(Guild guild) {
-        return guildInstances.process(guild.getID());
+        return guildInstances.getReference(guild.getID());
     }
 
     @Override
     public CompletableFuture<GuildMember> requestGuildMember(Guild guild) {
-        return guildInstances.process(guild.getID())
+        return guildInstances.getReference(guild.getID())
                 .map(CompletableFuture::completedFuture)
                 .orElseGet(() -> getBot().newRequest(
                         REST.Method.GET,
@@ -137,7 +137,7 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
 
     @Internal
     public GuildMember createGuildInstance(Guild guild, UniObjectNode data) {
-        return guildInstances.computeIfAbsent(guild.getID(), () -> new GuildMember(this, data));
+        return guildInstances.computeIfAbsent(guild.getID(), id -> new GuildMember(this, data));
     }
 
     @Override

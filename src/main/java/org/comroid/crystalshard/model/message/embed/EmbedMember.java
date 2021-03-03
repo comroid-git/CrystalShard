@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class EmbedMember extends AbstractDataContainer {
     protected final Embed parent;
 
-    public Embed getParent() {
+    public Embed getEmbed() {
         return parent;
     }
 

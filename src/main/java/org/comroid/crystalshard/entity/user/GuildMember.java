@@ -27,11 +27,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public final class GuildMember extends AbstractDataContainer implements User {
-    @Override
-    public Rewrapper<DiscordDataContainer> self() {
-        return super.self();
-    }
-
     @RootBind
     public static final GroupBind<GuildMember> TYPE
             = AbstractDataContainer.BASETYPE.subGroup("guild-member");

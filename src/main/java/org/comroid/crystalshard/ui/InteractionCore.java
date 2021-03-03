@@ -60,7 +60,7 @@ public class InteractionCore implements Context, ContextualProvider.Underlying {
 
         bot.getEventPipeline()
                 .flatMap(InteractionCreateEvent.class)
-                .forEach(this::handleInteraction);
+                .peek(this::handleInteraction);
     }
 
     public CompletableFuture<Void> addCommandsToGuild(long guildId, CommandDefinition... commands) {

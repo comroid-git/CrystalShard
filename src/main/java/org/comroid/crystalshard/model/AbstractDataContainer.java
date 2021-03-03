@@ -13,6 +13,6 @@ public abstract class AbstractDataContainer
         implements DiscordDataContainer {
 
     public AbstractDataContainer(ContextualProvider context, @Nullable UniNode initialData) {
-        super(context, initialData);
+        super(context, initialData == null ? null : initialData.asObjectNode());
     }
 }

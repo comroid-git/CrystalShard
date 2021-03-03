@@ -12,20 +12,15 @@ import org.comroid.crystalshard.gateway.presence.BotBasedPresence;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.crystalshard.ui.InteractionCore;
+import org.comroid.mutatio.model.RefPipe;
 import org.comroid.mutatio.pipe.Pipe;
-import org.comroid.mutatio.pump.Pump;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
-import org.comroid.restless.endpoint.CompleteEndpoint;
-import org.comroid.uniform.node.UniNode;
-import org.comroid.varbind.bind.GroupBind;
-import org.comroid.varbind.container.DataContainer;
+import org.comroid.restless.socket.WebsocketPacket;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public class DiscordBotBase implements Bot {
@@ -33,7 +28,7 @@ public class DiscordBotBase implements Bot {
     private final DiscordAPI context;
     private final Set<GatewayIntent> intents;
     private final Span<DiscordBotShard> shards;
-    private final Pipe<? extends GatewayEvent> eventPipeline;
+    private final RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> eventPipeline;
     private final BotBasedPresence ownPresence;
     private final InteractionCore interactionCore;
     protected final Reference<String> token;
@@ -48,7 +43,7 @@ public class DiscordBotBase implements Bot {
     }
 
     @Override
-    public final Pipe<? extends GatewayEvent> getEventPipeline() {
+    public final RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> getEventPipeline() {
         return eventPipeline;
     }
 
@@ -112,7 +107,7 @@ public class DiscordBotBase implements Bot {
                     return shard;
                 })
                 .collect(Span.collector());
-        this.eventPipeline = Pump.combine(shards.stream().map(DiscordBotShard::getEventPipeline));
+        this.eventPipeline = shards.map(DiscordBotShard::getEventPipeline).getReference(0, true).assertion();
         this.ownPresence = new BotBasedPresence(this, shards);
         this.interactionCore = new InteractionCore(this);
     }

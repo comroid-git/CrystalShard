@@ -1,6 +1,7 @@
 package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Polyfill;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordAPI;
@@ -45,9 +46,6 @@ public interface Snowflake extends DiscordDataContainer {
                 && getID() == other.getID();
     }
 
-    @Override
-    Rewrapper<DiscordDataContainer> self();
-
     @Internal
     static <R extends Snowflake> R resolve(
             ContextualProvider ctx,
@@ -76,12 +74,6 @@ public interface Snowflake extends DiscordDataContainer {
         @Override
         public final long getID() {
             return getComputedReference(ID).assertion();
-        }
-
-
-        @Override
-        public Rewrapper<DiscordDataContainer> self() {
-            return super.self();
         }
 
         @Override

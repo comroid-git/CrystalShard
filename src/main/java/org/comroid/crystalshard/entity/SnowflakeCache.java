@@ -15,6 +15,7 @@ import org.comroid.crystalshard.entity.message.MessageSticker;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
+import org.comroid.mutatio.model.Ref;
 import org.comroid.mutatio.ref.KeyedReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferenceMap;
@@ -24,7 +25,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class SnowflakeCache implements ContextualProvider.Underlying {
-    private final ReferenceMap<String, Snowflake> cache = ReferenceMap.create();
+    private final ReferenceMap<String, Snowflake> cache = new ReferenceMap<>();
     private final ContextualProvider context;
 
     @Override
@@ -37,59 +38,59 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
         this.context = context;
     }
 
-    public Reference<Guild> getGuild(long id) {
+    public Ref<Guild> getGuild(long id) {
         return getSnowflake(EntityType.GUILD, id);
     }
 
-    public Reference<GuildIntegration> getGuildIntegration(long id) {
+    public Ref<GuildIntegration> getGuildIntegration(long id) {
         return getSnowflake(EntityType.GUILD_INTEGRATION, id);
     }
 
-    public Reference<Role> getRole(long id) {
+    public Ref<Role> getRole(long id) {
         return getSnowflake(EntityType.ROLE, id);
     }
 
-    public Reference<Channel> getChannel(long id) {
+    public Ref<Channel> getChannel(long id) {
         return getSnowflake(EntityType.CHANNEL, id);
     }
 
-    public Reference<GuildChannelCategory> getChannelCategory(long id) {
+    public Ref<GuildChannelCategory> getChannelCategory(long id) {
         return getSnowflake(EntityType.GUILD_CHANNEL_CATEGORY, id);
     }
 
-    public Reference<Message> getMessage(long id) {
+    public Ref<Message> getMessage(long id) {
         return getSnowflake(EntityType.MESSAGE, id);
     }
 
-    public Reference<MessageApplication> getMessageApplication(long id) {
+    public Ref<MessageApplication> getMessageApplication(long id) {
         return getSnowflake(EntityType.MESSAGE_APPLICATION, id);
     }
 
-    public Reference<MessageAttachment> getMessageAttachment(long id) {
+    public Ref<MessageAttachment> getMessageAttachment(long id) {
         return getSnowflake(EntityType.MESSAGE_ATTACHMENT, id);
     }
 
-    public Reference<MessageSticker> getMessageSticker(long id) {
+    public Ref<MessageSticker> getMessageSticker(long id) {
         return getSnowflake(EntityType.MESSAGE_STICKER, id);
     }
 
-    public Reference<User> getUser(long id) {
+    public Ref<User> getUser(long id) {
         return getSnowflake(EntityType.USER, id);
     }
 
-    public Reference<Webhook> getWebhook(long id) {
+    public Ref<Webhook> getWebhook(long id) {
         return getSnowflake(EntityType.WEBHOOK, id);
     }
 
-    public Reference<CustomEmoji> getCustomEmoji(long id) {
+    public Ref<CustomEmoji> getCustomEmoji(long id) {
         return getSnowflake(EntityType.CUSTOM_EMOJI, id);
     }
 
-    public Reference<Command> getApplicationCommand(long id) {
+    public Ref<Command> getApplicationCommand(long id) {
         return getSnowflake(EntityType.APPLICATION_COMMAND, id);
     }
 
-    public <T extends Snowflake> Reference<T> getSnowflake(EntityType<T> type, long id) {
+    public <T extends Snowflake> Ref<T> getSnowflake(EntityType<T> type, long id) {
         return getReference(type, id).flatMap(type.getRelatedClass());
     }
 
@@ -98,9 +99,9 @@ public final class SnowflakeCache implements ContextualProvider.Underlying {
     }
 
     public <T extends Snowflake> Stream<T> streamSnowflakes(EntityType<T> type) {
-        return cache.stream(key -> key.startsWith(type.getRelatedCacheName().getName()))
-                .flatMap(Rewrapper::stream)
-                .map(type.getRelatedClass()::cast);
+        return cache.filterKey(key -> key.startsWith(type.getRelatedCacheName().getName()))
+                .flatMap(type.getRelatedClass())
+                .streamValues();
     }
 
     private <T extends Snowflake> String getKey(EntityType<T> type, long id) {

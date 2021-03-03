@@ -12,7 +12,9 @@ import org.comroid.crystalshard.gateway.event.generic.ReadyEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
+import org.comroid.mutatio.model.RefPipe;
 import org.comroid.mutatio.pipe.Pipe;
+import org.comroid.restless.socket.WebsocketPacket;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlyi
         return getYourself().getID();
     }
 
-    Pipe<? extends GatewayEvent> getEventPipeline();
+    RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> getEventPipeline();
 
     boolean isReady();
 

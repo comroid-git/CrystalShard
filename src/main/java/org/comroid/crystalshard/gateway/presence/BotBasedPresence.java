@@ -2,14 +2,14 @@ package org.comroid.crystalshard.gateway.presence;
 
 import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
-import org.comroid.mutatio.ref.ReferenceIndex;
+import org.comroid.mutatio.ref.ReferenceList;
 
 import java.util.concurrent.CompletableFuture;
 
 public final class BotBasedPresence extends AbstractPresence {
-    private final ReferenceIndex<DiscordBotShard> shards;
+    private final ReferenceList<DiscordBotShard> shards;
 
-    public BotBasedPresence(DiscordBotBase bot, ReferenceIndex<DiscordBotShard> shards) {
+    public BotBasedPresence(DiscordBotBase bot, ReferenceList<DiscordBotShard> shards) {
         super(bot);
 
         this.shards = shards;
