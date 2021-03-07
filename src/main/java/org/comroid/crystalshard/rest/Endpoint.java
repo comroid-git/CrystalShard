@@ -57,6 +57,11 @@ public enum Endpoint implements AccessibleEndpoint {
         return pattern;
     }
 
+    @Override
+    public int getGlobalRatelimit() {
+        return DiscordAPI.GLOBAL_RATELIMIT;
+    }
+
     Endpoint(String extension, @Language("RegExp") String... regexps) {
         this.extension = extension;
         this.regexps = regexps;

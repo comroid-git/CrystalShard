@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 public final class DiscordAPI extends ContextualProvider.Base implements Context, Closeable {
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
+    public static final int GLOBAL_RATELIMIT = 50;
     private static final Logger logger = LogManager.getLogger();
     public static SerializationAdapter SERIALIZATION = null;
     public final HttpAdapter httpAdapter;

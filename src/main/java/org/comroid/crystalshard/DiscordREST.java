@@ -126,6 +126,7 @@ public interface DiscordREST extends Context {
                 .body(body == null ? null : body.toSerializedString())
                 .addHeaders(createHeaders(as(Bot.class).map(Bot::getToken).orElse(null)))
                 .execute$body()
+                .thenApply(Serializable::toUniNode)
                 .thenApply(dataResolver)
                 .exceptionally(getExceptionLogger(this, method, endpoint));
     }
