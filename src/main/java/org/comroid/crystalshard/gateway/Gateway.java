@@ -48,7 +48,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final Reference<Integer> intents;
 
     public RefPipe<?, ?, WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
-        return socket.getPacketPipeline();
+        return socket.getEventPipeline();
     }
 
     public RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> getEventPipeline() {
