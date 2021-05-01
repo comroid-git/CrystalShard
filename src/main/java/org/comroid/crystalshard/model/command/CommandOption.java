@@ -20,8 +20,12 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class CommandOption extends AbstractDataContainer implements Named, Described {
@@ -49,17 +53,19 @@ public final class CommandOption extends AbstractDataContainer implements Named,
             = TYPE.createBind("required")
             .extractAs(StandardValueType.BOOLEAN)
             .build();
-    public static final VarBind<CommandOption, UniObjectNode, CommandOptionChoice<?>, Span<CommandOptionChoice<?>>> CHOICES
+    public static final VarBind<CommandOption, UniObjectNode, CommandOptionChoice<?>, List<CommandOptionChoice<?>>> CHOICES
             = TYPE.createBind("choices")
             .extractAsArray()
             .andConstruct(CommandOptionChoice.TYPE)
-            .intoSpan()
+            .intoCollection((Supplier<List<CommandOptionChoice<?>>>) ArrayList::new)
+            .setDefaultValue(Collections::emptyList)
             .build();
-    public static final VarBind<CommandOption, UniObjectNode, CommandOption, Span<CommandOption>> OPTIONS
+    public static final VarBind<CommandOption, UniObjectNode, CommandOption, List<CommandOption>> OPTIONS
             = TYPE.createBind("options")
             .extractAsArray()
             .andConstruct(TYPE)
-            .intoSpan()
+            .intoCollection((Supplier<List<CommandOption>>) ArrayList::new)
+            .setDefaultValue(Collections::emptyList)
             .build();
     public final Reference<String> name = getComputedReference(NAME);
     public final Reference<String> description = getComputedReference(DESCRIPTION);
@@ -84,12 +90,12 @@ public final class CommandOption extends AbstractDataContainer implements Named,
         return isRequired.orElse(false);
     }
 
-    public Span<CommandOptionChoice<?>> getChoices() {
-        return getComputedReference(CHOICES).orElseGet(Span::empty);
+    public List<CommandOptionChoice<?>> getChoices() {
+        return getComputedReference(CHOICES).assertion();
     }
 
-    public Span<CommandOption> getOptions() {
-        return getComputedReference(OPTIONS).orElseGet(Span::empty);
+    public List<CommandOption> getOptions() {
+        return getComputedReference(OPTIONS).assertion();
     }
 
     public CommandOption(ContextualProvider context, @Nullable UniNode initialData) {

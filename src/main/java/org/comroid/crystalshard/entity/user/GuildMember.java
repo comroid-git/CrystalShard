@@ -22,9 +22,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public final class GuildMember extends AbstractDataContainer implements User {
     @RootBind
@@ -39,11 +42,11 @@ public final class GuildMember extends AbstractDataContainer implements User {
             = TYPE.createBind("nick")
             .extractAs(StandardValueType.STRING)
             .build();
-    public static final VarBind<GuildMember, Long, Role, Span<Role>> ROLES
+    public static final VarBind<GuildMember, Long, Role, List<Role>> ROLES
             = TYPE.createBind("roles")
             .extractAsArray(StandardValueType.LONG)
             .andResolveRef((gmb, id) -> gmb.getCache().getRole(id))
-            .intoSpan()
+            .intoCollection((Supplier<List<Role>>) ArrayList::new)
             .build();
     public static final VarBind<GuildMember, String, String, String> JOINED_AT
             = TYPE.createBind("joined_at")
@@ -78,8 +81,8 @@ public final class GuildMember extends AbstractDataContainer implements User {
         return nickname.assertion();
     }
 
-    public Span<Role> getRoles() {
-        return getComputedReference(ROLES).orElseGet(Span::empty);
+    public List<Role> getRoles() {
+        return getComputedReference(ROLES).assertion();
     }
 
     public String getJoinedAt() {

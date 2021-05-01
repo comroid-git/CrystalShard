@@ -2,19 +2,20 @@ package org.comroid.crystalshard.model.message.embed;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Context;
-import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.container.DataContainer;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class EmbedBuilder implements Embed, ContextualProvider.Underlying {
     private final Context context;
-    private final Span<EmbedField> fields = new Span<>();
+    private final List<EmbedField> fields = new ArrayList<>();
     private Type type = Type.rich;
     private String title;
     private String description;
@@ -71,14 +72,6 @@ public class EmbedBuilder implements Embed, ContextualProvider.Underlying {
         return timestamp;
     }
 
-    public EmbedBuilder(Context context) {
-        this.context = context;
-    }
-
-    public EmbedBuilder setTimeToNow() {
-        return setTimestamp(Instant.now());
-    }
-
     public EmbedBuilder setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
         return this;
@@ -101,14 +94,6 @@ public class EmbedBuilder implements Embed, ContextualProvider.Underlying {
 
     public EmbedBuilder setAuthor(String name) {
         return setAuthor(name, null);
-    }
-
-    public EmbedBuilder setAuthor(String name, String url) {
-        return setAuthor(name, url, null);
-    }
-
-    public EmbedBuilder setAuthor(String name, String url, String iconUrl) {
-        return setAuthor(new EmbedAuthor(this, name, url, iconUrl));
     }
 
     public EmbedBuilder setAuthor(EmbedAuthor author) {
@@ -153,18 +138,39 @@ public class EmbedBuilder implements Embed, ContextualProvider.Underlying {
         return setFooter(text, null);
     }
 
-    public EmbedBuilder setFooter(String text, String iconUrl) {
-        return setFooter(new EmbedFooter(this, text, iconUrl));
-    }
-
     public EmbedBuilder setFooter(EmbedFooter footer) {
         this.footer = footer;
         return this;
     }
 
     @Override
-    public Span<EmbedField> getFields() {
+    public List<EmbedField> getFields() {
         return fields;
+    }
+
+    @Override
+    public ContextualProvider getUnderlyingContextualProvider() {
+        return context;
+    }
+
+    public EmbedBuilder(Context context) {
+        this.context = context;
+    }
+
+    public EmbedBuilder setTimeToNow() {
+        return setTimestamp(Instant.now());
+    }
+
+    public EmbedBuilder setAuthor(String name, String url) {
+        return setAuthor(name, url, null);
+    }
+
+    public EmbedBuilder setAuthor(String name, String url, String iconUrl) {
+        return setAuthor(new EmbedAuthor(this, name, url, iconUrl));
+    }
+
+    public EmbedBuilder setFooter(String text, String iconUrl) {
+        return setFooter(new EmbedFooter(this, text, iconUrl));
     }
 
     public EmbedBuilder addField(String name, String value) {
@@ -187,11 +193,6 @@ public class EmbedBuilder implements Embed, ContextualProvider.Underlying {
     public EmbedBuilder removeFieldIf(Predicate<EmbedField> filter) {
         fields.removeIf(filter);
         return this;
-    }
-
-    @Override
-    public ContextualProvider getUnderlyingContextualProvider() {
-        return context;
     }
 
     @Override

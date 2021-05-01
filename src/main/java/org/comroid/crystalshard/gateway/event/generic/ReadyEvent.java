@@ -7,16 +7,16 @@ import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.mutatio.ref.Reference;
-import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
-import org.comroid.util.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public final class ReadyEvent extends GatewayEvent {
@@ -58,11 +58,11 @@ public final class ReadyEvent extends GatewayEvent {
             .onceEach()
             .setRequired()
             .build();
-    public static final VarBind<ReadyEvent, Integer, Integer, Span<Integer>> SHARD
+    public static final VarBind<ReadyEvent, Integer, Integer, List<Integer>> SHARD
             = TYPE.createBind("shard")
             .extractAsArray(StandardValueType.INTEGER)
             .asIdentities()
-            .intoSpan()
+            .intoCollection((Supplier<List<Integer>>) ArrayList::new)
             .setRequired()
             .build();
     public final Reference<Integer> version = getComputedReference(VERSION);
@@ -70,7 +70,7 @@ public final class ReadyEvent extends GatewayEvent {
     public final Reference<ArrayList<Channel>> privateChannels = getComputedReference(PRIVATE_CHANNELS);
     public final Reference<ArrayList<Guild>> guilds = getComputedReference(GUILDS);
     public final Reference<String> sessionID = getComputedReference(SESSION_ID);
-    public final Reference<Span<Integer>> shard = getComputedReference(SHARD);
+    public final Reference<List<Integer>> shard = getComputedReference(SHARD);
 
     public ReadyEvent(ContextualProvider context, @Nullable UniNode initialData) {
         super(context, initialData);

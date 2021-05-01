@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 
 public final class MessageEmbed extends AbstractDataContainer implements Embed {
     public final Reference<Type> type = getComputedReference(EMBED_TYPE);
@@ -80,8 +82,8 @@ public final class MessageEmbed extends AbstractDataContainer implements Embed {
     }
 
     @Override
-    public Span<EmbedField> getFields() {
-        return getComputedReference(FIELDS).orElseGet(Span::empty);
+    public List<EmbedField> getFields() {
+        return getComputedReference(FIELDS).assertion();
     }
 
     public EmbedProvider getProvider() {

@@ -5,7 +5,6 @@ import org.comroid.api.Polyfill;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.model.AbstractDataContainer;
-import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.model.Serializable;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
@@ -16,6 +15,10 @@ import org.comroid.varbind.bind.VarBind;
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Supplier;
 
 public interface Embed extends Context, Serializable {
     @RootBind
@@ -93,11 +96,12 @@ public interface Embed extends Context, Serializable {
             .andResolve(EmbedAuthor::new)
             .onceEach()
             .build();
-    VarBind<MessageEmbed, UniObjectNode, EmbedField, Span<EmbedField>> FIELDS
+    VarBind<MessageEmbed, UniObjectNode, EmbedField, List<EmbedField>> FIELDS
             = TYPE.createBind("fields")
             .extractAsArray()
             .andResolve(EmbedField::new)
-            .intoSpan()
+            .intoCollection((Supplier<List<EmbedField>>) ArrayList::new)
+            .setDefaultValue(Collections::emptyList)
             .build();
 
     Type getType();
@@ -120,7 +124,7 @@ public interface Embed extends Context, Serializable {
 
     EmbedFooter getFooter();
 
-    Span<EmbedField> getFields();
+    List<EmbedField> getFields();
 
     enum Type implements Named, Described {
         rich("generic embed rendered from embed attributes"),
