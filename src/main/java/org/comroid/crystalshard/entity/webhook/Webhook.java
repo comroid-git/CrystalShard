@@ -126,7 +126,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
         );
     }
 
-    public enum Type implements IntEnum, Named, Described {
+    public enum Type implements IntegerAttribute, Named, Described {
         INCOMING(1, "Incoming Webhooks can post messages to channels with a generated token"),
         CHANNEL(2, "Follower	Channel Follower Webhooks are internal webhooks used with Channel Following to post new messages into channels");
 
@@ -149,7 +149,7 @@ public final class Webhook extends Snowflake.Abstract implements Named, MessageT
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.ui;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
@@ -101,7 +101,7 @@ public final class Interaction extends AbstractDataContainer {
         super(context, initialData);
     }
 
-    public enum Type implements IntEnum {
+    public enum Type implements IntegerAttribute {
         PING(1),
         APPLICATION_COMMAND(2);
 
@@ -117,7 +117,7 @@ public final class Interaction extends AbstractDataContainer {
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.entity.message;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
@@ -57,7 +57,7 @@ public final class MessageSticker extends Snowflake.Abstract {
         return Snowflake.resolve(context, data, SnowflakeCache::getMessageSticker, MessageSticker::new);
     }
 
-    public enum FormatType implements IntEnum {
+    public enum FormatType implements IntegerAttribute {
         PNG(1),
         APNG(2),
         LOTTIE(3);
@@ -74,7 +74,7 @@ public final class MessageSticker extends Snowflake.Abstract {
         }
 
         public static Rewrapper<FormatType> valueOf(int value) {
-            return IntEnum.valueOf(value, FormatType.class);
+            return IntegerAttribute.valueOf(value, FormatType.class);
         }
     }
 }

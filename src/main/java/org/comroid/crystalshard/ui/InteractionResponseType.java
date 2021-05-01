@@ -1,10 +1,10 @@
 package org.comroid.crystalshard.ui;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.common.info.Described;
 import org.jetbrains.annotations.NotNull;
 
-public enum InteractionResponseType implements IntEnum, Described {
+public enum InteractionResponseType implements IntegerAttribute, Described {
     PONG(1, "ACK a Ping"),
     ACKNOWLEDGE(2, "ACK a command without sending a message, eating the user's input"),
     CHANNEL_MESSAGE(3, "respond with a message, eating the user's input"),

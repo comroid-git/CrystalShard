@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.message;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.uniform.node.UniNode;
@@ -30,7 +30,7 @@ public final class MessageActivity extends AbstractDataContainer {
         super(context, initialData);
     }
 
-    public enum Type implements IntEnum {
+    public enum Type implements IntegerAttribute {
         JOIN(1),
         SPECTATE(2),
         LISTEN(3),
@@ -48,7 +48,7 @@ public final class MessageActivity extends AbstractDataContainer {
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
     }
 }

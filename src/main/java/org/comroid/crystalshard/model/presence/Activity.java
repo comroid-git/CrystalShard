@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.presence;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.model.AbstractDataContainer;
@@ -46,7 +46,7 @@ public final class Activity extends AbstractDataContainer {
         super(context, initialData);
     }
 
-    public enum Type implements IntEnum, Described {
+    public enum Type implements IntegerAttribute, Described {
         PLAYING(0, "Playing {name}"),
         STREAMING(1, "Streaming {details}"),
         LISTENING(2, "Listening to {name}"),
@@ -72,7 +72,7 @@ public final class Activity extends AbstractDataContainer {
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
     }
 }

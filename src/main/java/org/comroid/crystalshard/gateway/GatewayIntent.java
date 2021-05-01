@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.gateway;
 
-import org.comroid.api.BitmaskEnum;
+import org.comroid.api.BitmaskAttribute;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +11,7 @@ import java.util.Set;
 import static org.comroid.crystalshard.gateway.event.DispatchEventType.GUILD_CREATE;
 
 @SuppressWarnings("PointlessBitwiseExpression")
-public enum GatewayIntent implements BitmaskEnum<GatewayIntent> {
+public enum GatewayIntent implements BitmaskAttribute<GatewayIntent> {
     GUILDS(1 << 0, GUILD_CREATE),
     GUILD_MEMBERS(1 << 1),
     GUILD_BANS(1 << 2),
@@ -52,6 +52,6 @@ public enum GatewayIntent implements BitmaskEnum<GatewayIntent> {
     }
 
     public static Set<GatewayIntent> valueOf(int mask) {
-        return BitmaskEnum.valueOf(mask, GatewayIntent.class);
+        return BitmaskAttribute.valueOf(mask, GatewayIntent.class);
     }
 }

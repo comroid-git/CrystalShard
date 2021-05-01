@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.ui;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.crystalshard.entity.command.Command;
 import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.model.command.CommandOptionChoice;
@@ -168,10 +168,10 @@ public class CommandSetup {
             option.put(CommandOption.IS_DEFAULT, optDef.first());
             option.put(CommandOption.IS_REQUIRED, optDef.required());
 
-            if (IntEnum.class.isAssignableFrom(param.getType())) {
+            if (IntegerAttribute.class.isAssignableFrom(param.getType())) {
                 final UniArrayNode choices = option.putArray(CommandOption.CHOICES);
                 for (Object it : param.getType().getEnumConstants()) {
-                    final IntEnum each = (IntEnum) it;
+                    final IntegerAttribute each = (IntegerAttribute) it;
                     final UniObjectNode choice = choices.addObject();
 
                     choice.put(CommandOptionChoice.NAME, each.getName());

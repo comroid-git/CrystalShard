@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.channel;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.model.AbstractDataContainer;
@@ -51,7 +51,7 @@ public final class PermissionOverwrite extends AbstractDataContainer {
         super(context, initialData);
     }
 
-    public enum ReferentType implements IntEnum {
+    public enum ReferentType implements IntegerAttribute {
         ROLE(0),
         MEMBER(1);
 

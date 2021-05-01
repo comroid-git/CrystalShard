@@ -1,11 +1,11 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.jetbrains.annotations.NotNull;
 
-public enum MFALevel implements IntEnum, Named {
+public enum MFALevel implements IntegerAttribute, Named {
     NONE(0),
     ELEVATED(1);
 
@@ -21,6 +21,6 @@ public enum MFALevel implements IntEnum, Named {
     }
 
     public static Rewrapper<MFALevel> valueOf(int value) {
-        return IntEnum.valueOf(value, MFALevel.class);
+        return IntegerAttribute.valueOf(value, MFALevel.class);
     }
 }

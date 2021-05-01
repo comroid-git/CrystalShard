@@ -3,7 +3,7 @@ package org.comroid.crystalshard.ui;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.Context;
@@ -61,6 +61,12 @@ public class InteractionCore implements Context, ContextualProvider.Underlying {
         bot.getEventPipeline()
                 .flatMap(InteractionCreateEvent.class)
                 .peek(this::handleInteraction);
+    }
+
+    private static String nameOfParameter(Parameter parameter) {
+        if (parameter.isAnnotationPresent(Option.class))
+            return parameter.getAnnotation(Option.class).name();
+        return parameter.getName();
     }
 
     public CompletableFuture<Void> addCommandsToGuild(long guildId, CommandDefinition... commands) {
@@ -309,8 +315,8 @@ public class InteractionCore implements Context, ContextualProvider.Underlying {
                 if (value instanceof Integer
                         && parameters[i].isAnnotationPresent(Option.class)
                         && Enum.class.isAssignableFrom(type)
-                        && IntEnum.class.isAssignableFrom(type))
-                    args[i] = IntEnum.valueOf((int) value, Polyfill.uncheckedCast(type)).orElse(null);
+                        && IntegerAttribute.class.isAssignableFrom(type))
+                    args[i] = getIntegerAttribute((int) value, Polyfill.uncheckedCast(type));
 
                 if (args[i] == null && type.isPrimitive())
                     throw new IllegalStateException("Primitive parameter cannot be null");
@@ -363,6 +369,10 @@ public class InteractionCore implements Context, ContextualProvider.Underlying {
         ).join();
     }
 
+    private <R extends Enum & IntegerAttribute> R getIntegerAttribute(int value, Class<R> type) {
+        return (R) IntegerAttribute.valueOf(value, type).orElse(null);
+    }
+
     private Method resolveCommandMethod(Span<CommandInteractionDataOption> options, Class<?> tree) {
         final CommandInteractionDataOption option = options.requireSingle();
         return Arrays.stream(tree.getDeclaredClasses())
@@ -394,12 +404,6 @@ public class InteractionCore implements Context, ContextualProvider.Underlying {
         return mtd.isAnnotationPresent(SlashCommand.class)
                 && (mtd.getName().equalsIgnoreCase(option.getName())
                 || mtd.getAnnotation(SlashCommand.class).name().equalsIgnoreCase(option.getName()));
-    }
-
-    private static String nameOfParameter(Parameter parameter) {
-        if (parameter.isAnnotationPresent(Option.class))
-            return parameter.getAnnotation(Option.class).name();
-        return parameter.getName();
     }
 
     @Nullable

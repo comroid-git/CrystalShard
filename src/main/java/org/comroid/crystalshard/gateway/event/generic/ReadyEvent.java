@@ -17,6 +17,7 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 public final class ReadyEvent extends GatewayEvent {
     @RootBind
@@ -40,14 +41,14 @@ public final class ReadyEvent extends GatewayEvent {
             = TYPE.createBind("private_channels")
             .extractAsArray()
             .andResolve(Channel::resolve)
-            .intoCollection(ArrayList::new)
+            .intoCollection((Supplier<ArrayList<Channel>>) ArrayList::new)
             .setRequired()
             .build();
     public static final VarBind<ReadyEvent, UniObjectNode, Guild, ArrayList<Guild>> GUILDS
             = TYPE.createBind("guilds")
             .extractAsArray()
             .andResolve(Guild::resolve)
-            .intoCollection(ArrayList::new)
+            .intoCollection((Supplier<ArrayList<Guild>>) ArrayList::new)
             .setRequired()
             .build();
     public static final VarBind<ReadyEvent, String, String, String> SESSION_ID

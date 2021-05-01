@@ -1,12 +1,12 @@
 package org.comroid.crystalshard.model.channel;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
 import org.jetbrains.annotations.NotNull;
 
-public enum ChannelType implements IntEnum, Named, Described {
+public enum ChannelType implements IntegerAttribute, Named, Described {
     GUILD_TEXT(0, "a text channel within a server"),
     DM(1, "a direct message between users"),
     GUILD_VOICE(2, "a voice channel within a server"),
@@ -34,6 +34,6 @@ public enum ChannelType implements IntEnum, Named, Described {
     }
 
     public static Rewrapper<ChannelType> valueOf(int value) {
-        return IntEnum.valueOf(value, ChannelType.class);
+        return IntegerAttribute.valueOf(value, ChannelType.class);
     }
 }

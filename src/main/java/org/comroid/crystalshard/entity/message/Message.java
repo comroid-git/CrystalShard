@@ -286,7 +286,7 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
         return getChannel().executeMessage(builder);
     }
 
-    public enum Type implements IntEnum, Named {
+    public enum Type implements IntegerAttribute, Named {
         DEFAULT(0),
         RECIPIENT_ADD(1),
         RECIPIENT_REMOVE(2),
@@ -317,12 +317,12 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")
-    public enum Flags implements BitmaskEnum<Flags>, Named, Described {
+    public enum Flags implements BitmaskAttribute<Flags>, Named, Described {
         CROSSPOSTED(1 << 0, "this message has been published to subscribed channels (via Channel Following)"),
         IS_CROSSPOST(1 << 1, "this message originated from a message in another channel (via Channel Following)"),
         SUPPRESS_EMBEDS(1 << 2, "do not include any embeds when serializing this message"),
@@ -348,7 +348,7 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
         }
 
         public static Set<Flags> valueOf(int mask) {
-            return BitmaskEnum.valueOf(mask, Flags.class);
+            return BitmaskAttribute.valueOf(mask, Flags.class);
         }
     }
 }

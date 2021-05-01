@@ -12,6 +12,7 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 public final class VoiceRegionsResponse extends AbstractRestResponse {
     @RootBind
@@ -21,7 +22,7 @@ public final class VoiceRegionsResponse extends AbstractRestResponse {
             = TYPE.createBind("")
             .extractAsArray()
             .andResolve(VoiceRegion::find)
-            .intoCollection(ArrayList::new)
+            .intoCollection((Supplier<ArrayList<VoiceRegion>>) ArrayList::new)
             .build();
     public final Reference<ArrayList<VoiceRegion>> regions = getComputedReference(REGIONS);
 

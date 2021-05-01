@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.command;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
@@ -115,7 +115,7 @@ public final class CommandOption extends AbstractDataContainer implements Named,
                 .allMatch(choice -> other.getChoices().stream().anyMatch(choice::equals));
     }
 
-    public enum Type implements IntEnum {
+    public enum Type implements IntegerAttribute {
         SUB_COMMAND(1),
         SUB_COMMAND_GROUP(2),
         STRING(3),
@@ -137,7 +137,7 @@ public final class CommandOption extends AbstractDataContainer implements Named,
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
 
         public static Type typeOf(Class<?> klass) {
@@ -145,7 +145,7 @@ public final class CommandOption extends AbstractDataContainer implements Named,
                 return STRING;
             if (boolean.class.equals(klass) || Boolean.class.equals(klass))
                 return BOOLEAN;
-            if (int.class.equals(klass) || Integer.class.equals(klass) || IntEnum.class.isAssignableFrom(klass))
+            if (int.class.equals(klass) || Integer.class.equals(klass) || IntegerAttribute.class.isAssignableFrom(klass))
                 return INTEGER;
             if (User.class.isAssignableFrom(klass))
                 return USER;

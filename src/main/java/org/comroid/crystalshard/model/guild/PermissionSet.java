@@ -1,15 +1,15 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.api.BitmaskEnum;
+import org.comroid.api.BitmaskAttribute;
 
 import java.util.HashSet;
 
 public final class PermissionSet extends HashSet<Permission> {
     public PermissionSet(int value) {
-        super(BitmaskEnum.valueOf(value, Permission.class));
+        super(BitmaskAttribute.valueOf(value, Permission.class));
     }
 
     public int getBitmask() {
-        return BitmaskEnum.toMask(toArray(new Permission[0]));
+        return BitmaskAttribute.toMask(toArray(new Permission[0]));
     }
 }

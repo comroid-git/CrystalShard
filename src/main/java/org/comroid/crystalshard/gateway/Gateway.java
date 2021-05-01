@@ -4,7 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.DiscordBotBase;
@@ -13,6 +13,7 @@ import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
+import org.comroid.mutatio.model.RefContainer;
 import org.comroid.mutatio.model.RefPipe;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferencePipe;
@@ -47,7 +48,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     private final DiscordBotShard shard;
     private final Reference<Integer> intents;
 
-    public RefPipe<?, ?, WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
+    public RefContainer<WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
         return socket.getEventPipeline();
     }
 
@@ -81,7 +82,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.eventPipeline = dataPipeline
                 .map(data -> {
                     data.wrap("s").map(UniNode::asInt).ifPresent(sequence::set);
-                    OpCode op = IntEnum.valueOf(data.get("op").asInt(), OpCode.class)
+                    OpCode op = IntegerAttribute.valueOf(data.get("op").asInt(), OpCode.class)
                             .assertion(MessageSupplier.format("Invalid OP Code in data: %s", data));
                     logger.debug("Attempting to dispatch message as {}: {}", op.getName(), data.toString());
                     return dispatchPacket(data, op);
@@ -128,7 +129,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         switch (opCode) {
             case DISPATCH:
                 final DispatchEventType dispatchEventType = DispatchEventType.find(data)
-                        .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data.toString()));
+                        .orElseThrow(() -> new NoSuchElementException("Unknown Dispatch Event: " + data));
                 logger.trace("Handling Dispatch event as {} with data {}", dispatchEventType, innerData.toString());
                 return dispatchEventType.createPayload(shard, innerData.asObjectNode());
             case IDENTIFY:

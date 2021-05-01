@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.entity;
 
-import org.comroid.api.BitmaskEnum;
+import org.comroid.api.BitmaskAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.entity.channel.*;
@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
-public final class EntityType<T extends Snowflake> implements BitmaskEnum<EntityType<?>>, Named {
+public final class EntityType<T extends Snowflake> implements BitmaskAttribute<EntityType<?>>, Named {
     private static final Collection<EntityType<?>> values = new ArrayList<>();
 
     public static final EntityType<Snowflake> SNOWFLAKE
@@ -95,7 +95,7 @@ public final class EntityType<T extends Snowflake> implements BitmaskEnum<Entity
     }
 
     @Override
-    public String getAlternateFormattedName() {
+    public String getAlternateName() {
         return getRelatedCacheName().getName();
     }
 

@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.ui;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.model.AbstractDataContainer;
@@ -24,7 +24,7 @@ public final class InteractionResponse extends AbstractDataContainer {
         super(core, null);
     }
 
-    public enum Type implements IntEnum, Described {
+    public enum Type implements IntegerAttribute, Described {
         Pong(1, "ACK a Ping"),
         Acknowledge(2, "ACK a command without sending a message, eating the user's input"),
         ChannelMessage(3, "respond with a message, eating the user's input"),
@@ -50,7 +50,7 @@ public final class InteractionResponse extends AbstractDataContainer {
         }
 
         public static Rewrapper<Type> valueOf(int value) {
-            return IntEnum.valueOf(value, Type.class);
+            return IntegerAttribute.valueOf(value, Type.class);
         }
     }
 }

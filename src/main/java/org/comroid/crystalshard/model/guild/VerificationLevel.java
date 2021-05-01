@@ -1,12 +1,12 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
 import org.jetbrains.annotations.NotNull;
 
-public enum VerificationLevel implements IntEnum, Named, Described {
+public enum VerificationLevel implements IntegerAttribute, Named, Described {
     NONE(0, "unrestricted"),
     LOW(1, "must have verified email on account"),
     MEDIUM(2, "must be registered on Discord for longer than 5 minutes"),
@@ -27,7 +27,7 @@ public enum VerificationLevel implements IntEnum, Named, Described {
     }
 
     @Override
-    public String getAlternateFormattedName() {
+    public String getAlternateName() {
         return getDescription();
     }
 
@@ -37,6 +37,6 @@ public enum VerificationLevel implements IntEnum, Named, Described {
     }
 
     public static Rewrapper<VerificationLevel> valueOf(int value) {
-        return IntEnum.valueOf(value, VerificationLevel.class);
+        return IntegerAttribute.valueOf(value, VerificationLevel.class);
     }
 }

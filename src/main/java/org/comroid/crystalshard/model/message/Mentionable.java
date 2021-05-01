@@ -10,7 +10,7 @@ public interface Mentionable extends Snowflake, Named {
     }
 
     @Override
-    default String getAlternateFormattedName() {
+    default String getAlternateName() {
         return getMentionTag();
     }
 }

@@ -1,13 +1,13 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.api.BitmaskEnum;
+import org.comroid.api.BitmaskAttribute;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-public enum Permission implements BitmaskEnum<Permission>, Named, Described {
+public enum Permission implements BitmaskAttribute<Permission>, Named, Described {
     CREATE_INSTANT_INVITE(0x00000001, "Allows creation of instant invites"),
     KICK_MEMBERS(0x00000002, "Allows kicking members"),
     BAN_MEMBERS(0x00000004, "Allows banning members"),

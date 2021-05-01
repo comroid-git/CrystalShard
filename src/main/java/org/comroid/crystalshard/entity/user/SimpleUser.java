@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.entity.user;
 
-import org.comroid.api.BitmaskEnum;
+import org.comroid.api.BitmaskAttribute;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.cdn.CDNEndpoint;
@@ -201,7 +201,7 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")
-    public enum Flags implements BitmaskEnum<Flags> {
+    public enum Flags implements BitmaskAttribute<Flags> {
         DISCORD_EMPLOYEE(1 << 0),
         PARTNERED_SERVER_OWNER(1 << 1),
         EARLY_SUPPORTER(1 << 9),
@@ -231,7 +231,7 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
         }
 
         public static Set<Flags> valueOf(int mask) {
-            return BitmaskEnum.valueOf(mask, Flags.class);
+            return BitmaskAttribute.valueOf(mask, Flags.class);
         }
     }
 }

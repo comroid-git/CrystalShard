@@ -1,11 +1,11 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.jetbrains.annotations.NotNull;
 
-public enum PremiumTier implements IntEnum, Named {
+public enum PremiumTier implements IntegerAttribute, Named {
     NONE(0),
     TIER_1(1),
     TIER_2(2),
@@ -23,6 +23,6 @@ public enum PremiumTier implements IntEnum, Named {
     }
 
     public static Rewrapper<PremiumTier> valueOf(int value) {
-        return IntEnum.valueOf(value, PremiumTier.class);
+        return IntegerAttribute.valueOf(value, PremiumTier.class);
     }
 }

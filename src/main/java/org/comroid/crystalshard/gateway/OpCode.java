@@ -1,6 +1,6 @@
 package org.comroid.crystalshard.gateway;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
 import org.comroid.util.StandardValueType;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public enum OpCode implements IntEnum, Named, Described, Predicate<UniNode>, Function<UniObjectNode, UniObjectNode> {
+public enum OpCode implements IntegerAttribute, Named, Described, Predicate<UniNode>, Function<UniObjectNode, UniObjectNode> {
     DISPATCH(0, "An event was dispatched."),
     HEARTBEAT(1, "Fired periodically by the client to keep the connection alive."),
     IDENTIFY(2, "Starts a new session during the initial handshake."),

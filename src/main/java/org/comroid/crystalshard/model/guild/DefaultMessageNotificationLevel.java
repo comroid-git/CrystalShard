@@ -1,11 +1,11 @@
 package org.comroid.crystalshard.model.guild;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.jetbrains.annotations.NotNull;
 
-public enum DefaultMessageNotificationLevel implements IntEnum, Named {
+public enum DefaultMessageNotificationLevel implements IntegerAttribute, Named {
     ALL_MESSAGES(0),
     ONLY_MENTIONS(1);
 
@@ -21,6 +21,6 @@ public enum DefaultMessageNotificationLevel implements IntEnum, Named {
     }
 
     public static Rewrapper<DefaultMessageNotificationLevel> valueOf(int value) {
-        return IntEnum.valueOf(value, DefaultMessageNotificationLevel.class);
+        return IntegerAttribute.valueOf(value, DefaultMessageNotificationLevel.class);
     }
 }

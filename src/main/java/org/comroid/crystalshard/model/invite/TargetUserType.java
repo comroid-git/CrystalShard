@@ -1,10 +1,10 @@
 package org.comroid.crystalshard.model.invite;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.jetbrains.annotations.NotNull;
 
-public enum TargetUserType implements IntEnum {
+public enum TargetUserType implements IntegerAttribute {
     STREAM(1);
 
     private final int value;
@@ -19,6 +19,6 @@ public enum TargetUserType implements IntEnum {
     }
 
     public static Rewrapper<TargetUserType> valueOf(int value) {
-        return IntEnum.valueOf(value, TargetUserType.class);
+        return IntegerAttribute.valueOf(value, TargetUserType.class);
     }
 }

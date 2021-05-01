@@ -1,10 +1,10 @@
 package org.comroid.crystalshard.model.user;
 
-import org.comroid.api.IntEnum;
+import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.jetbrains.annotations.NotNull;
 
-public enum PremiumType implements IntEnum {
+public enum PremiumType implements IntegerAttribute {
     NONE(0),
     NITRO_CLASSIC(1),
     NITRO(2);
@@ -21,6 +21,6 @@ public enum PremiumType implements IntEnum {
     }
 
     public static Rewrapper<PremiumType> valueOf(int value) {
-        return IntEnum.valueOf(value, PremiumType.class);
+        return IntegerAttribute.valueOf(value, PremiumType.class);
     }
 }
