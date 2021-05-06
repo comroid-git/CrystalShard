@@ -10,7 +10,6 @@ import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.ref.Reference;
-import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;

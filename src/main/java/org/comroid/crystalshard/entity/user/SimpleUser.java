@@ -110,36 +110,6 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
         return discriminator.assertion();
     }
 
-    public static User resolve(ContextualProvider context, UniNode data) {
-        return Snowflake.resolve(context, data, SnowflakeCache::getUser, SimpleUser::new);
-    }
-
-    @Override
-    public URL getAvatarURL(ImageType imageType) {
-        return avatarHash.into(hash -> CDNEndpoint.USER_AVATAR.complete(getID(), hash, imageType)).getURL();
-    }
-
-    @Override
-    public Reference<GuildMember> asGuildMember(Guild guild) {
-        return guildInstances.getReference(guild.getID());
-    }
-
-    @Override
-    public CompletableFuture<GuildMember> requestGuildMember(Guild guild) {
-        return guildInstances.getReference(guild.getID())
-                .map(CompletableFuture::completedFuture)
-                .orElseGet(() -> getBot().newRequest(
-                        REST.Method.GET,
-                        Endpoint.GUILD_MEMBER_SPECIFIC.complete(guild.getID(), getID()),
-                        UniNode::asObjectNode
-                ).thenApply(data -> createGuildInstance(guild, data)));
-    }
-
-    @Internal
-    public GuildMember createGuildInstance(Guild guild, UniObjectNode data) {
-        return guildInstances.computeIfAbsent(guild.getID(), id -> new GuildMember(this, data));
-    }
-
     @Override
     public boolean isBot() {
         return isBot.orElse(false);
@@ -185,6 +155,40 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
         return publicFlags.assertion();
     }
 
+    private SimpleUser(ContextualProvider context, UniObjectNode data) {
+        super(context, data, EntityType.USER);
+    }
+
+    public static User resolve(ContextualProvider context, UniNode data) {
+        return Snowflake.resolve(context, data, SnowflakeCache::getUser, SimpleUser::new);
+    }
+
+    @Override
+    public URL getAvatarURL(ImageType imageType) {
+        return avatarHash.into(hash -> CDNEndpoint.USER_AVATAR.complete(getID(), hash, imageType)).getURL();
+    }
+
+    @Override
+    public Reference<GuildMember> asGuildMember(Guild guild) {
+        return guildInstances.getReference(guild.getID());
+    }
+
+    @Override
+    public CompletableFuture<GuildMember> requestGuildMember(Guild guild) {
+        return guildInstances.getReference(guild.getID())
+                .map(CompletableFuture::completedFuture)
+                .orElseGet(() -> getBot().newRequest(
+                        REST.Method.GET,
+                        Endpoint.GUILD_MEMBER_SPECIFIC.complete(guild.getID(), getID()),
+                        UniNode::asObjectNode
+                ).thenApply(data -> createGuildInstance(guild, data)));
+    }
+
+    @Internal
+    public GuildMember createGuildInstance(Guild guild, UniObjectNode data) {
+        return guildInstances.computeIfAbsent(guild.getID(), id -> new GuildMember(this, data));
+    }
+
     @Override
     public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
         return requireFromContext(Bot.class).newRequest(
@@ -194,10 +198,6 @@ public final class SimpleUser extends Snowflake.Abstract implements User {
                 obj -> obj.put("recipient_id", getID()),
                 PrivateTextChannel.TYPE
         );
-    }
-
-    private SimpleUser(ContextualProvider context, UniObjectNode data) {
-        super(context, data, EntityType.USER);
     }
 
     @SuppressWarnings("PointlessBitwiseExpression")

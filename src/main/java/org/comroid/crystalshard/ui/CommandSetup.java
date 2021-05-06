@@ -25,9 +25,35 @@ import java.util.stream.Stream;
 import static java.util.Collections.unmodifiableSet;
 
 public class CommandSetup {
-    private final InteractionCore core;
     final Map<String, CommandDefinition> definedCommands = new ConcurrentHashMap<>();
     final Map<Long, Set<String>> guildBindings = new ConcurrentHashMap<>();
+    private final InteractionCore core;
+
+    public Set<CommandDefinition> getAllDefinitions() {
+        return unmodifiableSet(new HashSet<>(definedCommands.values()));
+    }
+
+    public Set<CommandDefinition> getGlobalDefinitions() {
+        return unmodifiableSet(definedCommands.values()
+                .stream()
+                .filter(CommandDefinition::useGlobally)
+                .collect(Collectors.toSet()));
+    }
+
+    CommandSetup(InteractionCore core) {
+        this.core = core;
+    }
+
+    private static String prefabName(String name) {
+        if (name.matches("^[\\w-]{3,32}$"))
+            return name;
+        StringBuilder str = new StringBuilder();
+        for (char c : name.toCharArray())
+            if (Character.isLetter(c))
+                str.append(c);
+            else str.append('-');
+        return str.toString();
+    }
 
     public boolean hasCommand(String name) {
         return definedCommands.containsKey(name);
@@ -39,17 +65,6 @@ public class CommandSetup {
 
     public @Nullable CommandDefinition getCommand(String name) {
         return definedCommands.get(name);
-    }
-
-    public Set<CommandDefinition> getAllDefinitions() {
-        return unmodifiableSet(new HashSet<>(definedCommands.values()));
-    }
-
-    public Set<CommandDefinition> getGlobalDefinitions() {
-        return unmodifiableSet(definedCommands.values()
-                .stream()
-                .filter(CommandDefinition::useGlobally)
-                .collect(Collectors.toSet()));
     }
 
     public Set<CommandDefinition> getGuildDefinitions(long guildId) {
@@ -65,10 +80,6 @@ public class CommandSetup {
 
     private Set<String> getBindings(long guildId) {
         return guildBindings.computeIfAbsent(guildId, k -> new HashSet<>());
-    }
-
-    CommandSetup(InteractionCore core) {
-        this.core = core;
     }
 
     public CommandSetup readClass(Class<?> type) {
@@ -193,16 +204,5 @@ public class CommandSetup {
                 }
             }
         }
-    }
-
-    private static String prefabName(String name) {
-        if (name.matches("^[\\w-]{3,32}$"))
-            return name;
-        StringBuilder str = new StringBuilder();
-        for (char c : name.toCharArray())
-            if (Character.isLetter(c))
-                str.append(c);
-            else str.append('-');
-        return str.toString();
     }
 }

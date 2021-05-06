@@ -21,6 +21,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface DiscordREST extends Context {
+    @Internal
+    Logger logger = LogManager.getLogger();
+
     @NotNull
     @Internal
     static REST.Header.List createHeaders(String token) {
@@ -32,9 +35,19 @@ public interface DiscordREST extends Context {
                 "DiscordBot (%s, %s) %s",
                 CrystalShard.URL,
                 CrystalShard.VERSION.toSimpleString(),
-                CrystalShard.VERSION.toString())
+                CrystalShard.VERSION)
         );
         return headers;
+    }
+
+    @Internal
+    static <R> Function<Throwable, R> getExceptionLogger(DiscordREST it, REST.Method method, CompleteEndpoint endpoint) {
+        return it.getAPI().exceptionLogger(
+                logger,
+                Level.ERROR,
+                String.format("%s-Request @ %s", method, endpoint.getSpec()),
+                false
+        );
     }
 
     @Internal
@@ -63,6 +76,8 @@ public interface DiscordREST extends Context {
         return newRequest(method, endpoint, null, responseType);
     }
 
+    // actual callers
+
     @Internal
     default <R extends DataContainer<? super R>, N extends UniNode> CompletableFuture<R> newRequest(
             REST.Method method,
@@ -84,8 +99,6 @@ public interface DiscordREST extends Context {
         return newRequest(method, endpoint, body, responseType, Span::get);
     }
 
-    // actual callers
-
     @Internal
     default <T extends DataContainer<? super T>, R> CompletableFuture<R> newRequest(
             REST.Method method,
@@ -103,6 +116,8 @@ public interface DiscordREST extends Context {
                 .thenApply(spanResolver)
                 .exceptionally(getExceptionLogger(this, method, endpoint));
     }
+
+    // helpers
 
     @Internal
     default CompletableFuture<UniNode> newRequest(
@@ -131,25 +146,10 @@ public interface DiscordREST extends Context {
                 .exceptionally(getExceptionLogger(this, method, endpoint));
     }
 
-    // helpers
-
     @Internal
     default <N extends UniNode> N buildBody(BodyBuilderType<N> type, Consumer<N> builder) {
         final N body = type.apply(getSerializer());
         builder.accept(body);
         return body;
     }
-
-    @Internal
-    static <R> Function<Throwable, R> getExceptionLogger(DiscordREST it, REST.Method method, CompleteEndpoint endpoint) {
-        return it.getAPI().exceptionLogger(
-                logger,
-                Level.ERROR,
-                String.format("%s-Request @ %s", method, endpoint.getSpec()),
-                false
-        );
-    }
-
-    @Internal
-    Logger logger = LogManager.getLogger();
 }

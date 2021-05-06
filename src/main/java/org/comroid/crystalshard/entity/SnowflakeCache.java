@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.channel.GuildChannelCategory;
 import org.comroid.crystalshard.entity.command.Command;
@@ -17,7 +16,6 @@ import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
 import org.comroid.mutatio.model.Ref;
 import org.comroid.mutatio.ref.KeyedReference;
-import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferenceMap;
 import org.jetbrains.annotations.ApiStatus.Internal;
 

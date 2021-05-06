@@ -32,6 +32,10 @@ public enum UserStatus implements Named, Described, ValueBox<String> {
         return StandardValueType.STRING;
     }
 
+    public String getIdent() {
+        return ident;
+    }
+
     UserStatus(String ident, String description) {
         this.ident = ident;
         this.description = description;
@@ -42,9 +46,5 @@ public enum UserStatus implements Named, Described, ValueBox<String> {
             if (each.ident.equals(ident))
                 return () -> each;
         return Rewrapper.empty();
-    }
-
-    public String getIdent() {
-        return ident;
     }
 }

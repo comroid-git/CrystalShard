@@ -5,7 +5,6 @@ import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
@@ -14,19 +13,18 @@ import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.comroid.varbind.bind.builder.BuilderStep4$Properties;
 import org.jetbrains.annotations.Nullable;
 
 public final class MessageDeleteBulkEvent extends DispatchEvent {
-    @RootBind
-    public static final GroupBind<MessageDeleteBulkEvent> TYPE
-            = BASETYPE.subGroup("message-delete-bulk", MessageDeleteBulkEvent::new);
     public static final VarBind<MessageDeleteBulkEvent, Long, Long, Span<Long>> MESSAGE_IDS
             = TYPE.createBind("ids")
             .extractAsArray(StandardValueType.LONG)
             .asIdentities()
             .intoSpan()
             .build();
+    @RootBind
+    public static final GroupBind<MessageDeleteBulkEvent> TYPE
+            = BASETYPE.subGroup("message-delete-bulk", MessageDeleteBulkEvent::new);
     public static final VarBind<MessageDeleteBulkEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)

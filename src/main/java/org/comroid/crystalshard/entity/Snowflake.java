@@ -1,19 +1,15 @@
 package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Polyfill;
-import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.DiscordAPI;
 import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.model.Ref;
-import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
-import org.comroid.varbind.container.DataContainer;
 import org.comroid.varbind.container.DataContainerBase;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -42,11 +38,6 @@ public interface Snowflake extends DiscordDataContainer {
         return Instant.ofEpochMilli((getID() >> 22) + 1420070400000L);
     }
 
-    default boolean equals(Snowflake other) {
-        return getEntityType().equals(other.getEntityType())
-                && getID() == other.getID();
-    }
-
     @Internal
     static <R extends Snowflake> R resolve(
             ContextualProvider ctx,
@@ -66,6 +57,11 @@ public interface Snowflake extends DiscordDataContainer {
                         return null;
                     return fineConstructor.apply(context, data.asObjectNode());
                 });
+    }
+
+    default boolean equals(Snowflake other) {
+        return getEntityType().equals(other.getEntityType())
+                && getID() == other.getID();
     }
 
     @Internal

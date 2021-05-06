@@ -9,7 +9,7 @@ import java.util.Set;
 
 @SuppressWarnings("PointlessBitwiseExpression")
 public enum SystemChannelFlag implements BitmaskAttribute<SystemChannelFlag>, Named, Described {
-    SUPPRESS_JOIN_NOTIFICATIONS(1 << 0,"Suppress member join notifications"),
+    SUPPRESS_JOIN_NOTIFICATIONS(1 << 0, "Suppress member join notifications"),
     SUPPRESS_PREMIUM_SUBSCRIPTIONS(1 << 1, "Suppress server boost notifications");
 
     private final int value;

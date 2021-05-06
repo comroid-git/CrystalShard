@@ -22,11 +22,11 @@ public final class InvalidSessionEvent extends GatewayEvent {
             .build();
     public final Reference<Boolean> isResumable = getComputedReference(IS_RESUMABLE);
 
-    public InvalidSessionEvent(ContextualProvider context, @Nullable UniNode initialData) {
-        super(context, initialData);
-    }
-
     public boolean isResumable() {
         return isResumable.assertion();
+    }
+
+    public InvalidSessionEvent(ContextualProvider context, @Nullable UniNode initialData) {
+        super(context, initialData);
     }
 }

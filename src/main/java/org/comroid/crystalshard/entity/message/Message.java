@@ -166,7 +166,6 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
             .extractAsObject()
             .andResolve(Message::resolve)
             .build();
-    private final Map<String, Reaction> reactionsCache = new ConcurrentHashMap<>();
     public final Reference<Channel> channel = getComputedReference(CHANNEL);
     public final Reference<Guild> guild = getComputedReference(GUILD);
     public final Reference<User> author = getComputedReference(AUTHOR);
@@ -188,6 +187,7 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
     public final Reference<MessageReference> messageReference = getComputedReference(REFERENCE);
     public final Reference<Set<Flags>> flags = getComputedReference(FLAGS);
     public final Reference<Span<MessageSticker>> stickers = getComputedReference(STICKERS);
+    private final Map<String, Reaction> reactionsCache = new ConcurrentHashMap<>();
 
     public TextChannel getChannel() {
         return channel.flatMap(TextChannel.class).assertion();
@@ -215,10 +215,6 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
 
     public boolean isTTS() {
         return isTTS.assertion();
-    }
-
-    public boolean mentionsEveryone() {
-        return mentionsEveryone.assertion();
     }
 
     public Span<User> getUserMentions() {
@@ -279,6 +275,10 @@ public final class Message extends Snowflake.Abstract implements MessageTarget {
 
     public static Message resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getMessage, Message::new);
+    }
+
+    public boolean mentionsEveryone() {
+        return mentionsEveryone.assertion();
     }
 
     @Override

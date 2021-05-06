@@ -32,15 +32,6 @@ public final class Reaction extends AbstractDataContainer {
             .extractAsObject()
             .andResolve(Reaction::resolveEmoji)
             .build();
-
-    private static Emoji resolveEmoji(ContextualProvider context, UniObjectNode emojiObject) {
-        if (emojiObject.isNull("id")/* <== todo test this*/)
-            return UnicodeEmoji.getInstance(emojiObject.get("name").asString());
-        else if (CustomEmoji.TYPE.isValidData(emojiObject))
-            return CustomEmoji.resolve(context, emojiObject);
-        return null;
-    }
-
     private final Message parent;
 
     public Message getMessage() {
@@ -51,5 +42,13 @@ public final class Reaction extends AbstractDataContainer {
         super(parent, initialData);
 
         this.parent = parent;
+    }
+
+    private static Emoji resolveEmoji(ContextualProvider context, UniObjectNode emojiObject) {
+        if (emojiObject.isNull("id")/* <== todo test this*/)
+            return UnicodeEmoji.getInstance(emojiObject.get("name").asString());
+        else if (CustomEmoji.TYPE.isValidData(emojiObject))
+            return CustomEmoji.resolve(context, emojiObject);
+        return null;
     }
 }

@@ -11,7 +11,6 @@ import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.model.RefContainer;
 import org.comroid.mutatio.model.RefPipe;
-import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.socket.WebsocketPacket;
@@ -30,13 +29,12 @@ import java.util.function.Consumer;
 public class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
     public final Context context;
+    @Internal
+    public final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
     private final String token;
     private final int currentShardID;
     private final int shardCount;
     private final FutureReference<Gateway> gateway;
-
-    @Internal
-    public final List<Consumer<DiscordBotShard>> readyTasks = new ArrayList<>();
 
     public RefContainer<WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
         return gateway.into(Gateway::getPacketPipeline);

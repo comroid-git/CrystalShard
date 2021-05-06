@@ -1,12 +1,8 @@
 package org.comroid.crystalshard.gateway.event.dispatch.guild.member;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildCreateEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.guild.emoji.GuildEmojisUpdateEvent;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;

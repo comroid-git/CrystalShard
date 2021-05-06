@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.gateway.event.dispatch.guild.emoji;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;

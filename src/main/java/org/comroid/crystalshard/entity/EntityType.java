@@ -12,7 +12,6 @@ import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.entity.message.MessageApplication;
 import org.comroid.crystalshard.entity.message.MessageAttachment;
 import org.comroid.crystalshard.entity.message.MessageSticker;
-import org.comroid.crystalshard.entity.user.SimpleUser;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.entity.webhook.Webhook;
 import org.comroid.crystalshard.model.guild.GuildIntegration;
@@ -26,16 +25,12 @@ import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public final class EntityType<T extends Snowflake> implements BitmaskAttribute<EntityType<?>>, Named {
-    private static final Collection<EntityType<?>> values = new ArrayList<>();
-
     public static final EntityType<Snowflake> SNOWFLAKE
             = new EntityType<>(Snowflake.class);
-
     public static final EntityType<User> USER
             = new EntityType<>(User.class);
     public static final EntityType<Webhook> WEBHOOK
             = new EntityType<>(Webhook.class);
-
     public static final EntityType<Guild> GUILD
             = new EntityType<>(Guild.class);
     public static final EntityType<Role> ROLE
@@ -44,20 +39,16 @@ public final class EntityType<T extends Snowflake> implements BitmaskAttribute<E
             = new EntityType<>(CustomEmoji.class);
     public static final EntityType<GuildIntegration> GUILD_INTEGRATION
             = new EntityType<>(GuildIntegration.class);
-
     public static final EntityType<Channel> CHANNEL
             = new EntityType<>(Channel.class);
-
     public static final EntityType<TextChannel> TEXT_CHANNEL
             = new EntityType<>(TextChannel.class, CHANNEL);
     public static final EntityType<VoiceChannel> VOICE_CHANNEL
             = new EntityType<>(VoiceChannel.class, CHANNEL);
-
     public static final EntityType<PrivateTextChannel> PRIVATE_CHANNEL
             = new EntityType<>(PrivateTextChannel.class, TEXT_CHANNEL);
     public static final EntityType<GroupChannel> GROUP_CHANNEL
             = new EntityType<>(GroupChannel.class, TEXT_CHANNEL);
-
     public static final EntityType<GuildChannel> GUILD_CHANNEL
             = new EntityType<>(GuildChannel.class, CHANNEL);
     public static final EntityType<GuildChannelCategory> GUILD_CHANNEL_CATEGORY
@@ -66,7 +57,6 @@ public final class EntityType<T extends Snowflake> implements BitmaskAttribute<E
             = new EntityType<>(GuildTextChannel.class, GUILD_CHANNEL, TEXT_CHANNEL);
     public static final EntityType<GuildVoiceChannel> GUILD_VOICE_CHANNEL
             = new EntityType<>(GuildVoiceChannel.class, GUILD_CHANNEL, VOICE_CHANNEL);
-
     public static final EntityType<Message> MESSAGE
             = new EntityType<>(Message.class);
     public static final EntityType<MessageAttachment> MESSAGE_ATTACHMENT
@@ -75,10 +65,9 @@ public final class EntityType<T extends Snowflake> implements BitmaskAttribute<E
             = new EntityType<>(MessageApplication.class);
     public static final EntityType<MessageSticker> MESSAGE_STICKER
             = new EntityType<>(MessageSticker.class);
-
     public static final EntityType<Command> APPLICATION_COMMAND
             = new EntityType<>(Command.class);
-
+    private static final Collection<EntityType<?>> values = new ArrayList<>();
     private final int value;
     private final boolean isCacheName;
     private final EntityType<? super T> relatedCacheName;
@@ -106,6 +95,14 @@ public final class EntityType<T extends Snowflake> implements BitmaskAttribute<E
         return relatedCacheName;
     }
 
+    public Class<T> getRelatedClass() {
+        return relatedClass;
+    }
+
+    public boolean isInterface() {
+        return getRelatedClass().isInterface();
+    }
+
     private EntityType(Class<T> relatedClass, EntityType<?>... inherits) {
         this.relatedClass = relatedClass;
         if (relatedClass.equals(Snowflake.class)) {
@@ -125,13 +122,5 @@ public final class EntityType<T extends Snowflake> implements BitmaskAttribute<E
                     .map(Polyfill::<EntityType<? super T>>uncheckedCast)
                     .orElseThrow(() -> new NoSuchElementException("Could not find related cache name"));
         }
-    }
-
-    public Class<T> getRelatedClass() {
-        return relatedClass;
-    }
-
-    public boolean isInterface() {
-        return getRelatedClass().isInterface();
     }
 }

@@ -24,7 +24,7 @@ public interface Context extends ContextualProvider {
         return requireFromContext(ScheduledExecutorService.class);
     }
 
-    default SerializationAdapter<?,?,?> getSerializer() {
+    default SerializationAdapter<?, ?, ?> getSerializer() {
         return requireFromContext(SerializationAdapter.class);
     }
 

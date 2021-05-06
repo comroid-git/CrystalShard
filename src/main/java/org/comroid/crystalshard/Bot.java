@@ -1,28 +1,17 @@
 package org.comroid.crystalshard;
 
 import org.apache.logging.log4j.Logger;
-import org.comroid.annotations.Blocking;
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.guild.GuildCreateEvent;
-import org.comroid.crystalshard.gateway.event.generic.ReadyEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
 import org.comroid.mutatio.model.RefPipe;
-import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.restless.socket.WebsocketPacket;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlying {
     Logger getLogger();

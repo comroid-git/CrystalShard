@@ -5,8 +5,6 @@ import org.comroid.api.Named;
 import org.comroid.common.info.Described;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
-
 public enum Permission implements BitmaskAttribute<Permission>, Named, Described {
     CREATE_INSTANT_INVITE(0x00000001, "Allows creation of instant invites"),
     KICK_MEMBERS(0x00000002, "Allows kicking members"),

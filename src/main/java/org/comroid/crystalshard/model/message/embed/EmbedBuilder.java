@@ -7,7 +7,7 @@ import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.varbind.container.DataContainer;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

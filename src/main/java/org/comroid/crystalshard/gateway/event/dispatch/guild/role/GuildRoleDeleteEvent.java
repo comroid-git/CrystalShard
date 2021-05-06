@@ -6,9 +6,7 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
-import org.comroid.crystalshard.gateway.event.dispatch.guild.emoji.GuildEmojisUpdateEvent;
 import org.comroid.mutatio.ref.KeyedReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
@@ -19,9 +17,6 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class GuildRoleDeleteEvent extends DispatchEvent {
-    @RootBind
-    public static final GroupBind<GuildRoleDeleteEvent> TYPE
-            = BASETYPE.subGroup("guild-role-delete", GuildRoleDeleteEvent::new);
     public static final VarBind<GuildRoleDeleteEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
@@ -31,6 +26,9 @@ public final class GuildRoleDeleteEvent extends DispatchEvent {
             = TYPE.createBind("role_id")
             .extractAs(StandardValueType.LONG)
             .build();
+    @RootBind
+    public static final GroupBind<GuildRoleDeleteEvent> TYPE
+            = BASETYPE.subGroup("guild-role-delete", GuildRoleDeleteEvent::new);
     public final Reference<Guild> guild = getComputedReference(GUILD);
     public final Role role;
 

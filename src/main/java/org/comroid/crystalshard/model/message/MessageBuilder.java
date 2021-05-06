@@ -4,14 +4,10 @@ import org.comroid.api.Composer;
 import org.comroid.crystalshard.Context;
 import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.model.message.embed.*;
-import org.comroid.uniform.model.Serializable;
-import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniObjectNode;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -20,15 +16,6 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
     private StringBuilder contentBuilder = new StringBuilder();
     private boolean isTTS = false;
     private Embed embed;
-
-    public MessageBuilder(MessageTarget target) {
-        this.target = target;
-    }
-
-    @Override
-    public CompletableFuture<Message> compose() {
-        return target.executeMessage(this);
-    }
 
     public String getContent() {
         return contentBuilder.toString();
@@ -62,6 +49,15 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
         return setEmbed(embed);
     }
 
+    public MessageBuilder(MessageTarget target) {
+        this.target = target;
+    }
+
+    @Override
+    public CompletableFuture<Message> compose() {
+        return target.executeMessage(this);
+    }
+
     public EmbedComposer embed() {
         return new EmbedComposer(target);
     }
@@ -77,15 +73,6 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
     }
 
     public final class EmbedComposer extends EmbedBuilder implements Composer<Message> {
-        private EmbedComposer(Context context) {
-            super(context);
-        }
-
-        @Override
-        public CompletableFuture<Message> compose() {
-            return setEmbed(this).compose();
-        }
-
         @Override
         public EmbedComposer setType(Type type) {
             return (EmbedComposer) super.setType(type);
@@ -107,11 +94,6 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
         }
 
         @Override
-        public EmbedComposer setTimeToNow() {
-            return (EmbedComposer) super.setTimeToNow();
-        }
-
-        @Override
         public EmbedComposer setTimestamp(Instant timestamp) {
             return (EmbedComposer) super.setTimestamp(timestamp);
         }
@@ -124,16 +106,6 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
         @Override
         public EmbedComposer setAuthor(String name) {
             return (EmbedComposer) super.setAuthor(name);
-        }
-
-        @Override
-        public EmbedComposer setAuthor(String name, String url) {
-            return (EmbedComposer) super.setAuthor(name, url);
-        }
-
-        @Override
-        public EmbedComposer setAuthor(String name, String url, String iconUrl) {
-            return (EmbedComposer) super.setAuthor(name, url, iconUrl);
         }
 
         @Override
@@ -167,13 +139,37 @@ public final class MessageBuilder implements Composer<Message>, Consumer<UniObje
         }
 
         @Override
-        public EmbedComposer setFooter(String text, String iconUrl) {
-            return (EmbedComposer) super.setFooter(text, iconUrl);
+        public EmbedComposer setFooter(EmbedFooter footer) {
+            return (EmbedComposer) super.setFooter(footer);
+        }
+
+        private EmbedComposer(Context context) {
+            super(context);
         }
 
         @Override
-        public EmbedComposer setFooter(EmbedFooter footer) {
-            return (EmbedComposer) super.setFooter(footer);
+        public CompletableFuture<Message> compose() {
+            return setEmbed(this).compose();
+        }
+
+        @Override
+        public EmbedComposer setTimeToNow() {
+            return (EmbedComposer) super.setTimeToNow();
+        }
+
+        @Override
+        public EmbedComposer setAuthor(String name, String url) {
+            return (EmbedComposer) super.setAuthor(name, url);
+        }
+
+        @Override
+        public EmbedComposer setAuthor(String name, String url, String iconUrl) {
+            return (EmbedComposer) super.setAuthor(name, url, iconUrl);
+        }
+
+        @Override
+        public EmbedComposer setFooter(String text, String iconUrl) {
+            return (EmbedComposer) super.setFooter(text, iconUrl);
         }
     }
 }

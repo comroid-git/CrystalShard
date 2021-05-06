@@ -3,17 +3,15 @@ package org.comroid.crystalshard.model.voice;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
-import org.comroid.common.exception.AssertionException;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
-import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.restless.REST;
 import org.comroid.uniform.node.UniNode;
-import org.comroid.util.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
@@ -21,14 +19,10 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class VoiceRegion extends AbstractDataContainer implements Named {
-    @RootBind
-    public final static GroupBind<VoiceRegion> TYPE
-            = BASETYPE.subGroup("voice-region", VoiceRegion::new);
     public static final VarBind<VoiceRegion, String, String, String> ID
             = TYPE.createBind("id")
             .extractAs(StandardValueType.STRING)
@@ -72,6 +66,9 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .setRequired()
             .build();
     private final static Map<String, VoiceRegion> cache = new ConcurrentHashMap<>();
+    @RootBind
+    public final static GroupBind<VoiceRegion> TYPE
+            = BASETYPE.subGroup("voice-region", VoiceRegion::new);
     public final Reference<String> id = getComputedReference(ID);
     public final Reference<String> name = getComputedReference(NAME);
     public final Reference<Boolean> isVip = getComputedReference(IS_VIP);

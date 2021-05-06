@@ -13,7 +13,6 @@ import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.GatewayBotResponse;
 import org.comroid.crystalshard.ui.InteractionCore;
 import org.comroid.mutatio.model.RefPipe;
-import org.comroid.mutatio.pipe.Pipe;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.REST;
@@ -25,13 +24,13 @@ import java.util.stream.IntStream;
 
 public class DiscordBotBase implements Bot {
     private static final Logger logger = LogManager.getLogger();
+    protected final Reference<String> token;
     private final DiscordAPI context;
     private final Set<GatewayIntent> intents;
     private final Span<DiscordBotShard> shards;
     private final RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> eventPipeline;
     private final BotBasedPresence ownPresence;
     private final InteractionCore interactionCore;
-    protected final Reference<String> token;
 
     public Span<DiscordBotShard> getShards() {
         return shards;
@@ -82,6 +81,16 @@ public class DiscordBotBase implements Bot {
         return ownPresence;
     }
 
+    @Override
+    public String getToken() {
+        return token.assertion();
+    }
+
+    @Override
+    public final ContextualProvider getUnderlyingContextualProvider() {
+        return context;
+    }
+
     public DiscordBotBase(DiscordAPI context, String token, GatewayIntent... intents) {
         if (intents.length == 0)
             intents = GatewayIntent.ALL_UNPRIVILEGED;
@@ -113,11 +122,6 @@ public class DiscordBotBase implements Bot {
     }
 
     @Override
-    public String getToken() {
-        return token.assertion();
-    }
-
-    @Override
     public final void close() throws IOException, Disposable.MultipleExceptions {
         logger.info("Shutting down DiscordBotBase <{}>", getClass().getSimpleName());
         final List<IOException> exceptions = new ArrayList<>();
@@ -135,10 +139,5 @@ public class DiscordBotBase implements Bot {
         if (exceptions.size() == 1)
             throw exceptions.get(0);
         throw new Disposable.MultipleExceptions(String.format("Failed to close %d shards", shards.size()), exceptions);
-    }
-
-    @Override
-    public final ContextualProvider getUnderlyingContextualProvider() {
-        return context;
     }
 }

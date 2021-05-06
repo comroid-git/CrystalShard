@@ -2,7 +2,6 @@ package org.comroid.crystalshard.gateway.event.dispatch.channel;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.channel.Channel;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;

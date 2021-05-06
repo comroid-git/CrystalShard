@@ -13,7 +13,8 @@ public enum ImageType implements Named {
     WebP("webp"),
     GIF("gif");
 
-    private final @Language("RegExp") String regex;
+    private final @Language("RegExp")
+    String regex;
 
     @Override
     public String getName() {
@@ -34,6 +35,6 @@ public enum ImageType implements Named {
         return Stream.of(types)
                 .map(ImageType::getRegex)
                 .map(str -> String.format("(%s)", str))
-                .collect(Collectors.joining("|","\\.(",")"));
+                .collect(Collectors.joining("|", "\\.(", ")"));
     }
 }

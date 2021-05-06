@@ -49,6 +49,29 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         return rest;
     }
 
+    public DiscordAPI(HttpAdapter httpAdapter) {
+        this(httpAdapter, Executors.newScheduledThreadPool(4));
+    }
+
+    public DiscordAPI(HttpAdapter httpAdapter, ScheduledExecutorService scheduledExecutorService) {
+        super(SERIALIZATION, httpAdapter);
+
+        Objects.requireNonNull(SERIALIZATION, "SERIALIZATION must be provided");
+
+        this.scheduledExecutorService = scheduledExecutorService;
+        this.httpAdapter = httpAdapter;
+
+        Ratelimiter ratelimiter = Ratelimiter.ofPool(
+                scheduledExecutorService,
+                Endpoint.values()
+        );
+        this.rest = new REST(this, scheduledExecutorService, ratelimiter);
+
+        this.snowflakeCache = new SnowflakeCache(this);
+
+        addToContext(httpAdapter, scheduledExecutorService, rest, snowflakeCache);
+    }
+
     @Deprecated
     @Internal
     public static <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
@@ -92,29 +115,6 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
 
     public static int getShardIdForGuild(Bot bot, long id) {
         return Math.toIntExact((id >> 22) % bot.getShardCount());
-    }
-
-    public DiscordAPI(HttpAdapter httpAdapter) {
-        this(httpAdapter, Executors.newScheduledThreadPool(4));
-    }
-
-    public DiscordAPI(HttpAdapter httpAdapter, ScheduledExecutorService scheduledExecutorService) {
-        super((Base) SERIALIZATION, httpAdapter);
-
-        Objects.requireNonNull(SERIALIZATION, "SERIALIZATION must be provided");
-
-        this.scheduledExecutorService = scheduledExecutorService;
-        this.httpAdapter = httpAdapter;
-
-        Ratelimiter ratelimiter = Ratelimiter.ofPool(
-                scheduledExecutorService,
-                Endpoint.values()
-        );
-        this.rest = new REST(this, scheduledExecutorService, ratelimiter);
-
-        this.snowflakeCache = new SnowflakeCache(this);
-
-        addToContext(httpAdapter, scheduledExecutorService, rest, snowflakeCache);
     }
 
     @Override

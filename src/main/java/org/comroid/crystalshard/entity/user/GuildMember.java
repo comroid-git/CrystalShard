@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.entity.user;
 
-import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
@@ -8,10 +7,8 @@ import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
 import org.comroid.crystalshard.model.AbstractDataContainer;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.mutatio.ref.Reference;
-import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
@@ -69,13 +66,13 @@ public final class GuildMember extends AbstractDataContainer implements User {
             = TYPE.createBind("pending")
             .extractAs(StandardValueType.BOOLEAN)
             .build();
-    private final User base;
     public final Reference<String> nickname = getComputedReference(NICKNAME);
     public final Reference<String> joinedAt = getComputedReference(JOINED_AT);
     public final Reference<Instant> premiumSince = getComputedReference(PREMIUM_SINCE);
     public final Reference<Boolean> isDeafened = getComputedReference(IS_DEAFENED);
     public final Reference<Boolean> isMuted = getComputedReference(IS_MUTED);
     public final Reference<Boolean> isPending = getComputedReference(IS_PENDING);
+    private final User base;
 
     public String getNickname() {
         return nickname.assertion();
@@ -170,6 +167,19 @@ public final class GuildMember extends AbstractDataContainer implements User {
         return base.getPublicFlags();
     }
 
+    GuildMember(User baseUser, @Nullable UniNode initialData) {
+        super(baseUser, initialData);
+
+        this.base = baseUser;
+    }
+
+    public static GuildMember resolve(Guild context, UniNode data) {
+        if (!data.has(USER))
+            return null;
+        User user = SimpleUser.resolve(context, data.get(USER));
+        return user.as(SimpleUser.class, "assertion").createGuildInstance(context, data.asObjectNode());
+    }
+
     @Override
     public URL getAvatarURL(ImageType imageType) {
         return base.getAvatarURL(imageType);
@@ -188,18 +198,5 @@ public final class GuildMember extends AbstractDataContainer implements User {
     @Override
     public CompletableFuture<PrivateTextChannel> openPrivateChannel() {
         return base.openPrivateChannel();
-    }
-
-    public static GuildMember resolve(Guild context, UniNode data) {
-        if (!data.has(USER))
-            return null;
-        User user = SimpleUser.resolve(context, data.get(USER));
-        return user.as(SimpleUser.class, "assertion").createGuildInstance(context, data.asObjectNode());
-    }
-
-    GuildMember(User baseUser, @Nullable UniNode initialData) {
-        super(baseUser, initialData);
-
-        this.base = baseUser;
     }
 }

@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.entity.channel;
 
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.model.channel.PermissionOverwrite;
 import org.comroid.mutatio.span.Span;

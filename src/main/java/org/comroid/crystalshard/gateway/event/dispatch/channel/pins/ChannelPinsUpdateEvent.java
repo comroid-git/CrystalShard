@@ -1,10 +1,8 @@
 package org.comroid.crystalshard.gateway.event.dispatch.channel.pins;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.event.dispatch.DispatchEvent;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;

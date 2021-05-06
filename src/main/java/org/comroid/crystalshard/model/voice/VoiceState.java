@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.model.voice;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;

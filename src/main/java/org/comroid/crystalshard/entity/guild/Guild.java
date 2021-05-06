@@ -3,11 +3,11 @@ package org.comroid.crystalshard.entity.guild;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
-import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.cdn.CDNEndpoint;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
+import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.user.GuildMember;
 import org.comroid.crystalshard.entity.user.User;
@@ -26,8 +26,6 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.net.URL;
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -237,6 +235,7 @@ public final class Guild extends Snowflake.Abstract implements Named {
             = TYPE.createBind("approximate_presence_count")
             .extractAs(StandardValueType.INTEGER)
             .build();
+    public final Span<Long> bannedUsers = new Span<>();
 
     @Override
     public String getName() {
@@ -250,8 +249,6 @@ public final class Guild extends Snowflake.Abstract implements Named {
     public static Guild resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getGuild, Guild::new);
     }
-
-    public final Span<Long> bannedUsers = new Span<>();
 
     @Internal
     public boolean setBannedState(User user, boolean state) {

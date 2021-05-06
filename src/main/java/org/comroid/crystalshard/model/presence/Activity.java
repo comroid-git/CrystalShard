@@ -5,7 +5,6 @@ import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.model.AbstractDataContainer;
-import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;

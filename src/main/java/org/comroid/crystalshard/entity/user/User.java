@@ -18,12 +18,6 @@ import java.util.concurrent.CompletableFuture;
 public interface User extends Snowflake, MessageTarget {
     String getUsername();
 
-    default String getDisplayName(Guild inGuild) {
-        return asGuildMember(inGuild)
-                .flatMap(member -> member.nickname)
-                .orElseGet(this::getUsername);
-    }
-
     String getDiscriminator();
 
     boolean isBot();
@@ -43,6 +37,12 @@ public interface User extends Snowflake, MessageTarget {
     Set<SimpleUser.Flags> getAllFlags();
 
     Set<SimpleUser.Flags> getPublicFlags();
+
+    default String getDisplayName(Guild inGuild) {
+        return asGuildMember(inGuild)
+                .flatMap(member -> member.nickname)
+                .orElseGet(this::getUsername);
+    }
 
     URL getAvatarURL(ImageType imageType);
 

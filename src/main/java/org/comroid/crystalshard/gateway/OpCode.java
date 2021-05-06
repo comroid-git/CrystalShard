@@ -3,9 +3,9 @@ package org.comroid.crystalshard.gateway;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
-import org.comroid.util.StandardValueType;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.util.StandardValueType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;

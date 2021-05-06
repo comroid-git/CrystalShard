@@ -5,8 +5,8 @@ import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
-import org.comroid.util.StandardValueType;
 import org.comroid.uniform.node.UniObjectNode;
+import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
@@ -88,12 +88,12 @@ public final class GatewayBotResponse extends AbstractRestResponse {
             return resetAfter.assertion();
         }
 
-        public SessionStartLimit(ContextualProvider context, @Nullable UniNode initialData) {
-            super(context, initialData);
-        }
-
         public boolean isBlocked() {
             return getRemaining() != 0;
+        }
+
+        public SessionStartLimit(ContextualProvider context, @Nullable UniNode initialData) {
+            super(context, initialData);
         }
     }
 }

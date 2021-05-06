@@ -3,8 +3,6 @@ package org.comroid.crystalshard.entity.channel;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.entity.channel.Channel;
-import org.comroid.crystalshard.entity.channel.TextChannel;
 import org.comroid.uniform.node.UniObjectNode;
 
 abstract class AbstractTextChannel extends Snowflake.Abstract implements TextChannel {

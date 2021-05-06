@@ -3,20 +3,18 @@ package org.comroid.crystalshard.model.message.embed;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.mutatio.ref.Reference;
-import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 
 public final class MessageEmbed extends AbstractDataContainer implements Embed {
     public final Reference<Type> type = getComputedReference(EMBED_TYPE);
     public final Reference<String> title = getComputedReference(TITLE);
-    public final Reference<String> description  = getComputedReference(DESCRIPTION);
+    public final Reference<String> description = getComputedReference(DESCRIPTION);
     public final Reference<URL> url = getComputedReference(TARGET_URL);
     public final Reference<Instant> timestamp = getComputedReference(TIMESTAMP);
     public final Reference<Color> color = getComputedReference(COLOR);

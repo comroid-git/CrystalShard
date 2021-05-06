@@ -34,6 +34,10 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
 
     protected abstract Reference<T> getValueReference();
 
+    private CommandOptionChoice(ContextualProvider context, @Nullable UniNode initialData) {
+        super(context, initialData);
+    }
+
     private static CommandOptionChoice<?> resolve(ContextualProvider context, UniNode data) {
         UniValueNode target = data.get("value").asValueNode();
         ValueType<?> heldType = target.getHeldType();
@@ -44,10 +48,6 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
         throw new IllegalArgumentException("Invalid value type: " + heldType.getName());
     }
 
-    private CommandOptionChoice(ContextualProvider context, @Nullable UniNode initialData) {
-        super(context, initialData);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof CommandOptionChoice))
@@ -55,6 +55,10 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
         final CommandOptionChoice<?> other = (CommandOptionChoice<?>) o;
         return name.equals(other.name)
                 && value.equals(other.value);
+    }
+
+    public enum Type {
+        STRING, INTEGER
     }
 
     public static final class OfString extends CommandOptionChoice<String> {
@@ -93,9 +97,5 @@ public abstract class CommandOptionChoice<T> extends AbstractDataContainer imple
         private OfInteger(ContextualProvider context, @Nullable UniNode initialData) {
             super(context, initialData);
         }
-    }
-
-    public enum Type {
-        STRING, INTEGER
     }
 }
