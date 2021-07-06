@@ -35,8 +35,12 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     public static final int GLOBAL_RATELIMIT = 50;
     private static final Logger logger = LogManager.getLogger();
+    public static Context CONTEXT = ContextualProvider.getRoot().upgrade(Context.class);
+    /**
+     * @deprecated use {@link #CONTEXT} instead
+     */
+    @Deprecated
     public static SerializationAdapter SERIALIZATION = null;
-    public final HttpAdapter httpAdapter;
     private final REST rest;
     private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;
@@ -59,46 +63,13 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         Objects.requireNonNull(SERIALIZATION, "SERIALIZATION must be provided");
 
         this.scheduledExecutorService = scheduledExecutorService;
-        this.httpAdapter = httpAdapter;
 
-        Ratelimiter ratelimiter = Ratelimiter.ofPool(
-                scheduledExecutorService,
-                Endpoint.values()
-        );
+        Ratelimiter ratelimiter = Ratelimiter.ofPool(scheduledExecutorService, Endpoint.values());
         this.rest = new REST(this, scheduledExecutorService, ratelimiter);
 
         this.snowflakeCache = new SnowflakeCache(this);
 
         addToContext(httpAdapter, scheduledExecutorService, rest, snowflakeCache);
-    }
-
-    @Deprecated
-    @Internal
-    public static <T extends DataContainer<? super T>, R, N extends UniNode> CompletableFuture<R> newRequest(
-            DiscordAPI context,
-            String token,
-            REST.Method method,
-            CompleteEndpoint endpoint,
-            N body,
-            GroupBind<T> responseType,
-            Function<Span<T>, R> spanResolver
-    ) {
-        REST.Request<T> req = responseType == null
-                ? Polyfill.uncheckedCast(context.getREST().request())
-                : context.getREST().request(responseType);
-        req.endpoint(endpoint)
-                .addHeaders(DiscordREST.createHeaders(token));
-        if (body != null && method != REST.Method.GET)
-            req.body(body);
-        return req.method(method)
-                .execute$deserialize()
-                .thenApply(spanResolver)
-                .exceptionally(context.exceptionLogger(
-                        logger,
-                        Level.ERROR,
-                        String.format("%s-Request @ %s", method, endpoint.getSpec()),
-                        false
-                ));
     }
 
     public static long getIdFromToken(String token) {
