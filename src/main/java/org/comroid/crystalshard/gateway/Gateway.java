@@ -92,12 +92,12 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .peek(event -> logger.debug("Gateway Event initialization complete [{}]", event.getClass().getSimpleName()));
         // store every latest ready event
         this.readyEvent = Reference.create();
-        this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
-                .map(self -> new ShardBasedPresence(shard, self));
         getEventPipeline()
                 .flatMap(ReadyEvent.class)
                 .peek(ready -> logger.trace("New ReadyEvent received: " + ready))
                 .peek(this.readyEvent::set);
+        this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
+                .map(self -> new ShardBasedPresence(shard, self));
 
         try {
             getEventPipeline()
