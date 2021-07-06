@@ -1,46 +1,30 @@
 package org.comroid.crystalshard;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
-import org.comroid.api.Polyfill;
 import org.comroid.common.Disposable;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.rest.Endpoint;
-import org.comroid.mutatio.span.Span;
 import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
-import org.comroid.restless.endpoint.CompleteEndpoint;
 import org.comroid.restless.server.Ratelimiter;
-import org.comroid.uniform.SerializationAdapter;
-import org.comroid.uniform.node.UniNode;
-import org.comroid.varbind.bind.GroupBind;
-import org.comroid.varbind.container.DataContainer;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 import java.io.Closeable;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class DiscordAPI extends ContextualProvider.Base implements Context, Closeable {
+    public static final Context CTX = ContextualProvider.getRoot().upgrade(Context.class);
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
     public static final int GLOBAL_RATELIMIT = 50;
     private static final Logger logger = LogManager.getLogger();
-    public static Context CONTEXT = ContextualProvider.getRoot().upgrade(Context.class);
-    /**
-     * @deprecated use {@link #CONTEXT} instead
-     */
-    @Deprecated
-    public static SerializationAdapter SERIALIZATION = null;
     private final REST rest;
     private final SnowflakeCache snowflakeCache;
     private final ScheduledExecutorService scheduledExecutorService;
@@ -58,9 +42,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     }
 
     public DiscordAPI(HttpAdapter httpAdapter, ScheduledExecutorService scheduledExecutorService) {
-        super(SERIALIZATION, httpAdapter);
-
-        Objects.requireNonNull(SERIALIZATION, "SERIALIZATION must be provided");
+        super(CTX);
 
         this.scheduledExecutorService = scheduledExecutorService;
 
