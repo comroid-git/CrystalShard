@@ -70,6 +70,8 @@ public interface Context extends ContextualProvider {
 
     @Upgrade
     static Context upgrade(final ContextualProvider upgrade) {
+        upgrade.requireFromContext(SerializationAdapter.class, "Serialization Module not set");
+        upgrade.requireFromContext(HttpAdapter.class, "HTTP Module not set");
         return upgrade::streamContextMembers;
     }
 }
