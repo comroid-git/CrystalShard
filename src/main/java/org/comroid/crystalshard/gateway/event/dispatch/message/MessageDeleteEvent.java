@@ -18,13 +18,13 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class MessageDeleteEvent extends DispatchEvent {
+    @RootBind
+    public static final GroupBind<MessageDeleteEvent> TYPE
+            = BASETYPE.subGroup("message-delete", MessageDeleteEvent::new);
     public static final VarBind<MessageDeleteEvent, Long, Long, Long> MESSAGE_ID
             = TYPE.createBind("id")
             .extractAs(StandardValueType.LONG)
             .build();
-    @RootBind
-    public static final GroupBind<MessageDeleteEvent> TYPE
-            = BASETYPE.subGroup("message-delete", MessageDeleteEvent::new);
     public static final VarBind<MessageDeleteEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)

@@ -89,7 +89,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         req.endpoint(endpoint)
                 .addHeaders(DiscordREST.createHeaders(token));
         if (body != null && method != REST.Method.GET)
-            req.body(body.toString());
+            req.body(body);
         return req.method(method)
                 .execute$deserialize()
                 .thenApply(spanResolver)

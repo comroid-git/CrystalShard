@@ -17,6 +17,9 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class GuildRoleDeleteEvent extends DispatchEvent {
+    @RootBind
+    public static final GroupBind<GuildRoleDeleteEvent> TYPE
+            = BASETYPE.subGroup("guild-role-delete", GuildRoleDeleteEvent::new);
     public static final VarBind<GuildRoleDeleteEvent, Long, Guild, Guild> GUILD
             = TYPE.createBind("guild_id")
             .extractAs(StandardValueType.LONG)
@@ -26,9 +29,6 @@ public final class GuildRoleDeleteEvent extends DispatchEvent {
             = TYPE.createBind("role_id")
             .extractAs(StandardValueType.LONG)
             .build();
-    @RootBind
-    public static final GroupBind<GuildRoleDeleteEvent> TYPE
-            = BASETYPE.subGroup("guild-role-delete", GuildRoleDeleteEvent::new);
     public final Reference<Guild> guild = getComputedReference(GUILD);
     public final Role role;
 
