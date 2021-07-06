@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.mutatio.span.Span;
 import org.comroid.restless.CommonHeaderNames;
+import org.comroid.restless.HTTPStatusCodes;
 import org.comroid.restless.REST;
 import org.comroid.restless.body.BodyBuilderType;
 import org.comroid.restless.endpoint.CompleteEndpoint;
@@ -19,6 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static org.comroid.restless.HTTPStatusCodes.NO_CONTENT;
+import static org.comroid.restless.HTTPStatusCodes.OK;
 
 public interface DiscordREST extends Context {
     @Internal
@@ -140,6 +144,7 @@ public interface DiscordREST extends Context {
                 .endpoint(endpoint)
                 .body(body)
                 .addHeaders(createHeaders(as(Bot.class).map(Bot::getToken).orElse(null)))
+                .expect(true, OK, NO_CONTENT)
                 .execute$body()
                 .thenApply(Serializable::toUniNode)
                 .thenApply(dataResolver)
