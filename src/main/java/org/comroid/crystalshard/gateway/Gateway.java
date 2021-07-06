@@ -15,6 +15,7 @@ import org.comroid.crystalshard.gateway.event.generic.*;
 import org.comroid.crystalshard.gateway.presence.ShardBasedPresence;
 import org.comroid.mutatio.model.RefContainer;
 import org.comroid.mutatio.model.RefPipe;
+import org.comroid.mutatio.ref.FutureReference;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferencePipe;
 import org.comroid.restless.socket.Websocket;
@@ -38,7 +39,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     @Internal
     public final Reference<Integer> heartbeatTime = Reference.create();
     @Internal
-    public final Reference<ReadyEvent> readyEvent;
+    public final FutureReference<ReadyEvent> readyEvent;
     @Internal
     public final Reference<ShardBasedPresence> ownPresence;
     @Internal
@@ -90,28 +91,23 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 })
                 .filter(Objects::nonNull)
                 .peek(event -> logger.debug("Gateway Event initialization complete [{}]", event.getClass().getSimpleName()));
-        // store every latest ready event
-        this.readyEvent = Reference.create();
-        getEventPipeline()
-                .flatMap(ReadyEvent.class)
+        // handle first hello and store resulting ready event
+        this.readyEvent = new FutureReference<>(getEventPipeline()
+                .flatMap(HelloEvent.class)
+                .peek(ready -> logger.trace("New HelloEvent received: " + ready))
+                .next()
+                .thenCompose(hello -> {
+                    logger.trace("sending identify");
+                    hello.heartbeatInterval.ifPresentOrElse(this::startHeartbeat,
+                            () -> logger.warn("Unable to set heartbeat time!"));
+                    return sendIdentify(shard.getCurrentShardID());
+                }));
+        this.ownPresence = readyEvent
                 .peek(ready -> logger.trace("New ReadyEvent received: " + ready))
-                .peek(this.readyEvent::set);
-        this.ownPresence = readyEvent.flatMap(ready -> ready.yourself)
+                .flatMap(ready -> ready.yourself)
                 .map(self -> new ShardBasedPresence(shard, self));
 
-        try {
-            getEventPipeline()
-                    .flatMap(HelloEvent.class)
-                    .next()
-                    .thenCompose(hello -> {
-                        hello.heartbeatInterval.ifPresentOrElse(this::startHeartbeat,
-                                () -> logger.warn("Unable to set heartbeat time!"));
-                        return sendIdentify(shard.getCurrentShardID());
-                    })
-                    .join();
-        } catch (Throwable t) {
-            throw new RuntimeException("Could not send Identify", t);
-        }
+        readyEvent.future.join();
     }
 
     private void startHeartbeat(int interval) {

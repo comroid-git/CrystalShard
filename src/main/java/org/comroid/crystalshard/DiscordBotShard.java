@@ -92,7 +92,7 @@ public class DiscordBotShard implements Bot {
     }
 
     protected DiscordBotShard(DiscordAPI context, String token, GatewayIntent... intents) {
-        this(context, token, Polyfill.uri("wss://gateway.discord.com"), 0, 1, intents);
+        this(context, token, Polyfill.uri("wss://gateway.discord.com/?v=" + DiscordAPI.VERSION), 0, 1, intents);
     }
 
     DiscordBotShard(DiscordAPI context, String token, URI wsUri, int shardID, int shardCount, GatewayIntent... intents) {

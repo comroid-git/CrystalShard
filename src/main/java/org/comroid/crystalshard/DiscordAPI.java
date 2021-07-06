@@ -23,6 +23,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
     public static final Context CTX = ContextualProvider.getRoot().upgrade(Context.class);
     public static final String URL_BASE = "https://discord.com/api";
     public static final String CDN_URL_BASE = "https://cdn.discordapp.com/";
+    public static final int VERSION = 8;
     public static final int GLOBAL_RATELIMIT = 50;
     private static final Logger logger = LogManager.getLogger();
     private final REST rest;
