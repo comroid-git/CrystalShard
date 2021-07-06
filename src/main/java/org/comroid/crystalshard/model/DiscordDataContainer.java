@@ -7,5 +7,5 @@ import org.comroid.varbind.container.DataContainer;
 
 public interface DiscordDataContainer extends DataContainer<DiscordDataContainer>, Context {
     GroupBind<AbstractDataContainer> BASETYPE
-            = new GroupBind<>(DiscordAPI.SERIALIZATION, "data-container");
+            = new GroupBind<>("data-container");
 }

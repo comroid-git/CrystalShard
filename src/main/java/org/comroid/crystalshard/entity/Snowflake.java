@@ -19,7 +19,7 @@ import java.time.Instant;
 import java.util.function.BiFunction;
 
 public interface Snowflake extends DiscordDataContainer {
-    GroupBind<Snowflake> BASETYPE = new GroupBind<>(DiscordAPI.SERIALIZATION, "snowflake");
+    GroupBind<Snowflake> BASETYPE = new GroupBind<>("snowflake");
     VarBind<Snowflake, Long, Long, Long> ID
             = BASETYPE.createBind("id")
             .extractAs(StandardValueType.LONG)

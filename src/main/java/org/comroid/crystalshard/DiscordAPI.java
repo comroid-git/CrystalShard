@@ -37,11 +37,11 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
         return rest;
     }
 
-    public DiscordAPI(HttpAdapter httpAdapter) {
-        this(httpAdapter, Executors.newScheduledThreadPool(4));
+    public DiscordAPI() {
+        this(Executors.newScheduledThreadPool(4));
     }
 
-    public DiscordAPI(HttpAdapter httpAdapter, ScheduledExecutorService scheduledExecutorService) {
+    public DiscordAPI(ScheduledExecutorService scheduledExecutorService) {
         super(CTX);
 
         this.scheduledExecutorService = scheduledExecutorService;
@@ -51,7 +51,7 @@ public final class DiscordAPI extends ContextualProvider.Base implements Context
 
         this.snowflakeCache = new SnowflakeCache(this);
 
-        addToContext(httpAdapter, scheduledExecutorService, rest, snowflakeCache);
+        addToContext(scheduledExecutorService, rest, snowflakeCache);
     }
 
     public static long getIdFromToken(String token) {

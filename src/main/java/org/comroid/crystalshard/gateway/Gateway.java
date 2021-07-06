@@ -19,6 +19,7 @@ import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.ref.ReferencePipe;
 import org.comroid.restless.socket.Websocket;
 import org.comroid.restless.socket.WebsocketPacket;
+import org.comroid.uniform.SerializationAdapter;
 import org.comroid.uniform.node.UniArrayNode;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -77,7 +78,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
         this.dataPipeline = getPacketPipeline()
                 .filter(packet -> packet.getType() == WebsocketPacket.Type.DATA)
                 .flatMap(WebsocketPacket::getData)
-                .map(DiscordAPI.SERIALIZATION::parse)
+                .map(DiscordAPI.CTX.getSerializer()::parse)
                 .filter(Objects::nonNull);
         this.eventPipeline = dataPipeline
                 .map(data -> {
@@ -242,6 +243,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
     }
 
     public UniObjectNode createPayloadBase(OpCode code) {
-        return code.apply(DiscordAPI.SERIALIZATION.createObjectNode());
+        return code.apply(DiscordAPI.CTX.getSerializer().createObjectNode());
     }
 }
