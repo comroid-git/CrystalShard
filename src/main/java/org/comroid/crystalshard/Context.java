@@ -2,6 +2,7 @@ package org.comroid.crystalshard;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.comroid.annotations.Upgrade;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.restless.HttpAdapter;
@@ -65,5 +66,10 @@ public interface Context extends ContextualProvider {
                 System.exit(1);
             return null;
         };
+    }
+
+    @Upgrade
+    static Context upgrade(final ContextualProvider upgrade) {
+        return upgrade::streamContextMembers;
     }
 }
