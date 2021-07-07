@@ -107,9 +107,8 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .flatMap(ready -> ready.yourself)
                 .map(self -> new ShardBasedPresence(shard, self));
 
-
         socket.open();
-        readyEvent.future.join();
+       // readyEvent.future.join();
     }
 
     private void startHeartbeat(int interval) {
