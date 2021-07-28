@@ -15,13 +15,13 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class GuildDeleteEvent extends DispatchEvent {
-    @RootBind
-    public static final GroupBind<GuildDeleteEvent> TYPE
-            = BASETYPE.subGroup("guild-delete", GuildDeleteEvent::new);
     public static final VarBind<GuildDeleteEvent, UniObjectNode, UniObjectNode, UniObjectNode> GUILD_OBJ
             = TYPE.createBind("")
             .extractAsObject()
             .build();
+    @RootBind
+    public static final GroupBind<GuildDeleteEvent> TYPE
+            = BASETYPE.subGroup("guild-delete", GuildDeleteEvent::new);
     private final boolean wasKicked;
     private final Guild guild;
 

@@ -23,9 +23,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class VoiceRegion extends AbstractDataContainer implements Named {
-    @RootBind
-    public final static GroupBind<VoiceRegion> TYPE
-            = BASETYPE.subGroup("voice-region", VoiceRegion::new);
     public static final VarBind<VoiceRegion, String, String, String> ID
             = TYPE.createBind("id")
             .extractAs(StandardValueType.STRING)
@@ -69,6 +66,9 @@ public final class VoiceRegion extends AbstractDataContainer implements Named {
             .setRequired()
             .build();
     private final static Map<String, VoiceRegion> cache = new ConcurrentHashMap<>();
+    @RootBind
+    public final static GroupBind<VoiceRegion> TYPE
+            = BASETYPE.subGroup("voice-region", VoiceRegion::new);
     public final Reference<String> id = getComputedReference(ID);
     public final Reference<String> name = getComputedReference(NAME);
     public final Reference<Boolean> isVip = getComputedReference(IS_VIP);

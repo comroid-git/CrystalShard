@@ -12,14 +12,14 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class ChannelDeleteEvent extends DispatchEvent {
-    @RootBind
-    public static final GroupBind<ChannelDeleteEvent> TYPE
-            = BASETYPE.subGroup("channel-delete", ChannelDeleteEvent::new);
     public static final VarBind<ChannelDeleteEvent, UniObjectNode, Channel, Channel> CHANNEL
             = TYPE.createBind("")
             .extractAsObject()
             .andResolve(Channel::resolve)
             .build();
+    @RootBind
+    public static final GroupBind<ChannelDeleteEvent> TYPE
+            = BASETYPE.subGroup("channel-delete", ChannelDeleteEvent::new);
     private final Channel channel;
 
     public Channel getChannel() {

@@ -46,6 +46,13 @@ public interface Context extends ContextualProvider {
         return requireFromContext(DiscordBotShard.class);
     }
 
+    @Upgrade
+    static Context upgrade(final ContextualProvider upgrade) {
+        upgrade.requireFromContext(SerializationAdapter.class, "Serialization Module not set");
+        upgrade.requireFromContext(HttpAdapter.class, "HTTP Module not set");
+        return upgrade::streamContextMembers;
+    }
+
     default <T> Function<Throwable, T> exceptionLogger(
             Logger logger,
             Level level,
@@ -66,12 +73,5 @@ public interface Context extends ContextualProvider {
                 System.exit(1);
             return null;
         };
-    }
-
-    @Upgrade
-    static Context upgrade(final ContextualProvider upgrade) {
-        upgrade.requireFromContext(SerializationAdapter.class, "Serialization Module not set");
-        upgrade.requireFromContext(HttpAdapter.class, "HTTP Module not set");
-        return upgrade::streamContextMembers;
     }
 }

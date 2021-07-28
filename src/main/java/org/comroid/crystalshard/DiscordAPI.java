@@ -6,7 +6,6 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.common.Disposable;
 import org.comroid.crystalshard.entity.SnowflakeCache;
 import org.comroid.crystalshard.rest.Endpoint;
-import org.comroid.restless.HttpAdapter;
 import org.comroid.restless.REST;
 import org.comroid.restless.server.Ratelimiter;
 
