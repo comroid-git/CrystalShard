@@ -25,3 +25,8 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/gradle,intellij
+.classpath
+.project
+*.prefs
+*.class
+bin/main/org/comroid/crystalshard/info.properties
