@@ -16,15 +16,15 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
 public final class MessageDeleteBulkEvent extends DispatchEvent {
+    @RootBind
+    public static final GroupBind<MessageDeleteBulkEvent> TYPE
+            = BASETYPE.subGroup("message-delete-bulk", MessageDeleteBulkEvent::new);
     public static final VarBind<MessageDeleteBulkEvent, Long, Long, Span<Long>> MESSAGE_IDS
             = TYPE.createBind("ids")
             .extractAsArray(StandardValueType.LONG)
             .asIdentities()
             .intoSpan()
             .build();
-    @RootBind
-    public static final GroupBind<MessageDeleteBulkEvent> TYPE
-            = BASETYPE.subGroup("message-delete-bulk", MessageDeleteBulkEvent::new);
     public static final VarBind<MessageDeleteBulkEvent, Long, Channel, Channel> CHANNEL
             = TYPE.createBind("channel_id")
             .extractAs(StandardValueType.LONG)

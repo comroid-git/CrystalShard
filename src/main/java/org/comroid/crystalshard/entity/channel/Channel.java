@@ -11,6 +11,8 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 
 public interface Channel extends Snowflake, Named {
+    GroupBind<Channel> BASETYPE
+            = Snowflake.BASETYPE.subGroup("channel", Channel::resolve);
     VarBind<Channel, Integer, ChannelType, ChannelType> CHANNEL_TYPE
             = BASETYPE.createBind("type")
             .extractAs(StandardValueType.INTEGER)
@@ -18,8 +20,6 @@ public interface Channel extends Snowflake, Named {
             .onceEach()
             .setRequired()
             .build();
-    GroupBind<Channel> BASETYPE
-            = Snowflake.BASETYPE.subGroup("channel", Channel::resolve);
 
     static Channel resolve(ContextualProvider context, UniNode data) {
         return Snowflake.resolve(context, data, SnowflakeCache::getChannel, (ctx, obj) -> {

@@ -52,6 +52,7 @@ task javadocJar(type: Jar) {
 processResources {
     from(sourceSets.main.resources) {
         expand project.properties
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }
 
