@@ -115,10 +115,7 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable, 
         heartbeatTime.set(interval);
 
         requireFromContext(ScheduledExecutorService.class).scheduleAtFixedRate(
-                () -> sendHeartbeat().join(),
-                interval,
-                interval,
-                TimeUnit.MILLISECONDS);
+                () -> sendHeartbeat().join(), interval, interval, TimeUnit.MILLISECONDS);
     }
 
     private GatewayEvent dispatchPacket(UniNode data, OpCode opCode) {
