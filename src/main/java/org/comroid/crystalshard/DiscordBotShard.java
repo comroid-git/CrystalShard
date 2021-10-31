@@ -1,9 +1,9 @@
 package org.comroid.crystalshard;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.comroid.api.ContextualProvider;
-import org.comroid.api.Polyfill;
+import org.comroid.api.*;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
@@ -154,5 +154,11 @@ public class DiscordBotShard implements Bot {
     @Override
     public String toString() {
         return String.format("DiscordBotShard<Shard %d / %d>", getCurrentShardID(), getShardCount());
+    }
+
+    @Override
+    public void initialize() throws Throwable {
+        gateway.future.thenAccept(ThrowingConsumer.handling(Initializable::initialize, RuntimeException::new))
+                .exceptionally(exceptionLogger(logger, Level.FATAL, "Could not initialize Gateway"));
     }
 }

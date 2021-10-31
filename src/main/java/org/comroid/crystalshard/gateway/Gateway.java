@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Initializable;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
@@ -33,7 +34,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.*;
 
-public final class Gateway implements ContextualProvider.Underlying, Closeable {
+public final class Gateway implements ContextualProvider.Underlying, Closeable, Initializable {
     private static final Logger logger = LogManager.getLogger();
     @Internal
     public final Reference<Integer> heartbeatTime = Reference.create();
@@ -106,7 +107,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
                 .flatMap(ready -> ready.yourself)
                 .map(self -> new ShardBasedPresence(shard, self));
 
-        socket.open();
         // readyEvent.future.join();
     }
 
@@ -240,5 +240,10 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable {
 
     public UniObjectNode createPayloadBase(OpCode code) {
         return code.apply(DiscordAPI.CTX.getSerializer().createObjectNode());
+    }
+
+    @Override
+    public void initialize() throws Throwable {
+        socket.open();
     }
 }

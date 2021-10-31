@@ -2,6 +2,7 @@ package org.comroid.crystalshard;
 
 import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
+import org.comroid.api.Initializable;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
@@ -13,7 +14,7 @@ import org.comroid.restless.socket.WebsocketPacket;
 import java.io.Closeable;
 import java.util.concurrent.CompletableFuture;
 
-public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlying {
+public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlying, Initializable {
     Logger getLogger();
 
     default long getOwnID() {

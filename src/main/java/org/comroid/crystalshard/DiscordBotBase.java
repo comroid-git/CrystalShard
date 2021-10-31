@@ -140,4 +140,10 @@ public class DiscordBotBase implements Bot {
             throw exceptions.get(0);
         throw new Disposable.MultipleExceptions(String.format("Failed to close %d shards", shards.size()), exceptions);
     }
+
+    @Override
+    public void initialize() throws Throwable {
+        for (DiscordBotShard shard : shards)
+            shard.initialize();
+    }
 }
