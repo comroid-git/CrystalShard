@@ -65,7 +65,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.jetbrains:annotations:19.0.0'
+    compileOnly 'org.jetbrains:annotations:20.1.0'
 
     // logging dependencies
     implementation 'org.apache.logging.log4j:log4j-api:2.11.0'
