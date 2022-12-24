@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Initializable;
 import org.comroid.crystalshard.entity.user.User;
+import org.comroid.crystalshard.gateway.EventChannel;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
@@ -11,9 +12,7 @@ import org.comroid.crystalshard.model.presence.UserStatus;
 import java.io.Closeable;
 import java.util.concurrent.CompletableFuture;
 
-public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlying, Initializable {
-    Logger getLogger();
-
+public interface Bot extends Closeable, Initializable {
     default long getOwnID() {
         return getYourself().getID();
     }

@@ -1,5 +1,8 @@
 package org.comroid.crystalshard.entity.user;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import lombok.Getter;
 import org.comroid.crystalshard.cdn.ImageType;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
@@ -8,31 +11,42 @@ import org.comroid.crystalshard.entity.message.Message;
 import org.comroid.crystalshard.model.message.MessageBuilder;
 import org.comroid.crystalshard.model.message.MessageTarget;
 import org.comroid.crystalshard.model.user.PremiumType;
-import org.comroid.mutatio.ref.Reference;
 
 import java.net.URL;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public interface User extends Snowflake, MessageTarget {
-    String getUsername();
-
-    String getDiscriminator();
-
-    boolean isBot();
-
-    boolean isSystemUser();
-
-    boolean isMfaEnabled();
-
-    Locale getPreferredLocale();
-
-    boolean isVerified();
-
-    String getEMail();
-
-    PremiumType getPremiumType();
+@Entity
+public class User extends Snowflake implements MessageTarget {
+    @Column
+    @Getter
+    private String username;
+    @Column
+    @Getter
+    private String discriminator;
+    @Column
+    @Getter
+    private boolean bot;
+    @Column
+    @Getter
+    private boolean systemUser;
+    @Column
+    @Getter
+    private boolean mfaEnabled;
+    @Column
+    @Getter
+    private Locale preferredLocale;
+    @Column
+    @Getter
+    private boolean verified;
+    @Column
+    @Getter
+    private String email;
+    @Column
+    @Getter
+    private PremiumType premiumType;
 
     Set<SimpleUser.Flags> getAllFlags();
 
@@ -46,7 +60,7 @@ public interface User extends Snowflake, MessageTarget {
 
     URL getAvatarURL(ImageType imageType);
 
-    Reference<GuildMember> asGuildMember(Guild guild);
+    Optional<GuildMember> asGuildMember(Guild guild);
 
     CompletableFuture<GuildMember> requestGuildMember(Guild guild);
 
