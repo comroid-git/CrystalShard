@@ -3,7 +3,10 @@ package org.comroid.crystalshard;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.comroid.api.*;
+import org.comroid.api.ContextualProvider;
+import org.comroid.api.Initializable;
+import org.comroid.api.Polyfill;
+import org.comroid.api.ThrowingConsumer;
 import org.comroid.crystalshard.entity.user.User;
 import org.comroid.crystalshard.gateway.Gateway;
 import org.comroid.crystalshard.gateway.GatewayIntent;
@@ -17,6 +20,7 @@ import org.comroid.restless.socket.WebsocketPacket;
 import org.comroid.uniform.SerializationAdapter;
 import org.comroid.util.Bitmask;
 import org.jetbrains.annotations.ApiStatus.Internal;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+@Component
 public class DiscordBotShard implements Bot {
     private static final Logger logger = LogManager.getLogger();
     public final Context context;
@@ -35,10 +40,6 @@ public class DiscordBotShard implements Bot {
     private final int currentShardID;
     private final int shardCount;
     private final FutureReference<Gateway> gateway;
-
-    public RefContainer<WebsocketPacket.Type, ? extends WebsocketPacket> getPacketPipeline() {
-        return gateway.into(Gateway::getPacketPipeline);
-    }
 
     @Override
     public Logger getLogger() {

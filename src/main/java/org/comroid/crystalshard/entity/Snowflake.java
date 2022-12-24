@@ -2,7 +2,6 @@ package org.comroid.crystalshard.entity;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Context;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.model.Ref;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;

@@ -3,7 +3,6 @@ package org.comroid.crystalshard.ui;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;

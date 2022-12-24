@@ -4,7 +4,6 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.message.Message;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;

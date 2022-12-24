@@ -2,7 +2,6 @@ package org.comroid.crystalshard.ui;
 
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.ui.annotation.SlashCommand;
 import org.comroid.mutatio.ref.Reference;

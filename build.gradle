@@ -77,12 +77,19 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:23.1.0'
 
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    if (findProject(':guardian:spellbind') != null)
-        implementation project(':guardian:spellbind')
-    else 'org.comroid:spellbind:1.+'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    if (findProject(':spring-util') != null)
+        api project(':spring-util')
+    else api 'org.comroid:spring-util:1.+'
 }
 
 apply from: "gradle/publishing.gradle"

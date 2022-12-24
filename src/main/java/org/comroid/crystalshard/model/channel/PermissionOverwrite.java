@@ -4,7 +4,6 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.guild.PermissionSet;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;

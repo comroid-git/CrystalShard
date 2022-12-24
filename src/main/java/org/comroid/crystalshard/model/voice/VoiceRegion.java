@@ -4,7 +4,6 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.Bot;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
 import org.comroid.mutatio.ref.Reference;

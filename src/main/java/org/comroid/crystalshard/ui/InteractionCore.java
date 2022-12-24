@@ -7,7 +7,6 @@ import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.crystalshard.Context;
-import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.command.Command;

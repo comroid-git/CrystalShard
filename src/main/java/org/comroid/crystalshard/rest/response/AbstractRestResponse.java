@@ -1,7 +1,6 @@
 package org.comroid.crystalshard.rest.response;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.jetbrains.annotations.Nullable;
 

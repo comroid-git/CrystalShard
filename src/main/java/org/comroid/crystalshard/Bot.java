@@ -4,12 +4,9 @@ import org.apache.logging.log4j.Logger;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Initializable;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.gateway.event.GatewayEvent;
 import org.comroid.crystalshard.gateway.presence.OwnPresence;
 import org.comroid.crystalshard.model.presence.Activity;
 import org.comroid.crystalshard.model.presence.UserStatus;
-import org.comroid.mutatio.model.RefPipe;
-import org.comroid.restless.socket.WebsocketPacket;
 
 import java.io.Closeable;
 import java.util.concurrent.CompletableFuture;
@@ -20,8 +17,6 @@ public interface Bot extends DiscordREST, Closeable, ContextualProvider.Underlyi
     default long getOwnID() {
         return getYourself().getID();
     }
-
-    RefPipe<?, ?, WebsocketPacket.Type, GatewayEvent> getEventPipeline();
 
     boolean isReady();
 

@@ -6,7 +6,6 @@ import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.GuildMember;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;

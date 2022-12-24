@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.gateway.presence;
 
-import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.mutatio.ref.ReferenceList;
 

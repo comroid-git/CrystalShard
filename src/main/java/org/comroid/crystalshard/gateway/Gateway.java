@@ -8,7 +8,6 @@ import org.comroid.api.Initializable;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.common.info.MessageSupplier;
 import org.comroid.crystalshard.DiscordAPI;
-import org.comroid.crystalshard.DiscordBotBase;
 import org.comroid.crystalshard.DiscordBotShard;
 import org.comroid.crystalshard.gateway.event.DispatchEventType;
 import org.comroid.crystalshard.gateway.event.GatewayEvent;
@@ -38,8 +37,6 @@ public final class Gateway implements ContextualProvider.Underlying, Closeable, 
     private static final Logger logger = LogManager.getLogger();
     @Internal
     public final Reference<Integer> heartbeatTime = Reference.create();
-    @Internal
-    public final FutureReference<ReadyEvent> readyEvent;
     @Internal
     public final Reference<ShardBasedPresence> ownPresence;
     @Internal

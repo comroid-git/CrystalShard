@@ -1,6 +1,5 @@
 package org.comroid.crystalshard.model.message.embed;
 
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.jetbrains.annotations.Nullable;
 

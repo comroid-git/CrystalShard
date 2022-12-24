@@ -3,7 +3,6 @@ package org.comroid.crystalshard.model.message;
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.guild.CustomEmoji;
 import org.comroid.crystalshard.entity.message.Message;
-import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.emoji.Emoji;
 import org.comroid.crystalshard.model.emoji.UnicodeEmoji;
 import org.comroid.uniform.node.UniNode;
