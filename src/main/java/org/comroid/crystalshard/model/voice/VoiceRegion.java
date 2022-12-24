@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.Bot;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.rest.Endpoint;
 import org.comroid.crystalshard.rest.response.voice.VoiceRegionsResponse;
 import org.comroid.mutatio.ref.Reference;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class VoiceRegion extends AbstractDataContainer implements Named {
+public final class VoiceRegion extends DataContainerBase<DiscordDataContainer> implements Named, DiscordDataContainer {
     @RootBind
     public final static GroupBind<VoiceRegion> TYPE
             = BASETYPE.subGroup("voice-region", VoiceRegion::new);

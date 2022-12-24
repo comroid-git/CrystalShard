@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.message.embed;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +11,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.List;
 
-public final class MessageEmbed extends AbstractDataContainer implements Embed {
+public final class MessageEmbed extends DataContainerBase<DiscordDataContainer> implements Embed, DiscordDataContainer {
     public final Reference<Type> type = getComputedReference(EMBED_TYPE);
     public final Reference<String> title = getComputedReference(TITLE);
     public final Reference<String> description = getComputedReference(DESCRIPTION);

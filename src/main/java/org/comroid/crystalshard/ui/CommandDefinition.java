@@ -2,7 +2,7 @@ package org.comroid.crystalshard.ui;
 
 import org.comroid.api.Named;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.command.CommandOption;
 import org.comroid.crystalshard.ui.annotation.SlashCommand;
 import org.comroid.mutatio.ref.Reference;
@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class CommandDefinition extends AbstractDataContainer implements Named, Described {
+public class CommandDefinition extends DataContainerBase<DiscordDataContainer> implements Named, Described, DiscordDataContainer {
     @RootBind
     public static final GroupBind<CommandDefinition> TYPE
             = BASETYPE.subGroup("command-definition");

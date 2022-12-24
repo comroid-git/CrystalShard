@@ -3,14 +3,14 @@ package org.comroid.crystalshard.ui;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
 import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 
-public final class InteractionResponse extends AbstractDataContainer {
+public final class InteractionResponse extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<InteractionResponse> TYPE
             = BASETYPE.subGroup("interaction-response");

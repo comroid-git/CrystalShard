@@ -6,7 +6,7 @@ import org.comroid.crystalshard.entity.Snowflake;
 import org.comroid.crystalshard.entity.channel.PrivateTextChannel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.guild.Role;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.user.PremiumType;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public final class GuildMember extends AbstractDataContainer implements User {
+public final class GuildMember extends DataContainerBase<DiscordDataContainer> implements User, DiscordDataContainer {
     @RootBind
     public static final GroupBind<GuildMember> TYPE
             = AbstractDataContainer.BASETYPE.subGroup("guild-member");

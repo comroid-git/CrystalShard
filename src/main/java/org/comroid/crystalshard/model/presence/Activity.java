@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
 import org.comroid.common.info.Described;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 
-public final class Activity extends AbstractDataContainer {
+public final class Activity extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<Activity> TYPE
             = BASETYPE.subGroup("activity", Activity::new);

@@ -2,7 +2,7 @@ package org.comroid.crystalshard.rest.response;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Polyfill;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
@@ -47,7 +47,7 @@ public final class GatewayBotResponse extends AbstractRestResponse {
         super(context, initialData);
     }
 
-    public static class SessionStartLimit extends AbstractDataContainer {
+    public static class SessionStartLimit extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
         @RootBind
         public static final GroupBind<SessionStartLimit> TYPE
                 = BASETYPE.subGroup(GatewayBotResponse.TYPE, "session-start-limit", SessionStartLimit::new);

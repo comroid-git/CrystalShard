@@ -6,7 +6,7 @@ import org.comroid.api.Rewrapper;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.GuildMember;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.command.CommandInteractionData;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
@@ -18,7 +18,7 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class Interaction extends AbstractDataContainer {
+public final class Interaction extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<Interaction> TYPE
             = BASETYPE.subGroup("interaction", Interaction::new);

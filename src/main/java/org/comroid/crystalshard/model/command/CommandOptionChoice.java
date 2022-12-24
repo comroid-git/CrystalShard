@@ -3,7 +3,7 @@ package org.comroid.crystalshard.model.command;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.Named;
 import org.comroid.api.ValueType;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniValueNode;
@@ -13,7 +13,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class CommandOptionChoice<T> extends AbstractDataContainer implements Named {
+public abstract class CommandOptionChoice<T> extends DataContainerBase<DiscordDataContainer> implements Named, DiscordDataContainer {
     public static final GroupBind<CommandOptionChoice<?>> TYPE
             = BASETYPE.subGroup("application-command-option-choice", CommandOptionChoice::resolve);
     public static final VarBind<CommandOptionChoice<?>, String, String, String> NAME

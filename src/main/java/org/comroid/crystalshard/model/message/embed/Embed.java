@@ -4,7 +4,6 @@ import org.comroid.api.Named;
 import org.comroid.api.Polyfill;
 import org.comroid.common.info.Described;
 import org.comroid.crystalshard.Context;
-import org.comroid.crystalshard.model.AbstractDataContainer;
 import org.comroid.uniform.model.Serializable;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;

@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.Snowflake;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.crystalshard.model.guild.PermissionSet;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
@@ -14,7 +14,7 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class PermissionOverwrite extends AbstractDataContainer {
+public final class PermissionOverwrite extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<PermissionOverwrite> TYPE
             = BASETYPE.subGroup("permission-overwrite", PermissionOverwrite::new);

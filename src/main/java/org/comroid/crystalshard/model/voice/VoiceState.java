@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.channel.Channel;
 import org.comroid.crystalshard.entity.guild.Guild;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.uniform.node.UniObjectNode;
 import org.comroid.util.StandardValueType;
@@ -13,7 +13,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public final class VoiceState extends AbstractDataContainer {
+public final class VoiceState extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<VoiceState> TYPE
             = BASETYPE.subGroup("voice-state", VoiceState::new);

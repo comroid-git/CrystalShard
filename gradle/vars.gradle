@@ -3,7 +3,7 @@ import static java.lang.System.getenv
 ext {
     isAutoDeploy = rootProject.name != 'repo' || getenv().containsKey("TEAMCITY") || getenv().containsKey("JITPACK")
     artifactName = project.name
-    projectDescription = 'Wrapper for the Discord Bot API'
+    projectDescription = 'Spring Beans for creating a Discord Bot'
     userbase = 'comroid-git'
     snapshot = project.version.endsWith('SNAPSHOT')
 

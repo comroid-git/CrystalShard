@@ -1,7 +1,7 @@
 package org.comroid.crystalshard.model.presence;
 
 import org.comroid.api.ContextualProvider;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
@@ -10,7 +10,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public final class ClientStatus extends AbstractDataContainer {
+public final class ClientStatus extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<ClientStatus> TYPE
             = BASETYPE.subGroup("client-status", ClientStatus::new);

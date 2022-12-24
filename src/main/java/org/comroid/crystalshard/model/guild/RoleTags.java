@@ -4,7 +4,7 @@ import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.Bot;
 import org.comroid.crystalshard.entity.EntityType;
 import org.comroid.crystalshard.entity.user.User;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -12,7 +12,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public final class RoleTags extends AbstractDataContainer {
+public final class RoleTags extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<RoleTags> TYPE
             = BASETYPE.subGroup("role-tags", RoleTags::new);

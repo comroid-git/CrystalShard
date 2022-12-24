@@ -2,7 +2,7 @@ package org.comroid.crystalshard.model.command;
 
 import org.comroid.api.ContextualProvider;
 import org.comroid.crystalshard.entity.command.Command;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.mutatio.ref.Reference;
 import org.comroid.mutatio.span.Span;
 import org.comroid.uniform.node.UniNode;
@@ -13,7 +13,7 @@ import org.comroid.varbind.bind.GroupBind;
 import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.Nullable;
 
-public final class CommandInteractionData extends AbstractDataContainer {
+public final class CommandInteractionData extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<CommandInteractionData> TYPE
             = BASETYPE.subGroup("application-command-interaction-data", CommandInteractionData::new);

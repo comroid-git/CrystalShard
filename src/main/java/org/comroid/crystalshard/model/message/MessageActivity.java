@@ -3,7 +3,7 @@ package org.comroid.crystalshard.model.message;
 import org.comroid.api.ContextualProvider;
 import org.comroid.api.IntegerAttribute;
 import org.comroid.api.Rewrapper;
-import org.comroid.crystalshard.model.AbstractDataContainer;
+import org.comroid.crystalshard.model.DiscordDataContainer;
 import org.comroid.uniform.node.UniNode;
 import org.comroid.util.StandardValueType;
 import org.comroid.varbind.annotation.RootBind;
@@ -12,7 +12,7 @@ import org.comroid.varbind.bind.VarBind;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class MessageActivity extends AbstractDataContainer {
+public final class MessageActivity extends DataContainerBase<DiscordDataContainer> implements DiscordDataContainer {
     @RootBind
     public static final GroupBind<MessageActivity> TYPE
             = BASETYPE.subGroup("message-activity", MessageActivity::new);

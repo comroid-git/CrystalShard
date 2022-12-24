@@ -1,13 +1,22 @@
-apply plugin: 'java-library'
+import java.util.concurrent.TimeUnit
 
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot' version '3.0.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+}
+
+ext {
+    buildId = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
+}
 group 'org.comroid'
-version '0.3.0-SNAPSHOT'
+version = '1.0.0' + '.' + buildId
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 tasks.findByName('wrapper')?.configure {
-    gradleVersion = '6.2'
+    gradleVersion = '7.4'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
 
@@ -62,26 +71,18 @@ repositories {
     maven { url 'https://maven.comroid.org' }
     mavenLocal()
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly 'org.jetbrains:annotations:19.0.0'
+    compileOnly 'org.jetbrains:annotations:23.1.0'
 
-    // logging dependencies
-    implementation 'org.apache.logging.log4j:log4j-api:2.11.0'
-    testImplementation 'org.apache.logging.log4j:log4j-core:2.11.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    if (isAutoDeploy) {
-        implementation 'org.comroid:restless:0.+'
-    } else {
-        api project(':guardian:restless') == null
-                ? 'org.comroid:restless:0.16.0-SNAPSHOT'
-                : project(':guardian:restless')
-
-        testImplementation project(':guardian:uniform').sourceSets.java8compat.output.classesDirs
-        testImplementation project(':guardian:restless').sourceSets.java11compat.output.classesDirs
-    }
-    testImplementation 'com.alibaba:fastjson:1.2.70'
+    if (findProject(':guardian:spellbind') != null)
+        implementation project(':guardian:spellbind')
+    else 'org.comroid:spellbind:1.+'
 }
 
 apply from: "gradle/publishing.gradle"
